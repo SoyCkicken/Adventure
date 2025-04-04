@@ -1,0 +1,25 @@
+{
+  "id": "mercenary_event",
+  "description": "용병단이 던전에 들어갈 추가 인원을 찾고 있다. 자신이 잘하는 것을 자랑해보자.",
+  "conditions": [
+    {
+      "key": "turn",
+      "min": 10,
+      "max": 15
+    }
+  ],
+  "choices": [
+    {
+      "text": "힘을 자랑한다",
+      "nextNodeSuccess": "enter_dungeon",
+      "nextNodeFail": "rejected_by_mercenaries",
+      "checkStat": "strength"
+    },
+    {
+      "text": "민첩을 자랑한다",
+      "nextNodeSuccess": "enter_dungeon",
+      "nextNodeFail": "rejected_by_mercenaries",
+      "checkStat": "agility"
+    }
+  ]
+}
