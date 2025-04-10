@@ -36,7 +36,10 @@
                 },
                 {
                     "text": "참여할 생각이 없다고 말한다",
-                    "nextNode": "no_dungeon_Enter_event"
+                    "nextNodeSuccess": "no_dungeon_Enter_event",
+                    "nextNodeFail": "rejected_by_mercenaries",
+                    "checkStat": "agility",
+                    "velue": "0"
                 }
 
             ]
@@ -46,11 +49,17 @@
             "description": "당신은 용병단과 함께 던전에 들어간다.",
             "nextNode": "dungeon_Enter_event",
             "choices": [
+                {
+                    "text": "다음",
+                    "nextNodeSuccess": "dungeon_Enter_event",
+                    "checkStat": "agility",
+                    "velue": "0"
+                }
             ]
         },
         {
             "id": "no_dungeon_Enter_event",
-            "description": "그들은 투덜 거리며 다른 사람을 찾아 갔고. 당신은 더 이상 여기 있을 이유가 사라졌다",
+            "description": "그들은 투덜 거리며 다른 사람을 찾아 갔고.\n당신은 더 이상 여기 있을 이유가 사라졌다",
             "choices": []
         },
 
@@ -89,12 +98,12 @@
         },
         {
             "id": "NoDamage_Enter_dungeon",
-            "description": "다행히 당신의 힘이 상대방보다 쌔서 간발에 차이로 검을 막았다 그리고 들려오는 소리는 없었다 그러자 동료들이 \"뭐야 아무 소리도 안나는데 앞에 선두녀석 뭘한거야!\" \"미안해 바닥에 떨어진 검 같은데 이걸 발로 찼나봐.\" 해당 동료는 욕이란 욕들 다 먹었지만 아무도 다치지는 않았다",
+            "description": "다행히 당신의 힘이 상대방보다 쌔서 간발에 차이로 검을 막았다\n 그리고 들려오는 소리는 없었다 그러자 동료들이 \"뭐야 아무 소리도 안나는데 앞에 선두녀석 뭘한거야!\"\n \"미안해 바닥에 떨어진 검 같은데 이걸 발로 찼나봐.\" 해당 동료는 욕이란 욕들 다 먹었지만 아무도 다치지는 않았다",
             "choices": []
         },
         {
             "id": "Kill_Enter_dunger",
-            "description": "상대방의 검을 막기는 하였으나 힘이 부쳐 살짝 베였다 그리고 근처에서 사람을 베는 소리가 들리며 동료 한명이 목이 베여서 사망했다.\"어이 다들 살아는 있는거지? 이 자식은 운도 지지리 없지만 그래도 우리 몫이 늘어났으니 좋은건가.\" 그러면서 투덜거리며 죽을꺼면 적이나 싸우다 죽으면 좋았을 것을 하며 혀를 찹니다",
+            "description": "상대방의 검을 막기는 하였으나 힘이 부쳐 살짝 베였다\n 그리고 근처에서 사람을 베는 소리가 들리며 동료 한명이 목이 베여서 사망했다.\"어이 다들 살아는 있는거지? 이 자식은 운도 지지리 없지만 그래도 우리 몫이 늘어났으니 좋은건가.\"\n그러면서 투덜거리며 죽을꺼면 적이나 싸우다 죽으면 좋았을 것을 하며 혀를 찹니다",
             "effects": [
                 {
                     "key": "Player_damage",

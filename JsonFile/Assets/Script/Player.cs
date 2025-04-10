@@ -31,12 +31,12 @@ public class Player : MonoBehaviour
     public void Awake()
     {
         Experience_required = (int)(100 * (Level * 1.12f));
-        Debug.Log($"플레이어의 레벨 : {Level} 다음 레벨에 필요한 경험치 : {Experience_required} 남은 경험치 : {Experience}");
+        //Debug.Log($"플레이어의 레벨 : {Level} 다음 레벨에 필요한 경험치 : {Experience_required} 남은 경험치 : {Experience}");
     }
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(Experience_required);
+        //Debug.Log(Experience_required);
     }
 
     // Update is called once per frame
@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
         }
         else 
         {
-            Debug.LogError("경험치가 부족합니다");
+            //Debug.LogError("경험치가 부족합니다");
         }
     }
     public void PlayerStateReload()

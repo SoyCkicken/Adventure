@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Text;
+using UnityEditor.Experimental.GraphView;
 
 public class EventLoader : MonoBehaviour
 {
@@ -12,13 +13,26 @@ public class EventLoader : MonoBehaviour
     public Player player;                           //임시
     public TMP_Text id_text;                        //이벤트 ID
     public TMP_Text description_text;               //이벤트 설명(내용)
-    public TMP_Text choices_text;                   //선택지
+    //public TMP_Text choices_text;                   //선택지
     public GameObject choiceButtonPrefab; // 버튼 프리팹 연결 필요
     public Transform choiceContainer; // 버튼이 붙을 부모 오브젝트
+    public GameObject SkipButton;           //스킵 버튼
+    private bool isTyping = false; //타이핑중인지(TypeTextEffect에서 글씨를 추가 중인지 확인하는 변수)
+    private bool isSkipClick = false; //스킵 버튼을 눌렀는지
+    private Coroutine TypingCorouting; //지금남은 글자들을 합쳐버릴 코루틴 변수 선언
 
 
-    
-    
+    private void Awake()
+    {
+        //스킵 버튼이 눌렸을때 스킵을 시켜버림
+        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (isTyping)
+                isSkipClick = true;
+        });
+    }
+
+
     //플레이어의 스텟을 받아오고
     int GetPlayerStat(string stat)
     {
@@ -42,12 +56,13 @@ public class EventLoader : MonoBehaviour
     {
         //이벤트 불러오고
         LoadEventData();
-
+        
         // 테스트용: 시작 이벤트 노드 출력
         //text에 출력하는 정도만 작성해놨음
         DisplayEvent("mercenary_event");
     }
 
+    
     void LoadEventData()
     {
         //json파일 불러옴
@@ -60,6 +75,7 @@ public class EventLoader : MonoBehaviour
             foreach (var node in database.events)
             {
                 eventMap[node.id] = node;
+                
                 Debug.Log(node.id);
             }
 
@@ -80,65 +96,47 @@ public class EventLoader : MonoBehaviour
         Debug.LogWarning("없는 이벤트 ID: " + id);
         return null;
     }
-
-    //void DisplayEvent(string id)
-    //{
-    //    //이벤트 id값이 비어 있는 경우
-    //    if (!eventMap.ContainsKey(id))
-    //    {
-    //        //에러
-    //        Debug.LogError("해당 ID의 이벤트를 찾을 수 없음: " + id);
-    //        return;
-    //    }
-    //    //아닐경우 id에 쭉 넣어서 text에 출력하는중
-    //    EventNode node = eventMap[id];
-    //    id_text.text = $"ID: {node.id}";
-    //    description_text.text = node.description;
-    //    //선택지가 없지 않거나 , 선택지 숫자가 1개 이상일때
-    //    if (node.choices != null && node.choices.Count > 0)
-    //    {
-    //        //선택지 문자열 받아올거
-    //        string choiceText = "";
-    //        //for문으로 넣어서
-    //        for (int i = 0; i < node.choices.Count; i++)
-    //        {
-    //            //저장
-    //            choiceText += $"{i + 1}. {node.choices[i].text}\n";
-    //        }
-    //        //출력
-    //        choices_text.text = choiceText;
-    //    }
-    //    else
-    //    {
-    //        //선택지가 없다고 출력해줌
-    //        choices_text.text = "(선택지 없음)";
-    //    }
-    //}
     void DisplayEvent(string id)
     {
+        //이벤트 id값이 비어 있는 경우
         if (!eventMap.ContainsKey(id)) return;
-
+        
+        //아닐경우 id에 쭉 넣어서 text에 출력하는중
         EventNode node = eventMap[id];
         id_text.text = $"ID: {node.id}";
-        //StartCoroutine(TypeTextEffect(node.description));
+        StartCoroutine(TypeTextEffect(node.description));
+        //Debug.Log(node.description);
 
         // 기존 선택지 버튼 삭제
         foreach (Transform child in choiceContainer)
             Destroy(child.gameObject);
 
+        //선택지가 없지 않거나 , 선택지 숫자가 1개 이상일때
         if (node.choices != null && node.choices.Count > 0)
         {
             foreach (var choice in node.choices)
             {
+                //버튼의 인스턴스를 생성(복사본)
                 GameObject btnObj = Instantiate(choiceButtonPrefab, choiceContainer);
+                //버튼 텍스트를 받아옴
                 TMP_Text btnText = btnObj.GetComponentInChildren<TMP_Text>();
+                //버튼 텍스트에 선택지 내용을 담아서 출력
                 btnText.text = choice.text;
-
+                //버튼 컴포넌트
                 Button btn = btnObj.GetComponent<Button>();
+                //클릭시 발동
                 btn.onClick.AddListener(() =>
                 {
-                    HandleChoice(choice); // 클릭 시 처리
-                    Debug.Log(choice);
+                    if (isTyping)
+                    {
+                        isSkipClick = true; // 텍스트 출력 중이면 스킵 요청
+                        return;
+                    }
+                    HandleChoice(choice);   // 클릭 시 처리
+                    //Debug.Log($"<color=red>Red{choice.text} 선택지 출력</color>");      //확인 용
+                    if (TypingCorouting != null)
+                        StopCoroutine(TypingCorouting);
+                    TypingCorouting = StartCoroutine(TypeTextEffect(eventMap[choice.nextNodeSuccess].description));
                 });
             }
         }
@@ -148,15 +146,23 @@ public class EventLoader : MonoBehaviour
             if (!string.IsNullOrEmpty(node.nextNode))
             {
                 Debug.Log($"선택지 없음 → 다음 노드 자동 진행: {node.nextNode}");
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Debug.Log("마우스 버튼 눌림!");
+
+                }
                 DisplayEvent(node.nextNode);
+
             }
             else
             {
                 // 마지막 노드이거나 후속 이벤트 없음
-                choices_text.text = "(선택지 없음)";
+                //choices_text.text = "(선택지 없음)";
             }
         }
     }
+
+
     //선택지를 받아 오는데 해당 선택지의 조건 등을 확인 
     void HandleChoice(Choice choice)
     {
@@ -169,16 +175,32 @@ public class EventLoader : MonoBehaviour
         DisplayEvent(nextId);
     }
     //텍스트 이펙트를 구현을 위한 아이 이너머레이블 구현
-    IEnumerable TypeTextEffect(string text)
+    IEnumerator TypeTextEffect(string text)
     {
+        isTyping = true;
+        isSkipClick = false;
+        SkipButton.SetActive(true);
+        Debug.Log("스킵버튼 활성화");
         description_text.text = string.Empty; //문자열을 비우고
+        //스트링빌더(한글자씩 추가해주는 함수)
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < text.Length; i++)
         {
+            //스킵 버튼 눌렸을때 바로 문자열에 다 쑤셔넣음
+            if(isSkipClick)
+            {
+                description_text.text = text;
+                break;
+            }
+            //한글자씩 추가
             stringBuilder.Append(text[i]);
+            //받은 문자들을 text에 담아서 
             description_text.text = stringBuilder.ToString();
-            yield return new WaitForSeconds(0.01f);
+            //0.01초마다 한번씩 출력시킴
+            yield return new WaitForSeconds(0.05f);
         }
-       
+        isTyping = false;
+        SkipButton.SetActive(false);
+        Debug.Log("스킵버튼 비활성화");
     }
 }
