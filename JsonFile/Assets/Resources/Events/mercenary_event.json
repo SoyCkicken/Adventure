@@ -17,15 +17,43 @@
                     "text": "힘을 자랑한다",
                     "nextNodeSuccess": "enter_dungeon",
                     "nextNodeFail": "rejected_by_mercenaries",
-                    "checkStat": "strength"
+                    "checkStat": "strength",
+                    "velue" :  "5"
+                },
+                {
+                    "text": "민첩성을 자랑한다",
+                    "nextNodeSuccess": "enter_dungeon",
+                    "nextNodeFail": "rejected_by_mercenaries",
+                    "checkStat": "agility",
+                    "velue": "5"
+                },
+                {
+                    "text": "지력을 자랑한다",
+                    "nextNodeSuccess": "enter_dungeon",
+                    "nextNodeFail": "rejected_by_mercenaries",
+                    "checkStat": "intelligence",
+                    "velue": "5"
+                },
+                {
+                    "text": "참여할 생각이 없다고 말한다",
+                    "nextNode": "no_dungeon_Enter_event"
                 }
+
             ]
         },
         {
             "id": "enter_dungeon",
             "description": "당신은 용병단과 함께 던전에 들어간다.",
+            "nextNode": "dungeon_Enter_event",
+            "choices": [
+            ]
+        },
+        {
+            "id": "no_dungeon_Enter_event",
+            "description": "그들은 투덜 거리며 다른 사람을 찾아 갔고. 당신은 더 이상 여기 있을 이유가 사라졌다",
             "choices": []
         },
+
         {
             "id": "rejected_by_mercenaries",
             "description": "그들은 당신의 실력을 믿지 않고 쫓아낸다.",
@@ -44,7 +72,7 @@
         {
             "id": "dungeon_Enter_event",
 
-            "description": "던전에 입장하자 앞이 보이지 않을 정도로 어둡다. 앞에서 팅이라는 소리가 들리며 같이 왔던 동료들이 \"전투다!! 전투!!\"무기를 빼들고 휘두르기 시작했다 ",
+            "description": "던전에 입장하자 앞이 보이지 않을 정도로 어둡다.\n앞에서 팅이라는 소리가 들리며 같이 왔던 동료들이 \"전투다!! 전투!!\"\n무기를 빼들고 휘두르기 시작했다 ",
             "conditions": [
                 {
                 }
@@ -54,7 +82,8 @@
                     "text": "무기를 휘두른다",
                     "nextNodeSuccess": "NoDamage_Enter_dungeon",
                     "nextNodeFail": "Kill_Enter_dunger",
-                    "checkStat": "strength"
+                    "checkStat": "strength",
+                    "velue": "10"
                 }
             ]
         },

@@ -24,8 +24,10 @@ public class Player : MonoBehaviour
     public int HP = 5;
     public int MP = 5;
     private int Level = 1;
+    private int E_State = 0;
     private int Experience_required = 100;//필요 경험치
     private int Experience = 100000;
+    public StateManager StateManager;
     public void Awake()
     {
         Experience_required = (int)(100 * (Level * 1.12f));
@@ -51,15 +53,36 @@ public class Player : MonoBehaviour
             Experience -= Experience_required;
             Level++;
             Experience_required = (int)(100 * (Level * 1.12f));
+            E_State++;
+
             Debug.Log($"플레이어의 레벨 : {Level} 다음 레벨에 필요한 경험치 : {Experience_required} 남은 경험치 : {Experience}");
+            PlayerStateReload();
+            StateManager.StateOn();
         }
         else 
         {
             Debug.LogError("경험치가 부족합니다");
         }
-        
-
-
-
+    }
+    public void PlayerStateReload()
+    {
+        int temp = (int)(Strength / 3);
+        if (temp > 3)
+        {
+            HP = temp;
+        }
+        else
+        {
+            HP = 3;
+        }
+        temp = (int)(Magic / 3);
+        if (temp > 3)
+        {
+            MP = temp;
+        }
+        else
+        {
+            MP = 3;
+        }
     }
 }

@@ -19,6 +19,9 @@ public class EventNode
     public List<Choice> choices;
     //성공,실패 했을때 영향
     public List<Effect> effects;
+    //선택지가 없는 이벤트 일 경우 사용하는 다음 노드
+    public string nextNode;
+    
 }
 
 [System.Serializable]
@@ -43,6 +46,8 @@ public class Choice
     public string nextNodeFail;
     //선택지 설명
     public string checkStat;
+    //선택지에서 필요한 스탯 포인트
+    public string velue;
 }
 
 [System.Serializable]
