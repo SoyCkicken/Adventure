@@ -20,10 +20,17 @@ public class EventLoader : MonoBehaviour
     private bool isTyping = false; //타이핑중인지(TypeTextEffect에서 글씨를 추가 중인지 확인하는 변수)
     private bool isSkipClick = false; //스킵 버튼을 눌렀는지
     private Coroutine TypingCorouting; //지금남은 글자들을 합쳐버릴 코루틴 변수 선언
+    public List<string> ranEvent_List;
+    public int ranEvent_Count;
 
 
     private void Awake()
     {
+        //이벤트 불러오고
+        LoadEventData();
+        //이벤트 길이까지만 
+        
+
         //스킵 버튼이 눌렸을때 스킵을 시켜버림
         SkipButton.GetComponent<Button>().onClick.AddListener(() =>
         {
@@ -54,12 +61,9 @@ public class EventLoader : MonoBehaviour
     }
     void Start()
     {
-        //이벤트 불러오고
-        LoadEventData();
-        
-        // 테스트용: 시작 이벤트 노드 출력
-        //text에 출력하는 정도만 작성해놨음
-        DisplayEvent("mercenary_event");
+        //코루틴으로 정리 했음
+        StartCoroutine(RamdomEvent());
+
     }
 
     
@@ -75,10 +79,17 @@ public class EventLoader : MonoBehaviour
             foreach (var node in database.events)
             {
                 eventMap[node.id] = node;
-                
+                if (eventMap[node.id].precursor_ranEvent != null)
+                {
+                    ranEvent_List.Add(node.id);
+                }
                 Debug.Log(node.id);
             }
 
+            for (int i = 0; i < ranEvent_List.Count; i++)
+            {
+                Debug.Log(ranEvent_List[i]);
+            }
             Debug.Log($"이벤트 총 {eventMap.Count}개 로드됨");
         }
         else
@@ -98,14 +109,23 @@ public class EventLoader : MonoBehaviour
     }
     void DisplayEvent(string id)
     {
+        EventNode node = eventMap[id];
+        Debug.Log($"DisplayEvent에서 발생한 디버그입니다 : {node.id}");
+        //혹시 모르니 랜덤 이벤트 일경우 발동
+        if (node.id == "RamEvent")
+        {
+            StartCoroutine(RamdomEvent());
+            return;
+            }
+
         //이벤트 id값이 비어 있는 경우
         if (!eventMap.ContainsKey(id)) return;
-        
+       
         //아닐경우 id에 쭉 넣어서 text에 출력하는중
-        EventNode node = eventMap[id];
+
         id_text.text = $"ID: {node.id}";
         StartCoroutine(TypeTextEffect(node.description));
-        //Debug.Log(node.description);
+        Debug.Log($"DisplayEvent에서 발생한 디버그입니다 : {node.description}");
 
         // 기존 선택지 버튼 삭제
         foreach (Transform child in choiceContainer)
@@ -136,22 +156,32 @@ public class EventLoader : MonoBehaviour
                     //Debug.Log($"<color=red>Red{choice.text} 선택지 출력</color>");      //확인 용
                     if (TypingCorouting != null)
                         StopCoroutine(TypingCorouting);
-                    TypingCorouting = StartCoroutine(TypeTextEffect(eventMap[choice.nextNodeSuccess].description));
+                    //TypingCorouting = StartCoroutine(TypeTextEffect(eventMap[choice.nextNodeSuccess].description));
                 });
             }
         }
         else
         {
             // 선택지가 없고 다음 노드가 지정된 경우 → 자동 진행
-            if (!string.IsNullOrEmpty(node.nextNode))
+            if (node.precursor_ranEvent == "true")
             {
-                Debug.Log($"선택지 없음 → 다음 노드 자동 진행: {node.nextNode}");
-                if (Input.GetMouseButtonDown(0))
-                {
-                    Debug.Log("마우스 버튼 눌림!");
+                //Debug.Log($"선택지 없음 → 다음 노드 자동 진행: {node.nextNode}");
+                //if (Input.GetMouseButtonDown(0))
+                //{
+                //    Debug.Log("마우스 버튼 눌림!");
 
-                }
-                DisplayEvent(node.nextNode);
+                //}
+                //DisplayEvent(node.nextNode);
+
+                ranEvent_Count = UnityEngine.Random.Range(0, ranEvent_List.Count);
+                Debug.Log(ranEvent_Count);
+                Debug.Log($"<b><color=#FF0000>{ranEvent_List[ranEvent_Count].ToString()}</color></b>");
+
+                // 테스트용: 시작 이벤트 노드 출력
+                //text에 출력하는 정도만 작성해놨음
+                DisplayEvent(ranEvent_List[ranEvent_Count].ToString());
+                //이벤트 종료시 리스트에서 삭제
+                ranEvent_List.Remove(ranEvent_List[ranEvent_Count]);
 
             }
             else
@@ -166,11 +196,14 @@ public class EventLoader : MonoBehaviour
     //선택지를 받아 오는데 해당 선택지의 조건 등을 확인 
     void HandleChoice(Choice choice)
     {
+        
         int playerStat = GetPlayerStat(choice.checkStat);
+        Debug.Log(playerStat);
         bool success = playerStat >= Convert.ToInt32(choice.velue); // 기준 수치 (예시로 5 이상이면 성공)
         Debug.Log(Convert.ToInt32(choice.velue));
-
+        Debug.Log($"선택지에서 출력하는 디버그 입니다 {success}");
         string nextId = success ? choice.nextNodeSuccess : choice.nextNodeFail;
+        
         Debug.Log($"선택지 결과: {(success ? "성공" : "실패")} → {nextId}");
         DisplayEvent(nextId);
     }
@@ -184,23 +217,55 @@ public class EventLoader : MonoBehaviour
         description_text.text = string.Empty; //문자열을 비우고
         //스트링빌더(한글자씩 추가해주는 함수)
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < text.Length; i++)
+        if (text != null)
         {
-            //스킵 버튼 눌렸을때 바로 문자열에 다 쑤셔넣음
-            if(isSkipClick)
+            for (int i = 0; i < text.Length; i++)
             {
-                description_text.text = text;
-                break;
+                //스킵 버튼 눌렸을때 바로 문자열에 다 쑤셔넣음
+                if (isSkipClick)
+                {
+                    description_text.text = text;
+                    break;
+                }
+                //한글자씩 추가
+                stringBuilder.Append(text[i]);
+                //받은 문자들을 text에 담아서 
+                description_text.text = stringBuilder.ToString();
+                //0.01초마다 한번씩 출력시킴
+                yield return new WaitForSeconds(0.05f);
             }
-            //한글자씩 추가
-            stringBuilder.Append(text[i]);
-            //받은 문자들을 text에 담아서 
-            description_text.text = stringBuilder.ToString();
-            //0.01초마다 한번씩 출력시킴
-            yield return new WaitForSeconds(0.05f);
         }
+        else
+        {
+            //RamEvent같은 경우 설명 같은게 하나도 없기 때문에 에러가 발생을 하는데 그걸 막고자 if문 사용했음
+            yield break;
+        }
+        
         isTyping = false;
         SkipButton.SetActive(false);
         Debug.Log("스킵버튼 비활성화");
     }
+    IEnumerator RamdomEvent()
+    {
+        ranEvent_Count = UnityEngine.Random.Range(0, ranEvent_List.Count);
+        Debug.Log(ranEvent_Count);
+        Debug.Log($"<b><color=#FF0000> 해당 이벤트는 랜덤 이벤트 코루틴에서 발생 하였습니다\n{ranEvent_List[ranEvent_Count].ToString()}</color></b>");
+
+        // 테스트용: 시작 이벤트 노드 출력
+        //text에 출력하는 정도만 작성해놨음
+        DisplayEvent(ranEvent_List[ranEvent_Count].ToString());
+        //이벤트 종료시 리스트에서 삭제
+        ranEvent_List.Remove(ranEvent_List[ranEvent_Count]);
+
+        yield return null;
+    }
 }
+
+
+/*
+ 지금 구현 해야 하는것 -> 랜덤이벤트 발생을 하면 대부분 1회성 이벤트 들이니
+                        해당 이벤트가 종료되면 다시 랜덤한 이벤트를 발생 시키게 하면 된다
+
+-           구현 완료                  -
+
+ */

@@ -1070,10 +1070,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b459af311c69b46b59bd370315cad9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Strength: 5
-  Agility: 10
-  Intelligence: 15
-  Magic: 20
+  Strength: 4
+  Agility: 4
+  Intelligence: 4
+  Magic: 4
   Divinity: 21
   Charisma: 30
   HP: 0
@@ -2430,6 +2430,8 @@ MonoBehaviour:
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   choiceContainer: {fileID: 1522613451}
   SkipButton: {fileID: 1390415284}
+  ranEvent_List: []
+  ranEvent_Count: 0
 --- !u!4 &1458107050
 Transform:
   m_ObjectHideFlags: 0

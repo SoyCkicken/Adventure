@@ -5,6 +5,7 @@
             "id": "mercenary_event",
 
             "description": "용병단이 던전에 들어갈 추가 인원을 찾고 있다.",
+            "precursor_ranEvent": "True",
             "conditions": [
                 {
                     "key": "turn",
@@ -18,7 +19,7 @@
                     "nextNodeSuccess": "enter_dungeon",
                     "nextNodeFail": "rejected_by_mercenaries",
                     "checkStat": "strength",
-                    "velue" :  "5"
+                    "velue": "5"
                 },
                 {
                     "text": "민첩성을 자랑한다",
@@ -45,9 +46,12 @@
             ]
         },
         {
+            "id": "RamEvent"
+
+        },
+        {
             "id": "enter_dungeon",
             "description": "당신은 용병단과 함께 던전에 들어간다.",
-            "nextNode": "dungeon_Enter_event",
             "choices": [
                 {
                     "text": "다음",
@@ -60,7 +64,14 @@
         {
             "id": "no_dungeon_Enter_event",
             "description": "그들은 투덜 거리며 다른 사람을 찾아 갔고.\n당신은 더 이상 여기 있을 이유가 사라졌다",
-            "choices": []
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
         },
 
         {
@@ -76,7 +87,14 @@
                     "value": "20"
                 }
             ],
-            "choices": []
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
         },
         {
             "id": "dungeon_Enter_event",
@@ -111,6 +129,71 @@
                 }
             ],
             "choices": []
+        },
+        {
+            "id": "TestRan_01",
+            "description": "해당 이벤트는 랜덤 이벤트 테스트용입니다. ID : TestRan_01",
+            "precursor_ranEvent": "True",
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
+        },
+        {
+            "id": "TestRan_02",
+            "description": "해당 이벤트는 랜덤 이벤트 테스트용입니다. ID : TestRan_02",
+            "precursor_ranEvent": "True",
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
+        },
+        {
+            "id": "TestRan_03",
+            "description": "해당 이벤트는 랜덤 이벤트 테스트용입니다. ID : TestRan_03",
+            "precursor_ranEvent": "True",
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
+        },
+        {
+            "id": "TestRan_04",
+            "description": "해당 이벤트는 랜덤 이벤트 테스트용입니다. ID : TestRan_04",
+            "precursor_ranEvent": "True",
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
+        },
+        {
+            "id": "TestRan_05",
+            "description": "해당 이벤트는 랜덤 이벤트 테스트용입니다. ID : TestRan_05",
+            "precursor_ranEvent": "True",
+            "choices": [
+                {
+                    "text": "다음",
+                    "checkStat": "agility",
+                    "nextNodeSuccess": "RamEvent",
+                    "velue": "0"
+                }
+            ]
         }
     ]
 

@@ -13,6 +13,8 @@ public class EventNode
     public string id;
     //이벤트 설명
     public string description;
+    //전조 이벤트(이게 있어야지 이벤트 시작 지점과 랜덤으로 이벤트를 돌릴때 사용이 가능할꺼임
+    public string precursor_ranEvent;
     //조건(턴수나 캐릭터 성향 , 스텟 조건등)
     public List<Condition> conditions;
     //선택지
