@@ -1,0 +1,29 @@
+[
+    {
+        "Scene_Code": "EventScene_1_2",
+        "Choice_No": 1,
+        "Success_Formula": "str * 10",
+        "Success_Next_Script": "--",
+        "Fail_Next_Script": "--",
+        "Success_Effect": "--",
+        "Fail_Effect": "--"
+    },
+    {
+        "Scene_Code": "--",
+        "Choice_No": 2,
+        "Success_Formula": "--",
+        "Success_Next_Script": "--",
+        "Fail_Next_Script": "--",
+        "Success_Effect": "--",
+        "Fail_Effect": "--"
+    },
+    {
+        "Scene_Code": "--",
+        "Choice_No": 3,
+        "Success_Formula": "--",
+        "Success_Next_Script": "--",
+        "Fail_Next_Script": "--",
+        "Success_Effect": "--",
+        "Fail_Effect": "--"
+    }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "Scene_Code": "MainScript_1_1_1,",
+    "Choice_No": 1,
+    "Success_Formula": "가중치",
+    "Success_Script_Code ": "MainScript_1_1_2",
+    "Fail_Script_Code ": "MainScript_1_1_3"
+  },
+  {
+    "Scene_Code": "MainScript_1_1_1,",
+    "Choice_No": 1,
+    "Success_Formula": "가중치",
+    "Success_Script_Code ": "MainScript_1_1_2",
+    "Fail_Script_Code ": "MainScript_1_1_3"
+  },
+  {
+    "Scene_Code": "MainScript_1_1_1,",
+    "Choice_No": 1,
+    "Success_Formula": "가중치",
+    "Success_Script_Code ": "MainScript_1_1_2",
+    "Fail_Script_Code ": "MainScript_1_1_3"
+  }
+]
