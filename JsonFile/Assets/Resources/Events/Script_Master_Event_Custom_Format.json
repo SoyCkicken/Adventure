@@ -3,42 +3,49 @@
         "Event_Index": 1,
         "EventScript_Index": 1,
         "Script_Code": "EventScript_1_1",
-        "KOR": "안개 속으로 발을 들인다."
+        "KOR": "안개 속으로 발을 들인다.",
+        "displayType": "Text"
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 2,
         "Script_Code": "EventScript_1_2",
-        "KOR": "D:/DownLoad/길사진"
+        "KOR": "TestImage",
+        "displayType": "Image"
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 3,
         "Script_Code": "EventScript_1_3",
-        "KOR": "그림자를 따라간다."
+        "KOR": "그림자를 따라간다.",
+        "displayType": "Text"
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 4,
         "Script_Code": "EventScript_1_4",
-        "KOR": "숨을 죽인다."
+        "KOR": "숨을 죽인다.",
+        "displayType": "Text"
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 5,
         "Script_Code": "EventScript_1_5",
-        "KOR": "위험을 피한다."
+        "KOR": "위험을 피한다.",
+        "displayType": "Text"
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 6,
         "Script_Code": "EventScript_1_6",
-        "KOR": "다행히 무사히 빠져나오며 영혼이 모여드는 기분을 받았다"
+        "KOR": "다행히 무사히 빠져나오며 영혼이 모여드는 기분을 받았다",
+        "displayType": "Text"
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 7,
         "Script_Code": "EventScript_1_7",
-        "KOR": "허우적 대다가 넘어지며 다쳤지만 무사히 빠져나왔다."
+        "KOR": "허우적 대다가 넘어지며 다쳤지만 무사히 빠져나왔다.",
+        "displayType": "Text"
     }
 ]

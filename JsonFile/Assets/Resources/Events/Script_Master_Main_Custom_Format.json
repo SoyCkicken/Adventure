@@ -4,41 +4,48 @@
         "Event_Index": 1,
         "Script_Index": 1.0,
         "Script_Code": "MainScript_1_1_1",
-        "KOR": "--"
+        "KOR": "--",
+        "displayType": "Text"
+
     },
     {
         "Chapter_Index": 1,
         "Event_Index": 1,
         "Script_Index": 2.0,
         "Script_Code": "--",
-        "KOR": "--"
+        "KOR": "--",
+        "displayType": "Text"
     },
     {
         "Chapter_Index": 1,
         "Event_Index": 1,
         "Script_Index": 3.0,
         "Script_Code": "--",
-        "KOR": "--"
+        "KOR": "--",
+        "displayType": "Text"
     },
     {
         "Chapter_Index": 1,
         "Event_Index": 1,
         "Script_Index": 4.0,
         "Script_Code": "--",
-        "KOR": "--"
+        "KOR": "--",
+        "displayType": "Text"
     },
     {
         "Chapter_Index": 1,
         "Event_Index": 1,
         "Script_Index": 5.0,
         "Script_Code": "--",
-        "KOR": "--"
+        "KOR": "--",
+        "displayType": "Text"
     },
     {
         "Chapter_Index": 1,
         "Event_Index": 2,
         "Script_Index": "--",
         "Script_Code": "--",
-        "KOR": "--"
+        "KOR": "--",
+        "displayType": "Text"
     }
 ]

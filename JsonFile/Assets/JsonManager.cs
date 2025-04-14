@@ -26,7 +26,10 @@ public class JsonManager : MonoBehaviour
     public int num = 0;
     private void Awake()
     {
+        //제임스파일 로드
         LoadAllJson();
+        //제임스 파일 출력
+        PrintAllJsonData();
     }
 
     void LoadAllJson()
@@ -59,4 +62,27 @@ public class JsonManager : MonoBehaviour
         Debug.Log($"파일 불러오기 성공{list}");
         return list;
     }
+    public void PrintAllJsonData()
+    {
+        PrintList(storyMasters, "Story Masters");
+        PrintList(scriptMasterMains, "Script Master Mains");
+        PrintList(successRateMasterMains, "Success Rate Master Mains");
+        PrintList(randomEvents, "Random Events");
+        PrintList(scriptMasterEvents, "Script Master Events");
+        PrintList(successRateMasterRandomEvents, "Success Rate Master Random Events");
+        PrintList(effectMasters, "Effect Masters");
+    }
+
+    // 제네릭 메서드를 사용해 각 리스트의 데이터를 순회하며 출력
+    private void PrintList<T>(List<T> list, string listName)
+    {
+        Debug.Log($"---- {listName} ----");
+        foreach (T item in list)
+        {
+            // Newtonsoft.Json을 사용해 객체를 포맷된 JSON 문자열로 변환 후 출력
+            string jsonStr = JsonConvert.SerializeObject(item, Formatting.Indented);
+            Debug.Log(jsonStr);
+        }
+    }
 }
+
