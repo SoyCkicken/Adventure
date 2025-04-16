@@ -14,6 +14,7 @@ public class ScriptEventDisplayManager : MonoBehaviour
     public TMP_Text textComp;
     public string tempstring;
     public string temp;
+    public string temp2;
 
     private void Awake()
     {
@@ -37,25 +38,27 @@ public class ScriptEventDisplayManager : MonoBehaviour
     {
         List<Story_Master> scriptEvents = jsonManager.storyMasters;
         List<Script_Master_Main> script_Master_Mains = jsonManager.scriptMasterMains;
+        //Debug.Log($"{script_Master_Mains}가 있는지 확인");
         foreach (Story_Master ev in scriptEvents)
         {
             temp = $"MainScript_{ev.Chapter_Index}_{ev.Event_Index}_{ev.Scenc_Index}";
-            Debug.Log(temp);
-            Debug.Log(ev.Scene_Code.ToString());
-            foreach (Script_Master_Main story_Master in script_Master_Mains)
+            
+            foreach (Script_Master_Main sm in script_Master_Mains)
             {
-                if (temp == story_Master.Scene_Code)
+                //Debug.Log(sm.KOR);
+                //Debug.Log(temp);
+                temp2 = sm.Script_Code;//
+                //Debug.Log(temp2);
+                if (temp == temp2)
                 {
                     Debug.Log("temp와 story_Master.Scene_Code가 같은 값을 찾았습니다");
                 }
                 else
                 {
-                    //Debug.Log("temp와 story_Master와 같은 값을 찾지 못했습니다");
+                    Debug.Log($"temp의 값 : {temp}\ntemp2의 값 {temp2}");
                 }
             }
         }
-        
-        
     }
     public void Script_Master_EventDataLoad()
     {

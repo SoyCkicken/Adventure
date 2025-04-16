@@ -21,8 +21,8 @@
         "Event_Index": 1,
         "Script_Index": 3,
         "Script_Code": "MainScript_1_1_3",
-        "KOR": "TestImage",
-        "displayType": "Image"
+        "KOR": "이제 무엇을 할까?",
+        "displayType": "Text"
     },
     {
         "Chapter_Index": 1,
