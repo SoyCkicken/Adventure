@@ -59,7 +59,7 @@ public class JsonManager : MonoBehaviour
         }
         string jsonContent = jsonAsset.text;
         List<T> list = JsonConvert.DeserializeObject<List<T>>(jsonContent);
-        Debug.Log($"파일 불러오기 성공{list}");
+        //Debug.Log($"파일 불러오기 성공{list}");
         return list;
     }
     public void PrintAllJsonData()
@@ -76,12 +76,12 @@ public class JsonManager : MonoBehaviour
     // 제네릭 메서드를 사용해 각 리스트의 데이터를 순회하며 출력
     private void PrintList<T>(List<T> list, string listName)
     {
-        Debug.Log($"---- {listName} ----");
+        //Debug.Log($"---- {listName} ----");
         foreach (T item in list)
         {
             // Newtonsoft.Json을 사용해 객체를 포맷된 JSON 문자열로 변환 후 출력
             string jsonStr = JsonConvert.SerializeObject(item, Formatting.Indented);
-            Debug.Log(jsonStr);
+           //Debug.Log(jsonStr);
         }
     }
 }
