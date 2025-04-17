@@ -44,7 +44,7 @@
         "Event_Index": 1,
         "Script_Index": 6,
         "Script_Code": "MainScript_1_1_6",
-        "KOR": "아이가 말을 걸어왔다.\n형은 어디서 오셨어요?\n주인공은 고향도 모르고 떠돌아 다닌다고 답했다.\n새로오신거네요 그러면! 이거 선물이에요",
+        "KOR": "아이가 말을 걸어왔다.\n형은 어디서 오셨어요?\n주인공은 고향도 모르고 떠돌아 다닌다고 답했다.\n새로오신거네요 그러면! 이거 선물이에요\n",
         "displayType": "Text"
     },
     {
@@ -52,7 +52,7 @@
         "Event_Index": 1,
         "Script_Index": 7,
         "Script_Code": "MainScript_1_1_7",
-        "KOR": "고마워, 회복 포션을 얻었다.",
+        "KOR": "\n고마워, 회복 포션을 얻었다.\n",
         "displayType": "Text"
     },
     {
@@ -60,7 +60,7 @@
         "Event_Index": 1,
         "Script_Index": 8,
         "Script_Code": "MainScript_1_1_8",
-        "KOR": "이제 앞으로 나아가야지",
+        "KOR": "이제 앞으로 나아가야지\n",
         "displayType": "Text"
     },
     {
@@ -68,7 +68,7 @@
         "Event_Index": 1,
         "Script_Index": 9,
         "Script_Code": "MainScript_1_1_9",
-        "KOR": "여관으로 들어간다.",
+        "KOR": "여관으로 들어간다.\n",
         "displayType": "Text"
     },
     {

@@ -14,14 +14,14 @@ public class DynamicDialogManager : MonoBehaviour
     public Transform contentParent;        // 인스턴스될 부모(ScrollView.Content 등)
 
     [Header("딜레이 설정")]
-    public float typingDelay = 0.01f;      // 한글자씩 찍힐 시간
+    public float typingDelay = 0.15f;      // 한글자씩 찍힐 시간
 
     [Header("JSON 데이터 관리자")]
     public JsonManager jsonManager;        // Script_Master_Event 리스트를 들고 있는 오브젝트
 
     // 내부 사용 리스트
     private List<DialogBlockUI> blocks = new List<DialogBlockUI>();
-    private List<GameObject> Testblocks = new List<GameObject>();
+    public List<GameObject> Testblocks = new List<GameObject>();
 
     // 현재 처리할 이벤트 인덱스
     private int currentEventIndex = 0;
@@ -63,7 +63,7 @@ public class DynamicDialogManager : MonoBehaviour
         while (currentMainIndex < mains.Count)
         {
             var mi = mains[currentMainIndex];
-            Debug.Log($"mi.KOR의 값 : {mi.KOR}");
+            //Debug.Log($"mi.KOR의 값 : {mi.KOR}");
             // 블록 생성 또는 누적 타이핑
             HandleMain(mi);
             Debug.Log("문자열출력중입니다");
@@ -73,7 +73,7 @@ public class DynamicDialogManager : MonoBehaviour
 
                 // TypeText 코루틴이 실행될 때까지 잠시 대기
                 // (typingDelay * 글자수 + 0.1f 여유)
-                yield return new WaitForSeconds(mi.KOR.Length * typingDelay + 0.3f);
+                yield return new WaitForSeconds(mi.KOR.Length * typingDelay +5f);
 
             }
             else
@@ -211,11 +211,8 @@ public class DynamicDialogManager : MonoBehaviour
 
         // 1) 리스트가 비어있거나
         // 2) 마지막 블록이 이미지 타입이면 → 새로 Instantiate
-        if (blocks.Count == 0 || isImage || blocks[blocks.Count - 1].imageComp.gameObject.activeSelf)
+        if (Testblocks.Count == 0 || isImage)
         {
-            // 새 블록 만들기
-            
-
             // 이미지 or 텍스트 초기 세팅
             if (isImage)
             {
@@ -223,10 +220,7 @@ public class DynamicDialogManager : MonoBehaviour
                 Testblocks.Add(go);
                 RectTransform rt = go.GetComponent<RectTransform>();
                 // 이미지 띄우고 텍스트 숨김
-                rt.sizeDelta = new Vector2(700, 350);
-
-                // Resource 폴더에서 로드 예시
-
+                //rt.sizeDelta = new Vector2(700, 350);
                 Sprite sprite = Resources.Load<Sprite>("Images/" + ev.KOR);
                 Debug.Log(ev.KOR);
                 if (sprite == null)
@@ -253,15 +247,18 @@ public class DynamicDialogManager : MonoBehaviour
         {
             // 마지막 블록이 텍스트 타입 → 누적 타이핑
             var lastUi = Testblocks[Testblocks.Count - 1];
-            Debug.Log(lastUi.GetComponent<Text>().text);
+            Debug.Log(lastUi);
+            Debug.Log(lastUi.GetComponent<TMP_Text>().text);
             StartCoroutine(TypeText(lastUi.GetComponent<TMP_Text>(), ev.KOR));
-            Debug.Log(ev.KOR);
+            Debug.Log($"{ev.KOR}\n글자수 : {ev.KOR.Length}");
+           
         }
     }
 
 
     private IEnumerator TypeText(TMP_Text textComp, string fullText)
     {
+        Debug.Log(fullText);
         for (int i = 0; i < fullText.Length; i++)
         {
             textComp.text += fullText[i];
