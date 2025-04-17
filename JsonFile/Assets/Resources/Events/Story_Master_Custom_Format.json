@@ -2,6 +2,16 @@
     {
         "Chapter_Index": 1,
         "Event_Index": 1,
+        "Scenc_Index": 0,
+        "Scene_Code": "MainScene_1_1_0",
+        "Scene_Text": "MainScript_1_1_0",
+        "Choice1_Text": "--",
+        "Choice2_Text": "--",
+        "Choice3_Text": "--"
+    },
+    {
+        "Chapter_Index": 1,
+        "Event_Index": 1,
         "Scenc_Index": 1,
         "Scene_Code": "MainScene_1_1_1",
         "Scene_Text": "MainScript_1_1_1",
@@ -79,7 +89,7 @@
         "Choice2_Text": "--",
         "Choice3_Text": "--"
     },
-     {
+    {
         "Chapter_Index": 1,
         "Event_Index": 1,
         "Scenc_Index": 9,

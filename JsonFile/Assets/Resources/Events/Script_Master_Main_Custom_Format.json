@@ -6,7 +6,6 @@
         "Script_Code": "MainScript_1_1_1",
         "KOR": "모험가는 긴 여정 끝에 라노스 마을에 도착하였다.\n",
         "displayType": "Text"
-
     },
     {
         "Chapter_Index": 1,
@@ -71,5 +70,14 @@
         "Script_Code": "MainScript_1_1_9",
         "KOR": "여관으로 들어간다.",
         "displayType": "Text"
+    },
+    {
+        "Chapter_Index": 1,
+        "Event_Index": 1,
+        "Script_Index": 10,
+        "Script_Code": "IMG_5969",
+        "KOR": "TestImage",
+        "displayType": "Image"
     }
+
 ]

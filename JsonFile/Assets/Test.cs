@@ -4,8 +4,11 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 
-public class ScriptEventDisplayManager : MonoBehaviour
+public class Test : MonoBehaviour
 {
+    public List<GameObject> gameObjects;
+
+
     [Header("UI References")]
     public Transform contentParent;       // ScrollView의 Content Transform
     public GameObject dialogBlockPrefab;  // DialogBlock 프리팹 (DialogBlockUI 포함)
@@ -27,64 +30,71 @@ public class ScriptEventDisplayManager : MonoBehaviour
     private void Start()
     {
         //TestdebugLog();
-        Script_Master_EventDataLoad();
+        //Script_Master_EventDataLoad();
 
-        //Script_Master_MainDataLoad();
-
-
+        Script_Master_MainDataLoad();
     }
 
-    //public void TestdebugLog()
-    //{
-    //    List<Story_Master> scriptEvents = jsonManager.storyMasters;
-    //    List<Script_Master_Main> script_Master_Mains = jsonManager.scriptMasterMains;
-    //    //Debug.Log($"{script_Master_Mains}가 있는지 확인");
-    //    foreach (Story_Master ev in scriptEvents)
-    //    {
-    //        temp = $"MainScript_{ev.Chapter_Index}_{ev.Event_Index}_{ev.Scenc_Index}";
-            
-    //        foreach (Script_Master_Main sm in script_Master_Mains)
-    //        {
-    //            //Debug.Log(sm.KOR);
-    //            //Debug.Log(temp);
-    //            temp2 = sm.Script_Code;//
-    //            //Debug.Log(temp2);
-    //            if (temp == temp2)
-    //            {
-    //                //Debug.Log("temp와 story_Master.Scene_Code가 같은 값을 찾았습니다");
-    //            }
-    //            else
-    //            {
-    //                //Debug.Log($"temp의 값 : {temp}\ntemp2의 값 {temp2}");
-    //            }
-    //        }
-    //    }
-    //}
-    public void Script_Master_EventDataLoad()
+    /*
+     * 리스트가 비어있을 경우 하나를 꼭 만듬
+     * if (objectList.Count == 0)
+{
+    // 리스트가 비어 있으면 무조건 새 오브젝트 생성
+    GameObject obj = Instantiate(prefab, parent);
+    objectList.Add(obj);
+    //텍스트인지 아닌지 확인하는 프로세싱
+    ApplyContent(obj, newContent); // 이미지 or 텍스트 적용
+}
+값이 있을 경우이니
+else
+{
+    마지막 게임오브젝트가 이미지인지 텍스트인지 확인
+    GameObject lastObj = objectList[objectList.Count - 1];
+    //이미지가 활성화 되어 있었다면 새로운 오브젝트 추가
+    if (lastObj.GetComponentInChildren<Image>().enabled)
     {
-        // JsonManager에 있는 Script_Master_Event 데이터를 가져온다.
-        List<Script_Master_Event> scriptEvents = jsonManager.scriptMasterEvents;
-        if (scriptEvents == null || scriptEvents.Count == 0)
+        // 마지막이 이미지였다면 새 오브젝트 생성
+        GameObject obj = Instantiate(prefab, parent);
+        objectList.Add(obj);
+        ApplyContent(obj, newContent);
+    }
+    else
+    {
+        // 마지막이 텍스트라면, 해당 Text에 글자 하나 추가
+        TMP_Text text = lastObj.GetComponentInChildren<TMP_Text>();
+        string fullText = "출력할 전체 문자열";
+        int currentLength = text.text.Length;
+
+        if (currentLength < fullText.Length)
         {
-            Debug.LogWarning("Script_Master_Event 데이터가 없습니다.");
-            return;
-        }
-        // 각 이벤트 데이터마다 프리팹을 생성해서 Content에 추가한다.
-        foreach (Script_Master_Event ev in scriptEvents)
-        {
-            GameObject entry = Instantiate(dialogBlockPrefab, contentParent);
-            // 프리팹에 붙은 DialogBlockUI 컴포넌트를 찾아, 데이터 셋업 실행
-            DialogBlockUI ui = entry.GetComponent<DialogBlockUI>();
-            if (ui != null)
-            {
-                ui.SetBlockDataEvent(ev);
-            }
-            else
-            {
-                Debug.LogError("DialogBlockUI 컴포넌트를 찾을 수 없습니다.");
-            }
+            text.text += fullText[currentLength];
         }
     }
+}
+    //이걸 SetBlockDataMain가 대신 하고 있으니 구조를 파악하면 사용이 가능할 예정
+    
+    void ApplyContent(GameObject obj, string content)
+{
+    Image img = obj.GetComponentInChildren<Image>();
+    TMP_Text txt = obj.GetComponentInChildren<TMP_Text>();
+
+    if (IsImagePath(content))
+    {
+        Sprite sprite = LoadImage(content); // Resources나 Addressable 등 사용
+        img.sprite = sprite;
+        img.enabled = true;
+        txt.enabled = false;
+    }
+    else
+    {
+        txt.text = ""; // 처음은 빈 텍스트
+        img.enabled = false;
+        txt.enabled = true;
+    }
+}
+     */
+
+
     public void Script_Master_MainDataLoad()
     {
         // JsonManager에 있는 Script_Master_Mains 데이터를 가져온다.
@@ -117,7 +127,7 @@ public class ScriptEventDisplayManager : MonoBehaviour
             {
                 tempstring += mv.KOR;
             }
-            
+
         }
         StartCoroutine(TypeTextEffect(tempstring));
     }
