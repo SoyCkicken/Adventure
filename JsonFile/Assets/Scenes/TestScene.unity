@@ -207,6 +207,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogBlockPrefab: {fileID: 3370749556531148809, guid: 1831efd2ff6171e4b8da41355b019efa, type: 3}
+  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
+  ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
   contentParent: {fileID: 529089260}
   typingDelay: 0.05
   jsonManager: {fileID: 1190628254}
