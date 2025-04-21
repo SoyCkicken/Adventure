@@ -15,5 +15,5 @@ public class Story_Master
     public string Choice2_Text;
     public string Choice3_Text;
     //스토리 엔드
-    //public string StoryEnd;
+    public string StoryEnd;
 }

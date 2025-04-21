@@ -17,4 +17,5 @@ public class RandomEvent
     public string Choice2_Text;
     //세번째 선택지 내용
     public string Choice3_Text;
+    public string EventBreak;
 }

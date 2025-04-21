@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Text;
 using UnityEditor.Experimental.GraphView;
+using System.Runtime.CompilerServices;
 
 public class EventLoader : MonoBehaviour
 {
@@ -215,6 +216,9 @@ public class EventLoader : MonoBehaviour
         SkipButton.SetActive(true);
         Debug.Log("스킵버튼 활성화");
         description_text.text = string.Empty; //문자열을 비우고
+        //temp에 원본 텍스트랑 추가할 텍스트를 담아서
+        string temp = description_text.text + text;
+        Debug.Log(description_text.text);
         //스트링빌더(한글자씩 추가해주는 함수)
         StringBuilder stringBuilder = new StringBuilder();
         if (text != null)
@@ -224,15 +228,19 @@ public class EventLoader : MonoBehaviour
                 //스킵 버튼 눌렸을때 바로 문자열에 다 쑤셔넣음
                 if (isSkipClick)
                 {
-                    description_text.text = text;
-                    break;
+                    //한번에 다 넣어 버림
+                    description_text.text = temp;
+                    yield break;
                 }
-                //한글자씩 추가
-                stringBuilder.Append(text[i]);
-                //받은 문자들을 text에 담아서 
-                description_text.text = stringBuilder.ToString();
-                //0.01초마다 한번씩 출력시킴
-                yield return new WaitForSeconds(0.05f);
+                else 
+                {
+                    stringBuilder.Append(text[i]);
+                    //받은 문자들을 text에 담아서 
+                    description_text.text = stringBuilder.ToString();
+                    //0.01초마다 한번씩 출력시킴
+                    yield return new WaitForSeconds(0.05f);
+                    //한글자씩 추가 중
+                }
             }
         }
         else
@@ -243,6 +251,7 @@ public class EventLoader : MonoBehaviour
         
         isTyping = false;
         SkipButton.SetActive(false);
+        isSkipClick = false;
         Debug.Log("스킵버튼 비활성화");
     }
     IEnumerator RamdomEvent()

@@ -73,7 +73,7 @@ public class DynamicDialogManager : MonoBehaviour
 
                 // TypeText 코루틴이 실행될 때까지 잠시 대기
                 // (typingDelay * 글자수 + 0.1f 여유)
-                yield return new WaitForSeconds(mi.KOR.Length * typingDelay +5f);
+                yield return new WaitForSeconds(mi.KOR.Length * typingDelay +1.5f);
 
             }
             else
@@ -139,67 +139,9 @@ public class DynamicDialogManager : MonoBehaviour
     //        var lastUi = blocks[blocks.Count - 1];
     //        StartCoroutine(TypeText(lastUi.textComp, ev.KOR));
     //    }
-
     //}
 
-    //private void HandleMain(Script_Master_Main ev)
-    //{
-    //    bool isImage = ev.displayType == "Image";
-
-    //    // 1) 리스트가 비어있거나
-    //    // 2) 마지막 블록이 이미지 타입이면 → 새로 Instantiate
-    //    if (blocks.Count == 0 || isImage || blocks[blocks.Count - 1].imageComp.gameObject.activeSelf)
-    //    {
-    //        // 새 블록 만들기
-    //        var go = Instantiate(dialogBlockPrefab, contentParent);
-    //        var ui = go.GetComponent<DialogBlockUI>();
-    //        blocks.Add(ui);
-    //        RectTransform rt = go.GetComponent<RectTransform>();
-
-    //        // 이미지 or 텍스트 초기 세팅
-    //        if (isImage)
-    //        {
-    //            // 이미지 띄우고 텍스트 숨김
-    //            rt.sizeDelta = new Vector2(700, 350);
-
-
-    //            ui.imageComp.gameObject.SetActive(true);
-    //            ui.textComp.gameObject.SetActive(false);
-
-    //            // Resource 폴더에서 로드 예시
-
-    //            Sprite sprite = Resources.Load<Sprite>("Images/" + ev.KOR);
-    //            Debug.Log(ev.KOR);
-    //            if (sprite == null)
-    //            {
-    //                Debug.Log("프로그래머야 이게 뭐냐 버그났잖아!");
-    //            }
-    //            Debug.Log(sprite);
-    //            dialogBlockPrefab.GetComponentInChildren<Image>().sprite = sprite;
-    //        }
-    //        else
-    //        {
-    //            // 텍스트 블록 빈 상태로 시작
-    //            ui.imageComp.gameObject.SetActive(false);
-    //            ui.textComp.gameObject.SetActive(true);
-    //            ui.textComp.text = string.Empty;
-
-    //            // 첫 글자 찍기 코루틴 실행
-    //            StartCoroutine(TypeText(ui.textComp, ev.KOR));
-    //        }
-    //        //Debug.Log("출력성공");
-    //    }
-    //    else
-    //    {
-    //        // 마지막 블록이 텍스트 타입 → 누적 타이핑
-    //        var lastUi = blocks[blocks.Count - 1];
-    //        Debug.Log(lastUi.textComp);
-    //        StartCoroutine(TypeText(lastUi.textComp, ev.KOR));
-    //        Debug.Log(ev.KOR);
-    //    }
-    //}
-
-
+    
 
     // fullText: 출력할 전체 문자열
     // startIndex: fullText의 몇 번째 글자부터 찍을 것인지 (기본 0)
@@ -245,12 +187,13 @@ public class DynamicDialogManager : MonoBehaviour
         }
         else
         {
+            //if(ev.)
             // 마지막 블록이 텍스트 타입 → 누적 타이핑
             var lastUi = Testblocks[Testblocks.Count - 1];
-            Debug.Log(lastUi);
-            Debug.Log(lastUi.GetComponent<TMP_Text>().text);
+            //Debug.Log(lastUi);
+            //Debug.Log(lastUi.GetComponent<TMP_Text>().text);
             StartCoroutine(TypeText(lastUi.GetComponent<TMP_Text>(), ev.KOR));
-            Debug.Log($"{ev.KOR}\n글자수 : {ev.KOR.Length}");
+            //Debug.Log($"{ev.KOR}\n글자수 : {ev.KOR.Length}");
            
         }
     }

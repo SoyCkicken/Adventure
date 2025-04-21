@@ -14,6 +14,8 @@ public class Script_Master_Main
     //만약 내용이 Text일 경우 문자열만 출력 예정
     //Image일 경우 이미지만 출력 할 예정임
     public string displayType;
+    //이벤트가 끝나는 곳인지 확인용 추가
+    public string StoryBreak;
 
 }
 

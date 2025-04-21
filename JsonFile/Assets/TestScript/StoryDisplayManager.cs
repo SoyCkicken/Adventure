@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-
 using TMPro;
 using System.Collections;
 using System.Text;
@@ -12,17 +11,33 @@ using Image = UnityEngine.UI.Image;
 public class StoryDisplayManager : MonoBehaviour
 {
     public Transform content;
-    public GameObject GroupPrefab;
+    //이미지 프리팹 생성할 예정
+    public GameObject ImagePrefab;
+    //텍스트 프리팹 생성 예정
+    public GameObject TextPrefab;
     public JsonManager jsonManager;
     public List<Story_Master> storyList;
     private Story_Master currentStory;
-    public List<GameObject> GameObjects;
+    public bool isSkip = false;
+    public bool isTyping;
+    public GameObject SkipButton;
 
     [Header("UI References")]
-    public TMP_Text sceneText;
+    //public TMP_Text sceneText;
     public Transform choiceButtonParent;
     public GameObject choiceButtonPrefab;
     StringBuilder stringBuilder = new StringBuilder();
+    public List<GameObject> Testblocks = new List<GameObject>();
+
+
+    private void Awake()
+    {
+        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (isTyping)
+                isSkip = true;
+        });
+    }
     void Start()
     {
         if (jsonManager == null)
@@ -49,7 +64,8 @@ public class StoryDisplayManager : MonoBehaviour
         //Debug.Log(storyList.Count);
         //총 18개가 들어가 있는지 확인
         //Story_Master_Custom_Format에도 블록으로 18개가 들어가 있는걸 확인했음
-        
+        //스킵버튼 활성화
+        SkipButton.SetActive(true);
     }
 
     void DisplayCurrentStory()
@@ -57,22 +73,56 @@ public class StoryDisplayManager : MonoBehaviour
         //https://learn.microsoft.com/ko-kr/dotnet/api/system.text.stringbuilder?view=net-8.0
         // Script_Master_Main 데이터 불러오기
         List<Script_Master_Main> scriptEvents = jsonManager.scriptMasterMains;
-        
-        Debug.Log(stringBuilder.ToString());
+        //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Text.Trim());
+        
         if (matchingScript != null)
         {
-
-            StartCoroutine(TypeTextEffect(matchingScript.KOR));
-            //stringBuilder.Append(matchingScript.KOR);
-            //Debug.Log(stringBuilder.ToString());
-            //sceneText.text = stringBuilder.ToString();
+            bool isImage = matchingScript.displayType == "Image";
+            Debug.Log($"matchingScript.displayType의 대한 true false값 확인용 {matchingScript.displayType}");
+            //이미지일때
+            if (isImage)
+            {
+                var go = Instantiate(ImagePrefab, content);
+                Testblocks.Add(go);
+                RectTransform rt = go.GetComponent<RectTransform>();
+                Sprite sprite = Resources.Load<Sprite>("Images/" + matchingScript.KOR);
+                //Debug.Log(matchingScript.KOR);
+                if (sprite == null)
+                {
+                    Debug.Log("프로그래머야 이게 뭐냐 버그났잖아!");
+                }
+                //Debug.Log(sprite);
+                go.GetComponent<Image>().sprite = sprite;
+                //stringBuilder.Append(matchingScript.KOR);
+                //Debug.Log(stringBuilder.ToString());
+                //sceneText.text = stringBuilder.ToString();
+            }
+            //첫 블록 일때
+            else if (Testblocks.Count == 0)
+            {
+                var go = Instantiate(TextPrefab, content);
+                Testblocks.Add(go);
+                RectTransform rt = go.GetComponent<RectTransform>();
+                //혹시 모르니 값 초기화
+                go.GetComponent<TMP_Text>().text = string.Empty;
+                //넣을 값이랑 text를 받아감
+                StartCoroutine(TypeTextEffect(matchingScript.KOR, go));
+            }
+            //첫 블록이 아니고 마지막 블록이 이미지가 아닐때
+            else
+            {
+                var lastUi = Testblocks[Testblocks.Count - 1];
+                //matchingScript.kor + 마지막 블록 게임 오브젝트를 받아옴 
+                StartCoroutine(TypeTextEffect(matchingScript.KOR, lastUi));
+                //Debug.Log($"{ev.KOR}\n글자수 : {ev.KOR.Length}");
+            }
         }
         else
         {
             Debug.LogWarning("현재 스토리의 스크립트 텍스트를 찾을 수 없습니다.");
-            sceneText.text = currentStory.Scene_Text;
+            //sceneText.text = currentStory.Scene_Text;
         }
 
         // 기존 선택지 버튼 제거
@@ -142,7 +192,7 @@ public class StoryDisplayManager : MonoBehaviour
             currentStory.Choice2_Text == "--" &&
             currentStory.Choice3_Text == "--")
         {
-            if (Input.GetMouseButtonDown(0))
+            if (isTyping == false)
             {
                 NextScene();
             }
@@ -153,9 +203,9 @@ public class StoryDisplayManager : MonoBehaviour
     void OnChoiceSelected(string newSceneCode)
     {
         // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
-        if (newSceneCode.StartsWith("MainScript"))
+        if (newSceneCode.StartsWith("EventScene"))
         {
-            newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
+            newSceneCode = newSceneCode.Replace("EventScene", "EventScript");
         }
 
         Story_Master nextStory = FindStoryBySceneCode(newSceneCode);
@@ -172,19 +222,27 @@ public class StoryDisplayManager : MonoBehaviour
 
     void NextScene()
     {
+        List<Script_Master_Main> scriptEvents = jsonManager.scriptMasterMains;
+        //Debug.Log(stringBuilder.ToString());
+        // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
+        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Text.Trim());
+        Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.StoryBreak}");
+
         Story_Master nextStory = storyList.FirstOrDefault(s =>
             s.Chapter_Index == currentStory.Chapter_Index &&
             s.Event_Index == currentStory.Event_Index &&
             s.Scenc_Index == currentStory.Scenc_Index + 1);
 
-        if (nextStory != null)
+
+        if (nextStory == null || matchingScript.StoryBreak == "Break")
         {
-            currentStory = nextStory;
-            DisplayCurrentStory();
+            Debug.LogError("다음 씬이 존재하지 않습니다. 이벤트가 끝났거나 다음 챕터로 전환해야 합니다.");
+
         }
         else
         {
-            Debug.Log("다음 씬이 존재하지 않습니다. 이벤트가 끝났거나 다음 챕터로 전환해야 합니다.");
+            currentStory = nextStory;
+            DisplayCurrentStory();
         }
     }
 
@@ -215,25 +273,34 @@ public class StoryDisplayManager : MonoBehaviour
             }
         }
     }
-    IEnumerator TypeTextEffect(string text)
+    IEnumerator TypeTextEffect(string text , GameObject go)
     {
-
+        SkipButton.SetActive(true);
         Debug.Log("스킵버튼 활성화");
         //textComp.text = string.Empty; //문자열을 비우고
         //스트링빌더(한글자씩 추가해주는 함수)
         StringBuilder stringBuilder = new StringBuilder();
+        //스킵 버튼 누르면 저장해놓은 값 그대로 넣어버림
+        string temp = go.GetComponent<TMP_Text>().text + text;
         if (text != null)
         {
+            //타입핑 중 인지 확인
+            isTyping = true;
             for (int i = 0; i < text.Length; i++)
             {
+                //버튼 누를때 활성화 되게 하면 될듯
+                if (isSkip == true)
+                {
+                    go.GetComponent<TMP_Text>().text = temp.ToString();
+                    break;
+                }
                 //한글자씩 추가
                 //stringBuilder.Append(text[i]);
                 //Debug.Log(stringBuilder);
                 //받은 문자들을 text에 담아서 
-                sceneText.text += text[i].ToString();
+                go.GetComponent<TMP_Text>().text += text[i].ToString();
                 yield return new WaitForSeconds(0.05f);
                 //0.01초마다 한번씩 출력시킴
-
             }
             //char tempchar = stringBuilder[stringBuilder.Length -1];
             //Debug.Log(tempchar);
@@ -244,7 +311,9 @@ public class StoryDisplayManager : MonoBehaviour
             //RamEvent같은 경우 설명 같은게 하나도 없기 때문에 에러가 발생을 하는데 그걸 막고자 if문 사용했음
             yield break;
         }
-
+        isTyping = false;
+        SkipButton.SetActive(false);
+        isSkip = false;
         Debug.Log("스킵버튼 비활성화");
     }
     //지금 같은 경우 연 달아 출력 하는것은 가능
@@ -252,4 +321,6 @@ public class StoryDisplayManager : MonoBehaviour
     //그렇다면 지금 for문을 돌려서 문제가 생기는게 아닐까?
     //방식을 생각을 해봤는데 
     
+
 }
+

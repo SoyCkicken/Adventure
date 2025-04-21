@@ -7,7 +7,8 @@
         "Event_Text": "EventScript_1_1",
         "Choice1_Text": "--",
         "Choice2_Text": "--",
-        "Choice3_Text": "-"
+        "Choice3_Text": "--"
+
     },
     {
         "RandomEvent_Index": 1,
@@ -17,7 +18,7 @@
         "Event_Text": "EventScript_1_2",
         "Choice1_Text": "EventScript_1_3",
         "Choice2_Text": "EventScript_1_4",
-        "Choice3_Text": "-"
+        "Choice3_Text": "--"
     },
     {
         "RandomEvent_Index": 1,
