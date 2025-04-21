@@ -28,6 +28,8 @@ public class StoryDisplayManager : MonoBehaviour
     public GameObject choiceButtonPrefab;
     StringBuilder stringBuilder = new StringBuilder();
     public List<GameObject> Testblocks = new List<GameObject>();
+    //마지막 블록이 무엇인지 확인용
+    GameObject lastBlock;
 
 
     private void Awake()
@@ -76,7 +78,16 @@ public class StoryDisplayManager : MonoBehaviour
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Text.Trim());
+        if (Testblocks.Count > 2)
+        {
+            lastBlock = Testblocks[Testblocks.Count - 1];
+        }
+        else
+        {
+            lastBlock = null;
+        }
         
+        Debug.Log(lastBlock);
         if (matchingScript != null)
         {
             bool isImage = matchingScript.displayType == "Image";
@@ -99,8 +110,8 @@ public class StoryDisplayManager : MonoBehaviour
                 //Debug.Log(stringBuilder.ToString());
                 //sceneText.text = stringBuilder.ToString();
             }
-            //첫 블록 일때
-            else if (Testblocks.Count == 0)
+            //첫 블록 일때 이거나 마지막 블록이 이미지일때
+            else if (Testblocks.Count == 0|| lastBlock.GetComponent<Image>() != null)
             {
                 var go = Instantiate(TextPrefab, content);
                 Testblocks.Add(go);
@@ -111,9 +122,10 @@ public class StoryDisplayManager : MonoBehaviour
                 StartCoroutine(TypeTextEffect(matchingScript.KOR, go));
             }
             //첫 블록이 아니고 마지막 블록이 이미지가 아닐때
-            else
+            else if(Testblocks.Count != 0 && lastBlock.GetComponent<TMP_Text>() != null)
             {
-                var lastUi = Testblocks[Testblocks.Count - 1];
+                var lastUi = Testblocks[Testblocks.Count - 2];
+                //Debug.Log(Testblocks.Count - 1);
                 //matchingScript.kor + 마지막 블록 게임 오브젝트를 받아옴 
                 StartCoroutine(TypeTextEffect(matchingScript.KOR, lastUi));
                 //Debug.Log($"{ev.KOR}\n글자수 : {ev.KOR.Length}");
@@ -203,9 +215,9 @@ public class StoryDisplayManager : MonoBehaviour
     void OnChoiceSelected(string newSceneCode)
     {
         // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
-        if (newSceneCode.StartsWith("EventScene"))
+        if (newSceneCode.StartsWith("MainScript"))
         {
-            newSceneCode = newSceneCode.Replace("EventScene", "EventScript");
+            newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
         }
 
         Story_Master nextStory = FindStoryBySceneCode(newSceneCode);
@@ -226,7 +238,7 @@ public class StoryDisplayManager : MonoBehaviour
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Text.Trim());
-        Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.StoryBreak}");
+        //Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.StoryBreak}");
 
         Story_Master nextStory = storyList.FirstOrDefault(s =>
             s.Chapter_Index == currentStory.Chapter_Index &&
@@ -276,7 +288,7 @@ public class StoryDisplayManager : MonoBehaviour
     IEnumerator TypeTextEffect(string text , GameObject go)
     {
         SkipButton.SetActive(true);
-        Debug.Log("스킵버튼 활성화");
+        //Debug.Log("스킵버튼 활성화");
         //textComp.text = string.Empty; //문자열을 비우고
         //스트링빌더(한글자씩 추가해주는 함수)
         StringBuilder stringBuilder = new StringBuilder();
@@ -314,7 +326,7 @@ public class StoryDisplayManager : MonoBehaviour
         isTyping = false;
         SkipButton.SetActive(false);
         isSkip = false;
-        Debug.Log("스킵버튼 비활성화");
+        //Debug.Log("스킵버튼 비활성화");
     }
     //지금 같은 경우 연 달아 출력 하는것은 가능
     //한글자씩 출력 하는것도 가능

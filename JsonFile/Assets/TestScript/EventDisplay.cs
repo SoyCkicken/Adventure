@@ -61,7 +61,7 @@ public class EventDisplay : MonoBehaviour
                              .ToList();
 
         currentEvent = randomEvent[0];
-        DisplayCurrentStory();
+        DisplayCurrentEvent();
         //Debug.Log(storyList.Count);
         //총 18개가 들어가 있는지 확인
         //Story_Master_Custom_Format에도 블록으로 18개가 들어가 있는걸 확인했음
@@ -69,7 +69,7 @@ public class EventDisplay : MonoBehaviour
         SkipButton.SetActive(true);
     }
 
-    void DisplayCurrentStory()
+    void DisplayCurrentEvent()
     {
         //https://learn.microsoft.com/ko-kr/dotnet/api/system.text.stringbuilder?view=net-8.0
         // Script_Master_Main 데이터 불러오기
@@ -77,7 +77,7 @@ public class EventDisplay : MonoBehaviour
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentEvent.Event_Text.Trim());
-
+        Debug.Log(matchingScript);
         if (matchingScript != null)
         {
             bool isImage = matchingScript.displayType == "Image";
@@ -140,8 +140,9 @@ public class EventDisplay : MonoBehaviour
         if (currentEvent.Choice1_Text != "--")
         {
             string code = currentEvent.Choice1_Text;
-            Debug.Log(code);
+
             string display = GetDisplayTextFromScript(code, scriptEvents);
+            Debug.Log($"선택지 1번의 값 : {code} \n display의 값 : {display}");
             //Debug.Log($"테스트용 문자열입니다 {display}");
             availableChoices.Add((code, display));
         }
@@ -149,11 +150,13 @@ public class EventDisplay : MonoBehaviour
         {
             string code = currentEvent.Choice2_Text;
             string display = GetDisplayTextFromScript(code, scriptEvents);
+            Debug.Log($"선택지 2번의 값 : {code} \n display의 값 : {display}");
             availableChoices.Add((code, display));
         }
         if (currentEvent.Choice3_Text != "--")
         {
             string code = currentEvent.Choice3_Text;
+            
             string display = GetDisplayTextFromScript(code, scriptEvents);
             availableChoices.Add((code, display));
         }
@@ -203,21 +206,23 @@ public class EventDisplay : MonoBehaviour
     // 선택 버튼 클릭시 호출: newSceneCode는 Choice 텍스트(실제 값이 스크립트 코드임)
     void OnChoiceSelected(string newSceneCode)
     {
+        Debug.Log(newSceneCode);
         // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
-        if (newSceneCode.StartsWith("MainScript"))
+        if (newSceneCode.StartsWith("EventScript"))
         {
-            newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
+            newSceneCode = newSceneCode.Replace("EventScript", "EventScene");
         }
 
         RandomEvent nextStory = FindStoryBySceneCode(newSceneCode);
+        Debug.Log(nextStory);
         if (nextStory != null)
         {
             currentEvent = nextStory;
-            DisplayCurrentStory();
+            DisplayCurrentEvent();
         }
         else
         {
-            Debug.LogWarning($"해당 Scene_Code를 가진 스토리를 찾을 수 없습니다: \n newSCeneCode{newSceneCode}  \n currentEvent = {currentEvent}");
+            Debug.LogWarning($"해당 Scene_Code를 가진 스토리를 찾을 수 없습니다: \n newSceneCode{newSceneCode}  \n currentEvent = {currentEvent}");
         }
     }
 
@@ -227,11 +232,12 @@ public class EventDisplay : MonoBehaviour
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentEvent.Event_Text.Trim());
-        Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.EventBreak}");
+        Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.EventBreak} , {matchingScript.KOR}");
         Debug.LogError("NextScene에서 에러 발생중 고쳐야됨");
         RandomEvent nextStory = randomEvent.FirstOrDefault(s =>
             s.RandomEvent_Index == currentEvent.RandomEvent_Index &&
             s.Script_Index == currentEvent.Script_Index+1);
+        Debug.LogError($"nextStory의 값 : {nextStory.Random_Event_ID}");
 
 
         if (nextStory == null || matchingScript.EventBreak == "Break")
@@ -242,7 +248,7 @@ public class EventDisplay : MonoBehaviour
         else
         {
             currentEvent = nextStory;
-            DisplayCurrentStory();
+            DisplayCurrentEvent();
         }
     }
 
