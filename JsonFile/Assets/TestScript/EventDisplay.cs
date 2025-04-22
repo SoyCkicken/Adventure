@@ -77,47 +77,36 @@ public class EventDisplay : MonoBehaviour
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentEvent.Event_Text.Trim());
-        Debug.Log(matchingScript);
+        GameObject lastBlock = Testblocks.Count > 0
+        ? Testblocks[Testblocks.Count - 1]
+        : null;
+        bool isImage = matchingScript.displayType == "Image";
+        Debug.Log(lastBlock);
         if (matchingScript != null)
         {
-            bool isImage = matchingScript.displayType == "Image";
-            Debug.Log($"matchingScript.displayType의 대한 true false값 확인용 {matchingScript.displayType}");
+            //Debug.Log($"matchingScript.displayType의 대한 true false값 확인용 {matchingScript.displayType}");
             //이미지일때
             if (isImage)
             {
-                var go = Instantiate(ImagePrefab, content);
-                Testblocks.Add(go);
-                RectTransform rt = go.GetComponent<RectTransform>();
-                Sprite sprite = Resources.Load<Sprite>("Images/" + matchingScript.KOR);
-                //Debug.Log(matchingScript.KOR);
-                if (sprite == null)
-                {
-                    Debug.Log("프로그래머야 이게 뭐냐 버그났잖아!");
-                }
-                //Debug.Log(sprite);
-                go.GetComponent<Image>().sprite = sprite;
-                //stringBuilder.Append(matchingScript.KOR);
-                //Debug.Log(stringBuilder.ToString());
-                //sceneText.text = stringBuilder.ToString();
+                //생성함수로 정리했음
+                CreateImageBlock(matchingScript.KOR);
             }
-            //첫 블록 일때
-            else if (Testblocks.Count == 0)
-            {
-                var go = Instantiate(TextPrefab, content);
-                Testblocks.Add(go);
-                RectTransform rt = go.GetComponent<RectTransform>();
-                //혹시 모르니 값 초기화
-                go.GetComponent<TMP_Text>().text = string.Empty;
-                //넣을 값이랑 text를 받아감
-                StartCoroutine(TypeTextEffect(matchingScript.KOR, go));
-            }
-            //첫 블록이 아니고 마지막 블록이 이미지가 아닐때
             else
             {
-                var lastUi = Testblocks[Testblocks.Count - 1];
-                //matchingScript.kor + 마지막 블록 게임 오브젝트를 받아옴 
-                StartCoroutine(TypeTextEffect(matchingScript.KOR, lastUi));
-                //Debug.Log($"{ev.KOR}\n글자수 : {ev.KOR.Length}");
+                //첫 블록 일때 이거나 마지막 블록이 이미지일때
+                if (lastBlock == null)
+                {
+                    CreateTextBlock(matchingScript.KOR);
+                }
+                //첫 블록이 아니고.마지막 블록이 이미지였다면
+                else if (lastBlock.TryGetComponent<Image>(out _))
+                {
+                    CreateTextBlock(matchingScript.KOR);
+                }
+                else
+                {
+                    StartCoroutine(TypeTextEffect(matchingScript.KOR, lastBlock));
+                }
             }
         }
         else
@@ -327,6 +316,29 @@ public class EventDisplay : MonoBehaviour
     //한글자씩 출력 하는것도 가능
     //그렇다면 지금 for문을 돌려서 문제가 생기는게 아닐까?
     //방식을 생각을 해봤는데 
-
+    void CreateImageBlock(string matchingScript)
+    {
+        var go = Instantiate(ImagePrefab, content);
+        Testblocks.Add(go);
+        RectTransform rt = go.GetComponent<RectTransform>();
+        Sprite sprite = Resources.Load<Sprite>("Images/" + matchingScript);
+        //Debug.Log(matchingScript.KOR);
+        if (sprite == null)
+        {
+            Debug.Log("프로그래머야 이게 뭐냐 버그났잖아!");
+        }
+        //Debug.Log(sprite);
+        go.GetComponent<Image>().sprite = sprite;
+    }
+    void CreateTextBlock(string matchingScript)
+    {
+        var go = Instantiate(TextPrefab, content);
+        Testblocks.Add(go);
+        RectTransform rt = go.GetComponent<RectTransform>();
+        //혹시 모르니 값 초기화
+        go.GetComponent<TMP_Text>().text = string.Empty;
+        //넣을 값이랑 text를 받아감
+        StartCoroutine(TypeTextEffect(matchingScript, go));
+    }
 
 }

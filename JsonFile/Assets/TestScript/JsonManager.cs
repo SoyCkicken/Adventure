@@ -12,8 +12,10 @@ public class JsonManager : MonoBehaviour
     public string randomEventsFile = "RandomEvents_Master_Custom_Format.json";
     public string scriptMasterEventFile = "Script_Master_Event_Custom_Format.json";
     public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format.json";
-    public string effectMasterFile = "Effect_Master_Custom_Format.json";
-
+    public string QuesteffectMasterFile = "Quest_Effect_Master_Custom_Format.json";
+    [Header("JSON File Paths (리소스폴더/아이템 폴더안에 있는 Json파일 불러올 예정)")]
+    public string ItemMasterFile = "Weapon_Master.json";
+    public string ItemOptionMasterFile = "Option_Master.json";
     [Header("Loaded Data")]
     public List<Story_Master> storyMasters;
     public List<Script_Master_Main> scriptMasterMains;
@@ -22,6 +24,8 @@ public class JsonManager : MonoBehaviour
     public List<Script_Master_Event> scriptMasterEvents;
     public List<SuccessRate_Master_RandomEvents> successRateMasterRandomEvents;
     public List<Effect_Master> effectMasters;
+    public List<Weapon_Master> Weapon_Masters;
+    public List<Option_Master> Item_Options;
 
     public int num = 0;
     private void Awake()
@@ -40,7 +44,9 @@ public class JsonManager : MonoBehaviour
         randomEvents = LoadJsonFile<RandomEvent>(randomEventsFile);
         scriptMasterEvents = LoadJsonFile<Script_Master_Event>(scriptMasterEventFile);
         successRateMasterRandomEvents = LoadJsonFile<SuccessRate_Master_RandomEvents>(successRateMasterRandomEventsFile);
-        effectMasters = LoadJsonFile<Effect_Master>(effectMasterFile);
+        effectMasters = LoadJsonFile<Effect_Master>(QuesteffectMasterFile);
+        Weapon_Masters = LoadJsonFile<Weapon_Master>(ItemMasterFile);
+        Item_Options = LoadJsonFile<Option_Master>(ItemOptionMasterFile);
 
         Debug.Log("JSON 파일 로딩 완료");
     }
@@ -70,7 +76,9 @@ public class JsonManager : MonoBehaviour
         PrintList(randomEvents, "Random Events");
         PrintList(scriptMasterEvents, "Script Master Events");
         PrintList(successRateMasterRandomEvents, "Success Rate Master Random Events");
-        PrintList(effectMasters, "Effect Masters");
+        PrintList(effectMasters, "Effect_Master_Custom_Format");
+        PrintList(Weapon_Masters, "Weapon Master");
+        PrintList(effectMasters, "Option Master");
     }
 
     // 제네릭 메서드를 사용해 각 리스트의 데이터를 순회하며 출력
