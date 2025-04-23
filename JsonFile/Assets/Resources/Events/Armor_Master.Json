@@ -1,0 +1,12 @@
+[
+  {
+    "Armor_ID": "Armor_001",
+    "Armor_NAME": "철갑옷",
+    "Armor_DEF": 5,
+    "Armor_HP": 100,
+    "Armor_Option1": "--",
+    "Option1_Value": 0,
+    "Armor_Option2": "--",
+    "Option2_Value": 0
+  }
+]
