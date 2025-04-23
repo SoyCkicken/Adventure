@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 public class JsonManager : MonoBehaviour
 {
-    [Header("JSON File Paths (리소스폴더/이벤트폴더안에 있는 Json파일 불러올 예정)")]
+    [Header("JSON File Paths (이벤트 리스트에 있는 Json파일)")]
     public string storyMasterFile = "Story_Master_Custom_Format";
     public string scriptMasterMainFile = "Script_Master_Main_Custom_Format.json";
     public string successRateMasterMainFile = "SuccessRate_Master_Main_Custom_Format.json";
@@ -13,9 +13,11 @@ public class JsonManager : MonoBehaviour
     public string scriptMasterEventFile = "Script_Master_Event_Custom_Format.json";
     public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format.json";
     public string QuesteffectMasterFile = "Quest_Effect_Master_Custom_Format.json";
-    [Header("JSON File Paths (리소스폴더/아이템 폴더안에 있는 Json파일 불러올 예정)")]
-    public string ItemMasterFile = "Weapon_Master.Json";
+    [Header("JSON File Paths (아이템 목록에 있는 Json파일)")]
+    public string ItemWeaponMasterFile = "Weapon_Master.Json";
     public string ItemOptionMasterFile = "Option_Master.json";
+    public string ItemArmorMasterFile = "Armor_Master.Json";
+    public string ItemMasterFile = "Item_Master.json";
     [Header("Loaded Data")]
     public List<Story_Master> storyMasters;
     public List<Script_Master_Main> scriptMasterMains;
@@ -26,7 +28,8 @@ public class JsonManager : MonoBehaviour
     public List<Effect_Master> effectMasters;
     public List<Weapon_Master> Weapon_Masters;
     public List<Option_Master> Item_Options;
-
+    public List<Armor_Master> Armor_Master;
+    public List<Item_Master> Item_Master;
     public int num = 0;
     private void Awake()
     {
@@ -45,8 +48,10 @@ public class JsonManager : MonoBehaviour
         scriptMasterEvents = LoadJsonFile<Script_Master_Event>(scriptMasterEventFile);
         successRateMasterRandomEvents = LoadJsonFile<SuccessRate_Master_RandomEvents>(successRateMasterRandomEventsFile);
         effectMasters = LoadJsonFile<Effect_Master>(QuesteffectMasterFile);
-        Weapon_Masters = LoadJsonFile<Weapon_Master>(ItemMasterFile);
+        Weapon_Masters = LoadJsonFile<Weapon_Master>(ItemWeaponMasterFile);
         Item_Options = LoadJsonFile<Option_Master>(ItemOptionMasterFile);
+        Armor_Master = LoadJsonFile<Armor_Master>(ItemArmorMasterFile);
+        Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
 
         Debug.Log("JSON 파일 로딩 완료");
     }

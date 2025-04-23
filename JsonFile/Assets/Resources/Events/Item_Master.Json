@@ -2,6 +2,8 @@
   {
     "Item_ID": "Item_001",
     "Item_NAME": "체력포션",
+    "Item_Description" : "빨간 크랜베리로 만든 포션이다\n생각보다 맛있다.\n생명력을 1 회복시켜줍니다",
+    "Item_Price":30,
     "Item_Option1": "--",
     "Option1_Value": 1,
     "Item_Option2": "--",
