@@ -5,15 +5,15 @@
         "Script_Code": "EventScript_1_1",
         "KOR": "안개 속으로 발을 들인다.",
         "displayType": "Text",
-        "EventBreak" : ""
+        "EventBreak": ""
 
     },
     {
         "Event_Index": 1,
         "EventScript_Index": 2,
         "Script_Code": "EventScript_1_2",
-        "KOR": "TestImage",
-        "displayType": "Image",
+        "KOR": "테스트용값입니다",
+        "displayType": "Text",
         "EventBreak": ""
     },
     {
@@ -33,26 +33,66 @@
         "EventBreak": "Break"
     },
     {
-        "Event_Index": 1,
-        "EventScript_Index": 5,
-        "Script_Code": "EventScript_1_5",
-        "KOR": "위험을 피한다.\n",
+        "Event_Index": 2,
+        "EventScript_Index": 1,
+        "Script_Code": "EventScript_2_1",
+        "KOR": "고블린을 발견했다\n",
         "displayType": "Text",
         "EventBreak": ""
     },
     {
-        "Event_Index": 1,
-        "EventScript_Index": 6,
-        "Script_Code": "EventScript_1_6",
-        "KOR": "다행히 무사히 빠져나오며 영혼이 모여드는 기분을 받았다\n",
+        "Event_Index": 2,
+        "EventScript_Index": 2,
+        "Script_Code": "EventScript_2_2",
+        "KOR": "멀뚱멀뚱 처다보고 있는데 어떻하지\n",
+        "displayType": "Text",
+        "EventBreak": ""
+    },
+    {
+        "Event_Index": 2,
+        "EventScript_Index": 3,
+        "Script_Code": "EventScript_2_3",
+        "KOR": "공격한다\n",
         "displayType": "Text",
         "EventBreak": "Break"
     },
     {
-        "Event_Index": 1,
-        "EventScript_Index": 7,
-        "Script_Code": "EventScript_1_7",
-        "KOR": "허우적 대다가 넘어지며 다쳤지만 무사히 빠져나왔다.\n",
+        "Event_Index": 2,
+        "EventScript_Index": 4,
+        "Script_Code": "EventScript_2_4",
+        "KOR": "무시한다\n",
+        "displayType": "Text",
+        "EventBreak": "Break"
+    },
+    {
+        "Event_Index": 3,
+        "EventScript_Index": 1,
+        "Script_Code": "EventScript_3_1",
+        "KOR": "숲속에서 모자를 쓴 작은 토끼 한마리를 발견을 했는데\n이 토끼 잘보니 귀중품을 가지고 있는거 같은데?.\n",
+        "displayType": "Text",
+        "EventBreak": ""
+    },
+    {
+        "Event_Index": 3,
+        "EventScript_Index": 2,
+        "Script_Code": "EventScript_3_2",
+        "KOR": "토끼한테 다가가 말을 걸자\n\"어이 형씨 여기 귀한 물건들이 있는데 한번 보고 갈래?\"어떻게 할까?\n",
+        "displayType": "Text",
+        "EventBreak": ""
+    },
+    {
+        "Event_Index": 3,
+        "EventScript_Index": 3,
+        "Script_Code": "EventScript_3_3",
+        "KOR": "거래한다\n",
+        "displayType": "Text",
+        "EventBreak": "Break"
+    },
+    {
+        "Event_Index": 3,
+        "EventScript_Index": 4,
+        "Script_Code": "EventScript_3_4",
+        "KOR": "거절하고 다음장소를 향해 간다\n",
         "displayType": "Text",
         "EventBreak": "Break"
     }

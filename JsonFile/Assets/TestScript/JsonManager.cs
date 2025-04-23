@@ -14,7 +14,7 @@ public class JsonManager : MonoBehaviour
     public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format.json";
     public string QuesteffectMasterFile = "Quest_Effect_Master_Custom_Format.json";
     [Header("JSON File Paths (리소스폴더/아이템 폴더안에 있는 Json파일 불러올 예정)")]
-    public string ItemMasterFile = "Weapon_Master.json";
+    public string ItemMasterFile = "Weapon_Master.Json";
     public string ItemOptionMasterFile = "Option_Master.json";
     [Header("Loaded Data")]
     public List<Story_Master> storyMasters;
@@ -77,8 +77,8 @@ public class JsonManager : MonoBehaviour
         PrintList(scriptMasterEvents, "Script Master Events");
         PrintList(successRateMasterRandomEvents, "Success Rate Master Random Events");
         PrintList(effectMasters, "Effect_Master_Custom_Format");
-        PrintList(Weapon_Masters, "Weapon Master");
-        PrintList(effectMasters, "Option Master");
+        PrintList(Weapon_Masters, "Weapon_Master");
+        PrintList(effectMasters, "Option_Master");
     }
 
     // 제네릭 메서드를 사용해 각 리스트의 데이터를 순회하며 출력

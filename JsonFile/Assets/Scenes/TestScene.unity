@@ -133,7 +133,6 @@ GameObject:
   - component: {fileID: 25302958}
   - component: {fileID: 25302960}
   - component: {fileID: 25302961}
-  - component: {fileID: 25302962}
   m_Layer: 0
   m_Name: ScriptEventDisplayManager
   m_TagString: Untagged
@@ -185,7 +184,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d94baab00f717404699feb396d7c19f2, type: 3}
   m_Name: 
@@ -200,19 +199,6 @@ MonoBehaviour:
   choiceButtonParent: {fileID: 465859462}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   Testblocks: []
---- !u!114 &25302962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 25302956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dda1e65cf4bff5640809dee979dcceb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jsonManager: {fileID: 1190628254}
 --- !u!1 &201274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -905,9 +891,9 @@ MonoBehaviour:
   randomEventsFile: RandomEvents_Master_Custom_Format
   scriptMasterEventFile: Script_Master_Event_Custom_Format
   successRateMasterRandomEventsFile: SuccessRate_Master_RandomEvents_Custom_Format
-  QuesteffectMasterFile: Effect_Master_Custom_Format.json
-  ItemMasterFile: Effect_Master_Custom_Format.json
-  ItemOptionMasterFile: Weapon_Master.json
+  QuesteffectMasterFile: Quest_Effect_Master_Custom_Format
+  ItemMasterFile: Weapon_Master
+  ItemOptionMasterFile: Option_Master
   num: 0
 --- !u!4 &1190628255
 Transform:

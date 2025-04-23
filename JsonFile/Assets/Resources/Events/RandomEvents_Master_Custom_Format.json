@@ -8,7 +8,6 @@
         "Choice1_Text": "--",
         "Choice2_Text": "--",
         "Choice3_Text": "--"
-
     },
     {
         "RandomEvent_Index": 1,
@@ -41,41 +40,81 @@
         "Choice3_Text": "--"
     },
     {
-        "RandomEvent_Index": 1,
-        "Script_Index": 5,
-        "Random_Event_ID": "EventScene_1_5",
+        "RandomEvent_Index": 2,
+        "Script_Index": 1,
+        "Random_Event_ID": "EventScene_2_1",
         "Chapter_Index": 1,
-        "Event_Text": "--",
+        "Event_Text": "EventScript_2_1",
         "Choice1_Text": "--",
         "Choice2_Text": "--",
         "Choice3_Text": "--"
     },
     {
-        "RandomEvent_Index": 1,
-        "Script_Index": 6,
-        "Random_Event_ID": "EventScene_1_6",
+        "RandomEvent_Index": 2,
+        "Script_Index": 2,
+        "Random_Event_ID": "EventScene_2_2",
         "Chapter_Index": 1,
-        "Event_Text": "--",
+        "Event_Text": "EventScript_2_2",
+        "Choice1_Text": "EventScript_2_3",
+        "Choice2_Text": "EventScript_2_4",
+        "Choice3_Text": "--"
+    },
+    {
+        "RandomEvent_Index": 2,
+        "Script_Index": 3,
+        "Random_Event_ID": "EventScene_2_3",
+        "Chapter_Index": 1,
+        "Event_Text": "EventScript_2_3",
         "Choice1_Text": "--",
         "Choice2_Text": "--",
         "Choice3_Text": "--"
     },
     {
-        "RandomEvent_Index": 1,
-        "Script_Index": 7,
-        "Random_Event_ID": "EventScene_1_7",
+        "RandomEvent_Index": 2,
+        "Script_Index": 4,
+        "Random_Event_ID": "EventScene_2_4",
         "Chapter_Index": 1,
-        "Event_Text": "--",
+        "Event_Text": "EventScript_2_4",
         "Choice1_Text": "--",
         "Choice2_Text": "--",
         "Choice3_Text": "--"
     },
     {
-        "RandomEvent_Index": 1,
-        "Script_Index": 8,
-        "Random_Event_ID": "EventScene_1_8",
+        "RandomEvent_Index": 3,
+        "Script_Index": 1,
+        "Random_Event_ID": "EventScene_3_1",
         "Chapter_Index": 1,
-        "Event_Text": "--",
+        "Event_Text": "EventScript_3_1",
+        "Choice1_Text": "--",
+        "Choice2_Text": "--",
+        "Choice3_Text": "--"
+    },
+    {
+        "RandomEvent_Index": 3,
+        "Script_Index": 2,
+        "Random_Event_ID": "EventScene_3_2",
+        "Chapter_Index": 1,
+        "Event_Text": "EventScript_3_2",
+        "Choice1_Text": "EventScript_3_3",
+        "Choice2_Text": "EventScript_3_4",
+        "Choice3_Text": "--"
+    },
+    {
+        "RandomEvent_Index": 3,
+        "Script_Index": 3,
+        "Random_Event_ID": "EventScene_3_3",
+        "Chapter_Index": 1,
+        "Event_Text": "EventScript_3_3",
+        "Choice1_Text": "--",
+        "Choice2_Text": "--",
+        "Choice3_Text": "--"
+    },
+    {
+        "RandomEvent_Index": 3,
+        "Script_Index": 4,
+        "Random_Event_ID": "EventScene_3_4",
+        "Chapter_Index": 1,
+        "Event_Text": "EventScript_3_4",
         "Choice1_Text": "--",
         "Choice2_Text": "--",
         "Choice3_Text": "--"
