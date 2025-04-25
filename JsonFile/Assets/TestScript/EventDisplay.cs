@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Text;
+using System;
 
 public class EventDisplay : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class EventDisplay : MonoBehaviour
     private List<GameObject> Testblocks = new List<GameObject>();
     private System.Random rng = new System.Random();
     private List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
+    //public Action OnEventComplete;
     private void Awake()
     {
         SkipButton.GetComponent<Button>().onClick.AddListener(() =>
@@ -45,7 +47,7 @@ public class EventDisplay : MonoBehaviour
             Debug.LogError("RandomEvent 데이터가 없습니다.");
             return;
         }
-
+        //OnEventComplete.Invoke();
         // 그룹 인덱스만 추려서 리스트 생성
         eventGroups = randomEvents
             .Select(e => e.RandomEvent_Index)
@@ -79,7 +81,7 @@ public class EventDisplay : MonoBehaviour
     /// <summary>
     /// currentEvent 를 화면에 표시
     /// </summary>
-    void DisplayCurrentEvent()
+    public void DisplayCurrentEvent()
     {
         availableChoices.Clear();
         // 스크립트 텍스트/이미지를 처리

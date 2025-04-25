@@ -7,6 +7,8 @@ using System.Collections;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 using Image = UnityEngine.UI.Image;
+using System;
+
 
 public class StoryDisplayManager : MonoBehaviour
 {
@@ -30,7 +32,7 @@ public class StoryDisplayManager : MonoBehaviour
     public List<GameObject> Testblocks = new List<GameObject>();
     //마지막 블록이 무엇인지 확인용
     GameObject lastBlock;
-
+    //public Action OnStoryComplete;
 
     private void Awake()
     {
@@ -46,8 +48,9 @@ public class StoryDisplayManager : MonoBehaviour
         {
             jsonManager = FindObjectOfType<JsonManager>();
         }
+        //OnStoryComplete.Invoke();
 
-        storyList = jsonManager.storyMasters;
+         storyList = jsonManager.storyMasters;
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 데이터가 없습니다.");
@@ -228,7 +231,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         if (nextStory == null || matchingScript.StoryBreak == "Break")
         {
-            Debug.LogError("다음 씬이 존재하지 않습니다. 이벤트가 끝났거나 다음 챕터로 전환해야 합니다.");
+            //Debug.LogError("다음 씬이 존재하지 않습니다. 이벤트가 끝났거나 다음 챕터로 전환해야 합니다.");
 
         }
         else
@@ -338,5 +341,6 @@ public class StoryDisplayManager : MonoBehaviour
         //넣을 값이랑 text를 받아감
         StartCoroutine(TypeTextEffect(matchingScript, go));
     }
+
 }
 

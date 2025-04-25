@@ -163,7 +163,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c29270714bad24eb4ece3309a3a364, type: 3}
   m_Name: 
@@ -212,6 +212,51 @@ MonoBehaviour:
   jsonManager: {fileID: 1190628254}
   contentParent: {fileID: 529089260}
   weaponItemPrefab: {fileID: 5592000379863961251, guid: 97dd3ccb8ae31834c950a568e8978360, type: 3}
+--- !u!1 &96228415
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 96228417}
+  - component: {fileID: 96228418}
+  m_Layer: 0
+  m_Name: GameStory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &96228417
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96228415}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &96228418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96228415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ff210782917c645a1979f4aa828cff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonManager: {fileID: 0}
 --- !u!1 &201274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -1516,15 +1561,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041071669}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2c1ad1650ba7a140a95abc4a41c29e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   jsonManager: {fileID: 1190628254}
   weaponsParent: {fileID: 529089260}
-  armorsParent: {fileID: 529089260}
-  consumablesParent: {fileID: 529089260}
   weaponItemPrefab: {fileID: 5592000379863961251, guid: 97dd3ccb8ae31834c950a568e8978360, type: 3}
   armorItemPrefab: {fileID: 5592000379863961251, guid: 97dd3ccb8ae31834c950a568e8978360, type: 3}
   consumableItemPrefab: {fileID: 5592000379863961251, guid: 97dd3ccb8ae31834c950a568e8978360, type: 3}
@@ -1554,3 +1597,4 @@ SceneRoots:
   - {fileID: 2041071671}
   - {fileID: 1376282828}
   - {fileID: 1225873731}
+  - {fileID: 96228417}

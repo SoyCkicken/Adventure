@@ -35,33 +35,33 @@
     "displayType": "Text",
     "StoryBreak": ""
   },
-  {
-    "Chapter_Index": 1,
-    "Event_Index": 1,
-    "Script_Index": 5,
-    "Script_Code": "MainScript_1_1_5",
-    "KOR": "TestImage",
-    "displayType": "Image",
-    "StoryBreak": ""
-  },
-  {
-    "Chapter_Index": 1,
-    "Event_Index": 1,
-    "Script_Index": 6,
-    "Script_Code": "MainScript_1_1_6",
-    "KOR": "아이가 말을 걸어왔다.\n형은 어디서 오셨어요?\n주인공은 고향도 모르고 떠돌아 다닌다고 답했다.\n새로오신거네요 그러면! 이거 선물이에요\n",
-    "displayType": "Text",
-    "StoryBreak": ""
-  },
-  {
-    "Chapter_Index": 1,
-    "Event_Index": 1,
-    "Script_Index": 7,
-    "Script_Code": "MainScript_1_1_7",
-    "KOR": "\n고마워, \n회복 포션을 얻었다.\n",
-    "displayType": "Text",
-    "StoryBreak": "Break"
-  },
+    {
+        "Chapter_Index": 1,
+        "Event_Index": 1,
+        "Script_Index": 5,
+        "Script_Code": "MainScript_1_1_5",
+        "KOR": "제목 없음",
+        "displayType": "Image",
+        "StoryBreak": ""
+    },
+    {
+        "Chapter_Index": 1,
+        "Event_Index": 1,
+        "Script_Index": 6,
+        "Script_Code": "MainScript_1_1_6",
+        "KOR": "Image001", //"아이가 말을 걸어왔다.\n형은 어디서 오셨어요?\n주인공은 고향도 모르고 떠돌아 다닌다고 답했다.\n새로오신거네요 그러면! 이거 선물이에요\n",
+        "displayType": "Image",
+        "StoryBreak": ""
+    },
+    {
+        "Chapter_Index": 1,
+        "Event_Index": 1,
+        "Script_Index": 7,
+        "Script_Code": "MainScript_1_1_7",
+        "KOR": "IMG_0842", //"\n고마워, \n회복 포션을 얻었다.\n",
+        "displayType": "Image",
+        "StoryBreak": "Break"
+    },
   {
     "Chapter_Index": 1,
     "Event_Index": 1,
