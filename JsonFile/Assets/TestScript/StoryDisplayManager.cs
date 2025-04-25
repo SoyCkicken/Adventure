@@ -32,7 +32,17 @@ public class StoryDisplayManager : MonoBehaviour
     public List<GameObject> Testblocks = new List<GameObject>();
     //마지막 블록이 무엇인지 확인용
     GameObject lastBlock;
-    //public Action OnStoryComplete;
+    private Action<Script_Master_Main> onComplete;
+
+
+    //public void DisplayNode(Script_Master_Main node, Action<Script_Master_Main> onComplete)
+    //{
+    //    this.onComplete = onComplete;
+    //    // 노드 데이터 세팅
+    //    currentStory = node;
+    //    // 기존 렌더링 로직 호출
+    //    DisplayCurrentStory();
+    //}
 
     private void Awake()
     {

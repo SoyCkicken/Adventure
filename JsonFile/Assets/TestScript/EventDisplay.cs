@@ -28,7 +28,7 @@ public class EventDisplay : MonoBehaviour
     private List<GameObject> Testblocks = new List<GameObject>();
     private System.Random rng = new System.Random();
     private List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
-    //public Action OnEventComplete;
+    private Action<Script_Master_Main> onComplete;
     private void Awake()
     {
         SkipButton.GetComponent<Button>().onClick.AddListener(() =>
@@ -58,6 +58,8 @@ public class EventDisplay : MonoBehaviour
         PickNewGroup();
         SkipButton.SetActive(true);
     }
+
+    
 
     /// <summary>
     /// eventGroups 에서 무작위로 하나 골라 currentEvent 초기화 후 출력
@@ -168,6 +170,7 @@ public class EventDisplay : MonoBehaviour
             }
         }
         // 선택지가 없으면 Update()에서 클릭시 자동 진행함.
+
     }
 
     RandomEvent FindStoryBySceneCode(string sceneCode)

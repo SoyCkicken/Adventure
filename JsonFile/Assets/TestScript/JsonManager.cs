@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
+using System.Linq;
 
 public class JsonManager : MonoBehaviour
 {
@@ -30,6 +30,8 @@ public class JsonManager : MonoBehaviour
     public List<Option_Master> Item_Options;
     public List<Armor_Master> Armor_Master;
     public List<Item_Master> Item_Master;
+    //메인 스토리 딕셔너리 만듬
+    private Dictionary<string, List<Story_Master>> MainStoryDictionary;
     public int num = 0;
     private void Awake()
     {
@@ -37,6 +39,8 @@ public class JsonManager : MonoBehaviour
         LoadAllJson();
         //제임스 파일 출력
         PrintAllJsonData();
+
+        //Debug.Log(MainStoryDictionary);
     }
 
     void LoadAllJson()
@@ -54,6 +58,9 @@ public class JsonManager : MonoBehaviour
         Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
 
         Debug.Log("JSON 파일 로딩 완료");
+        //이러면 딕셔너리 하나 만듬
+        //키로 씬 코드를 넣고 값으로 해당 스토리를 넣는다
+        MainStoryDictionary = storyMasters.GroupBy(e => e.Scene_Code).ToDictionary(g => g.Key, g => g.ToList());
     }
 
     List<T> LoadJsonFile<T>(string fileName)
