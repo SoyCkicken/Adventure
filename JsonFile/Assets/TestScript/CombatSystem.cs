@@ -25,7 +25,8 @@ public class CombatSystem : MonoBehaviour
             User = user,
             Target = target,
             hp = 50,
-                Value = 10            // 예: 초당 10 데미지
+                Value = 10            // 예: 10의 추가  데미지
+                
         };
             optionManager.ApplyOption("Effect_Bleed", bleedCtx);
 

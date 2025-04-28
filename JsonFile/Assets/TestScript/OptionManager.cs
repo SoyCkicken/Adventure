@@ -39,35 +39,52 @@ public class BleedEffect : IOptionEffect
     public void Apply(OptionContext ctx)
     {
         int damage = Mathf.FloorToInt(ctx.Value);
-        ctx.hp -= damage;
-        Debug.Log(ctx.hp);
+        ctx.Target.Health -= damage;
+        Debug.Log(damage);
+        Debug.Log(ctx.Target.Health);
     }
 }
 
-public class LifeStealEffect : IOptionEffect
+public class AddFireDamage : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
         int heal = Mathf.FloorToInt(ctx.DamageDealt);
-        ctx.hp=+heal;
-        Debug.Log(ctx.hp);
+        ctx.Target.Health -= heal;
+        Debug.Log(heal);
+        Debug.Log($"{ctx.Target.Health}");
     }
 }
 public class Healting : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
+        int heal = Mathf.FloorToInt(ctx.DamageDealt);
+        ctx.User.Health += heal;
+        Debug.Log(heal);
+        Debug.Log(ctx.User.Health);
     }
 }
-
+public class Critical : IOptionEffect
+{
+    public void Apply(OptionContext ctx)
+    {//예: 매 턴마다 추가 피해를 주는 스택을 만든다
+        Debug.Log(ctx.DamageDealt);
+        float magnification = Mathf.FloorToInt(ctx.DamageDealt /100);
+        Debug.Log(magnification);
+        ctx.Target.Health -= ((int)(ctx.Value * magnification));
+        Debug.Log(magnification);
+        Debug.Log(ctx.Target.Health);
+    }
+}
 public class BurnEffect : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        // 예: 매 턴마다 추가 피해를 주는 스택을 만든다
-        //ctx.Target.AddStatus(new BurnStatus(
-        //    baseDamage: ctx.Value,
-        //    extraPerTurn: ctx.TurnNumber));
+        //예: 매 턴마다 추가 피해를 주는 스택을 만든다
+        int heal = Mathf.FloorToInt((ctx.DamageDealt)*3);
+        ctx.hp -= heal;
+        Debug.Log(ctx.hp);
     }
 }
 
@@ -83,8 +100,9 @@ public class OptionManager : MonoBehaviour
         effects = new Dictionary<string, IOptionEffect>()
         {
             {"Effect_Bleed",   new BleedEffect()},
-            {"Effect_LifeSteal",new LifeStealEffect()},
-            {"Effect_Burn",     new BurnEffect()},
+            {"Effect_Fire",new AddFireDamage()},
+            {"Effect_Critical",     new Critical()},
+            {"Effect_MagicBoost",     new BurnEffect()},
             // …추가
         };
     }
