@@ -1,56 +1,107 @@
-using UnityEngine;
-using MyGame;  // OptionContext, Character Á¤ÀÇµÈ ³×ÀÓ½ºÆäÀÌ½º
+ï»¿using UnityEngine;
+using MyGame;
+using System.Collections;  // OptionContext, Character ì •ì˜ëœ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
 
 public class CombatTest : MonoBehaviour
 {
     public OptionManager optionManager;
-    Character user, target;
+    public Character player;
+    public Character enemy;
+
 
     void Start()
     {
-        // OptionManager ÂüÁ¶ È®º¸
+        // OptionManager ì°¸ì¡° í™•ë³´
         optionManager = optionManager != null
             ? optionManager
             : FindObjectOfType<OptionManager>();
 
-        // À¯Àú/Å¸°Ù Ä³¸¯ÅÍ ´õ¹Ì »ı¼º
-        user = CreateDummy("User");
-        target = CreateDummy("Target");
+        // ìœ ì €/íƒ€ê²Ÿ ìºë¦­í„° ë”ë¯¸ ìƒì„±
+        SetupDummy(player, speed: 1f, armor: 2, baseDmg: 12,
+                   optID: "Option_004", optVal: 5,10);
+        SetupDummy(enemy, speed: 0.8f, armor: 1, baseDmg: 8,
+                   optID: null, optVal: 0,10);
 
-        // °¢ ¿É¼ÇÀ» Å×½ºÆ®ÇØº»´Ù
-        TestOption("Option_001", value: 10, dealt: 0, turn: 0);
-        TestOption("Option_002", value: 20, dealt: 50, turn: 0);
-        TestOption("Option_003", value: 5, dealt: 150, turn: 0);
-        TestOption("Option_004", value: 15, dealt: 0, turn: 3);
+        // ê° ì˜µì…˜ì„ í…ŒìŠ¤íŠ¸í•´ë³¸ë‹¤
+        //TestOption("Option_001", value: 10, dealt: 0, turn: 0);
+        //TestOption("Option_002", value: 20, dealt: 50, turn: 0);
+        //TestOption("Option_003", value: 5, dealt: 150, turn: 0);
+        //TestOption("Option_004", value: 15, dealt: 0, turn: 3);
+        StartCoroutine(BattleLoop());
     }
-
-    Character CreateDummy(string name)
+    void SetupDummy(Character c, float speed, int armor, int baseDmg, string optID, int optVal,int CitChance)
     {
-        var go = new GameObject(name);
-        var c = go.AddComponent<Character>();
-        c.charaterName = name;
-        c.Health = 500;
-        return c;
+        c.speed = speed;
+        c.armor = armor;
+        c.damage = baseDmg;
+        c.Health = 100;
+        c.charaterName = c.gameObject.name;
+        c.CitChance = CitChance;
+
+        // í”Œë ˆì´ì–´ë§Œ ì˜µì…˜ì„ ì“¸ ê±°ë¼ë©´, Characterì— ì•„ë˜ í•„ë“œë§Œ ì¶”ê°€í•´ë‘ê³  ì„¸íŒ…
+        c.Option1_ID = optID;
+        c.Option1_Value = optVal;
     }
+    IEnumerator BattleLoop()
+    {
+        // ì–‘ìª½ ìƒì¡´í•˜ëŠ” ë™ì•ˆ ë°˜ë³µ
+        while (player.Health > 0 && enemy.Health > 0)
+        {
+            // â€” í”Œë ˆì´ì–´ ê³µê²©
+            yield return new WaitForSeconds(1f / player.speed);
+            int dealt = player.damage;
+
+            // ì˜µì…˜ ì ìš© (í”Œë ˆì´ì–´ë§Œ)
+            if (!string.IsNullOrEmpty(player.Option1_ID))
+            {
+                var ctx = new OptionContext
+                {
+                    User = player,
+                    Target = enemy,
+                    Value = player.Option1_Value,
+                    DamageDealt = dealt,
+                    TurnNumber = 0
+                };
+                optionManager.ApplyOption(player.Option1_ID, ctx);
+                player.Attack(enemy);
+            }
+            else
+            {
+                player.Attack(enemy);
+            }
+
+            if (enemy.Health <= 0) break;
+
+            // â€” ì  ê³µê²©
+            yield return new WaitForSeconds(1f / enemy.speed);
+            enemy.Attack(player);
+        }
+
+        // ì „íˆ¬ ì¢…ë£Œ ë¡œê·¸
+        var winner = player.Health > 0 ? player.charaterName : enemy.charaterName;
+        Debug.Log($"ì „íˆ¬ ì¢…ë£Œ! ìŠ¹ì: {winner}");
+    }
+
+
 
     void TestOption(string optionID, int value, int dealt, int turn)
     {
-        // È£Ãâ Àü ·Î±×
-        Debug.Log($"[Test] {optionID} ¢º Value={value}, Dealt={dealt}, Turn={turn}");
+        // í˜¸ì¶œ ì „ ë¡œê·¸
+        Debug.Log($"[Test] {optionID} â–¶ Value={value}, Dealt={dealt}, Turn={turn}");
 
-        // ÄÁÅØ½ºÆ® Ã¤¿ì°í È£Ãâ
+        // ì»¨í…ìŠ¤íŠ¸ ì±„ìš°ê³  í˜¸ì¶œ
         var ctx = new OptionContext
         {
-            User = user,
-            Target = target,
+            User = player,
+            Target = enemy,
             Value = value,
             DamageDealt = dealt,
             TurnNumber = turn
         };
         optionManager.ApplyOption(optionID, ctx);
 
-        // È£Ãâ ÈÄ ·Î±× (±¸ÇöÃ¼ ³»ºÎ¿¡¼­µµ ·Î±× ÂïÈù´Ù)
-        Debug.Log($"[Test] {optionID} ¿Ï·á\n");
+        // í˜¸ì¶œ í›„ ë¡œê·¸ (êµ¬í˜„ì²´ ë‚´ë¶€ì—ì„œë„ ë¡œê·¸ ì°íŒë‹¤)
+        Debug.Log($"[Test] {optionID} ì™„ë£Œ\n");
         //Debug.Log(ctx.User.Health);
     }
 }
