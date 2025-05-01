@@ -7,17 +7,20 @@ public class JsonManager : MonoBehaviour
 {
     [Header("JSON File Paths (이벤트 리스트에 있는 Json파일)")]
     public string storyMasterFile = "Story_Master_Custom_Format";
-    public string scriptMasterMainFile = "Script_Master_Main_Custom_Format.json";
-    public string successRateMasterMainFile = "SuccessRate_Master_Main_Custom_Format.json";
-    public string randomEventsFile = "RandomEvents_Master_Custom_Format.json";
-    public string scriptMasterEventFile = "Script_Master_Event_Custom_Format.json";
-    public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format.json";
-    public string QuesteffectMasterFile = "Quest_Effect_Master_Custom_Format.json";
-    [Header("JSON File Paths (아이템 목록에 있는 Json파일)")]
-    public string ItemWeaponMasterFile = "Weapon_Master.Json";
-    public string ItemOptionMasterFile = "Option_Master.json";
-    public string ItemArmorMasterFile = "Armor_Master.Json";
-    public string ItemMasterFile = "Item_Master.json";
+    public string scriptMasterMainFile = "Script_Master_Main_Custom_Format";
+    public string successRateMasterMainFile = "SuccessRate_Master_Main_Custom_Format";
+    public string randomEventsFile = "RandomEvents_Master_Custom_Format";
+    public string scriptMasterEventFile = "Script_Master_Event_Custom_Format";
+    public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format";
+    public string QuesteffectMasterFile = "Quest_Effect_Master_Custom_Format";
+    [Header("JSON File Paths (아이템 목록 Json파일)")]
+    public string ItemWeaponMasterFile = "Weapon_Master";
+    public string ItemOptionMasterFile = "Option_Master";
+    public string ItemArmorMasterFile = "Armor_Master";
+    public string ItemMasterFile = "Item_Master";
+    [Header("JSON File Paths (몬스터 목록 Json파일)")]
+    public string Monster_DataFile = "MonsterData";
+    public string Monster_EffectFile = "MonsterEffect";
     [Header("Loaded Data")]
     public List<Story_Master> storyMasters;
     public List<Script_Master_Main> scriptMasterMains;
@@ -30,8 +33,10 @@ public class JsonManager : MonoBehaviour
     public List<Option_Master> Item_Options;
     public List<Armor_Master> Armor_Master;
     public List<Item_Master> Item_Master;
+    public List<MonsterData> Monster_Data;
+    public List<MonsterEffect> Monster_Effect;
     //메인 스토리 딕셔너리 만듬
-    private Dictionary<string, List<Story_Master>> MainStoryDictionary;
+    //private Dictionary<string, List<Story_Master>> MainStoryDictionary;
     public int num = 0;
     private void Awake()
     {
@@ -56,11 +61,14 @@ public class JsonManager : MonoBehaviour
         Item_Options = LoadJsonFile<Option_Master>(ItemOptionMasterFile);
         Armor_Master = LoadJsonFile<Armor_Master>(ItemArmorMasterFile);
         Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
+        Monster_Data = LoadJsonFile<MonsterData>(Monster_DataFile);
+        Monster_Effect = LoadJsonFile<MonsterEffect>(Monster_EffectFile);
+
 
         Debug.Log("JSON 파일 로딩 완료");
         //이러면 딕셔너리 하나 만듬
         //키로 씬 코드를 넣고 값으로 해당 스토리를 넣는다
-        MainStoryDictionary = storyMasters.GroupBy(e => e.Scene_Code).ToDictionary(g => g.Key, g => g.ToList());
+        //MainStoryDictionary = storyMasters.GroupBy(e => e.Scene_Code).ToDictionary(g => g.Key, g => g.ToList());
     }
 
     List<T> LoadJsonFile<T>(string fileName)

@@ -49,7 +49,7 @@ public class AddFireDamage : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        int heal = Mathf.FloorToInt(ctx.DamageDealt);
+        int heal = Mathf.FloorToInt(ctx.Value);
         ctx.Target.Health -= heal;
         Debug.Log(heal);
         Debug.Log($"{ctx.Target.Health}");
@@ -69,10 +69,9 @@ public class Critical : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        //크리티컬 확률 증가
-        ctx.User.AddCritBuff(
-            buffID: ctx.User.Option1_ID,   // 고유 ID로 중복 방지
-            bonusPercent: ctx.Value);
+        // 키를 “장비ID_옵션ID” 로 합쳐서
+        var buffKey = $"{ctx.item_ID}_{ctx.option_ID}";
+        ctx.User.AddCritBuff(buffKey, ctx.Value);
     }
 }
 public class BurnEffect : IOptionEffect
@@ -80,7 +79,7 @@ public class BurnEffect : IOptionEffect
     public void Apply(OptionContext ctx)
     {
         //예: 매 턴마다 추가 피해를 주는 스택을 만든다
-        int heal = Mathf.FloorToInt((ctx.DamageDealt)*3);
+        int heal = Mathf.FloorToInt((ctx.Value)*3);
         ctx.hp -= heal;
         Debug.Log(ctx.hp);
     }
@@ -100,7 +99,7 @@ public class OptionManager : MonoBehaviour
             {"Effect_Bleed",   new BleedEffect()},
             {"Effect_Fire",new AddFireDamage()},
             {"Effect_Critical",     new Critical()},
-            {"Effect_MagicBoost",     new Healting()},
+            {"Effect_Healing",     new Healting()}, 
             // …추가
         };
     }
@@ -114,6 +113,7 @@ public class OptionManager : MonoBehaviour
         if (opt == null) 
         {
             Debug.Log("옵션이 없습니다");
+            return;
         };
 
         if (effects.TryGetValue(opt.Effect_ID, out var effect))

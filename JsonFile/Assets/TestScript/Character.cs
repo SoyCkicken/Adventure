@@ -12,19 +12,58 @@ namespace MyGame
         public int damage = 10;
         public float speed = 1f;
         public int armor = 5;
-        public string Option1_ID;
-        public int Option1_Value;
+        //[Tooltip("여기 2개는 무기 옵션 전용임")]
+        //public string Option1_ID;
+        //public int Option1_Value;
+        //public string Option2_ID;
+        //public int Option2_Value;
+        //[Tooltip("여기 2개는 방어구 옵션 전용임")]
+        //public string Option3_ID;
+        //public int Option3_Value;
+        //public string Option4_ID;
+        //public int Option4_Value;
         public int CitChance = 10; //일반적인 크리티컬 확률
-        private Dictionary<string, int> critBuffs = new Dictionary<string, int>();
-
-        public int CritChancePercent
+        public Dictionary<string, int> critBuffs = new Dictionary<string, int>();
+        public string weapon_Name;
+        public string armor_Name;
+        public int CritChancePercent 
             => CitChance + critBuffs.Values.Sum(); //모든 크리티컬 확률 증가 적용해서
+        [System.Serializable]
+        public struct EquippedOption
+        {
+            public string OptionID;
+            public int Value;
+            public string item_ID;
+        }
+        public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
+        public void ApplyWeapon(Weapon_Master weapon)
+        {
+            if (weapon == null) return;
+
+            damage += weapon.Weapon_DMG;
+            Debug.Log($"[{charaterName}] '{weapon.Weapon_Name}' 장착 → 공격력 +{weapon.Weapon_DMG} → 최종 공격력 {damage}");
+        }
+        /// <summary>
+        /// 방어구 장착 시 방어력 & 체력에 추가
+        /// </summary>
+        public void ApplyArmor(Armor_Master Armor)
+        {
+            if (Armor == null) return;
+
+            armor += Armor.Armor_DEF;
+            Health += Armor.Armor_HP;
+            Debug.Log($"[{charaterName}] '{Armor.Armor_Name}' 장착 → 방어력 +{Armor.Armor_DEF}, 체력 +{Armor.Armor_HP} → 최종 방어력 {armor}, 체력 {Health}");
+        }
 
         public void AddCritBuff(string buffID, int bonusPercent)
         {
+            Debug.Log($"{buffID} : {bonusPercent}");
             if (critBuffs.ContainsKey(buffID))
+            {
+                //Debug.Log("중복 적용 되었습니다");
                 return; // 이미 적용되었으면 무시
 
+            }
             critBuffs[buffID] = bonusPercent;
             Debug.Log($"[{charaterName}] 크리티컬 버프 적용: +{bonusPercent}%. 최종 확률 = {CritChancePercent}%");
         }
@@ -45,6 +84,7 @@ namespace MyGame
         // 기본 공격 메서드
         public int Attack(Character target)
         {
+            Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
             bool isCrit = Random.Range(0, 100) < CritChancePercent ? true : false;
             Debug.Log($"{isCrit} , {CritChancePercent} ");
@@ -67,8 +107,9 @@ namespace MyGame
         public int damage;
         public float speed;         //공격속도
         public int armor;           //방어력
+        public string option_ID;
         public int Value;           // 옵션 값
-        public int DamageDealt;     // LifeSteal 용
-        public int TurnNumber;      // Burn 스택용
+        public string item_ID;
+       
     }
 }

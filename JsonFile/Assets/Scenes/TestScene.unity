@@ -924,6 +924,8 @@ MonoBehaviour:
   ItemOptionMasterFile: Option_Master
   ItemArmorMasterFile: Armor_Master
   ItemMasterFile: Item_Master
+  Monster_DataFile: MonsterData
+  Monster_EffectFile: MonsterEffect
   num: 0
 --- !u!4 &1190628255
 Transform:
@@ -951,7 +953,7 @@ GameObject:
   - component: {fileID: 1206244608}
   - component: {fileID: 1206244607}
   m_Layer: 0
-  m_Name: GameObject (2)
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -974,6 +976,17 @@ MonoBehaviour:
   damage: 10
   speed: 0.8
   armor: 5
+  Option1_ID: 
+  Option1_Value: 0
+  Option2_ID: 
+  Option2_Value: 0
+  Option3_ID: 
+  Option3_Value: 0
+  Option4_ID: 
+  Option4_Value: 0
+  CitChance: 10
+  weapon_Name: 
+  armor_Name: 
 --- !u!4 &1206244608
 Transform:
   m_ObjectHideFlags: 0
@@ -1613,8 +1626,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2006169297}
   - component: {fileID: 2006169296}
+  - component: {fileID: 2006169298}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1637,6 +1651,17 @@ MonoBehaviour:
   damage: 10
   speed: 2
   armor: 5
+  Option1_ID: 
+  Option1_Value: 0
+  Option2_ID: 
+  Option2_Value: 0
+  Option3_ID: 
+  Option3_Value: 0
+  Option4_ID: 
+  Option4_Value: 0
+  CitChance: 10
+  weapon_Name: Weapon_001
+  armor_Name: Armor_001
 --- !u!4 &2006169297
 Transform:
   m_ObjectHideFlags: 0
@@ -1652,6 +1677,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2006169298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2006169295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51481fccdb2862745af7b58864f0df20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonManager: {fileID: 1190628254}
+  optionManager: {fileID: 2041071672}
+  player: {fileID: 2006169296}
+  enemy: {fileID: 1206244607}
 --- !u!1 &2041071669
 GameObject:
   m_ObjectHideFlags: 0
@@ -1727,6 +1768,6 @@ SceneRoots:
   - {fileID: 1376282828}
   - {fileID: 1225873731}
   - {fileID: 96228417}
-  - {fileID: 1515041321}
   - {fileID: 2006169297}
   - {fileID: 1206244608}
+  - {fileID: 1515041321}

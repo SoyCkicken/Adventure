@@ -8,6 +8,11 @@ public class CombatTest : MonoBehaviour
     public Character player;
     public Character enemy;
 
+    private void Awake()
+    {
+        SetupDummy(enemy, speed: 0.8f, armor: 1, baseDmg: 8,
+                  optID: null, optVal: 0, 10);
+    }
 
     void Start()
     {
@@ -17,10 +22,7 @@ public class CombatTest : MonoBehaviour
             : FindObjectOfType<OptionManager>();
 
         // 유저/타겟 캐릭터 더미 생성
-        SetupDummy(player, speed: 1f, armor: 2, baseDmg: 12,
-                   optID: "Option_004", optVal: 5,10);
-        SetupDummy(enemy, speed: 0.8f, armor: 1, baseDmg: 8,
-                   optID: null, optVal: 0,10);
+       
 
         // 각 옵션을 테스트해본다
         //TestOption("Option_001", value: 10, dealt: 0, turn: 0);
@@ -34,13 +36,11 @@ public class CombatTest : MonoBehaviour
         c.speed = speed;
         c.armor = armor;
         c.damage = baseDmg;
-        c.Health = 100;
+        c.Health = 1000;
         c.charaterName = c.gameObject.name;
         c.CitChance = CitChance;
 
         // 플레이어만 옵션을 쓸 거라면, Character에 아래 필드만 추가해두고 세팅
-        c.Option1_ID = optID;
-        c.Option1_Value = optVal;
     }
     IEnumerator BattleLoop()
     {
@@ -50,26 +50,21 @@ public class CombatTest : MonoBehaviour
             // — 플레이어 공격
             yield return new WaitForSeconds(1f / player.speed);
             int dealt = player.damage;
-
+            
             // 옵션 적용 (플레이어만)
-            if (!string.IsNullOrEmpty(player.Option1_ID))
+            foreach (var opt in player.OnHitOptions)
             {
                 var ctx = new OptionContext
                 {
                     User = player,
                     Target = enemy,
-                    Value = player.Option1_Value,
-                    DamageDealt = dealt,
-                    TurnNumber = 0
+                    Value = opt.Value,
+                    option_ID = opt.OptionID,
+                    item_ID = opt.item_ID
                 };
-                optionManager.ApplyOption(player.Option1_ID, ctx);
-                player.Attack(enemy);
+                optionManager.ApplyOption(opt.OptionID, ctx);
             }
-            else
-            {
-                player.Attack(enemy);
-            }
-
+            player.Attack(enemy);
             if (enemy.Health <= 0) break;
 
             // — 적 공격
@@ -95,8 +90,6 @@ public class CombatTest : MonoBehaviour
             User = player,
             Target = enemy,
             Value = value,
-            DamageDealt = dealt,
-            TurnNumber = turn
         };
         optionManager.ApplyOption(optionID, ctx);
 

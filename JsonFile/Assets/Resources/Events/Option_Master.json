@@ -16,11 +16,16 @@
   },
   {
     "Option_ID": "Option_004",
-    "Option_Description": "마법 공격력 증가",
-    "Effect_ID": "Effect_MagicBoost"
+    "Option_Description": "회복합니다",
+    "Effect_ID": "Effect_Healing"
   },
   {
     "Option_ID": "Option_005",
+    "Option_Description": "방어 무시",
+    "Effect_ID": "Effect_Penetration"
+  },
+  {
+    "Option_ID": "Option_006",
     "Option_Description": "방어 무시",
     "Effect_ID": "Effect_Penetration"
   }
