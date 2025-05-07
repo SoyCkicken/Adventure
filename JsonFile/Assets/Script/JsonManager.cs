@@ -21,6 +21,15 @@ public class JsonManager : MonoBehaviour
     [Header("JSON File Paths (몬스터 목록 Json파일)")]
     public string Monster_DataFile = "MonsterData";
     public string Monster_EffectFile = "MonsterEffect";
+    public string allItemMasterArmorMasterFile;
+    public string allItemMasterItemMasterFile;
+    public string allItemMasterOptionMasterFile;
+    public string allItemMasterWeaponMasterFile;
+    [Header("JSON File Paths (몬스터 목록 Json파일)")]
+    public string Test5;
+    public string Test6;
+    public string Test7;
+    public string Test8;
     [Header("Loaded Data")]
     public List<Story_Master> storyMasters;
     public List<Script_Master_Main> scriptMasterMains;
@@ -35,6 +44,10 @@ public class JsonManager : MonoBehaviour
     public List<Item_Master> Item_Master;
     public List<MonsterData> Monster_Data;
     public List<MonsterEffect> Monster_Effect;
+    public List<AllItemMasterArmorMasterData> allItemMasterArmorMasterDatas;
+    public List<AllItemMasterItemMasterData> allItemMasterItemMasterDatas;
+    public List<AllItemMasterOptionMasterData> allItemMasterOptionMasterDatas;
+    public List<AllItemMasterWeaponMasterData> allItemMasterWeaponMasterDatas;
     //메인 스토리 딕셔너리 만듬
     //private Dictionary<string, List<Story_Master>> MainStoryDictionary;
     public int num = 0;
@@ -63,6 +76,10 @@ public class JsonManager : MonoBehaviour
         Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
         Monster_Data = LoadJsonFile<MonsterData>(Monster_DataFile);
         Monster_Effect = LoadJsonFile<MonsterEffect>(Monster_EffectFile);
+        allItemMasterArmorMasterDatas = LoadJsonFile<AllItemMasterArmorMasterData>(Test5);
+        allItemMasterItemMasterDatas = LoadJsonFile<AllItemMasterItemMasterData>(Test6);
+        allItemMasterOptionMasterDatas = LoadJsonFile<AllItemMasterOptionMasterData>(Test7);
+        allItemMasterWeaponMasterDatas = LoadJsonFile<AllItemMasterWeaponMasterData>(Test8);
 
 
         Debug.Log("JSON 파일 로딩 완료");

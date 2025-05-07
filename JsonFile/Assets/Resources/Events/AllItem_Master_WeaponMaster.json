@@ -1,0 +1,53 @@
+﻿[
+  {
+    "Weapon_ID": "Weapon_001",
+    "Weapon_Name": "철검",
+    "Weapon_Type": true,
+    "Weapon_DMG": 100.0,
+    "STR_Scaling": 0.2,
+    "DEX_Scaling": 0.2,
+    "INT_Scaling": 0.0,
+    "MAG_Scaling": 0.0,
+    "DIV_Scaling": 0.0,
+    "CHR_Scaling": 0.0,
+    "Option_1_ID": "Option_001",
+    "Option_Value1": 15.0,
+    "Option_2_ID": "Option_003",
+    "Option_Value2": 20.0,
+    "Description": "기본 철로 만든 검"
+  },
+  {
+    "Weapon_ID": "Weapon_002",
+    "Weapon_Name": "붉은 용의 검",
+    "Weapon_Type": true,
+    "Weapon_DMG": 150.0,
+    "STR_Scaling": 0.1,
+    "DEX_Scaling": 0.1,
+    "INT_Scaling": 0.0,
+    "MAG_Scaling": 0.0,
+    "DIV_Scaling": 0.0,
+    "CHR_Scaling": 0.0,
+    "Option_1_ID": "Option_002",
+    "Option_Value1": 10.0,
+    "Option_2_ID": "Option_005",
+    "Option_Value2": 5.0,
+    "Description": "붉은 용의 비늘로 제작된 검"
+  },
+  {
+    "Weapon_ID": "Weapon_003",
+    "Weapon_Name": "마법 지팡이",
+    "Weapon_Type": false,
+    "Weapon_DMG": 60.0,
+    "STR_Scaling": 0.0,
+    "DEX_Scaling": 0.0,
+    "INT_Scaling": 0.5,
+    "MAG_Scaling": 0.2,
+    "DIV_Scaling": 0.0,
+    "CHR_Scaling": 0.0,
+    "Option_1_ID": "Option_004",
+    "Option_Value1": 5.0,
+    "Option_2_ID": "-",
+    "Option_Value2": 0.0,
+    "Description": "초보 마법사가 사용하기 적합한 지팡이"
+  }
+]
