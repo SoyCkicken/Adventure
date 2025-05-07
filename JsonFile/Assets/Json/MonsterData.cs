@@ -16,8 +16,8 @@ public class MonsterData
     // "Get_Soul": 100
     public string Mon_ID;
     public string Mon_Name;
-    public int mon_HP;
-    public int mon_ATK;
+    public int Mon_HP;
+    public int Mon_ATK;
     public int Mon_Def;
     public float Mon_Speed;
     public string MonPas_Effect1;
