@@ -1,108 +1,188 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using ExcelDataReader; // ExcelDataReader ³×ÀÓ½ºÆäÀÌ½º
-using Newtonsoft.Json;  // JSON º¯È¯¿ë (ÆĞÅ°Áö ¸Å´ÏÀú¿¡¼­ ¼³Ä¡ÇÏ°Å³ª Á÷Á¢ .dll Ãß°¡)
+using ExcelDataReader;
+using Newtonsoft.Json;
 
-/// <summary>
-/// ¿¡µğÅÍ ¸Ş´º¿¡ "Tools/Excel ¡æ JSON" Ç×¸ñÀ» Ãß°¡ÇÏ°í,
-/// ¼±ÅÃÇÑ .xlsx/.xls ÆÄÀÏÀ» JSONÀ¸·Î º¯È¯ÇØ Assets/Resources/ExcelJsons/ ¾Æ·¡¿¡ ÀúÀåÇØ Áİ´Ï´Ù.
-/// </summary>
 public class ExcelToJsonConverter : EditorWindow
 {
-    // À©µµ¿ì ÀÎ½ºÅÏ½º
-    private static ExcelToJsonConverter window;
-    // º¯È¯ÇÒ ¿¢¼¿ ÆÄÀÏ °æ·Î
-    private string excelPath = "";
+    private List<UnityEngine.Object> excelFiles = new List<UnityEngine.Object>();
+    private const string TARGET_FOLDER = "Assets/ExcelFiles"; // âœ… ìë™ ì¸ì‹í•  í´ë”
 
-    [MenuItem("Tools/Excel ¡æ JSON", priority = 100)]
+    [MenuItem("Tools/Excel â†’ JSON (Auto Folder Scan)")]
     public static void ShowWindow()
     {
-        // ¸Ş´º Å¬¸¯ ½Ã À©µµ¿ì ¶ç¿ì±â
-        window = GetWindow<ExcelToJsonConverter>("Excel To JSON");
-        window.minSize = new Vector2(400, 100);
+        GetWindow<ExcelToJsonConverter>("Excel To JSON (Auto Scan)");
+    }
+
+    private void OnEnable()
+    {
+        // ê¸°ì¡´ EditorPrefs ì €ì¥ëœ ê²½ë¡œ ë¡œë“œ
+        if (EditorPrefs.HasKey("ExcelToJson_FileList"))
+        {
+            string savedPaths = EditorPrefs.GetString("ExcelToJson_FileList");
+            string[] paths = savedPaths.Split(';');
+
+            excelFiles.Clear();
+
+            foreach (string path in paths)
+            {
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+                    if (obj != null && !excelFiles.Contains(obj))
+                        excelFiles.Add(obj);
+                }
+            }
+        }
+
+        // âœ… í´ë” ìë™ ìŠ¤ìº”
+        AutoScanExcelFiles();
+    }
+
+    private void AutoScanExcelFiles()
+    {
+        if (!AssetDatabase.IsValidFolder(TARGET_FOLDER))
+        {
+            Debug.LogWarning($"í´ë” {TARGET_FOLDER} ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            return;
+        }
+
+        string[] guids = AssetDatabase.FindAssets("", new[] { TARGET_FOLDER });
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (path.EndsWith(".xls") || path.EndsWith(".xlsx"))
+            {
+                var obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+                if (obj != null && !excelFiles.Contains(obj))
+                {
+                    excelFiles.Add(obj);
+                }
+            }
+        }
+    }
+
+    private void OnDisable()
+    {
+        // EditorPrefsì— ê²½ë¡œ ì €ì¥
+        List<string> paths = new List<string>();
+        foreach (var obj in excelFiles)
+        {
+            if (obj != null)
+            {
+                string path = AssetDatabase.GetAssetPath(obj);
+                if (!string.IsNullOrEmpty(path))
+                    paths.Add(path);
+            }
+        }
+        EditorPrefs.SetString("ExcelToJson_FileList", string.Join(";", paths));
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("¿¢¼¿ ÆÄÀÏ ¼±ÅÃ", EditorStyles.boldLabel);
+        GUILayout.Label($"ì—‘ì…€ íŒŒì¼ ëª©ë¡ (ìë™ ìŠ¤ìº” í´ë”: {TARGET_FOLDER})", EditorStyles.boldLabel);
 
-        // 1) ÆÄÀÏ ÆĞ½º¸¦ ÅØ½ºÆ® ÇÊµå¿¡ º¸¿©ÁÖ°í
-        EditorGUILayout.BeginHorizontal();
-        excelPath = EditorGUILayout.TextField(excelPath);
-        if (GUILayout.Button("Browse", GUILayout.Width(80)))
+        for (int i = 0; i < excelFiles.Count; i++)
         {
-            // 2) ÆÄÀÏ ´ÙÀÌ¾ó·Î±× ¿­±â (.xls, .xlsx ÇÊÅÍ)
-            string path = EditorUtility.OpenFilePanel("Select Excel File", "", "xls,xlsx");
-            if (!string.IsNullOrEmpty(path))
-                excelPath = path;
+            EditorGUILayout.BeginHorizontal();
+            excelFiles[i] = EditorGUILayout.ObjectField($"Excel íŒŒì¼ {i + 1}", excelFiles[i], typeof(UnityEngine.Object), false);
+
+            if (GUILayout.Button("X", GUILayout.Width(20)))
+            {
+                excelFiles.RemoveAt(i);
+                i--;
+            }
+            EditorGUILayout.EndHorizontal();
         }
-        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
 
-        // º¯È¯ ¹öÆ°
-        if (GUILayout.Button("Convert to JSON") && !string.IsNullOrEmpty(excelPath))
+        if (GUILayout.Button("Add Excel File Slot"))
         {
-            ConvertExcelToJson(excelPath);
+            excelFiles.Add(null);
+        }
+
+        if (GUILayout.Button("Rescan Folder"))
+        {
+            AutoScanExcelFiles();
+        }
+
+        EditorGUILayout.Space();
+
+        if (GUILayout.Button("Convert All to JSON"))
+        {
+            foreach (var excelFile in excelFiles)
+            {
+                if (excelFile == null)
+                {
+                    Debug.LogWarning("ë¹ˆ ìŠ¬ë¡¯ì€ ë¬´ì‹œí•©ë‹ˆë‹¤.");
+                    continue;
+                }
+
+                string assetPath = AssetDatabase.GetAssetPath(excelFile);
+                string fullPath = Path.Combine(Application.dataPath.Substring(0, Application.dataPath.Length - "Assets".Length), assetPath);
+
+                if (assetPath.EndsWith(".xls") || assetPath.EndsWith(".xlsx"))
+                {
+                    ConvertExcelToJson(fullPath);
+                }
+                else
+                {
+                    Debug.LogError($"íŒŒì¼ {assetPath} ì€(ëŠ”) .xls/.xlsx íŒŒì¼ì´ ì•„ë‹™ë‹ˆë‹¤.");
+                }
+            }
         }
     }
 
-    /// <summary>
-    /// ½ÇÁ¦ º¯È¯ ·ÎÁ÷
-    /// </summary>
     private static void ConvertExcelToJson(string path)
     {
-        // ¿¢¼¿ ÆÄÀÏÀ» ¹ÙÀÌÆ® ½ºÆ®¸²À¸·Î ¿­±â
-        using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
-        // ExcelDataReader ÃÊ±âÈ­ (ÀÚµ¿À¸·Î xls/xlsx ±¸ºĞ)
-        using var reader = ExcelReaderFactory.CreateReader(stream);
-        // DataSetÀ¸·Î ÀĞ¾î¼­ °¢ ½ÃÆ®º°·Î DataTableÀ» ¾òÀ½
-        var conf = new ExcelDataSetConfiguration
+        try
         {
-            ConfigureDataTable = _ => new ExcelDataTableConfiguration { UseHeaderRow = true }
-        };
-        var dataSet = reader.AsDataSet(conf);
+            using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
+            using var reader = ExcelReaderFactory.CreateReader(stream);
 
-        // JSONÀ¸·Î Á÷·ÄÈ­ÇÒ ¿ÀºêÁ§Æ® ¸¸µé±â
-        var workbook = new Dictionary<string, List<Dictionary<string, object>>>();
-
-        foreach (DataTable table in dataSet.Tables)
-        {
-            var rows = new List<Dictionary<string, object>>();
-
-            // °¢ ÇàÀ» Dictionary<ÄÃ·³¸í, °ª>À¸·Î º¯È¯
-            foreach (DataRow dr in table.Rows)
+            var conf = new ExcelDataSetConfiguration
             {
-                var dict = new Dictionary<string, object>();
-                foreach (DataColumn col in table.Columns)
+                ConfigureDataTable = _ => new ExcelDataTableConfiguration { UseHeaderRow = true }
+            };
+            DataSet dataSet = reader.AsDataSet(conf);
+
+            var workbook = new Dictionary<string, List<Dictionary<string, object>>>();
+
+            foreach (DataTable table in dataSet.Tables)
+            {
+                var rows = new List<Dictionary<string, object>>();
+                foreach (DataRow dr in table.Rows)
                 {
-                    dict[col.ColumnName] = dr[col];
+                    var dict = new Dictionary<string, object>();
+                    foreach (DataColumn col in table.Columns)
+                        dict[col.ColumnName] = dr[col];
+                    rows.Add(dict);
                 }
-                rows.Add(dict);
+                workbook[table.TableName] = rows;
             }
 
-            workbook[table.TableName] = rows;
+            string json = JsonConvert.SerializeObject(workbook, Formatting.Indented);
+
+            string folder = "Assets/Resources/ExcelJsons";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            string fileName = Path.GetFileNameWithoutExtension(path) + ".json";
+            string savePath = Path.Combine(folder, fileName);
+            File.WriteAllText(savePath, json);
+
+            AssetDatabase.Refresh();
+            Debug.Log($"[ExcelToJson] {savePath} ë¡œ ë³€í™˜ ì™„ë£Œ");
         }
-
-        // JSON ¹®ÀÚ¿­ »ı¼º (µé¿©¾²±â ¿É¼Ç)
-        string json = JsonConvert.SerializeObject(workbook, Formatting.Indented);
-
-        // ÀúÀåÇÒ °æ·Î ÁØºñ (Assets/Resources/ExcelJsons/)
-        string folder = "Assets/Resources/ExcelJsons";
-        if (!Directory.Exists(folder))
-            Directory.CreateDirectory(folder);
-
-        // ¿øº» ÆÄÀÏ¸íÀ¸·Î .json È®ÀåÀÚ ºÙ¿© ÀúÀå
-        string fileName = Path.GetFileNameWithoutExtension(path) + ".json";
-        string assetPath = Path.Combine(folder, fileName);
-        File.WriteAllText(assetPath, json);
-
-        // ¿¡µğÅÍ¿¡ °»½Å ¾Ë¸®±â
-        AssetDatabase.Refresh();
-        Debug.Log($"[ExcelToJson] Successfully converted to {assetPath}");
+        catch (Exception ex)
+        {
+            Debug.LogError($"ì—‘ì…€ ë³€í™˜ ì¤‘ ì—ëŸ¬ ë°œìƒ: {ex.Message}");
+        }
     }
 }
