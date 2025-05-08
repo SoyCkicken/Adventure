@@ -4,8 +4,8 @@ using System;
 [System.Serializable]
 public class Event_Effect_Master
 {
-    public int Effect_ID;
+    public string Effect_ID;
     public string Effect_Description;
-    public string Effect_Type;
+    public int Effect_Type;
     public string Effect_Value;
 }

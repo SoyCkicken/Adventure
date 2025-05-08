@@ -4,7 +4,7 @@ using System;
 [System.Serializable]
 public class Item_Master
 {
-    public int Item_ID;
+    public string Item_ID;
     public string Item_NAME;
     public string Item_Option1;
     public int Option1_Value;

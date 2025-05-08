@@ -6,14 +6,14 @@ public class Mon_Master
 {
     public string Mon_ID;
     public string Mon_Name;
-    public string Mon_HP;
-    public string Mon_ATK;
-    public string Mon_Def;
-    public string Mon_Speed;
+    public int Mon_HP;
+    public int Mon_ATK;
+    public int Mon_Def;
+    public int Mon_Speed;
     public string MonPas_Effect1;
-    public string Effect1_Stat;
+    public int Effect1_Stat;
     public string MonPas_Effect2;
     public string Effect2_Stat;
-    public string Get_EXP;
-    public string Get_Soul;
+    public int Get_EXP;
+    public int Get_Soul;
 }

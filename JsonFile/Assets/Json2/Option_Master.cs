@@ -4,7 +4,7 @@ using System;
 [System.Serializable]
 public class Option_Master
 {
-    public int Option_ID;
+    public string Option_ID;
     public string Option_Description;
-    public int Effect_ID;
+    public string Effect_ID;
 }

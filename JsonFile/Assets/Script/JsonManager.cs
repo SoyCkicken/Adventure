@@ -131,6 +131,7 @@
 //}
 
 using System.Collections.Generic;
+using System.IO;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -165,17 +166,29 @@ public class JsonManager : MonoBehaviour
             if (jsonFile != null)
             {
                 string fileName = jsonFile.name;
+                Debug.Log(fileName);
                 string jsonContent = jsonFile.text;
 
                 // 파일명 기준으로 어떤 데이터인지 구분
                 if (fileName.Contains("Story_Master_Main"))
                 {
-                    // ✅ Story_Master로 파싱
-                    Wrapper<Story_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Story_Master_Main>>(WrapJsonArray(jsonContent));
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Story_Master_Main"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Story_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Story_Master_Main>>(wrappedJson);
+
                     if (wrapper != null && wrapper.items != null)
                     {
-                        storyMasterDict[fileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (Story_Master {wrapper.items.Count}개)");
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        storyMasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }
                 else if (fileName.Contains("Main_Script_Master_Main"))
@@ -194,29 +207,53 @@ public class JsonManager : MonoBehaviour
 
                     if (wrapper != null && wrapper.items != null)
                     {
-                        storyMasterScriptDict[fileName] = wrapper.items;
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        storyMasterScriptDict[cleanFileName] = wrapper.items;
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }
                 else if (fileName.Contains("Main_SuccessRate_Master_Main"))
                 {
-                    // ✅ Story_Master로 파싱
-                    Wrapper<Main_SuccessRate_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Main_SuccessRate_Master_Main>>(WrapJsonArray(jsonContent));
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Main_SuccessRate_Master_Main"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Main_SuccessRate_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Main_SuccessRate_Master_Main>>(wrappedJson);
+
                     if (wrapper != null && wrapper.items != null)
                     {
-                        storyMastersuccessRateDict[fileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (Story_Master {wrapper.items.Count}개)");
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        storyMastersuccessRateDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
+
                 }
                 else if (fileName.Contains("Story_Effect_Master"))
                 {
-                    // ✅ Story_Master로 파싱
-                    Wrapper<Story_Effect_Master> wrapper = JsonUtility.FromJson<Wrapper<Story_Effect_Master>>(WrapJsonArray(jsonContent));
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Story_Effect_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Story_Effect_Master> wrapper = JsonUtility.FromJson<Wrapper<Story_Effect_Master>>(wrappedJson);
+
                     if (wrapper != null && wrapper.items != null)
                     {
-                        storyMasterEffectDict[fileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (Story_Master {wrapper.items.Count}개)");
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        storyMasterEffectDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
+
                 }
                 else
                 {

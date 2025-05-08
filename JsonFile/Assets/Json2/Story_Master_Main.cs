@@ -8,7 +8,7 @@ public class Story_Master_Main
     public int Event_Index;
     public int Script_Index;
     public string Scene_Code;
-    public string Next_Scene;
+    public bool Next_Scene;
     public string Script_Text;
     public string Main_Effect;
     public string Choice1_Text;

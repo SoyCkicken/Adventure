@@ -60,13 +60,18 @@ public class StoryDisplayManager : MonoBehaviour
         }
         //OnStoryComplete.Invoke();
 
-         storyList = jsonManager.GetStoryMainMasters("Main_Script_Master_Main");
+         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
+        Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 데이터가 없습니다.");
             return;
         }
-        
+        Debug.Log($"불러온 스토리 데이터 개수: {storyList.Count}");
+        foreach (var item in storyList)
+        {
+            Debug.Log($"Event_Index: {item.Event_Index}, Scene_Text: {item.Script_Text}");
+        }
         // 정렬 (챕터, 이벤트, 씬 순)
         //이러면 1~9챕터 1~9이벤트 1~9씬까지 알잘딱하게 정렬해줌
         storyList = storyList.OrderBy(s => s.Chapter_Index)
@@ -90,11 +95,12 @@ public class StoryDisplayManager : MonoBehaviour
         List<Main_Script_Master_Main> scriptEvents = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
-        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Code.Trim());
+        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
         Debug.Log(Testblocks.Count);
         GameObject lastBlock = Testblocks.Count > 0
         ? Testblocks[Testblocks.Count - 1]
         : null;
+        Debug.Log(matchingScript.displayType);
         bool isImage = matchingScript.displayType == "Image";
         Debug.Log(lastBlock);
         if (matchingScript != null)
@@ -141,7 +147,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         // 여기서는 Choice1_Text, Choice2_Text, Choice3_Text가
         // 스크립트 코드(예: "MainScript_1_1_4" 또는 "MainScene_1_1_8")같이 선택지가 있을때만 작동
-        if (currentStory.Choice1_Text != "--")
+        if (currentStory.Choice1_Text != "")
         {
             string code = currentStory.Choice1_Text;
             Debug.Log(code);
@@ -149,13 +155,13 @@ public class StoryDisplayManager : MonoBehaviour
             //Debug.Log($"테스트용 문자열입니다 {display}");
             availableChoices.Add((code, display));
         }
-        if (currentStory.Choice2_Text != "--")
+        if (currentStory.Choice2_Text != "")
         {
             string code = currentStory.Choice2_Text;
             string display = GetDisplayTextFromScript(code, scriptEvents);
             availableChoices.Add((code, display));
         }
-        if (currentStory.Choice3_Text != "--")
+        if (currentStory.Choice3_Text != "")
         {
             string code = currentStory.Choice3_Text;
             string display = GetDisplayTextFromScript(code, scriptEvents);
@@ -193,9 +199,9 @@ public class StoryDisplayManager : MonoBehaviour
     void Update()
     {
         // 선택지가 없는 경우엔 (모두 "--" 이면) 화면 클릭시 자동 진행
-        if (currentStory.Choice1_Text == "--" &&
-            currentStory.Choice2_Text == "--" &&
-            currentStory.Choice3_Text == "--")
+        if (currentStory.Choice1_Text == "" &&
+            currentStory.Choice2_Text == "" &&
+            currentStory.Choice3_Text == "")
         {
             if (isTyping == false)
             {

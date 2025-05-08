@@ -10,6 +10,5 @@ public class Main_Script_Master_Main
     public string Script_Code;
     public string KOR;
     public string displayType;
-    //이벤트가 끝나는 곳인지 확인용 추가
     public string StoryBreak;
 }

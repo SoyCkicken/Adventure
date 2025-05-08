@@ -1,3 +1,14 @@
 {
-  "Armor_Master": []
+  "Armor_Master": [
+    {
+      "Armor_ID": "Armor_001",
+      "Armor_NAME": "철갑옷",
+      "Armor_DEF": 5.0,
+      "Armor_HP": 100.0,
+      "Armor_Option1": "Option_001",
+      "Option1_Value": 5.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0
+    }
+  ]
 }

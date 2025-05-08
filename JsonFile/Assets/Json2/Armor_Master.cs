@@ -4,7 +4,7 @@ using System;
 [System.Serializable]
 public class Armor_Master
 {
-    public int Armor_ID;
+    public string Armor_ID;
     public string Armor_NAME;
     public int Armor_DEF;
     public int Armor_HP;
