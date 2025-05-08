@@ -162,7 +162,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c29270714bad24eb4ece3309a3a364, type: 3}
   m_Name: 
@@ -171,6 +171,7 @@ MonoBehaviour:
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
   TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
   jsonManager: {fileID: 1190628254}
+  storyList: []
   isSkip: 0
   isTyping: 0
   SkipButton: {fileID: 1641275629}
@@ -196,6 +197,11 @@ MonoBehaviour:
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   SkipButton: {fileID: 1641275629}
   jsonManager: {fileID: 1190628254}
+  eventGroups: 
+  currentGroup: 0
+  isTyping: 0
+  isSkip: 0
+  Testblocks: []
 --- !u!1 &201274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -950,20 +956,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476dec59a5193134d9966c1a2574ece9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storyMasterFile: Story_Master_Custom_Format
-  scriptMasterMainFile: Script_Master_Main_Custom_Format
-  successRateMasterMainFile: SuccessRate_Master_Main_Custom_Format
-  randomEventsFile: RandomEvents_Master_Custom_Format
-  scriptMasterEventFile: Script_Master_Event_Custom_Format
-  successRateMasterRandomEventsFile: SuccessRate_Master_RandomEvents_Custom_Format
-  QuesteffectMasterFile: Quest_Effect_Master_Custom_Format
-  ItemWeaponMasterFile: Weapon_Master
-  ItemOptionMasterFile: Option_Master
-  ItemArmorMasterFile: Armor_Master
-  ItemMasterFile: Item_Master
-  Monster_DataFile: MonsterData
-  Monster_EffectFile: MonsterEffect
-  num: 0
 --- !u!4 &1190628255
 Transform:
   m_ObjectHideFlags: 0
@@ -1400,6 +1392,7 @@ MonoBehaviour:
   optionManager: {fileID: 2041071672}
   player: {fileID: 2006169296}
   enemy: {fileID: 0}
+  battleOver: 0
 --- !u!4 &1515041321
 Transform:
   m_ObjectHideFlags: 0

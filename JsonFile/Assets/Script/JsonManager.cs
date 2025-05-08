@@ -1,133 +1,286 @@
-using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json;
-using System.Linq;
+ï»¿//using System.Collections.Generic;
+//using UnityEngine;
+//using Newtonsoft.Json;
+//using System.Linq;
 
+//public class JsonManager : MonoBehaviour
+//{
+//    [Header("JSON File Paths (ì´ë²¤íŠ¸ ë¦¬ìŠ¤íŠ¸ì— ìˆëŠ” JsoníŒŒì¼)")]
+//    public string storyMasterFile = "TRPG_ScriptData_StoryMasterMain";
+//    public string scriptMasterMainFile = "TRPG_ScriptData_ScriptMasterMain";
+//    public string successRateMasterMainFile = "TRPG_ScriptData_SuccessRateMasterMain";
+//    public string randomEventsFile = "RandomEvents_Master_Custom_Format";
+//    public string scriptMasterEventFile = "Script_Master_Event_Custom_Format";
+//    public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format";
+//    public string MainQuesteffectMasterFile = "Quest_Effect_Master_Custom_Format";
+//    public string EventQuesteffectMasterFile = "Quest_Effect_Master_Custom_Format";
+//    [Header("JSON File Paths (ì•„ì´í…œ ëª©ë¡ JsoníŒŒì¼)")]
+//    public string ItemWeaponMasterFile = "Weapon_Master";
+//    public string ItemOptionMasterFile = "Option_Master";
+//    public string ItemArmorMasterFile = "Armor_Master";
+//    public string ItemMasterFile = "Item_Master";
+//    [Header("JSON File Paths (ëª¬ìŠ¤í„° ëª©ë¡ JsoníŒŒì¼)")]
+//    public string Monster_DataFile = "MonsterData";
+//    public string Monster_EffectFile = "MonsterEffect";
+//    public string allItemMasterArmorMasterFile;
+//    public string allItemMasterItemMasterFile;
+//    public string allItemMasterOptionMasterFile;
+//    public string allItemMasterWeaponMasterFile;
+//    [Header("JSON File Paths (ëª¬ìŠ¤í„° ëª©ë¡ JsoníŒŒì¼)")]
+//    public string Test5;
+//    public string Test6;
+//    public string Test7;
+//    public string Test8;
+//    [Header("ìŠ¤í† ë¦¬")]
+//    public List<Story_Master_Main> storyMasters;
+//    public List<Main_Script_Master_Main> scriptMasterMains;
+//    public List<Main_SuccessRate_Master_Main> successRateMasterMains;
+//    public List<Story_Effect_Master> Story_effectMasters;
+//    [Header("ì´ë²¤íŠ¸")]
+//    public List<RandomEvents_Master_Event> randomEvents;
+//    public List<Ran_Script_Master_Event> scriptMasterEvents;
+//    public List<Ran_SuccessRate_Master_Events> successRateMasterRandomEvents;
+//    public List<Event_Effect_Master> Event_effectMasters;
+//    [Header("ì•„ì´í…œ")]
+//    public List<Weapon_Master> Weapon_Masters;
+//    public List<Option_Master> Item_Options;
+//    public List<Armor_Master> Armor_Master;
+//    public List<Item_Master> Item_Master;
+//    [Header("ëª¬ìŠ¤í„°")]
+//    public List<Mon_Master> Monster_Data;
+//    public List<Mon_Effect_Master> Monster_Effect;
+//    //ë©”ì¸ ìŠ¤í† ë¦¬ ë”•ì…”ë„ˆë¦¬ ë§Œë“¬
+//    //private Dictionary<string, List<Story_Master>> MainStoryDictionary;
+//    public int num = 0;
+//    private void Awake()
+//    {
+//        //ì œì„ìŠ¤íŒŒì¼ ë¡œë“œ
+//        LoadAllJson();
+//        //ì œì„ìŠ¤ íŒŒì¼ ì¶œë ¥
+//        PrintAllJsonData();
+
+//        //Debug.Log(MainStoryDictionary);
+//    }
+
+//    void LoadAllJson()
+//    {
+//        storyMasters = LoadJsonFile<Story_Master_Main>(storyMasterFile);
+//        scriptMasterMains = LoadJsonFile<Main_Script_Master_Main>(scriptMasterMainFile);
+//        successRateMasterMains = LoadJsonFile<Main_SuccessRate_Master_Main>(successRateMasterMainFile);
+//        randomEvents = LoadJsonFile<RandomEvents_Master_Event>(randomEventsFile);
+//        scriptMasterEvents = LoadJsonFile<Ran_Script_Master_Event>(scriptMasterEventFile);
+//        successRateMasterRandomEvents = LoadJsonFile<Ran_SuccessRate_Master_Events>(successRateMasterRandomEventsFile);
+//        Story_effectMasters = LoadJsonFile<Story_Effect_Master>(MainQuesteffectMasterFile);
+//        Event_effectMasters = LoadJsonFile<Event_Effect_Master>(EventQuesteffectMasterFile);
+//        Weapon_Masters = LoadJsonFile<Weapon_Master>(ItemWeaponMasterFile);
+//        Item_Options = LoadJsonFile<Option_Master>(ItemOptionMasterFile);
+//        Armor_Master = LoadJsonFile<Armor_Master>(ItemArmorMasterFile);
+//        Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
+//        Monster_Data = LoadJsonFile<Mon_Master>(Monster_DataFile);
+//        Monster_Effect = LoadJsonFile<Mon_Effect_Master>(Monster_EffectFile);
+
+
+//        Debug.Log("JSON íŒŒì¼ ë¡œë”© ì™„ë£Œ");
+//        //ì´ëŸ¬ë©´ ë”•ì…”ë„ˆë¦¬ í•˜ë‚˜ ë§Œë“¬
+//        //í‚¤ë¡œ ì”¬ ì½”ë“œë¥¼ ë„£ê³  ê°’ìœ¼ë¡œ í•´ë‹¹ ìŠ¤í† ë¦¬ë¥¼ ë„£ëŠ”ë‹¤
+//        //MainStoryDictionary = storyMasters.GroupBy(e => e.Scene_Code).ToDictionary(g => g.Key, g => g.ToList());
+//    }
+
+//    List<T> LoadJsonFile<T>(string fileName)
+//    {
+
+//        Debug.Log(fileName);
+//        num++;
+//        Debug.Log(num);
+//        TextAsset jsonAsset = Resources.Load<TextAsset>("Events/" + fileName);
+//        if (jsonAsset == null)
+//        {
+//            Debug.LogError("íŒŒì¼ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: Events/" + fileName);
+//            return new List<T>();
+//        }
+//        string jsonContent = jsonAsset.text;
+//        List<T> list = JsonConvert.DeserializeObject<List<T>>(jsonContent);
+//        //Debug.Log($"íŒŒì¼ ë¶ˆëŸ¬ì˜¤ê¸° ì„±ê³µ{list}");
+//        return list;
+//    }
+//    public void PrintAllJsonData()
+//    {
+//        PrintList(storyMasters, "Story Masters");
+//        PrintList(scriptMasterMains, "Script Master Mains");
+//        PrintList(successRateMasterMains, "Success Rate Master Mains");
+//        PrintList(randomEvents, "Random Events");
+//        PrintList(scriptMasterEvents, "Script Master Events");
+//        PrintList(successRateMasterRandomEvents, "Success Rate Master Random Events");
+//        PrintList(Story_effectMasters, "Effect_Master_Custom_Format");
+//        PrintList(Event_effectMasters, "Effect_Master_Custom_Format");
+//        PrintList(Weapon_Masters, "Weapon_Master");
+//        PrintList(Item_Options, "Option_Master");
+//    }
+
+//    // ì œë„¤ë¦­ ë©”ì„œë“œë¥¼ ì‚¬ìš©í•´ ê° ë¦¬ìŠ¤íŠ¸ì˜ ë°ì´í„°ë¥¼ ìˆœíšŒí•˜ë©° ì¶œë ¥
+//    private void PrintList<T>(List<T> list, string listName)
+//    {
+//        //Debug.Log($"---- {listName} ----");
+//        foreach (T item in list)
+//        {
+//            // Newtonsoft.Jsonì„ ì‚¬ìš©í•´ ê°ì²´ë¥¼ í¬ë§·ëœ JSON ë¬¸ìì—´ë¡œ ë³€í™˜ í›„ ì¶œë ¥
+//            string jsonStr = JsonConvert.SerializeObject(item, Formatting.Indented);
+//            //Debug.Log(jsonStr);
+//        }
+//    }
+//}
+
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+
+/// <summary>
+/// ëª¨ë“  JSON íŒŒì¼ ìë™ ë¡œë“œ ë° íŒŒì‹± (Resources/ExcelJsons í´ë” ê¸°ì¤€)
+/// </summary>
 public class JsonManager : MonoBehaviour
 {
-    [Header("JSON File Paths (ÀÌº¥Æ® ¸®½ºÆ®¿¡ ÀÖ´Â JsonÆÄÀÏ)")]
-    public string storyMasterFile = "Story_Master_Custom_Format";
-    public string scriptMasterMainFile = "Script_Master_Main_Custom_Format";
-    public string successRateMasterMainFile = "SuccessRate_Master_Main_Custom_Format";
-    public string randomEventsFile = "RandomEvents_Master_Custom_Format";
-    public string scriptMasterEventFile = "Script_Master_Event_Custom_Format";
-    public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format";
-    public string QuesteffectMasterFile = "Quest_Effect_Master_Custom_Format";
-    [Header("JSON File Paths (¾ÆÀÌÅÛ ¸ñ·Ï JsonÆÄÀÏ)")]
-    public string ItemWeaponMasterFile = "Weapon_Master";
-    public string ItemOptionMasterFile = "Option_Master";
-    public string ItemArmorMasterFile = "Armor_Master";
-    public string ItemMasterFile = "Item_Master";
-    [Header("JSON File Paths (¸ó½ºÅÍ ¸ñ·Ï JsonÆÄÀÏ)")]
-    public string Monster_DataFile = "MonsterData";
-    public string Monster_EffectFile = "MonsterEffect";
-    public string allItemMasterArmorMasterFile;
-    public string allItemMasterItemMasterFile;
-    public string allItemMasterOptionMasterFile;
-    public string allItemMasterWeaponMasterFile;
-    [Header("JSON File Paths (¸ó½ºÅÍ ¸ñ·Ï JsonÆÄÀÏ)")]
-    public string Test5;
-    public string Test6;
-    public string Test7;
-    public string Test8;
-    [Header("Loaded Data")]
-    public List<Story_Master> storyMasters;
-    public List<Script_Master_Main> scriptMasterMains;
-    public List<SuccessRate_Master_Main> successRateMasterMains;
-    public List<RandomEvent> randomEvents;
-    public List<Script_Master_Event> scriptMasterEvents;
-    public List<SuccessRate_Master_RandomEvents> successRateMasterRandomEvents;
-    public List<Effect_Master> effectMasters;
-    public List<Weapon_Master> Weapon_Masters;
-    public List<Option_Master> Item_Options;
-    public List<Armor_Master> Armor_Master;
-    public List<Item_Master> Item_Master;
-    public List<MonsterData> Monster_Data;
-    public List<MonsterEffect> Monster_Effect;
-    public List<AllItemMasterArmorMasterData> allItemMasterArmorMasterDatas;
-    public List<AllItemMasterItemMasterData> allItemMasterItemMasterDatas;
-    public List<AllItemMasterOptionMasterData> allItemMasterOptionMasterDatas;
-    public List<AllItemMasterWeaponMasterData> allItemMasterWeaponMasterDatas;
-    //¸ŞÀÎ ½ºÅä¸® µñ¼Å³Ê¸® ¸¸µë
-    //private Dictionary<string, List<Story_Master>> MainStoryDictionary;
-    public int num = 0;
-    private void Awake()
+    // íŒŒì¼ëª… â†’ íŒŒì‹±ëœ List<Story_Master> ì €ì¥
+    private Dictionary<string, List<Story_Master_Main>> storyMasterDict = new Dictionary<string, List<Story_Master_Main>>();
+    private Dictionary<string, List<Main_Script_Master_Main>> storyMasterScriptDict = new Dictionary<string, List<Main_Script_Master_Main>>();
+    private Dictionary<string, List<Main_SuccessRate_Master_Main>> storyMastersuccessRateDict = new Dictionary<string, List<Main_SuccessRate_Master_Main>>();
+    private Dictionary<string, List<Story_Effect_Master>> storyMasterEffectDict = new Dictionary<string, List<Story_Effect_Master>>();
+    // íŒŒì¼ëª… â†’ íŒŒì‹±ëœ List<RandomEvent> ì €ì¥ (í•„ìš” ì‹œ ì¶”ê°€)
+
+    void Awake()
     {
-        //Á¦ÀÓ½ºÆÄÀÏ ·Îµå
-        LoadAllJson();
-        //Á¦ÀÓ½º ÆÄÀÏ Ãâ·Â
-        PrintAllJsonData();
-
-        //Debug.Log(MainStoryDictionary);
-    }
-
-    void LoadAllJson()
-    {
-        storyMasters = LoadJsonFile<Story_Master>(storyMasterFile);
-        scriptMasterMains = LoadJsonFile<Script_Master_Main>(scriptMasterMainFile);
-        successRateMasterMains = LoadJsonFile<SuccessRate_Master_Main>(successRateMasterMainFile);
-        randomEvents = LoadJsonFile<RandomEvent>(randomEventsFile);
-        scriptMasterEvents = LoadJsonFile<Script_Master_Event>(scriptMasterEventFile);
-        successRateMasterRandomEvents = LoadJsonFile<SuccessRate_Master_RandomEvents>(successRateMasterRandomEventsFile);
-        effectMasters = LoadJsonFile<Effect_Master>(QuesteffectMasterFile);
-        Weapon_Masters = LoadJsonFile<Weapon_Master>(ItemWeaponMasterFile);
-        Item_Options = LoadJsonFile<Option_Master>(ItemOptionMasterFile);
-        Armor_Master = LoadJsonFile<Armor_Master>(ItemArmorMasterFile);
-        Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
-        Monster_Data = LoadJsonFile<MonsterData>(Monster_DataFile);
-        Monster_Effect = LoadJsonFile<MonsterEffect>(Monster_EffectFile);
-        allItemMasterArmorMasterDatas = LoadJsonFile<AllItemMasterArmorMasterData>(Test5);
-        allItemMasterItemMasterDatas = LoadJsonFile<AllItemMasterItemMasterData>(Test6);
-        allItemMasterOptionMasterDatas = LoadJsonFile<AllItemMasterOptionMasterData>(Test7);
-        allItemMasterWeaponMasterDatas = LoadJsonFile<AllItemMasterWeaponMasterData>(Test8);
-
-
-        Debug.Log("JSON ÆÄÀÏ ·Îµù ¿Ï·á");
-        //ÀÌ·¯¸é µñ¼Å³Ê¸® ÇÏ³ª ¸¸µë
-        //Å°·Î ¾À ÄÚµå¸¦ ³Ö°í °ªÀ¸·Î ÇØ´ç ½ºÅä¸®¸¦ ³Ö´Â´Ù
-        //MainStoryDictionary = storyMasters.GroupBy(e => e.Scene_Code).ToDictionary(g => g.Key, g => g.ToList());
-    }
-
-    List<T> LoadJsonFile<T>(string fileName)
-    {
-        
-        Debug.Log(fileName);
-        num++;
-        Debug.Log(num);
-        TextAsset jsonAsset = Resources.Load<TextAsset>("Events/" + fileName);
-        if (jsonAsset == null)
+        LoadAllJsonFiles();
+        foreach (var key in storyMasterScriptDict.Keys)
         {
-            Debug.LogError("ÆÄÀÏÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù: Events/" + fileName);
-            return new List<T>();
-        }
-        string jsonContent = jsonAsset.text;
-        List<T> list = JsonConvert.DeserializeObject<List<T>>(jsonContent);
-        //Debug.Log($"ÆÄÀÏ ºÒ·¯¿À±â ¼º°ø{list}");
-        return list;
-    }
-    public void PrintAllJsonData()
-    {
-        PrintList(storyMasters, "Story Masters");
-        PrintList(scriptMasterMains, "Script Master Mains");
-        PrintList(successRateMasterMains, "Success Rate Master Mains");
-        PrintList(randomEvents, "Random Events");
-        PrintList(scriptMasterEvents, "Script Master Events");
-        PrintList(successRateMasterRandomEvents, "Success Rate Master Random Events");
-        PrintList(effectMasters, "Effect_Master_Custom_Format");
-        PrintList(Weapon_Masters, "Weapon_Master");
-        PrintList(effectMasters, "Option_Master");
-    }
-
-    // Á¦³×¸¯ ¸Ş¼­µå¸¦ »ç¿ëÇØ °¢ ¸®½ºÆ®ÀÇ µ¥ÀÌÅÍ¸¦ ¼øÈ¸ÇÏ¸ç Ãâ·Â
-    private void PrintList<T>(List<T> list, string listName)
-    {
-        //Debug.Log($"---- {listName} ----");
-        foreach (T item in list)
-        {
-            // Newtonsoft.JsonÀ» »ç¿ëÇØ °´Ã¼¸¦ Æ÷¸ËµÈ JSON ¹®ÀÚ¿­·Î º¯È¯ ÈÄ Ãâ·Â
-            string jsonStr = JsonConvert.SerializeObject(item, Formatting.Indented);
-           //Debug.Log(jsonStr);
+            Debug.Log($"ë“±ë¡ëœ í‚¤: {key}");
         }
     }
+
+    private void LoadAllJsonFiles()
+    {
+        TextAsset[] jsonFiles = Resources.LoadAll<TextAsset>("Events2");
+
+        foreach (TextAsset jsonFile in jsonFiles)
+        {
+            if (jsonFile != null)
+            {
+                string fileName = jsonFile.name;
+                string jsonContent = jsonFile.text;
+
+                // íŒŒì¼ëª… ê¸°ì¤€ìœ¼ë¡œ ì–´ë–¤ ë°ì´í„°ì¸ì§€ êµ¬ë¶„
+                if (fileName.Contains("Story_Master_Main"))
+                {
+                    // âœ… Story_Masterë¡œ íŒŒì‹±
+                    Wrapper<Story_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Story_Master_Main>>(WrapJsonArray(jsonContent));
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        storyMasterDict[fileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json ë¡œë“œ ì™„ë£Œ (Story_Master {wrapper.items.Count}ê°œ)");
+                    }
+                }
+                else if (fileName.Contains("Main_Script_Master_Main"))
+                {
+                    // âœ… jsonContentëŠ” ì „ì²´ JSON ë¬¸ìì—´
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // âœ… ë°°ì—´ ë¶€ë¶„ë§Œ ì¶”ì¶œ
+                    string arrayStr = jObj["Main_Script_Master_Main"].ToString();
+
+                    // âœ… ë°°ì—´ì„ itemsë¡œ ê°ì‹¸ê¸°
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // âœ… íŒŒì‹±
+                    Wrapper<Main_Script_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Main_Script_Master_Main>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        storyMasterScriptDict[fileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json ë¡œë“œ ì™„ë£Œ (ë°ì´í„° {wrapper.items.Count}ê°œ)");
+                    }
+                }
+                else if (fileName.Contains("Main_SuccessRate_Master_Main"))
+                {
+                    // âœ… Story_Masterë¡œ íŒŒì‹±
+                    Wrapper<Main_SuccessRate_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Main_SuccessRate_Master_Main>>(WrapJsonArray(jsonContent));
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        storyMastersuccessRateDict[fileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json ë¡œë“œ ì™„ë£Œ (Story_Master {wrapper.items.Count}ê°œ)");
+                    }
+                }
+                else if (fileName.Contains("Story_Effect_Master"))
+                {
+                    // âœ… Story_Masterë¡œ íŒŒì‹±
+                    Wrapper<Story_Effect_Master> wrapper = JsonUtility.FromJson<Wrapper<Story_Effect_Master>>(WrapJsonArray(jsonContent));
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        storyMasterEffectDict[fileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json ë¡œë“œ ì™„ë£Œ (Story_Master {wrapper.items.Count}ê°œ)");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"[JsonManager] {fileName}.json ì€ ì¸ì‹ë˜ì§€ ì•ŠëŠ” í˜•ì‹ì…ë‹ˆë‹¤.");
+                }
+            }
+
+        }
+
+    }
+
+    // JSON ë°°ì—´ì„ JsonUtility íŒŒì‹±ìš© ê°ì²´ë¡œ ê°ì‹¸ì£¼ëŠ” í•¨ìˆ˜
+    private string WrapJsonArray(string jsonArray)
+    {
+        return "{\"items\":" + jsonArray + "}";
+    }
+
+    // íŠ¹ì • íŒŒì¼ëª…ìœ¼ë¡œ Story_Master ë¦¬ìŠ¤íŠ¸ ê°€ì ¸ì˜¤ê¸°
+    public List<Story_Master_Main> GetStoryMainMasters(string fileName)
+    {
+        if (storyMasterDict.TryGetValue(fileName, out List<Story_Master_Main> list))
+        {
+            Debug.Log($"í˜¸ì¶œì´ ë˜ì—ˆìŠµë‹ˆë‹¤!!");
+            Debug.Log(list);
+            return list;
+        }
+            
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
+        return null;
+    }
+    public List<Main_Script_Master_Main> GetStoryMainScriptMasters(string fileName)
+    {
+        if (storyMasterScriptDict.TryGetValue(fileName, out List<Main_Script_Master_Main> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
+        return null;
+    }
+    public List<Main_SuccessRate_Master_Main> GetStoryMainSuccessRateMasters(string fileName)
+    {
+        if (storyMastersuccessRateDict.TryGetValue(fileName, out List<Main_SuccessRate_Master_Main> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
+        return null;
+    }
+    public List<Story_Effect_Master> GetStoryMainEffectMasters(string fileName)
+    {
+        if (storyMasterEffectDict.TryGetValue(fileName, out List<Story_Effect_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
+        return null;
+    }
+
+    // ì „ì²´ ë¡œë“œëœ Story_Master íŒŒì¼ëª… ë¦¬ìŠ¤íŠ¸
+    public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);
 }
+
+/// <summary>
+/// JsonUtilityë¡œ List<T> íŒŒì‹± ì‹œ í•„ìš”í•œ Wrapper í´ë˜ìŠ¤
+/// </summary>
+[System.Serializable]
+public class Wrapper<T>
+{
+    public List<T> items;
+}
+
+
 

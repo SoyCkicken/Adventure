@@ -44,7 +44,7 @@ namespace MyGame
 
             armor += Armor.Armor_DEF;
             Health += Armor.Armor_HP;
-            Debug.Log($"[{charaterName}] '{Armor.Armor_Name}' 장착 → 방어력 +{Armor.Armor_DEF}, 체력 +{Armor.Armor_HP} → 최종 방어력 {armor}, 체력 {Health}");
+            Debug.Log($"[{charaterName}] '{Armor.Armor_NAME}' 장착 → 방어력 +{Armor.Armor_DEF}, 체력 +{Armor.Armor_HP} → 최종 방어력 {armor}, 체력 {Health}");
         }
 
         public void AddCritBuff(string buffID, int bonusPercent)

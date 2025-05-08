@@ -18,8 +18,8 @@ public class StoryDisplayManager : MonoBehaviour
     //텍스트 프리팹 생성 예정
     public GameObject TextPrefab;
     public JsonManager jsonManager;
-    public List<Story_Master> storyList;
-    private Story_Master currentStory;
+    public List<Story_Master_Main> storyList;
+    private Story_Master_Main currentStory;
     public bool isSkip = false;
     public bool isTyping;
     public GameObject SkipButton;
@@ -32,7 +32,7 @@ public class StoryDisplayManager : MonoBehaviour
     public List<GameObject> Testblocks = new List<GameObject>();
     //마지막 블록이 무엇인지 확인용
     GameObject lastBlock;
-    private Action<Script_Master_Main> onComplete;
+    private Action<Main_Script_Master_Main> onComplete;
 
 
     //public void DisplayNode(Script_Master_Main node, Action<Script_Master_Main> onComplete)
@@ -60,7 +60,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
         //OnStoryComplete.Invoke();
 
-         storyList = jsonManager.storyMasters;
+         storyList = jsonManager.GetStoryMainMasters("Main_Script_Master_Main");
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 데이터가 없습니다.");
@@ -71,7 +71,7 @@ public class StoryDisplayManager : MonoBehaviour
         //이러면 1~9챕터 1~9이벤트 1~9씬까지 알잘딱하게 정렬해줌
         storyList = storyList.OrderBy(s => s.Chapter_Index)
                              .ThenBy(s => s.Event_Index)
-                             .ThenBy(s => s.Scenc_Index)
+                             .ThenBy(s => s.Script_Index)
                              .ToList();
 
         currentStory = storyList[0];
@@ -87,10 +87,10 @@ public class StoryDisplayManager : MonoBehaviour
     {
         //https://learn.microsoft.com/ko-kr/dotnet/api/system.text.stringbuilder?view=net-8.0
         // Script_Master_Main 데이터 불러오기
-        List<Script_Master_Main> scriptEvents = jsonManager.scriptMasterMains;
+        List<Main_Script_Master_Main> scriptEvents = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
-        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Text.Trim());
+        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Code.Trim());
         Debug.Log(Testblocks.Count);
         GameObject lastBlock = Testblocks.Count > 0
         ? Testblocks[Testblocks.Count - 1]
@@ -180,7 +180,7 @@ public class StoryDisplayManager : MonoBehaviour
     }
 
     // Script_Master_Main 리스트에서 스크립트 코드(code)에 해당하는 KOR 값을 반환 (없으면 code 자체)
-    private string GetDisplayTextFromScript(string code, List<Script_Master_Main> scriptEvents)
+    private string GetDisplayTextFromScript(string code, List<Main_Script_Master_Main> scriptEvents)
     {
         var match = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == code.Trim());
         Debug.Log(match);
@@ -213,7 +213,7 @@ public class StoryDisplayManager : MonoBehaviour
             newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
         }
 
-        Story_Master nextStory = FindStoryBySceneCode(newSceneCode);
+        Story_Master_Main nextStory = FindStoryBySceneCode(newSceneCode);
         if (nextStory != null)
         {
             currentStory = nextStory;
@@ -227,16 +227,16 @@ public class StoryDisplayManager : MonoBehaviour
 
     void NextScene()
     {
-        List<Script_Master_Main> scriptEvents = jsonManager.scriptMasterMains;
+        List<Main_Script_Master_Main> scriptEvents = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
-        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Scene_Text.Trim());
+        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
         //Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.StoryBreak}");
 
-        Story_Master nextStory = storyList.FirstOrDefault(s =>
+        Story_Master_Main nextStory = storyList.FirstOrDefault(s =>
             s.Chapter_Index == currentStory.Chapter_Index &&
             s.Event_Index == currentStory.Event_Index &&
-            s.Scenc_Index == currentStory.Scenc_Index + 1);
+            s.Script_Index == currentStory.Script_Index + 1);
 
 
         if (nextStory == null || matchingScript.StoryBreak == "Break")
@@ -251,19 +251,19 @@ public class StoryDisplayManager : MonoBehaviour
         }
     }
 
-    Story_Master FindStoryBySceneCode(string sceneCode)
+    Story_Master_Main FindStoryBySceneCode(string sceneCode)
     {
         return storyList.FirstOrDefault(s => s.Scene_Code.Trim() == sceneCode.Trim());
     }
     public IEnumerator TestdebugLog(string temp)
     {
-        List<Story_Master> scriptEvents = jsonManager.storyMasters;
-        List<Script_Master_Main> script_Master_Mains = jsonManager.scriptMasterMains;
+        List<Story_Master_Main> scriptEvents = jsonManager.GetStoryMainMasters("Story_Master_Main");
+        List<Main_Script_Master_Main> script_Master_Mains = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         //Debug.Log($"{script_Master_Mains}가 있는지 확인");
-        foreach (Story_Master ev in scriptEvents)
+        foreach (Story_Master_Main ev in scriptEvents)
         {
 
-            foreach (Script_Master_Main sm in script_Master_Mains)
+            foreach (Main_Script_Master_Main sm in script_Master_Mains)
             {
                 string temp2 = sm.Script_Code;//
                 //Debug.Log(temp2);

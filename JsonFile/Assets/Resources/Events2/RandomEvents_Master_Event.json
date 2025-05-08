@@ -1,0 +1,84 @@
+{
+  "RandomEvents_Master_Event": [
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 1.0,
+      "Random_Event_ID": "EventScene_1_1",
+      "Chapter_Index": 1.0,
+      "Event_Text": "EventScript_1_1",
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": "-"
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 2.0,
+      "Random_Event_ID": "EventScene_1_2",
+      "Chapter_Index": 1.0,
+      "Event_Text": "EventScript_1_2",
+      "Choice1_Text": "EventScript_1_3",
+      "Choice2_Text": "EventScript_1_4",
+      "Choice3_Text": "-"
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 3.0,
+      "Random_Event_ID": "EventScene_1_3",
+      "Chapter_Index": 1.0,
+      "Event_Text": null,
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 4.0,
+      "Random_Event_ID": "EventScene_1_4",
+      "Chapter_Index": 1.0,
+      "Event_Text": null,
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 5.0,
+      "Random_Event_ID": "EventScene_1_5",
+      "Chapter_Index": 1.0,
+      "Event_Text": null,
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 6.0,
+      "Random_Event_ID": "EventScene_1_6",
+      "Chapter_Index": 1.0,
+      "Event_Text": null,
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 7.0,
+      "Random_Event_ID": "EventScene_1_7",
+      "Chapter_Index": 1.0,
+      "Event_Text": null,
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 8.0,
+      "Random_Event_ID": "EventScene_1_8",
+      "Chapter_Index": 1.0,
+      "Event_Text": null,
+      "Choice1_Text": null,
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    }
+  ]
+}

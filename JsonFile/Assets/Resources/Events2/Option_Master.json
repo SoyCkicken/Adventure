@@ -1,0 +1,29 @@
+{
+  "Option_Master": [
+    {
+      "Option_ID": "Option_001",
+      "Option_Description": "출혈 확률",
+      "Effect_ID": "Effect_Bleed"
+    },
+    {
+      "Option_ID": "Option_002",
+      "Option_Description": "화염 속성 피해",
+      "Effect_ID": "Effect_Fire"
+    },
+    {
+      "Option_ID": "Option_003",
+      "Option_Description": "크리티컬 확률 증가",
+      "Effect_ID": "Effect_Critical"
+    },
+    {
+      "Option_ID": "Option_004",
+      "Option_Description": "마법 공격력 증가",
+      "Effect_ID": "Effect_MagicBoost"
+    },
+    {
+      "Option_ID": "Option_005",
+      "Option_Description": "방어 무시",
+      "Effect_ID": "Effect_Penetration"
+    }
+  ]
+}
