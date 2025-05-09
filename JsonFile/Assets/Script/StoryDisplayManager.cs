@@ -67,11 +67,11 @@ public class StoryDisplayManager : MonoBehaviour
             Debug.LogError("Story_Master 데이터가 없습니다.");
             return;
         }
-        Debug.Log($"불러온 스토리 데이터 개수: {storyList.Count}");
-        foreach (var item in storyList)
-        {
-            Debug.Log($"Event_Index: {item.Event_Index}, Scene_Text: {item.Script_Text}");
-        }
+        //Debug.Log($"불러온 스토리 데이터 개수: {storyList.Count}");
+        //foreach (var item in storyList)
+        //{
+        //    Debug.Log($"Event_Index: {item.Event_Index}, Scene_Text: {item.Script_Text}");
+        //}
         // 정렬 (챕터, 이벤트, 씬 순)
         //이러면 1~9챕터 1~9이벤트 1~9씬까지 알잘딱하게 정렬해줌
         storyList = storyList.OrderBy(s => s.Chapter_Index)

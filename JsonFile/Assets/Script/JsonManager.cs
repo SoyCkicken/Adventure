@@ -1,136 +1,4 @@
-﻿//using System.Collections.Generic;
-//using UnityEngine;
-//using Newtonsoft.Json;
-//using System.Linq;
-
-//public class JsonManager : MonoBehaviour
-//{
-//    [Header("JSON File Paths (이벤트 리스트에 있는 Json파일)")]
-//    public string storyMasterFile = "TRPG_ScriptData_StoryMasterMain";
-//    public string scriptMasterMainFile = "TRPG_ScriptData_ScriptMasterMain";
-//    public string successRateMasterMainFile = "TRPG_ScriptData_SuccessRateMasterMain";
-//    public string randomEventsFile = "RandomEvents_Master_Custom_Format";
-//    public string scriptMasterEventFile = "Script_Master_Event_Custom_Format";
-//    public string successRateMasterRandomEventsFile = "SuccessRate_Master_RandomEvents_Custom_Format";
-//    public string MainQuesteffectMasterFile = "Quest_Effect_Master_Custom_Format";
-//    public string EventQuesteffectMasterFile = "Quest_Effect_Master_Custom_Format";
-//    [Header("JSON File Paths (아이템 목록 Json파일)")]
-//    public string ItemWeaponMasterFile = "Weapon_Master";
-//    public string ItemOptionMasterFile = "Option_Master";
-//    public string ItemArmorMasterFile = "Armor_Master";
-//    public string ItemMasterFile = "Item_Master";
-//    [Header("JSON File Paths (몬스터 목록 Json파일)")]
-//    public string Monster_DataFile = "MonsterData";
-//    public string Monster_EffectFile = "MonsterEffect";
-//    public string allItemMasterArmorMasterFile;
-//    public string allItemMasterItemMasterFile;
-//    public string allItemMasterOptionMasterFile;
-//    public string allItemMasterWeaponMasterFile;
-//    [Header("JSON File Paths (몬스터 목록 Json파일)")]
-//    public string Test5;
-//    public string Test6;
-//    public string Test7;
-//    public string Test8;
-//    [Header("스토리")]
-//    public List<Story_Master_Main> storyMasters;
-//    public List<Main_Script_Master_Main> scriptMasterMains;
-//    public List<Main_SuccessRate_Master_Main> successRateMasterMains;
-//    public List<Story_Effect_Master> Story_effectMasters;
-//    [Header("이벤트")]
-//    public List<RandomEvents_Master_Event> randomEvents;
-//    public List<Ran_Script_Master_Event> scriptMasterEvents;
-//    public List<Ran_SuccessRate_Master_Events> successRateMasterRandomEvents;
-//    public List<Event_Effect_Master> Event_effectMasters;
-//    [Header("아이템")]
-//    public List<Weapon_Master> Weapon_Masters;
-//    public List<Option_Master> Item_Options;
-//    public List<Armor_Master> Armor_Master;
-//    public List<Item_Master> Item_Master;
-//    [Header("몬스터")]
-//    public List<Mon_Master> Monster_Data;
-//    public List<Mon_Effect_Master> Monster_Effect;
-//    //메인 스토리 딕셔너리 만듬
-//    //private Dictionary<string, List<Story_Master>> MainStoryDictionary;
-//    public int num = 0;
-//    private void Awake()
-//    {
-//        //제임스파일 로드
-//        LoadAllJson();
-//        //제임스 파일 출력
-//        PrintAllJsonData();
-
-//        //Debug.Log(MainStoryDictionary);
-//    }
-
-//    void LoadAllJson()
-//    {
-//        storyMasters = LoadJsonFile<Story_Master_Main>(storyMasterFile);
-//        scriptMasterMains = LoadJsonFile<Main_Script_Master_Main>(scriptMasterMainFile);
-//        successRateMasterMains = LoadJsonFile<Main_SuccessRate_Master_Main>(successRateMasterMainFile);
-//        randomEvents = LoadJsonFile<RandomEvents_Master_Event>(randomEventsFile);
-//        scriptMasterEvents = LoadJsonFile<Ran_Script_Master_Event>(scriptMasterEventFile);
-//        successRateMasterRandomEvents = LoadJsonFile<Ran_SuccessRate_Master_Events>(successRateMasterRandomEventsFile);
-//        Story_effectMasters = LoadJsonFile<Story_Effect_Master>(MainQuesteffectMasterFile);
-//        Event_effectMasters = LoadJsonFile<Event_Effect_Master>(EventQuesteffectMasterFile);
-//        Weapon_Masters = LoadJsonFile<Weapon_Master>(ItemWeaponMasterFile);
-//        Item_Options = LoadJsonFile<Option_Master>(ItemOptionMasterFile);
-//        Armor_Master = LoadJsonFile<Armor_Master>(ItemArmorMasterFile);
-//        Item_Master = LoadJsonFile<Item_Master>(ItemMasterFile);
-//        Monster_Data = LoadJsonFile<Mon_Master>(Monster_DataFile);
-//        Monster_Effect = LoadJsonFile<Mon_Effect_Master>(Monster_EffectFile);
-
-
-//        Debug.Log("JSON 파일 로딩 완료");
-//        //이러면 딕셔너리 하나 만듬
-//        //키로 씬 코드를 넣고 값으로 해당 스토리를 넣는다
-//        //MainStoryDictionary = storyMasters.GroupBy(e => e.Scene_Code).ToDictionary(g => g.Key, g => g.ToList());
-//    }
-
-//    List<T> LoadJsonFile<T>(string fileName)
-//    {
-
-//        Debug.Log(fileName);
-//        num++;
-//        Debug.Log(num);
-//        TextAsset jsonAsset = Resources.Load<TextAsset>("Events/" + fileName);
-//        if (jsonAsset == null)
-//        {
-//            Debug.LogError("파일을 찾을 수 없습니다: Events/" + fileName);
-//            return new List<T>();
-//        }
-//        string jsonContent = jsonAsset.text;
-//        List<T> list = JsonConvert.DeserializeObject<List<T>>(jsonContent);
-//        //Debug.Log($"파일 불러오기 성공{list}");
-//        return list;
-//    }
-//    public void PrintAllJsonData()
-//    {
-//        PrintList(storyMasters, "Story Masters");
-//        PrintList(scriptMasterMains, "Script Master Mains");
-//        PrintList(successRateMasterMains, "Success Rate Master Mains");
-//        PrintList(randomEvents, "Random Events");
-//        PrintList(scriptMasterEvents, "Script Master Events");
-//        PrintList(successRateMasterRandomEvents, "Success Rate Master Random Events");
-//        PrintList(Story_effectMasters, "Effect_Master_Custom_Format");
-//        PrintList(Event_effectMasters, "Effect_Master_Custom_Format");
-//        PrintList(Weapon_Masters, "Weapon_Master");
-//        PrintList(Item_Options, "Option_Master");
-//    }
-
-//    // 제네릭 메서드를 사용해 각 리스트의 데이터를 순회하며 출력
-//    private void PrintList<T>(List<T> list, string listName)
-//    {
-//        //Debug.Log($"---- {listName} ----");
-//        foreach (T item in list)
-//        {
-//            // Newtonsoft.Json을 사용해 객체를 포맷된 JSON 문자열로 변환 후 출력
-//            string jsonStr = JsonConvert.SerializeObject(item, Formatting.Indented);
-//            //Debug.Log(jsonStr);
-//        }
-//    }
-//}
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -142,12 +10,25 @@ using UnityEngine;
 public class JsonManager : MonoBehaviour
 {
     // 파일명 → 파싱된 List<Story_Master> 저장
+    //메인 스토리 관련해서 추가 된 딕셔너리
     private Dictionary<string, List<Story_Master_Main>> storyMasterDict = new Dictionary<string, List<Story_Master_Main>>();
     private Dictionary<string, List<Main_Script_Master_Main>> storyMasterScriptDict = new Dictionary<string, List<Main_Script_Master_Main>>();
     private Dictionary<string, List<Main_SuccessRate_Master_Main>> storyMastersuccessRateDict = new Dictionary<string, List<Main_SuccessRate_Master_Main>>();
     private Dictionary<string, List<Story_Effect_Master>> storyMasterEffectDict = new Dictionary<string, List<Story_Effect_Master>>();
     // 파일명 → 파싱된 List<RandomEvent> 저장 (필요 시 추가)
+    private Dictionary<string, List<RandomEvents_Master_Event>> RandomMasterDict = new Dictionary<string, List<RandomEvents_Master_Event>>();
+    private Dictionary<string, List<Ran_Script_Master_Event>> RandomMasterScriptDict = new Dictionary<string, List<Ran_Script_Master_Event>>();
+    private Dictionary<string, List<Ran_SuccessRate_Master_Events>> RandomMasterSuccessRateDict = new Dictionary<string, List<Ran_SuccessRate_Master_Events>>();
+    private Dictionary<string, List<Event_Effect_Master>> RandomMasterEffectDict = new Dictionary<string, List<Event_Effect_Master>>();
+    //아이템 파싱
+    private Dictionary<string, List<Weapon_Master>> WeaponMasterDict = new Dictionary<string, List<Weapon_Master>>();
+    private Dictionary<string, List<Armor_Master>> ArmorMasterDict = new Dictionary<string, List<Armor_Master>>();
+    private Dictionary<string, List<Item_Master>> ItemMasterDict = new Dictionary<string, List<Item_Master>>();
+    private Dictionary<string, List<Option_Master>> Option_MasterDict = new Dictionary<string, List<Option_Master>>();
 
+    //적
+    private Dictionary<string, List<Mon_Master>> Mon_MasterDict = new Dictionary<string, List<Mon_Master>>();
+    private Dictionary<string, List<Mon_Effect_Master>> Mon_EffectMasterDict = new Dictionary<string, List<Mon_Effect_Master>>();
     void Awake()
     {
         LoadAllJsonFiles();
@@ -170,6 +51,7 @@ public class JsonManager : MonoBehaviour
                 string jsonContent = jsonFile.text;
 
                 // 파일명 기준으로 어떤 데이터인지 구분
+                //메인 스토리
                 if (fileName.Contains("Story_Master_Main"))
                 {
                     // ✅ jsonContent는 전체 JSON 문자열
@@ -255,6 +137,178 @@ public class JsonManager : MonoBehaviour
                     }
 
                 }
+                //이벤트
+                else if (fileName.Contains("RandomEvents_Master_Event"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["RandomEvents_Master_Event"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<RandomEvents_Master_Event> wrapper = JsonUtility.FromJson<Wrapper<RandomEvents_Master_Event>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        RandomMasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Ran_Script_Master_Event"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Ran_Script_Master_Event"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Ran_Script_Master_Event> wrapper = JsonUtility.FromJson<Wrapper<Ran_Script_Master_Event>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        RandomMasterScriptDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Ran_SuccessRate_Master_Events"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Ran_SuccessRate_Master_Events"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Ran_SuccessRate_Master_Events> wrapper = JsonUtility.FromJson<Wrapper<Ran_SuccessRate_Master_Events>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        RandomMasterSuccessRateDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Event_Effect_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Event_Effect_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Event_Effect_Master> wrapper = JsonUtility.FromJson<Wrapper<Event_Effect_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        RandomMasterEffectDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                //아이템
+                else if (fileName.Contains("Weapon_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Weapon_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Weapon_Master> wrapper = JsonUtility.FromJson<Wrapper<Weapon_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        WeaponMasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Armor_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Armor_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Armor_Master> wrapper = JsonUtility.FromJson<Wrapper<Armor_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        ArmorMasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Item_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Item_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Item_Master> wrapper = JsonUtility.FromJson<Wrapper<Item_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        ItemMasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Option_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Option_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Option_Master> wrapper = JsonUtility.FromJson<Wrapper<Option_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        Option_MasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                //플레이어 + 적 (데이터가 적만 있어서 적만 추가를 해놨음)
+
                 else
                 {
                     Debug.LogWarning($"[JsonManager] {fileName}.json 은 인식되지 않는 형식입니다.");
@@ -272,6 +326,7 @@ public class JsonManager : MonoBehaviour
     }
 
     // 특정 파일명으로 Story_Master 리스트 가져오기
+    //메인 스토리
     public List<Story_Master_Main> GetStoryMainMasters(string fileName)
     {
         if (storyMasterDict.TryGetValue(fileName, out List<Story_Master_Main> list))
@@ -305,6 +360,81 @@ public class JsonManager : MonoBehaviour
         Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
         return null;
     }
+    //이벤트 스토리
+    public List<RandomEvents_Master_Event> GetRandomMainMasters(string fileName)
+    {
+        if (RandomMasterDict.TryGetValue(fileName, out List<RandomEvents_Master_Event> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Ran_Script_Master_Event> GetRandomScriptMasters(string fileName)
+    {
+        if (RandomMasterScriptDict.TryGetValue(fileName, out List<Ran_Script_Master_Event> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Ran_SuccessRate_Master_Events> GetRandomSuccessRateMasters(string fileName)
+    {
+        if (RandomMasterSuccessRateDict.TryGetValue(fileName, out List<Ran_SuccessRate_Master_Events> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Event_Effect_Master> GetRanomEffectMasters(string fileName)
+    {
+        if (RandomMasterEffectDict.TryGetValue(fileName, out List<Event_Effect_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    //아이템 목록
+    public List<Weapon_Master> GetWeaponMasters(string fileName)
+    {
+        if (WeaponMasterDict.TryGetValue(fileName, out List<Weapon_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Armor_Master> GetArmorMasters(string fileName)
+    {
+        if (ArmorMasterDict.TryGetValue(fileName, out List<Armor_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Item_Master> GetItemMasters(string fileName)
+    {
+        if (ItemMasterDict.TryGetValue(fileName, out List<Item_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Option_Master> GetOptionMasters(string fileName)
+    {
+        if (Option_MasterDict.TryGetValue(fileName, out List<Option_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    //몬스터
+    public List<Mon_Master> GetMonMasters(string fileName)
+    {
+        if (Mon_MasterDict.TryGetValue(fileName, out List<Mon_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+    public List<Mon_Effect_Master> GetMonEffectMasters(string fileName)
+    {
+        if (Mon_EffectMasterDict.TryGetValue(fileName, out List<Mon_Effect_Master> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        return null;
+    }
+
+    //몬스터
 
     // 전체 로드된 Story_Master 파일명 리스트
     public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);
