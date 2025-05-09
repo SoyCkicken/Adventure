@@ -32,10 +32,6 @@ public class JsonManager : MonoBehaviour
     void Awake()
     {
         LoadAllJsonFiles();
-        foreach (var key in storyMasterScriptDict.Keys)
-        {
-            Debug.Log($"등록된 키: {key}");
-        }
     }
 
     private void LoadAllJsonFiles()
@@ -304,6 +300,49 @@ public class JsonManager : MonoBehaviour
                     {
                         string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
                         Option_MasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+
+                else if (fileName.Contains("Mon_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Mon_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Mon_Master> wrapper = JsonUtility.FromJson<Wrapper<Mon_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        Mon_MasterDict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
+                else if (fileName.Contains("Mon_Effect_Master"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Mon_Effect_Master"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Mon_Effect_Master> wrapper = JsonUtility.FromJson<Wrapper<Mon_Effect_Master>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        Mon_EffectMasterDict[cleanFileName] = wrapper.items;
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }

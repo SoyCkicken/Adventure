@@ -96,7 +96,7 @@ public class StoryDisplayManager : MonoBehaviour
         //Debug.Log(stringBuilder.ToString());
         // 현재 스토리의 Scene_Text(대상 스크립트 코드)를 찾아서 해당 KOR 값을 출력
         var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
-        Debug.Log(Testblocks.Count);
+        //Debug.Log(Testblocks.Count);
         GameObject lastBlock = Testblocks.Count > 0
         ? Testblocks[Testblocks.Count - 1]
         : null;

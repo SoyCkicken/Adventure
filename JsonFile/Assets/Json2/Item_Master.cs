@@ -10,4 +10,6 @@ public class Item_Master
     public int Option1_Value;
     public string Item_Option2;
     public int Option2_Value;
+    public string Item_Description;
+    public int Item_Price;
 }
