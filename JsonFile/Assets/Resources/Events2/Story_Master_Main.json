@@ -42,8 +42,8 @@
       "Choice1_Next_Scene": "MainScene_1_1_4",
       "Choice2_Text": "MainScript_1_1_8",
       "Choice2_Next_Scene": "MainScene_1_1_8",
-      "Choice3_Text": "-",
-      "Choice3_Next_Scene": "-"
+      "Choice3_Text": null,
+      "Choice3_Next_Scene": null
     },
     {
       "Chapter_Index": 1.0,
