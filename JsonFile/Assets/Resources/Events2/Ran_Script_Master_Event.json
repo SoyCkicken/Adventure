@@ -13,7 +13,7 @@
       "EventScript_Index": 2.0,
       "Script_Code": "EventScript_1_2",
       "KOR": "Image001",
-      "displayType": "IMAGE",
+      "displayType": "Image",
       "EventBreak": null
     },
     {
@@ -22,7 +22,7 @@
       "Script_Code": "EventScript_1_3",
       "KOR": "그림자를 따라간다.",
       "displayType": "TEXT",
-      "EventBreak": null
+      "EventBreak": "Break"
     },
     {
       "Event_Index": 1.0,
@@ -30,7 +30,7 @@
       "Script_Code": "EventScript_1_4",
       "KOR": "숨을 죽인다.",
       "displayType": "TEXT",
-      "EventBreak": null
+      "EventBreak": "Break"
     },
     {
       "Event_Index": 1.0,
@@ -53,6 +53,30 @@
       "EventScript_Index": 7.0,
       "Script_Code": "EventScript_1_7",
       "KOR": "허우적 대다가 넘어지며 다쳤지만 무사히 빠져나왔다.",
+      "displayType": "TEXT",
+      "EventBreak": "Break"
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_2_1",
+      "KOR": "테스트용입니다 2_1",
+      "displayType": "TEXT",
+      "EventBreak": "Break"
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_3_1",
+      "KOR": "테스트용입니다 3_1",
+      "displayType": "TEXT",
+      "EventBreak": "Break"
+    },
+    {
+      "Event_Index": 4.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_4_1",
+      "KOR": "테스트용입니다 4_1",
       "displayType": "TEXT",
       "EventBreak": "Break"
     }

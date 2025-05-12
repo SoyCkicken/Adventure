@@ -17,7 +17,7 @@ public class MonsterSpawner : MonoBehaviour
     [Header("스폰할 몬스터 ID")]
     public string spawnMonID = "monster_001";
 
-    void Start()
+    void Awake()
     {
         // 자동 참조
         if (jsonManager == null) jsonManager = FindObjectOfType<JsonManager>();

@@ -16,6 +16,7 @@ public class EventDisplay : MonoBehaviour
     public Transform choiceButtonParent;
     public GameObject choiceButtonPrefab;
     public GameObject SkipButton;
+    public GameObject BattleSystem;
 
     [Header("Data Manager")]
     public JsonManager jsonManager;
@@ -29,8 +30,12 @@ public class EventDisplay : MonoBehaviour
     private System.Random rng = new System.Random();
     private List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
     private Action<Main_Script_Master_Main> onComplete;
+
+    public int count;
+    public int currCount = 0;
     private void Awake()
     {
+        count = UnityEngine.Random.Range(3, 6);
         SkipButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             if (isTyping) isSkip = true;
@@ -227,6 +232,13 @@ public class EventDisplay : MonoBehaviour
             .FirstOrDefault(sm => sm.Script_Code.Trim() == currentEvent.Event_Text.Trim());
         if (script != null && script.EventBreak == "Break")
         {
+            currCount++;
+            if (currCount == count)
+            {
+                BattleSystem.SetActive(true);
+                currCount = 0;
+            }
+
             PickNewGroup();
             return;
         }

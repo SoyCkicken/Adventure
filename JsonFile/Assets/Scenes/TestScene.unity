@@ -162,7 +162,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c29270714bad24eb4ece3309a3a364, type: 3}
   m_Name: 
@@ -185,7 +185,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d94baab00f717404699feb396d7c19f2, type: 3}
   m_Name: 
@@ -196,7 +196,10 @@ MonoBehaviour:
   choiceButtonParent: {fileID: 465859462}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   SkipButton: {fileID: 1641275629}
+  BattleSystem: {fileID: 1010119032}
   jsonManager: {fileID: 1190628254}
+  count: 0
+  currCount: 0
 --- !u!1 &201274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,7 +906,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1010119033
 Transform:
   m_ObjectHideFlags: 0
@@ -1387,6 +1390,7 @@ MonoBehaviour:
   optionManager: {fileID: 2041071672}
   player: {fileID: 2006169296}
   enemy: {fileID: 0}
+  BattleSystem: {fileID: 1010119032}
 --- !u!4 &1515041321
 Transform:
   m_ObjectHideFlags: 0
