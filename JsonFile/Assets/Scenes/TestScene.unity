@@ -162,7 +162,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c29270714bad24eb4ece3309a3a364, type: 3}
   m_Name: 
@@ -198,6 +198,21 @@ MonoBehaviour:
   SkipButton: {fileID: 1641275629}
   BattleSystem: {fileID: 1010119032}
   jsonManager: {fileID: 1190628254}
+  randomEvents: []
+  eventGroups: 
+  currentGroup: 0
+  currentEvent:
+    RandomEvent_Index: 0
+    Script_Index: 0
+    Random_Event_ID: 
+    Chapter_Index: 0
+    Event_Text: 
+    Choice1_Text: 
+    Choice2_Text: 
+    Choice3_Text: 
+  isTyping: 0
+  isSkip: 0
+  Testblocks: []
   count: 0
   currCount: 0
 --- !u!1 &201274078
@@ -525,6 +540,7 @@ Transform:
   - {fileID: 1190628255}
   - {fileID: 25302958}
   - {fileID: 2041071671}
+  - {fileID: 1847108098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &646720211
@@ -1390,7 +1406,6 @@ MonoBehaviour:
   optionManager: {fileID: 2041071672}
   player: {fileID: 2006169296}
   enemy: {fileID: 0}
-  BattleSystem: {fileID: 1010119032}
 --- !u!4 &1515041321
 Transform:
   m_ObjectHideFlags: 0
@@ -1665,6 +1680,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5745d33422412c459c6b6c1bf742d83, type: 3}
+--- !u!1 &1847108097
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1847108098}
+  - component: {fileID: 1847108099}
+  m_Layer: 0
+  m_Name: GameFlowManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1847108098
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847108097}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 596016689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1847108099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847108097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8c00507165a3cb459e295d99543dd66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainStoryManager: {fileID: 25302960}
+  battleManager: {fileID: 0}
 --- !u!1 &2006169295
 GameObject:
   m_ObjectHideFlags: 0
