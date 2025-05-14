@@ -15,13 +15,14 @@ public class GameFlowManager : MonoBehaviour
     // 2) 하위 매니저 참조
     [Header("Managers")]
     public StoryDisplayManager mainStoryManager;
-    //public EventDisplay randomEventManager;
+    public EventDisplay randomEventManager;
     public CombatTest battleManager;
 
     void Start()
     {
         // 초기 진입: 메인 스토리
-        EnterState(FlowState.MainStory);
+        //EnterState(FlowState.MainStory);
+        EnterState(FlowState.RandomEvent);
     }
 
     // 3) 상태 전환 메서드
@@ -53,7 +54,7 @@ public class GameFlowManager : MonoBehaviour
                 mainStoryManager.StopMainStory();
                 break;
             case FlowState.RandomEvent:
-                //randomEventManager.StopRandomEvent();
+                randomEventManager.StopRandomEvent();
                 break;
             case FlowState.Battle:
                 //battleManager.StopBattle();

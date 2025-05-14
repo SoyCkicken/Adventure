@@ -167,16 +167,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c29270714bad24eb4ece3309a3a364, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  content: {fileID: 529089260}
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
   TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
+  SkipButton: {fileID: 1641275629}
+  choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
+  content: {fileID: 529089260}
+  choiceButtonParent: {fileID: 465859462}
   jsonManager: {fileID: 1190628254}
   storyList: []
   isSkip: 0
   isTyping: 0
-  SkipButton: {fileID: 1641275629}
-  choiceButtonParent: {fileID: 465859462}
-  choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   Testblocks: []
 --- !u!114 &25302961
 MonoBehaviour:
@@ -193,28 +193,9 @@ MonoBehaviour:
   content: {fileID: 529089260}
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
   TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
+  SkipButton: {fileID: 1641275629}
   choiceButtonParent: {fileID: 465859462}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
-  SkipButton: {fileID: 1641275629}
-  BattleSystem: {fileID: 1010119032}
-  jsonManager: {fileID: 1190628254}
-  randomEvents: []
-  eventGroups: 
-  currentGroup: 0
-  currentEvent:
-    RandomEvent_Index: 0
-    Script_Index: 0
-    Random_Event_ID: 
-    Chapter_Index: 0
-    Event_Text: 
-    Choice1_Text: 
-    Choice2_Text: 
-    Choice3_Text: 
-  isTyping: 0
-  isSkip: 0
-  Testblocks: []
-  count: 0
-  currCount: 0
 --- !u!1 &201274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -1725,6 +1706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainStoryManager: {fileID: 25302960}
+  randomEventManager: {fileID: 0}
   battleManager: {fileID: 0}
 --- !u!1 &2006169295
 GameObject:

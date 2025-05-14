@@ -322,3 +322,279 @@
 //    }
 //}
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+/// <summary>
+/// 랜덤 이벤트 흐름을 관리하는 매니저
+/// </summary>
+public class EventDisplay : MonoBehaviour
+{
+    [Header("Prefabs & References")]
+    public Transform content;
+    public GameObject ImagePrefab;
+    public GameObject TextPrefab;
+    public GameObject SkipButton;
+    public Transform choiceButtonParent;
+    public GameObject choiceButtonPrefab;
+
+    private JsonManager jsonManager;
+    private List<RandomEvents_Master_Event> eventList;
+    private List<Ran_Script_Master_Event> scriptEventsCache;
+    private RandomEvents_Master_Event currentEvent;
+    private int currentIndex = 0;
+
+
+    private bool isSkip = false;
+    private bool isTyping = false;
+    private Action<bool> onCompleteCallback;
+    private List<GameObject> activeBlocks = new List<GameObject>();
+    private Button skipButtonComponent;
+
+    private void Awake()
+    {
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+
+        skipButtonComponent = SkipButton.GetComponent<Button>();
+        skipButtonComponent.onClick.AddListener(OnSkip);
+    }
+
+    private void OnSkip()
+    {
+        if (isTyping)
+            isSkip = true;
+    }
+    public void Start()
+    {
+        FindObjectOfType<EventDisplay>()
+    .StartRandomEvent(toBattle => Debug.Log("이벤트 끝, 전투여부: " + toBattle));
+    }
+    /// <summary>
+    /// 랜덤 이벤트 연출 시작
+    /// </summary>
+    /// <param name="onComplete">전투 여부를 매개변수로 받는 콜백</param>
+    public void StartRandomEvent(Action<bool> onComplete = null)
+    {
+        onCompleteCallback = onComplete;
+
+        // 이벤트 데이터 로드 및 정렬
+        eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event");
+        if (eventList == null || eventList.Count == 0)
+        {
+            Debug.LogError("RandomEvent 파일 로드 실패");
+            onCompleteCallback?.Invoke(false);
+            return;
+        }
+        eventList = eventList.OrderBy(e => e.RandomEvent_Index)
+                             .ThenBy(e => e.Script_Index)
+                             .ToList();
+
+        // 스크립트 캐시
+        scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
+
+        // 초기화
+        currentIndex = 0;
+        currentEvent = eventList[currentIndex];
+        ClearContent();
+        SkipButton.SetActive(true);
+
+        DisplayCurrentEvent();
+    }
+
+    /// <summary>
+    /// 랜덤 이벤트 일시 중지 및 UI 클린업
+    /// </summary>
+    public void StopRandomEvent()
+    {
+        StopAllCoroutines();
+        ClearContent();
+        SkipButton.SetActive(false);
+    }
+
+    /// <summary>
+    /// 현재 이벤트 노드 표시
+    /// </summary>
+    private void DisplayCurrentEvent()
+    {
+
+        Debug.Log(eventList[currentIndex].Event_Text);
+        if (currentIndex < 0 || currentIndex >= eventList.Count)
+        {
+            Debug.LogError($"Invalid currentIndex: {currentIndex}");
+            onCompleteCallback?.Invoke(false);
+            return;
+        }
+
+        currentEvent = eventList[currentIndex];
+        var script = scriptEventsCache.FirstOrDefault(s =>
+            s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
+
+        if (script == null)
+        {
+            Debug.LogWarning($"스크립트 매칭 실패: {currentEvent.Event_Text}");
+            AdvanceEvent();
+            return;
+        }
+
+        GameObject last = activeBlocks.Count > 0 ? activeBlocks[activeBlocks.Count - 1] : null;
+        Debug.Log(script.displayType);
+        bool isImage = script.displayType == "Image";
+        Debug.Log(isImage);
+        if (isImage)
+            CreateImageBlock(script.KOR);
+        else
+            HandleTextDisplay(script.KOR, last);
+
+        if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
+            SetupChoices();
+        else
+        {
+            // 선택지 없으면 다음으로
+            AdvanceEvent();
+        }
+    }
+
+    private void HandleTextDisplay(string text, GameObject last)
+    {
+        Debug.Log("텍스트인데 마지막 블록이 있는지 없는지 확인");
+        if (last == null || last.TryGetComponent<Image>(out _))
+            CreateTextBlock(text);
+        else
+            StartCoroutine(TypeTextEffect(text, last));
+    }
+
+    /// <summary>
+    /// UI 블록 및 버튼 정리
+    /// </summary>
+    private void ClearContent()
+    {
+        foreach (var go in activeBlocks)
+            Destroy(go);
+        activeBlocks.Clear();
+        ClearChoiceButtons();
+    }
+
+    private void ClearChoiceButtons()
+    {
+        foreach (Transform t in choiceButtonParent)
+            Destroy(t.gameObject);
+    }
+
+    /// <summary>
+    /// 이벤트 흐름 진행 (전투 여부 결정)
+    /// </summary>
+    private void AdvanceEvent()
+    {
+        // 예: 이벤트 그룹이 battleGroup일 경우 전투 호출
+        //bool toBattle = currentEvent.TriggerBattle;
+        //if (toBattle)
+        //{
+        //    onCompleteCallback?.Invoke(true);
+        //    return;
+        //}
+
+        // 다음 이벤트
+        var next = eventList.ElementAtOrDefault(currentIndex + 1);
+        //ClearContent();
+        if (next != null)
+        {
+            currentIndex++;
+            DisplayCurrentEvent();
+        }
+        else
+        {
+            // 이벤트 종료 후 메인 스토리 복귀
+            onCompleteCallback?.Invoke(false);
+        }
+    }
+
+    private IEnumerator TypeTextEffect(string full, GameObject go)
+    {
+        Debug.Log("타이핑중");
+        var tmp = go.GetComponent<TMP_Text>();
+        isTyping = true;
+        string complete = tmp.text + full;
+
+        for (int i = 0; i < full.Length; i++)
+        {
+            if (isSkip)
+            {
+                tmp.text = complete;
+                break;
+            }
+            tmp.text += full[i];
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        isTyping = false;
+        isSkip = false;
+        SkipButton.SetActive(false);
+        AdvanceEvent();
+    }
+
+    private void CreateImageBlock(string name)
+    {
+        Debug.Log("이미지 블록 생성");
+        var go = Instantiate(ImagePrefab, content);
+        go.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + name);
+        activeBlocks.Add(go);
+    }
+
+    void CreateTextBlock(string text)
+    {
+        var go = Instantiate(TextPrefab, content);
+        activeBlocks.Add(go);
+        var tmp = go.GetComponent<TMP_Text>();
+        tmp.text = "";
+        //StartCoroutine(TypeTextEffect(text, go));
+    }
+
+
+    private void SetupChoices()
+    {
+        ClearChoiceButtons();
+        var choices = new List<(string code, string text)>();
+        if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
+            choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text)));
+        if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
+            choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text)));
+        if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
+            choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text)));
+
+        foreach (var ch in choices)
+        {
+            var btn = Instantiate(choiceButtonPrefab, choiceButtonParent).GetComponent<Button>();
+            btn.GetComponentInChildren<TMP_Text>().text = ch.text;
+            btn.onClick.AddListener(() => OnChoice(ch.code));
+        }
+    }
+
+    private void OnChoice(string code)
+    {
+        // 선택된 코드로 이동
+        var target = eventList.FirstOrDefault(e => e.Event_Text.Trim() == code.Trim());
+        ClearContent();
+        if (target != null)
+        {
+            currentIndex = eventList.IndexOf(target);
+            DisplayCurrentEvent();
+        }
+        else
+        {
+            Debug.LogWarning("이벤트 코드 미발견: " + code);
+            AdvanceEvent();
+        }
+    }
+
+    private string GetScriptText(string code)
+    {
+        var s = scriptEventsCache.FirstOrDefault(sv => sv.KOR.Trim() == code.Trim());
+        return s != null ? s.KOR : code;
+    }
+}
