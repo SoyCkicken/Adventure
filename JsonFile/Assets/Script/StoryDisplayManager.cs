@@ -175,7 +175,7 @@ public class StoryDisplayManager : MonoBehaviour
     private void CreateTextBlock(string text)
     {
         var go = Instantiate(TextPrefab, content);
-        var tmp = go.GetComponent<TMP_Text>();
+        //var tmp = go.GetComponent<TMP_Text>();
         StartCoroutine(TypeTextEffect(text, go));
         Testblocks.Add(go);
     }

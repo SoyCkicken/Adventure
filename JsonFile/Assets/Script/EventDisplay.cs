@@ -329,6 +329,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text;
 
 /// <summary>
 /// 랜덤 이벤트 흐름을 관리하는 매니저
@@ -344,17 +345,18 @@ public class EventDisplay : MonoBehaviour
     public GameObject choiceButtonPrefab;
 
     private JsonManager jsonManager;
-    private List<RandomEvents_Master_Event> eventList;
+    public List<RandomEvents_Master_Event> eventList;
     private List<Ran_Script_Master_Event> scriptEventsCache;
     private RandomEvents_Master_Event currentEvent;
     private int currentIndex = 0;
-
-
     private bool isSkip = false;
     private bool isTyping = false;
     private Action<bool> onCompleteCallback;
-    private List<GameObject> activeBlocks = new List<GameObject>();
+    public List<GameObject> activeBlocks = new List<GameObject>();
     private Button skipButtonComponent;
+    public int count;
+    public int currCount = 0;
+    public int currentGroup;
 
     private void Awake()
     {
@@ -403,7 +405,7 @@ public class EventDisplay : MonoBehaviour
         currentEvent = eventList[currentIndex];
         ClearContent();
         SkipButton.SetActive(true);
-
+        //랜덤으로 바꿨음
         DisplayCurrentEvent();
     }
 
@@ -416,7 +418,6 @@ public class EventDisplay : MonoBehaviour
         ClearContent();
         SkipButton.SetActive(false);
     }
-
     /// <summary>
     /// 현재 이벤트 노드 표시
     /// </summary>
@@ -453,11 +454,7 @@ public class EventDisplay : MonoBehaviour
 
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
             SetupChoices();
-        else
-        {
-            // 선택지 없으면 다음으로
-            AdvanceEvent();
-        }
+        
     }
 
     private void HandleTextDisplay(string text, GameObject last)
@@ -498,6 +495,22 @@ public class EventDisplay : MonoBehaviour
         //    onCompleteCallback?.Invoke(true);
         //    return;
         //}
+        var script = scriptEventsCache.FirstOrDefault(s =>
+            s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
+
+        Debug.Log(script.EventBreak);
+        if (currentEvent != null && script.EventBreak == "Break")
+        {
+            currCount++;
+            if (currCount == count)
+            {
+                //BattleSystem.SetActive(true);
+                currCount = 0;
+            }
+
+            //DisplayCurrentEvent();
+            return;
+        }
 
         // 다음 이벤트
         var next = eventList.ElementAtOrDefault(currentIndex + 1);
@@ -550,9 +563,8 @@ public class EventDisplay : MonoBehaviour
     {
         var go = Instantiate(TextPrefab, content);
         activeBlocks.Add(go);
-        var tmp = go.GetComponent<TMP_Text>();
-        tmp.text = "";
-        //StartCoroutine(TypeTextEffect(text, go));
+        //var tmp = go.GetComponent<TMP_Text>();
+        StartCoroutine(TypeTextEffect(text, go));
     }
 
 
@@ -560,6 +572,7 @@ public class EventDisplay : MonoBehaviour
     {
         ClearChoiceButtons();
         var choices = new List<(string code, string text)>();
+        Debug.Log(GetScriptText(currentEvent.Choice1_Text));
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
             choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text)));
         if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
@@ -594,7 +607,8 @@ public class EventDisplay : MonoBehaviour
 
     private string GetScriptText(string code)
     {
-        var s = scriptEventsCache.FirstOrDefault(sv => sv.KOR.Trim() == code.Trim());
+        var s = scriptEventsCache.FirstOrDefault(sv => sv.Script_Code.Trim() == code.Trim());
+        Debug.Log(s);
         return s != null ? s.KOR : code;
     }
 }
