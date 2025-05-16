@@ -9,7 +9,8 @@ namespace MyGame
     {
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
         public string charaterName;
-        public int Health =50;
+        public int MaxHealth = 50;
+        public int Health;
         public int damage = 10;
         public float speed = 1f;
         public int armor = 5;
@@ -43,7 +44,7 @@ namespace MyGame
             if (Armor == null) return;
 
             armor += Armor.Armor_DEF;
-            Health += Armor.Armor_HP;
+            MaxHealth += Armor.Armor_HP;
             Debug.Log($"[{charaterName}] '{Armor.Armor_NAME}' 장착 → 방어력 +{Armor.Armor_DEF}, 체력 +{Armor.Armor_HP} → 최종 방어력 {armor}, 체력 {Health}");
         }
 

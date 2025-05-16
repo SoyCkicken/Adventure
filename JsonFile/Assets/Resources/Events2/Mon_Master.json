@@ -3,7 +3,7 @@
     {
       "Mon_ID": "monster_001",
       "Mon_Name": "슬라임",
-      "Mon_HP": 150.0,
+      "Mon_HP": 500.0,
       "Mon_ATK": 15.0,
       "Mon_Def": 10.0,
       "Mon_Speed": 1.0,

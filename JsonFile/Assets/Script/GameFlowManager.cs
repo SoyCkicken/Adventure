@@ -2,53 +2,20 @@ using UnityEngine;
 
 public class GameFlowManager : MonoBehaviour
 {
-    // 1) 현재 흐름 상태를 정의
-    public enum FlowState
-    {
-        MainStory,
-        RandomEvent,
-        Battle
-    }
+    public enum FlowState { MainStory, RandomEvent, Battle }
+    FlowState currentState;
+    FlowState prevState;
 
-    public FlowState currentState { get; private set; }
-
-    // 2) 하위 매니저 참조
-    [Header("Managers")]
     public StoryDisplayManager mainStoryManager;
     public EventDisplay randomEventManager;
-    public CombatTest battleManager;
+    public BattleManager battleManager;
 
-    void Start()
+    void Start() => EnterState(FlowState.RandomEvent);
+
+    void EnterState(FlowState next)
     {
-        // 초기 진입: 메인 스토리
-        //EnterState(FlowState.MainStory);
-        EnterState(FlowState.RandomEvent);
-    }
-
-    // 3) 상태 전환 메서드
-    public void EnterState(FlowState nextState)
-    {
-        ExitState(currentState);
-        currentState = nextState;
-
+        // 1) 이전 상태 정리
         switch (currentState)
-        {
-            case FlowState.MainStory:
-                mainStoryManager.StartMainStory(OnMainStoryComplete);
-                break;
-            case FlowState.RandomEvent:
-                //randomEventManager.StartRandomEvent(OnRandomEventComplete);
-                break;
-            case FlowState.Battle:
-                //battleManager.StartBattle(OnBattleComplete);
-                break;
-        }
-    }
-
-    void ExitState(FlowState state)
-    {
-        // 필요 시, 이전 매니저 정리 호출
-        switch (state)
         {
             case FlowState.MainStory:
                 mainStoryManager.StopMainStory();
@@ -57,32 +24,48 @@ public class GameFlowManager : MonoBehaviour
                 randomEventManager.StopRandomEvent();
                 break;
             case FlowState.Battle:
-                //battleManager.StopBattle();
+                battleManager.StopBattle();
+                break;
+        }
+
+        // 2) 새 상태 진입
+        currentState = next;
+        switch (currentState)
+        {
+            case FlowState.MainStory:
+                mainStoryManager.StartMainStory(OnMainStoryComplete);
+                break;
+            case FlowState.RandomEvent:
+                randomEventManager.StartRandomEvent(OnRandomEventComplete);
+                break;
+            case FlowState.Battle:
+                battleManager.StartBattle(OnBattleComplete);
                 break;
         }
     }
 
-    // 4) 콜백에서 다음 흐름 결정
     void OnMainStoryComplete()
     {
-        // 메인 스토리 → 전투
+        prevState = FlowState.MainStory;
         EnterState(FlowState.Battle);
     }
 
-    void OnRandomEventComplete(bool goToBattle)
+    void OnRandomEventComplete(bool toBattle)
     {
-        if (goToBattle)
+        if (toBattle)
+        {
+            prevState = FlowState.RandomEvent;
             EnterState(FlowState.Battle);
+        }
         else
+        {
             EnterState(FlowState.MainStory);
+        }
     }
 
-    //void OnBattleComplete(bool playerWon)
-    //{
-    //    // 전투 결과에 따라 돌아갈 곳 결정
-    //    if (mainStoryManager.IsCurrentlyPlaying)
-    //        EnterState(FlowState.MainStory);
-    //    else
-    //        EnterState(FlowState.RandomEvent);
-    //}
+    void OnBattleComplete(bool playerWon)
+    {
+        // 전투 끝나면 prevState로 복귀
+        EnterState(prevState);
+    }
 }

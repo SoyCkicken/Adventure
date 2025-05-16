@@ -47,7 +47,7 @@ public class EquipmentSystem : MonoBehaviour
         if (armor != null)
         {
             player.armor += armor.Armor_DEF;
-            player.Health += armor.Armor_HP;
+            player.MaxHealth += armor.Armor_HP;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(armor.Armor_Option1))
                 player.OnHitOptions.Add(new Character.EquippedOption

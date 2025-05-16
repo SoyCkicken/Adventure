@@ -162,7 +162,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 25302956}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6c29270714bad24eb4ece3309a3a364, type: 3}
   m_Name: 
@@ -196,11 +196,14 @@ MonoBehaviour:
   SkipButton: {fileID: 1641275629}
   choiceButtonParent: {fileID: 465859462}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
-  eventList: []
-  activeBlocks: []
   count: 0
   currCount: 0
   currentGroup: 0
+  currentGroupIndex: 0
+  toBattle: 1
+  eventList: []
+  groupEvents: []
+  activeBlocks: []
 --- !u!1 &201274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -902,13 +905,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1010119033}
+  - component: {fileID: 1010119034}
   m_Layer: 0
   m_Name: "\uC804\uD22C\uC6A9"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1010119033
 Transform:
   m_ObjectHideFlags: 0
@@ -927,6 +931,19 @@ Transform:
   - {fileID: 1206244608}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1010119034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010119032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4092657a7a71f84dbe7a01d07364f34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatTest: {fileID: 1515041320}
 --- !u!1 &1190628253
 GameObject:
   m_ObjectHideFlags: 0
@@ -1711,8 +1728,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainStoryManager: {fileID: 25302960}
-  randomEventManager: {fileID: 0}
-  battleManager: {fileID: 0}
+  randomEventManager: {fileID: 25302961}
+  battleManager: {fileID: 1010119034}
 --- !u!1 &2006169295
 GameObject:
   m_ObjectHideFlags: 0
@@ -1744,13 +1761,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charaterName: Player
+  MaxHealth: 50
   Health: 50
   damage: 10
   speed: 2
   armor: 5
   CitChance: 10
   weapon_Name: Weapon_001
-  armor_Name: Armor_003
+  armor_Name: Armor_001
   OnHitOptions: []
 --- !u!4 &2006169297
 Transform:

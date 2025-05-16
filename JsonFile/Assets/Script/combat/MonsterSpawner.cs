@@ -44,7 +44,8 @@ public class MonsterSpawner : MonoBehaviour
         //순서 중요
         combatTest.enemy = ch;
         ch.charaterName = m.Mon_Name;
-        ch.Health = m.Mon_HP;
+        ch.MaxHealth = m.Mon_HP;
+        ch.Health = ch.MaxHealth;
         ch.damage = m.Mon_ATK;
         ch.armor = m.Mon_Def;
         ch.speed = m.Mon_Speed;
@@ -77,6 +78,6 @@ public class MonsterSpawner : MonoBehaviour
             // DamageDealt, TurnNumber 등은 패시브엔 필요 없으므로 0
             //SourceID = sourceID
         };
-        monsterOptionManager.ApplyMonsterOption(optionID, ctx);
+        //monsterOptionManager.ApplyMonsterOption(optionID, ctx);
     }
 }

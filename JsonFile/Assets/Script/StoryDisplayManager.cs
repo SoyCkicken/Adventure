@@ -36,14 +36,7 @@ public class StoryDisplayManager : MonoBehaviour
 
     private void Awake()
     {
-        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            if (isTyping)
-                isSkip = true;
-        });
-
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
+        
 
 
     }
@@ -57,17 +50,7 @@ public class StoryDisplayManager : MonoBehaviour
 
     void Update()
     {
-        // 선택지가 없는 경우엔 (모두 "--" 이면) 화면 클릭시 자동 진행
-        //if (currentStory.Choice1_Text == "" &&
-        //    currentStory.Choice2_Text == "" &&
-        //    currentStory.Choice3_Text == "" 
-        //    )
-        //{
-        //    if (isTyping == false)
-        //    {
-        //        NextScene(scriptEventsCache);
-        //    }
-        //}
+
     }
 
     /// <summary>
@@ -75,6 +58,16 @@ public class StoryDisplayManager : MonoBehaviour
     /// </summary>
     public void StartMainStory(Action onComplete)
     {
+
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (isTyping)
+                isSkip = true;
+        });
+
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
         onCompleteCallback = onComplete;
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
@@ -96,7 +89,7 @@ public class StoryDisplayManager : MonoBehaviour
         SkipButton.SetActive(true);
         ClearContent();
         // 첫 시퀀스 표시
-        DisplayCurrentStory(scriptEventsCache);
+        DisplayCurrentStory();
     }
 
     /// <summary>
@@ -110,16 +103,18 @@ public class StoryDisplayManager : MonoBehaviour
         SkipButton.SetActive(false);
     }
 
-    void DisplayCurrentStory(List<Main_Script_Master_Main> scriptEvents)
+    void DisplayCurrentStory()
     {
         // 기존 DisplayCurrentStory 내부 로직 그대로 유지
-        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
-        Debug.Log(matchingScript.KOR);
+        var matchingScript = scriptEventsCache.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
+        //Debug.Log(matchingScript.KOR);
         GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
-        bool isImage = matchingScript.displayType == "Image";
-
-        if (matchingScript != null)
+        if (matchingScript == null)
         {
+            OnMainStoryComplete();
+        }else if (matchingScript != null)
+        {
+            bool isImage = matchingScript.displayType == "Image";
             if (isImage)
                 CreateImageBlock(matchingScript.KOR);
             else
@@ -133,8 +128,7 @@ public class StoryDisplayManager : MonoBehaviour
         // Choice 버튼 세팅, OnChoiceSelected에서 currentIndex++, 필요 시 onCompleteCallback 호출
         if (currentStory.Choice1_Text != "")
         {
-            Debug.Log(scriptEvents);
-            SetupChoices(scriptEvents);
+            SetupChoices();
         }
 
     }
@@ -169,6 +163,7 @@ public class StoryDisplayManager : MonoBehaviour
         var img = go.GetComponent<Image>();
         img.sprite = Resources.Load<Sprite>($"Images/{spriteName}");
         Testblocks.Add(go);
+        NextScene();
     }
 
     // 텍스트 블록 생성 (초기화만)
@@ -219,10 +214,11 @@ public class StoryDisplayManager : MonoBehaviour
         isTyping = false;
         SkipButton.SetActive(false);
         isSkip = false;
+        NextScene();
     }
 
     // 선택지 버튼 세팅
-    private void SetupChoices(List<Main_Script_Master_Main> scriptEvents)
+    private void SetupChoices()
     {
         List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
 
@@ -233,20 +229,20 @@ public class StoryDisplayManager : MonoBehaviour
         {
             string code = currentStory.Choice1_Text;
             Debug.Log(code);
-            string display = GetDisplayTextFromScript(code, scriptEvents);
+            string display = GetDisplayTextFromScript(code, scriptEventsCache);
             //Debug.Log($"테스트용 문자열입니다 {display}");
             availableChoices.Add((code, display));
         }
         if (currentStory.Choice2_Text != "")
         {
             string code = currentStory.Choice2_Text;
-            string display = GetDisplayTextFromScript(code, scriptEvents);
+            string display = GetDisplayTextFromScript(code, scriptEventsCache);
             availableChoices.Add((code, display));
         }
         if (currentStory.Choice3_Text != "")
         {
             string code = currentStory.Choice3_Text;
-            string display = GetDisplayTextFromScript(code, scriptEvents);
+            string display = GetDisplayTextFromScript(code, scriptEventsCache);
             availableChoices.Add((code, display));
         }
         CreateChoicebutton(availableChoices);
@@ -286,7 +282,7 @@ public class StoryDisplayManager : MonoBehaviour
         if (nextStory != null)
         {
             currentStory = nextStory;
-            DisplayCurrentStory(scriptEventsCache);
+            DisplayCurrentStory();
         }
         else
         {
@@ -307,28 +303,57 @@ public class StoryDisplayManager : MonoBehaviour
         else
             return code;
     }
-    void NextScene(List<Main_Script_Master_Main> scriptEvents)
+    void NextScene()
     {
+        if (isTyping) return;
 
-        var matchingScript = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
-        //Debug.Log($"matchingScript의 값을 출력을 위한 디버그 입니다  = {matchingScript.StoryBreak}");
+        var next = storyList
+        .FirstOrDefault(s => s.Chapter_Index == currentStory.Chapter_Index &&
+                             s.Event_Index == currentStory.Event_Index &&
+                             s.Script_Index == currentStory.Script_Index + 1);
 
-        Story_Master_Main nextStory = storyList.FirstOrDefault(s =>
-            s.Chapter_Index == currentStory.Chapter_Index &&
-            s.Event_Index == currentStory.Event_Index &&
-            s.Script_Index == currentStory.Script_Index + 1);
+        var choices = new[]
+   {
+        currentStory.Choice1_Text,
+        currentStory.Choice2_Text,
+        currentStory.Choice3_Text
+    }.Where(c => !string.IsNullOrEmpty(c)).ToList();
 
-
-        if (nextStory == null || matchingScript.StoryBreak == "Break")
+        if (choices.Count == 1)
         {
-            //Debug.LogError("다음 씬이 존재하지 않습니다. 이벤트가 끝났거나 다음 챕터로 전환해야 합니다.");
-            OnMainStoryComplete();
+            OnChoiceSelected(choices[0]);
+            return;
+        }
+        else if (choices.Count > 1)
+        {
+            // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
+            return;
+        }
 
+        var script = scriptEventsCache
+        .FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
+        if (script != null && script.StoryBreak == "Break")
+        {
+            Debug.Log("브레이크문 들어왔습니다");
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
+            return;
+        }
+
+
+        if (next != null)
+        {
+            currentIndex = storyList.IndexOf(next);
+            currentStory = next;
+            DisplayCurrentStory();
         }
         else
         {
-            currentStory = nextStory;
-            DisplayCurrentStory(scriptEventsCache);
+            Debug.Log("아무조건에도 맞지 않습니다");
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
         }
     }
 
