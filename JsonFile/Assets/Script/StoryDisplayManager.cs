@@ -19,7 +19,7 @@ public class StoryDisplayManager : MonoBehaviour
 
     public JsonManager jsonManager;
     public List<Story_Master_Main> storyList;
-    private Story_Master_Main currentStory;
+    public Story_Master_Main currentStory;
     private int currentIndex = 0;
     public bool isSkip = false;
     public bool isTyping;
@@ -111,8 +111,11 @@ public class StoryDisplayManager : MonoBehaviour
         GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
         if (matchingScript == null)
         {
-            OnMainStoryComplete();
-        }else if (matchingScript != null)
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
+        }
+        else if (matchingScript != null)
         {
             bool isImage = matchingScript.displayType == "Image";
             if (isImage)
