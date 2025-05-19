@@ -5,106 +5,106 @@
       "Event_Index": 1.0,
       "Script_Index": 1.0,
       "Script_Code": "MainScript_1_1_1",
-      "KOR": "평온한 마을인 라노스마을\\n\n해가 높이 떠올랐고, 바람은 따뜻했다.\\n\n나는 그 조용한 일상 속에서 오늘도 변함없이 숨을 죽이며 살아가고 있었다.\\n",
+      "KOR": "평온한 마을인 라노스마을\n해가 높이 떠올랐고, 바람은 따뜻했다.\n나는 그 조용한 일상 속에서 오늘도 변함없이 숨을 죽이며 살아가고 있었다.\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 2.0,
       "Script_Code": "MainScript_1_1_2",
-      "KOR": "마을 사람들이 특별히 따돌리진 않았다\\n\n하지만 당신을 향한 시선에는 어딘가 설명하기 어려운 거리감이 배어 있었다.\\n\n나는 그게 더 편했다.\\n\n누구와도 엮이지 않으면, 누군가를 잃는 일도 없을 테니까..\\n",
+      "KOR": "마을 사람들이 특별히 따돌리진 않았다\n하지만 당신을 향한 시선에는 어딘가 설명하기 어려운 거리감이 배어 있었다.\n나는 그게 더 편했다.\n누구와도 엮이지 않으면, 누군가를 잃는 일도 없을 테니까..\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 3.0,
       "Script_Code": "MainScript_1_1_3",
-      "KOR": "그날 아침도 평범했다,\\n\n언제나처럼 우물가에서 물을 길었고, 남은 식사를 정리했다.\\n\n모두가 자신만의 하루를 살고 있던 평범한 날이였다.\\n",
+      "KOR": "그날 아침도 평범했다,\n언제나처럼 우물가에서 물을 길었고, 남은 식사를 정리했다.\n모두가 자신만의 하루를 살고 있던 평범한 날이였다.\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 4.0,
       "Script_Code": "MainScript_1_1_4",
-      "KOR": "하지만 나는 이상한 기척을 순간 느꼈다…\\n",
+      "KOR": "하지만 나는 이상한 기척을 순간 느꼈다…\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 5.0,
       "Script_Code": "MainScript_1_1_5",
-      "KOR": "\"뭐지….?\"\\n",
+      "KOR": "\"뭐지….?\"\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 6.0,
       "Script_Code": "MainScript_1_1_6",
-      "KOR": "멀리서 보이는 흙먼지와 짐승 같은 울음소리, 갑작스러운 비명,\\n",
+      "KOR": "멀리서 보이는 흙먼지와 짐승 같은 울음소리, 갑작스러운 비명,\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 7.0,
       "Script_Code": "MainScript_1_1_7",
-      "KOR": "마을 입구 쪽이였다.\\n\n사람들이 하나 둘 당황한 표정으로 그쪽을 바라보고 있었다.\\n",
+      "KOR": "마을 입구 쪽이였다.\n사람들이 하나 둘 당황한 표정으로 그쪽을 바라보고 있었다.\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 8.0,
       "Script_Code": "MainScript_1_1_8",
-      "KOR": "그리고 그 잠깐의 고요함은 오래가지 않았다.\\n\n사람들이 비명을 지르며 도망치기 시작했다.\\n\n창백한 얼굴이 달려오는 아이, 허둥지둥 짐을 챙기는 노인.\\n\n그들의 뒤를 따라, 망토를 뒤집어쓴 이들과 기괴한 형체들이 나타났다.\\n",
+      "KOR": "그리고 그 잠깐의 고요함은 오래가지 않았다.\n사람들이 비명을 지르며 도망치기 시작했다.\n창백한 얼굴이 달려오는 아이, 허둥지둥 짐을 챙기는 노인.\n그들의 뒤를 따라, 망토를 뒤집어쓴 이들과 기괴한 형체들이 나타났다.\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 9.0,
       "Script_Code": "MainScript_1_1_9",
-      "KOR": "거칠게 짖는 괴수들,\\n\n날이 빠진 무기를 들고도 거침없이 웃는 산적들.\\n",
+      "KOR": "거칠게 짖는 괴수들,\n날이 빠진 무기를 들고도 거침없이 웃는 산적들.\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 10.0,
       "Script_Code": "MainScript_1_1_10",
-      "KOR": "그것은 단순한 약탈이 아니었다.\\n\n말살에 가까웠다…\\n",
+      "KOR": "그것은 단순한 약탈이 아니었다.\n말살에 가까웠다…\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "null"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 11.0,
       "Script_Code": "MainScript_1_1_11",
-      "KOR": "소년은 그 광경을 멍하니 바라보고만 있었다.\\n\n누군가의 비명이 들려왔다.\\n",
+      "KOR": "나는 그 광경을 멍하니 바라보고만 있었다.\n마치… 이 모든 장면을 어디선가 본 것처럼.\n기억도, 감정도, 이 상황을 처음 겪는 사람의 것과는 달랐다.\n",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "Break"
     },
     {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 12.0,
       "Script_Code": "MainScript_1_1_12",
-      "KOR": " ",
+      "KOR": null,
       "displayType": "TEXT",
       "StoryBreak": null
     },
