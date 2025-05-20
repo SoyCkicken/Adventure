@@ -9,7 +9,7 @@ public class Mon_Master
     public int Mon_HP;
     public int Mon_ATK;
     public int Mon_Def;
-    public int Mon_Speed;
+    public float Mon_Speed;
     public string MonPas_Effect1;
     public int Effect1_Stat;
     public string MonPas_Effect2;

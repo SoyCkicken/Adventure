@@ -13,7 +13,7 @@ public class StoryDisplayManager : MonoBehaviour
     public GameObject TextPrefab;
     public GameObject SkipButton;
     public GameObject choiceButtonPrefab;
-
+    public ScrollRect scrollRect;         // 에디터에서 연결
     public Transform content;
     public Transform choiceButtonParent;
 
@@ -25,10 +25,8 @@ public class StoryDisplayManager : MonoBehaviour
     public bool isTyping;
 
     private List<Main_Script_Master_Main> scriptEventsCache;
+    public event Action<string> OnBattleJoin;
     [Header("UI References")]
-
-
-    private StringBuilder stringBuilder = new StringBuilder();
     public List<GameObject> Testblocks = new List<GameObject>();
 
     // 콜백 저장용
@@ -117,11 +115,22 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else if (matchingScript != null)
         {
-            bool isImage = matchingScript.displayType == "Image";
-            if (isImage)
-                CreateImageBlock(matchingScript.KOR);
-            else
-                HandleTextDisplay(matchingScript.KOR, lastBlock);
+            switch (matchingScript.displayType)
+            {
+                case "IMAGE":
+                    Debug.Log("이미지 생성에 들어왔습니다");
+                    CreateImageBlock(matchingScript.KOR);
+                    break;
+                case "TEXT":
+                    Debug.Log("텍스트 생성에 들어왔습니다");
+                    HandleTextDisplay(matchingScript.KOR, lastBlock);
+                    break ;
+                case "BATTLE":
+                    Debug.Log("배틀에 들어왔습니다");
+                    OnBattleJoin?.Invoke(matchingScript.KOR);
+                    break;
+                        
+            }
         }
         else
         {
@@ -182,11 +191,6 @@ public class StoryDisplayManager : MonoBehaviour
     private IEnumerator TypeTextEffect(string fullText, GameObject go)
     {
         SkipButton.SetActive(true);
-        //Debug.Log("스킵버튼 활성화");
-        //textComp.text = string.Empty; //문자열을 비우고
-        //스트링빌더(한글자씩 추가해주는 함수)
-        StringBuilder stringBuilder = new StringBuilder();
-        //스킵 버튼 누르면 저장해놓은 값 그대로 넣어버림
         string temp = go.GetComponent<TMP_Text>().text + fullText;
         if (fullText != null)
         {
@@ -200,10 +204,6 @@ public class StoryDisplayManager : MonoBehaviour
                     go.GetComponent<TMP_Text>().text = temp.ToString();
                     break;
                 }
-                //한글자씩 추가
-                //stringBuilder.Append(text[i]);
-                //Debug.Log(stringBuilder);
-                //받은 문자들을 text에 담아서 
                 go.GetComponent<TMP_Text>().text += fullText[i].ToString();
                 yield return new WaitForSeconds(0.05f);
                 //0.01초마다 한번씩 출력시킴
@@ -214,6 +214,12 @@ public class StoryDisplayManager : MonoBehaviour
             //RamEvent같은 경우 설명 같은게 하나도 없기 때문에 에러가 발생을 하는데 그걸 막고자 if문 사용했음
             yield break;
         }
+        Canvas.ForceUpdateCanvases();
+
+        // 2) 스크롤을 맨 아래(또는 맨 위)로 이동
+        //    verticalNormalizedPosition == 1 → 맨 위, 0 → 맨 아래
+        scrollRect.verticalNormalizedPosition = 0f;
+
         isTyping = false;
         SkipButton.SetActive(false);
         isSkip = false;
@@ -306,7 +312,7 @@ public class StoryDisplayManager : MonoBehaviour
         else
             return code;
     }
-    void NextScene()
+    public void NextScene()
     {
         if (isTyping) return;
 

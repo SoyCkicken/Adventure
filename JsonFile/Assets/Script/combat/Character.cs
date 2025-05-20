@@ -71,6 +71,10 @@ namespace MyGame
             int reduced = Mathf.Max(damage - armor, 0);
             Health -= reduced;
             Debug.Log($"{charaterName}이(가) 받는 데미지: {damage} → 방어구 {armor} 경감 → 실제 {reduced}. 현재 HP: {Health}");
+            if (Health <= 0)
+            {
+                Destroy(this);
+            }
             return reduced;
         }
 
@@ -81,6 +85,7 @@ namespace MyGame
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
             bool isCrit = Random.Range(0, 100) < CritChancePercent ? true : false;
             Debug.Log($"{isCrit} , {CritChancePercent} ");
+            
             if (isCrit)
             {
                 Debug.Log(damage * 2);
@@ -88,7 +93,7 @@ namespace MyGame
             else
             { Debug.Log(damage);
                 return target.TakeDamage(damage); }
-
+            
                
         }
     }

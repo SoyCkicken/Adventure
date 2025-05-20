@@ -53,7 +53,16 @@ public class CombatTest : MonoBehaviour
 
         yield return playerLoop;
         yield return enemyLoop;
-
+        if (battleOver == true)
+        {
+            Destroy(enemy.gameObject);
+            Debug.Log("플레이어가 패배하였습니다");
+        }
+        else
+        {
+            Debug.Log("플레이어가 승리하였습니다");
+            
+        }
         onComplete?.Invoke(battleOver);
     }
 
