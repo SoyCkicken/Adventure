@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace MyGame
@@ -9,6 +9,7 @@ namespace MyGame
     {
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
         public string charaterName;
+        public PlayerState playerState;
         public int MaxHealth = 50;
         public int Health;
         public int damage = 10;
@@ -32,8 +33,13 @@ namespace MyGame
         public void ApplyWeapon(Weapon_Master weapon)
         {
             if (weapon == null) return;
-
-            damage += weapon.Weapon_DMG;
+            int tempDamage = Convert.ToInt32(weapon.Weapon_DMG + (playerState.Strength*weapon.STR_Scaling)
+                + (playerState.DEX * weapon.DEX_Scaling)
+                + (playerState.Int*weapon.INT_Scaling)
+                + (playerState.MAG*weapon.MAG_Scaling)
+                + (playerState.Charisma * weapon.CHR_Scaling)
+                + (playerState.Divinity * weapon.DIV_Scaling));
+            damage += tempDamage;
             Debug.Log($"[{charaterName}] '{weapon.Weapon_Name}' 장착 → 공격력 +{weapon.Weapon_DMG} → 최종 공격력 {damage}");
         }
         /// <summary>
@@ -42,9 +48,9 @@ namespace MyGame
         public void ApplyArmor(Armor_Master Armor)
         {
             if (Armor == null) return;
-
+            int tempArmorHP = (Armor.Armor_HP + ((playerState.Health*Armor.Armor_HP) + (playerState.Health * Armor.Armor_DEF)/5));
             armor += Armor.Armor_DEF;
-            MaxHealth += Armor.Armor_HP;
+            MaxHealth += tempArmorHP;
             Debug.Log($"[{charaterName}] '{Armor.Armor_NAME}' 장착 → 방어력 +{Armor.Armor_DEF}, 체력 +{Armor.Armor_HP} → 최종 방어력 {armor}, 체력 {Health}");
         }
 
@@ -83,7 +89,7 @@ namespace MyGame
         {
             Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
-            bool isCrit = Random.Range(0, 100) < CritChancePercent ? true : false;
+            bool isCrit = UnityEngine.Random.Range(0, 100) < CritChancePercent ? true : false;
             Debug.Log($"{isCrit} , {CritChancePercent} ");
             
             if (isCrit)

@@ -62,7 +62,87 @@
       "Script_Code": "EventScript_2_1",
       "KOR": "테스트용입니다 2_1",
       "displayType": "TEXT",
-      "EventBreak": "Break"
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 2.0,
+      "Script_Code": "EventScript_2_2",
+      "KOR": "고블린이다",
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 3.0,
+      "Script_Code": "EventScript_2_3",
+      "KOR": "아직 나를 발견하지 못한것 같다",
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 4.0,
+      "Script_Code": "EventScript_2_4",
+      "KOR": "기습한다",
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 5.0,
+      "Script_Code": "EventScript_2_5",
+      "KOR": "공격한다",
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 6.0,
+      "Script_Code": "EventScript_2_6",
+      "KOR": null,
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 7.0,
+      "Script_Code": "EventScript_2_7",
+      "KOR": null,
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 8.0,
+      "Script_Code": "EventScript_2_8",
+      "KOR": "monster_002",
+      "displayType": "BATTLE",
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 9.0,
+      "Script_Code": "EventScript_2_9",
+      "KOR": null,
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 10.0,
+      "Script_Code": "EventScript_2_10",
+      "KOR": null,
+      "displayType": null,
+      "EventBreak": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 11.0,
+      "Script_Code": "EventScript_2_11",
+      "KOR": null,
+      "displayType": null,
+      "EventBreak": null
     },
     {
       "Event_Index": 3.0,

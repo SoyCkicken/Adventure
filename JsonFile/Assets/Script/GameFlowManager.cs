@@ -18,6 +18,9 @@ public class GameFlowManager : MonoBehaviour
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         mainStoryManager.StartMainStory(OnStoryComplete);
 
+        randomEventManager.OnBattleJoin += HandleEventBattleJoin;
+        randomEventManager.StartRandomEvent(OnRandomEventComplete);
+
         EnterState(FlowState.MainStory);
     }
 
@@ -68,6 +71,24 @@ public class GameFlowManager : MonoBehaviour
         {
             // 전투가 끝나면 다시 스토리로 돌아와서 다음 스크립트 진행
             mainStoryManager.NextScene();
+        });
+    }
+
+    private void HandleEventBattleJoin(string monsterID)
+    {
+        Debug.Log("전투에 진입했습니다!");
+        // 1) 곧바로 스토리 연출 중지
+        randomEventManager.StopRandomEvent();
+        Debug.Log(monsterID);
+        // 2) 전투에 넘길 몬스터 ID 저장
+        pendingMonsterID = monsterID;
+        monsterSpawner.SpawnMonsterByID(pendingMonsterID);
+
+        // 3) 전투 시작
+        battleManager.StartBattle(playerWon =>
+        {
+            // 전투가 끝나면 다시 스토리로 돌아와서 다음 스크립트 진행
+            randomEventManager.AdvanceEvent();
         });
     }
 

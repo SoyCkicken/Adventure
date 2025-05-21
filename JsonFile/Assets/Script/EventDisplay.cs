@@ -34,13 +34,14 @@ public class EventDisplay : MonoBehaviour
     public int currentGroup;
     public int currentGroupIndex;
 
-    public bool toBattle = true;
+    public bool toBattle = false;
 
     private List<int> eventGroups;
     public List<RandomEvents_Master_Event> eventList;
     public List<RandomEvents_Master_Event> groupEvents;
     private List<Ran_Script_Master_Event> scriptEventsCache;
     public List<GameObject> activeBlocks = new List<GameObject>();
+    public event Action<string> OnBattleJoin;
     private void Awake()
     {
         if (jsonManager == null)
@@ -166,11 +167,20 @@ public class EventDisplay : MonoBehaviour
         //Debug.Log(script.displayType);
         bool isImage = script.displayType == "Image";
         //Debug.Log(isImage);
-        if (isImage)
-            CreateImageBlock(script.KOR);
-        else
-            HandleTextDisplay(script.KOR, last);
 
+       
+        switch (script.displayType)
+        {
+            case "IMAGE":
+                CreateImageBlock(script.KOR);
+                break;
+            case "TEXT":
+                HandleTextDisplay(script.KOR, last);
+                break;
+            case "BATTLE":
+                OnBattleJoin?.Invoke(script.KOR);
+                break;  
+        }
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
             SetupChoices();
 
@@ -201,7 +211,7 @@ public class EventDisplay : MonoBehaviour
     /// <summary>
     /// 이벤트 흐름 진행 (전투 여부 결정)
     /// </summary>
-    private void AdvanceEvent()
+    public void AdvanceEvent()
     {
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
