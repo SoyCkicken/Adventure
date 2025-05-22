@@ -289,6 +289,7 @@ public class EventDisplay : MonoBehaviour
     private void SetupChoices()
     {
         ClearChoiceButtons();
+        skipButtonComponent.onClick.RemoveAllListeners();
         var choices = new List<(string code, string text)>();
         Debug.Log(GetScriptText(currentEvent.Choice1_Text));
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
@@ -297,7 +298,6 @@ public class EventDisplay : MonoBehaviour
             choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text)));
         if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
             choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text)));
-
         foreach (var ch in choices)
         {
             var btn = Instantiate(choiceButtonPrefab, choiceButtonParent).GetComponent<Button>();

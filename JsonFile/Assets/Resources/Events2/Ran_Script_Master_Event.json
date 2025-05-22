@@ -69,7 +69,7 @@
       "EventScript_Index": 2.0,
       "Script_Code": "EventScript_2_2",
       "KOR": "고블린이다",
-      "displayType": null,
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
@@ -77,7 +77,7 @@
       "EventScript_Index": 3.0,
       "Script_Code": "EventScript_2_3",
       "KOR": "아직 나를 발견하지 못한것 같다",
-      "displayType": null,
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
@@ -85,31 +85,31 @@
       "EventScript_Index": 4.0,
       "Script_Code": "EventScript_2_4",
       "KOR": "기습한다",
-      "displayType": null,
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
       "Event_Index": 2.0,
       "EventScript_Index": 5.0,
       "Script_Code": "EventScript_2_5",
-      "KOR": "공격한다",
-      "displayType": null,
+      "KOR": "미간에 바람구멍 하나 놔줬다",
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
       "Event_Index": 2.0,
       "EventScript_Index": 6.0,
       "Script_Code": "EventScript_2_6",
-      "KOR": null,
-      "displayType": null,
-      "EventBreak": null
+      "KOR": "다음 지역으로 넘어가야지",
+      "displayType": "TEXT",
+      "EventBreak": "Break"
     },
     {
       "Event_Index": 2.0,
       "EventScript_Index": 7.0,
       "Script_Code": "EventScript_2_7",
-      "KOR": null,
-      "displayType": null,
+      "KOR": "공격한다",
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
@@ -124,25 +124,25 @@
       "Event_Index": 2.0,
       "EventScript_Index": 9.0,
       "Script_Code": "EventScript_2_9",
-      "KOR": null,
-      "displayType": null,
+      "KOR": "전투 성공",
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
       "Event_Index": 2.0,
       "EventScript_Index": 10.0,
       "Script_Code": "EventScript_2_10",
-      "KOR": null,
-      "displayType": null,
+      "KOR": "전투 실패",
+      "displayType": "TEXT",
       "EventBreak": null
     },
     {
       "Event_Index": 2.0,
       "EventScript_Index": 11.0,
       "Script_Code": "EventScript_2_11",
-      "KOR": null,
-      "displayType": null,
-      "EventBreak": null
+      "KOR": "다음 지역으로 넘어가야지",
+      "displayType": "TEXT",
+      "EventBreak": "Break"
     },
     {
       "Event_Index": 3.0,

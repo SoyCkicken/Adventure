@@ -16,10 +16,10 @@ public class GameFlowManager : MonoBehaviour
     {
         
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
-        mainStoryManager.StartMainStory(OnStoryComplete);
+        //mainStoryManager.StartMainStory(OnStoryComplete);
 
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-        randomEventManager.StartRandomEvent(OnRandomEventComplete);
+        //randomEventManager.StartRandomEvent(OnRandomEventComplete);
 
         EnterState(FlowState.MainStory);
     }
@@ -45,12 +45,15 @@ public class GameFlowManager : MonoBehaviour
         switch (currentState)
         {
             case FlowState.MainStory:
+                Debug.Log("메인스토리에 진입했습니다");
                 mainStoryManager.StartMainStory(OnMainStoryComplete);
                 break;
             case FlowState.RandomEvent:
+                Debug.Log("이벤트스토리에 진입했습니다");
                 randomEventManager.StartRandomEvent(OnRandomEventComplete);
                 break;
             case FlowState.Battle:
+                Debug.Log("전투스토리에 진입했습니다");
                 battleManager.StartBattle(OnBattleComplete);
                 break;
         }
@@ -58,7 +61,7 @@ public class GameFlowManager : MonoBehaviour
 
     private void HandleStoryBattleJoin(string monsterID)
     {
-        Debug.Log("전투에 진입했습니다!");
+        Debug.Log("메인 스토리에서 전투에 진입했습니다!");
         // 1) 곧바로 스토리 연출 중지
         mainStoryManager.StopMainStory();
         Debug.Log(monsterID);
@@ -76,7 +79,7 @@ public class GameFlowManager : MonoBehaviour
 
     private void HandleEventBattleJoin(string monsterID)
     {
-        Debug.Log("전투에 진입했습니다!");
+        Debug.Log("이벤트에서 전투에 진입했습니다!");
         // 1) 곧바로 스토리 연출 중지
         randomEventManager.StopRandomEvent();
         Debug.Log(monsterID);
@@ -99,8 +102,9 @@ public class GameFlowManager : MonoBehaviour
 
     void OnMainStoryComplete()
     {
+
         prevState = FlowState.MainStory;
-        EnterState(FlowState.Battle);
+        EnterState(FlowState.RandomEvent);
     }
 
     void OnRandomEventComplete(bool toBattle)

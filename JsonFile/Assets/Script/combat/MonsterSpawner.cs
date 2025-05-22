@@ -98,6 +98,12 @@ public class MonsterSpawner : MonoBehaviour
 
     [Header("몬스터 프리팹")]
     public GameObject monsterPrefab;
+    // 생성된 몬스터 인스턴스를 저장할 필드
+    private GameObject _currentMonster;
+
+    // 외부에서 접근할 수 있도록 프로퍼티
+    public GameObject CurrentMonster => _currentMonster;
+
 
     private void Awake()
     {
@@ -106,6 +112,7 @@ public class MonsterSpawner : MonoBehaviour
         if (monsterOptionManager == null) monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
         if (combatTest == null) combatTest = FindObjectOfType<CombatTest>();
         if (player == null) player = GameObject.FindWithTag("Player");
+        //SpawnMonsterByID("monster_001"); //임시로 적이름을 넣고 생성을 시키고
     }
 
     /// <summary>
@@ -113,7 +120,13 @@ public class MonsterSpawner : MonoBehaviour
     /// </summary>
     public void SpawnMonsterByID(string monsterID)
     {
-        // 1) JSON에서 해당 ID 찾아오기
+        // (1) 기존 몬스터가 있으면 제거하거나 재활용
+        if (_currentMonster != null)
+        {
+            Destroy(_currentMonster);
+        }
+
+        // (2) JSON에서 데이터 찾기
         var data = jsonManager.GetMonMasters("Mon_Master")
                               .FirstOrDefault(m => m.Mon_ID == monsterID);
         if (data == null)
@@ -122,12 +135,12 @@ public class MonsterSpawner : MonoBehaviour
             return;
         }
 
-        // 2) 인스턴스 생성
-        var go = Instantiate(monsterPrefab, transform.position, Quaternion.identity);
-        go.name = data.Mon_Name;
+        // (3) 인스턴스 생성 후 필드에 저장
+        _currentMonster = Instantiate(monsterPrefab, transform.position, Quaternion.identity);
+        _currentMonster.name = data.Mon_Name;
 
-        // 3) Character 컴포넌트 세팅
-        var ch = go.GetComponent<Character>();
+        // (4) Character 세팅
+        var ch = _currentMonster.GetComponent<Character>();
         ch.charaterName = data.Mon_Name;
         ch.MaxHealth = data.Mon_HP;
         ch.Health = ch.MaxHealth;
@@ -135,17 +148,13 @@ public class MonsterSpawner : MonoBehaviour
         ch.armor = data.Mon_Def;
         ch.speed = data.Mon_Speed;
 
-        Debug.Log($"[Spawn] {data.Mon_Name} 생성 → HP:{ch.Health}, ATK:{ch.damage}, DEF:{ch.armor}, SPD:{ch.speed}");
-
-        // 4) 전투 테스트 스크립트에 적 설정
+        // (5) CombatTest에 할당
         combatTest.enemy = ch;
 
-        // 5) 패시브 옵션 적용
+        // (6) 패시브 옵션 적용
         ApplyPassive(data.MonPas_Effect1, data.Effect1_Stat, data.Mon_ID, ch);
-        // 필요 시 다른 패시브도 추가
 
-        // 6) (옵션) 전투 시작
-        // GameFlowManager에서 이 메서드를 호출한 뒤 battleManager.StartBattle()를 실행하세요.
+        Debug.Log($"[Spawn] {_currentMonster.name} 세팅 완료");
     }
 
     private void ApplyPassive(string optionID, int value, string sourceID, Character target)
