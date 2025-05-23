@@ -2,272 +2,355 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 public class StoryDisplayManager : MonoBehaviour
 {
-    [Header("Prefabs & References")]
     public GameObject ImagePrefab;
     public GameObject TextPrefab;
     public GameObject SkipButton;
     public GameObject choiceButtonPrefab;
-    public ScrollRect scrollRect;
+    public ScrollRect scrollRect;         // 에디터에서 연결
     public Transform content;
     public Transform choiceButtonParent;
 
-    [Header("Data")]
     public JsonManager jsonManager;
-    private List<Story_Master_Main> storyList;
-    private Story_Master_Main currentStory;
-    private int currentIndex;
-    private List<Main_Script_Master_Main> scriptEventsCache;
-
-    [Header("State")]
-    public bool isSkip;
+    public List<Story_Master_Main> storyList;
+    public Story_Master_Main currentStory;
+    private int currentIndex = 0;
+    public bool isSkip = false;
     public bool isTyping;
+
+    private List<Main_Script_Master_Main> scriptEventsCache;
+    public event Action<string> OnBattleJoin;
+    [Header("UI References")]
     public List<GameObject> Testblocks = new List<GameObject>();
 
-    public event Action<string> OnBattleJoin;
+    // 콜백 저장용
     private Action onCompleteCallback;
 
-    void Awake()
+    private void Awake()
     {
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
+
+
+
+    }
+    void Start()
+    {
+        //this.StartMainStory(() =>
+        //{
+        //    Debug.Log("스토리 연출 완료!");
+        //});
+    }
+
+    void Update()
+    {
+
     }
 
     /// <summary>
-    /// 메인 스토리 연출 시작
+    /// 메인 스토리 연출 시작 (GameFlowManager에서 호출)
     /// </summary>
     public void StartMainStory(Action onComplete)
     {
-        onCompleteCallback = onComplete;
-        ResetSkipButton();
 
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (isTyping)
+                isSkip = true;
+        });
+
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+        onCompleteCallback = onComplete;
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
+        Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 파일을 불러오는 데 실패했습니다.");
             onCompleteCallback?.Invoke();
             return;
         }
-        storyList = storyList
-            .OrderBy(s => s.Chapter_Index)
-            .ThenBy(s => s.Event_Index)
-            .ThenBy(s => s.Script_Index)
-            .ToList();
 
-        scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main")
-                             ?? new List<Main_Script_Master_Main>();
+        storyList = storyList.OrderBy(s => s.Chapter_Index)
+                             .ThenBy(s => s.Event_Index)
+                             .ThenBy(s => s.Script_Index)
+                             .ToList();
 
         currentIndex = 0;
+        scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         currentStory = storyList[currentIndex];
-
         SkipButton.SetActive(true);
         ClearContent();
+        // 첫 시퀀스 표시
         DisplayCurrentStory();
     }
 
     /// <summary>
-    /// 메인 스토리 일시 중지
+    /// 메인 스토리 연출 일시 정지/중지
     /// </summary>
     public void StopMainStory()
     {
         StopAllCoroutines();
+        // currentIndex는 마지막 진행 지점을 자동 보존합니다.
         ClearContent();
         SkipButton.SetActive(false);
     }
 
-    /// <summary>
-    /// 현재 스토리 노드 표시
-    /// </summary>
-    private void DisplayCurrentStory()
+    void DisplayCurrentStory()
     {
-        var script = scriptEventsCache
-            .FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
-        GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[^1] : null;
-
-        if (script == null)
+        // 기존 DisplayCurrentStory 내부 로직 그대로 유지
+        var matchingScript = scriptEventsCache.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
+        //Debug.Log(matchingScript.KOR);
+        GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
+        if (matchingScript == null)
         {
-            OnAfterScene();
-            return;
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
         }
-
-        switch (script.displayType)
+        else if (matchingScript != null)
         {
-            case "IMAGE":
-                CreateImageBlock(script.KOR);
-                OnAfterScene();
-                break;
-
-            case "TEXT":
-                HandleTextDisplay(script.KOR, lastBlock, OnAfterScene);
-                break;
-
-            case "BATTLE":
-                OnBattleJoin?.Invoke(script.KOR);
-                break;
-
-            default:
-                Debug.LogWarning("알 수 없는 displayType: " + script.displayType);
-                OnAfterScene();
-                break;
-        }
-    }
-
-    /// <summary>
-    /// 타입 이펙트 또는 새 텍스트 블록 처리
-    /// </summary>
-    private void HandleTextDisplay(string text, GameObject lastBlock, Action onDone)
-    {
-        if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
-        {
-            CreateTextBlock(text);
-            onDone?.Invoke();
+            switch (matchingScript.displayType)
+            {
+                case "IMAGE":
+                    Debug.Log("이미지 생성에 들어왔습니다");
+                    CreateImageBlock(matchingScript.KOR);
+                    break;
+                case "TEXT":
+                    Debug.Log("텍스트 생성에 들어왔습니다");
+                    HandleTextDisplay(matchingScript.KOR, lastBlock);
+                    if (currentStory.Choice1_Text != "")
+                    {
+                        SetupChoices();
+                    }
+                    break;
+                case "BATTLE":
+                    Debug.Log("배틀에 들어왔습니다");
+                    Debug.Log(matchingScript.KOR);
+                    OnBattleJoin?.Invoke(matchingScript.KOR);
+                    break;
+            }
         }
         else
         {
-            StartCoroutine(TypeTextEffect(text, lastBlock, onDone));
+            Debug.LogWarning("해당 스크립트를 찾지 못했습니다.");
         }
-    }
 
-    private IEnumerator TypeTextEffect(string fullText, GameObject go, Action onDone)
+        // Choice 버튼 세팅, OnChoiceSelected에서 currentIndex++, 필요 시 onCompleteCallback 호출
+
+
+    }
+    private void HandleTextDisplay(string text, GameObject lastBlock)
     {
-        isTyping = true;
-        SkipButton.SetActive(true);
-
-        var tmp = go.GetComponent<TMP_Text>();
-        string full = tmp.text + fullText;
-        for (int i = 0; i < fullText.Length; i++)
-        {
-            if (isSkip)
-            {
-                tmp.text = full;
-                break;
-            }
-            tmp.text += fullText[i];
-            yield return new WaitForSeconds(0.05f);
-        }
-
-        isTyping = false;
-        isSkip = false;
-        SkipButton.SetActive(false);
-
-        // 스크롤 자동 갱신
-        Canvas.ForceUpdateCanvases();
-        scrollRect.verticalNormalizedPosition = 0f;
-
-        onDone?.Invoke();
+        if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
+            CreateTextBlock(text);
+        else
+            StartCoroutine(TypeTextEffect(text, lastBlock));
     }
 
-    /// <summary>
-    /// 이미지 블록 생성
-    /// </summary>
+
+    // 필요 시 마지막 노드까지 모두 진행 후 onCompleteCallback 호출
+    public void OnMainStoryComplete()
+    {
+        onCompleteCallback?.Invoke();
+    }
+
+    private void ClearContent()
+    {
+        foreach (var go in Testblocks)
+            Destroy(go);
+        Testblocks.Clear();
+        foreach (Transform t in choiceButtonParent)
+            Destroy(t.gameObject);
+    }
+
+    // 이미지 블록 생성
     private void CreateImageBlock(string spriteName)
     {
         var go = Instantiate(ImagePrefab, content);
         var img = go.GetComponent<Image>();
         img.sprite = Resources.Load<Sprite>($"Images/{spriteName}");
         Testblocks.Add(go);
+        NextScene();
     }
+
+    // 텍스트 블록 생성 (초기화만)
     private void CreateTextBlock(string text)
     {
         var go = Instantiate(TextPrefab, content);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffect(text, go, OnAfterScene));
+        StartCoroutine(TypeTextEffect(text, go));
         Testblocks.Add(go);
     }
 
-    /// <summary>
-    /// 선택지 생성 또는 다음 씬 분기 처리
-    /// </summary>
-    private void OnAfterScene()
+    // 타입라이터 이펙트
+    private IEnumerator TypeTextEffect(string fullText, GameObject go)
     {
-        // 선택지 개수 확인
-        var choices = new[]
+        SkipButton.SetActive(true);
+        string temp = go.GetComponent<TMP_Text>().text + fullText;
+        if (fullText != null)
         {
-            currentStory.Choice1_Text,
-            currentStory.Choice2_Text,
-            currentStory.Choice3_Text
-        }.Where(c => !string.IsNullOrEmpty(c)).ToList();
-
-        if (choices.Count > 1)
-        {
-            SetupChoices();
-        }
-        else if (choices.Count == 1)
-        {
-            OnChoiceSelected(choices[0]);
+            //타입핑 중 인지 확인
+            isTyping = true;
+            for (int i = 0; i < fullText.Length; i++)
+            {
+                //버튼 누를때 활성화 되게 하면 될듯
+                if (isSkip == true)
+                {
+                    go.GetComponent<TMP_Text>().text = temp.ToString();
+                    break;
+                }
+                go.GetComponent<TMP_Text>().text += fullText[i].ToString();
+                yield return new WaitForSeconds(0.05f);
+                //0.01초마다 한번씩 출력시킴
+            }
         }
         else
         {
-            // 스토리 브레이크 분기
-            var script = scriptEventsCache
-                .FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
-            if (script != null && script.StoryBreak == "Break")
-            {
-                ResetSkipButton();
-                SkipButton.GetComponent<Button>().onClick.AddListener(OnMainStoryComplete);
-            }
-            else
-            {
-                NextScene();
-            }
+            //RamEvent같은 경우 설명 같은게 하나도 없기 때문에 에러가 발생을 하는데 그걸 막고자 if문 사용했음
+            yield break;
         }
+        Canvas.ForceUpdateCanvases();
+
+        // 2) 스크롤을 맨 아래(또는 맨 위)로 이동
+        //    verticalNormalizedPosition == 1 → 맨 위, 0 → 맨 아래
+        scrollRect.verticalNormalizedPosition = 0f;
+
+        isTyping = false;
+        SkipButton.SetActive(false);
+        isSkip = false;
+        NextScene();
     }
 
+    // 선택지 버튼 세팅
     private void SetupChoices()
     {
-        ClearChoiceButtons();
-        var available = new List<(string code, string text)>();
-        for (int i = 1; i <= 3; i++)
+        List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
+
+        // 기존 버튼 삭제
+        foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
+
+        if (currentStory.Choice1_Text != "")
         {
-            var code = currentStory.GetType()
-                .GetProperty($"Choice{i}_Text")
-                .GetValue(currentStory) as string;
-            if (!string.IsNullOrEmpty(code))
+            string code = currentStory.Choice1_Text;
+            Debug.Log(code);
+            string display = GetDisplayTextFromScript(code, scriptEventsCache);
+            //Debug.Log($"테스트용 문자열입니다 {display}");
+            availableChoices.Add((code, display));
+        }
+        if (currentStory.Choice2_Text != "")
+        {
+            string code = currentStory.Choice2_Text;
+            string display = GetDisplayTextFromScript(code, scriptEventsCache);
+            availableChoices.Add((code, display));
+        }
+        if (currentStory.Choice3_Text != "")
+        {
+            string code = currentStory.Choice3_Text;
+            string display = GetDisplayTextFromScript(code, scriptEventsCache);
+            availableChoices.Add((code, display));
+        }
+        CreateChoicebutton(availableChoices);
+    }
+
+    void CreateChoicebutton(List<(string destCode, string displayText)> availableChoices)
+    {
+        if (availableChoices.Count > 0)
+        {
+            // 선택지가 있으면 버튼 생성
+            foreach (var choice in availableChoices)
             {
-                var display = GetDisplayTextFromScript(code);
-                available.Add((code, display));
+                GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
+                Button btn = buttonObj.GetComponent<Button>();
+                TMP_Text btnText = buttonObj.GetComponentInChildren<TMP_Text>();
+                if (btnText != null)
+                    btnText.text = choice.displayText;
+
+                btn.onClick.AddListener(() => { OnChoiceSelected(choice.destCode); });
+            }
+        }
+    }
+    void OnChoiceSelected(string newSceneCode)
+    {
+        // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
+        if (newSceneCode.StartsWith("MainScript"))
+        {
+            newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
+            //버튼 눌렸으면 삭제 시킴
+            foreach (Transform child in choiceButtonParent)
+            {
+                Destroy(child.gameObject);
             }
         }
 
-        foreach (var (code, text) in available)
+        Story_Master_Main nextStory = FindStoryBySceneCode(newSceneCode);
+        if (nextStory != null)
         {
-            var btnObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
-            var btn = btnObj.GetComponent<Button>();
-            btn.GetComponentInChildren<TMP_Text>().text = text;
-            btn.onClick.AddListener(() => OnChoiceSelected(code));
-        }
-    }
-
-    private void OnChoiceSelected(string newCode)
-    {
-        ClearChoiceButtons();
-        var target = FindStoryBySceneCode(newCode);
-        if (target != null)
-        {
-            currentStory = target;
-            currentIndex = storyList.IndexOf(target);
+            currentStory = nextStory;
             DisplayCurrentStory();
         }
         else
         {
-            Debug.LogWarning("Scene not found: " + newCode);
-            OnMainStoryComplete();
+            Debug.LogWarning("해당 Scene_Code를 가진 스토리를 찾을 수 없습니다: " + newSceneCode);
         }
-    }
 
+    }
+    Story_Master_Main FindStoryBySceneCode(string sceneCode)
+    {
+        return storyList.FirstOrDefault(s => s.Scene_Code.Trim() == sceneCode.Trim());
+    }
+    private string GetDisplayTextFromScript(string code, List<Main_Script_Master_Main> scriptEvents)
+    {
+        var match = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == code.Trim());
+        Debug.Log(match);
+        if (match != null)
+            return match.KOR;
+        else
+            return code;
+    }
     public void NextScene()
     {
         if (isTyping) return;
-        var next = storyList.FirstOrDefault(s =>
-            s.Chapter_Index == currentStory.Chapter_Index &&
-            s.Event_Index == currentStory.Event_Index &&
-            s.Script_Index == currentStory.Script_Index + 1);
+
+        var next = storyList
+        .FirstOrDefault(s => s.Chapter_Index == currentStory.Chapter_Index &&
+                             s.Event_Index == currentStory.Event_Index &&
+                             s.Script_Index == currentStory.Script_Index + 1);
+
+        var choices = new[]
+   {
+        currentStory.Choice1_Text,
+        currentStory.Choice2_Text,
+        currentStory.Choice3_Text
+    }.Where(c => !string.IsNullOrEmpty(c)).ToList();
+
+        if (choices.Count == 1)
+        {
+            OnChoiceSelected(choices[0]);
+            return;
+        }
+        else if (choices.Count > 1)
+        {
+            // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
+            return;
+        }
+
+        var script = scriptEventsCache
+        .FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
+        if (script != null && script.StoryBreak == "Break")
+        {
+            Debug.Log("브레이크문 들어왔습니다");
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
+            return;
+        }
+
 
         if (next != null)
         {
@@ -277,38 +360,11 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else
         {
-            OnMainStoryComplete();
+            Debug.Log("아무조건에도 맞지 않습니다");
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
         }
     }
 
-    private void ResetSkipButton()
-    {
-        var btn = SkipButton.GetComponent<Button>();
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => { if (isTyping) isSkip = true; });
-    }
-
-    public void OnMainStoryComplete() => onCompleteCallback?.Invoke();
-
-    private void ClearContent()
-    {
-        foreach (var go in Testblocks) Destroy(go);
-        Testblocks.Clear();
-        ClearChoiceButtons();
-    }
-
-    private void ClearChoiceButtons()
-    {
-        foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
-    }
-
-    private Story_Master_Main FindStoryBySceneCode(string sceneCode)
-        => storyList.FirstOrDefault(s => s.Scene_Code.Trim() == sceneCode.Trim());
-
-    private string GetDisplayTextFromScript(string code)
-    {
-        var match = scriptEventsCache
-            .FirstOrDefault(sm => sm.Script_Code.Trim() == code.Trim());
-        return match != null ? match.KOR : code;
-    }
 }
