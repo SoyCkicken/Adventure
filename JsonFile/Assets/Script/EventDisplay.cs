@@ -176,6 +176,10 @@ public class EventDisplay : MonoBehaviour
                 break;
             case "TEXT":
                 HandleTextDisplay(script.KOR, last);
+                if (currentEvent.Choice1_Text != null)
+                {
+                    SetupChoices();
+                }
                 break;
             case "BATTLE":
                 OnBattleJoin?.Invoke(script.KOR);
@@ -213,6 +217,27 @@ public class EventDisplay : MonoBehaviour
     /// </summary>
     public void AdvanceEvent()
     {
+        var choices = new[]
+   {
+        currentEvent.Choice1_Text,
+        currentEvent.Choice2_Text,
+        currentEvent.Choice3_Text
+    }.Where(c => !string.IsNullOrEmpty(c)).ToList();
+        if (choices.Count == 1)
+        {
+            return;
+        }
+        else if (choices.Count > 1)
+        {
+            // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
+            return;
+        }
+
+
+
+
+
+
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
 
@@ -267,6 +292,7 @@ public class EventDisplay : MonoBehaviour
         isSkip = false;
         SkipButton.SetActive(false);
         AdvanceEvent();
+        StopCoroutine(TypeTextEffect(full,go));
     }
 
     private void CreateImageBlock(string name)
@@ -315,7 +341,9 @@ public class EventDisplay : MonoBehaviour
         ClearContent();
         if (target != null)
         {
-            currentGroupIndex = eventList.IndexOf(target);
+            //여기가 문제인거 확인
+            //currentGroupIndex = eventList.IndexOf(target);
+            currentGroupIndex = target.Script_Index;
             DisplayCurrentEvent();
         }
         else

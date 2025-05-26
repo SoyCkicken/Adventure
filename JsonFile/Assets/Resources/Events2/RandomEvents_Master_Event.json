@@ -45,7 +45,7 @@
       "Script_Index": 5.0,
       "Random_Event_ID": "EventScene_1_5",
       "Chapter_Index": 1.0,
-      "Event_Text": null,
+      "Event_Text": "EventScript_1_5",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
@@ -55,7 +55,7 @@
       "Script_Index": 6.0,
       "Random_Event_ID": "EventScene_1_6",
       "Chapter_Index": 1.0,
-      "Event_Text": null,
+      "Event_Text": "EventScript_1_6",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
@@ -65,7 +65,7 @@
       "Script_Index": 7.0,
       "Random_Event_ID": "EventScene_1_7",
       "Chapter_Index": 1.0,
-      "Event_Text": null,
+      "Event_Text": "EventScript_1_7",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
@@ -75,7 +75,7 @@
       "Script_Index": 8.0,
       "Random_Event_ID": "EventScene_1_8",
       "Chapter_Index": 1.0,
-      "Event_Text": null,
+      "Event_Text": "EventScript_1_8",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null

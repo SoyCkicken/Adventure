@@ -328,7 +328,7 @@ public class StoryDisplayManager : MonoBehaviour
         currentStory.Choice2_Text,
         currentStory.Choice3_Text
     }.Where(c => !string.IsNullOrEmpty(c)).ToList();
-
+        Debug.Log(choices.Count);
         if (choices.Count == 1)
         {
             OnChoiceSelected(choices[0]);

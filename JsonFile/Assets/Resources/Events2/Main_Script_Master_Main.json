@@ -97,7 +97,7 @@
       "Script_Code": "MainScript_1_1_11",
       "KOR": "나는 그 광경을 멍하니 바라보고만 있었다.\n마치… 이 모든 장면을 어디선가 본 것처럼.\n기억도, 감정도, 이 상황을 처음 겪는 사람의 것과는 달랐다.\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break"
+      "StoryBreak": null
     },
     {
       "Chapter_Index": 1.0,
@@ -115,7 +115,7 @@
       "Script_Code": "MainScript_1_1_13",
       "KOR": "다음 모험으로 떠난다",
       "displayType": "TEXT",
-      "StoryBreak": null
+      "StoryBreak": "Break"
     },
     {
       "Chapter_Index": 1.0,
@@ -124,7 +124,7 @@
       "Script_Code": "MainScript_1_1_14",
       "KOR": null,
       "displayType": "TEXT",
-      "StoryBreak": "Break"
+      "StoryBreak": null
     },
     {
       "Chapter_Index": 1.0,

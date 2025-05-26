@@ -7,6 +7,7 @@ using MyGame;
 public class CombatTest : MonoBehaviour
 {
     public OptionManager optionManager;
+    public EquipmentSystem equipmentSystem;
     public Character player;
     public Character enemy;
 
@@ -55,7 +56,7 @@ public class CombatTest : MonoBehaviour
         yield return enemyLoop;
         if (battleOver == true)
         {
-            Destroy(enemy.gameObject);
+            //Destroy(enemy.gameObject);
             Debug.Log("플레이어가 승리하였습니다");
         }
         else
@@ -96,6 +97,11 @@ public class CombatTest : MonoBehaviour
             {
                 // attacker가 살아 있으면 attacker 승리
                 battleOver = (player.Health > 0);
+                yield break;
+            }
+            else if(attacker.Health<=0)
+            {
+                battleOver = false;
                 yield break;
             }
         }

@@ -33,13 +33,7 @@ namespace MyGame
         public void ApplyWeapon(Weapon_Master weapon)
         {
             if (weapon == null) return;
-            int tempDamage = Convert.ToInt32(weapon.Weapon_DMG + (playerState.Strength*weapon.STR_Scaling)
-                + (playerState.DEX * weapon.DEX_Scaling)
-                + (playerState.Int*weapon.INT_Scaling)
-                + (playerState.MAG*weapon.MAG_Scaling)
-                + (playerState.Charisma * weapon.CHR_Scaling)
-                + (playerState.Divinity * weapon.DIV_Scaling));
-            damage += tempDamage;
+            
             Debug.Log($"[{charaterName}] '{weapon.Weapon_Name}' 장착 → 공격력 +{weapon.Weapon_DMG} → 최종 공격력 {damage}");
         }
         /// <summary>

@@ -2,27 +2,32 @@ using UnityEngine;
 using System.Linq;
 using MyGame;
 using UnityEngine.UI;
-using UnityEditor;  // Character, OptionContext 등이 있는 네임스페이스
+using UnityEditor;
+using System;  // Character, OptionContext 등이 있는 네임스페이스
 
 public class EquipmentSystem : MonoBehaviour
 {
+    public PlayerState playerState;
     public JsonManager jsonManager;
     public Character player;
-    public Character enemy;
 
-    void Start()
+    public void Start()
     {
         // 자동 참조
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
-        if (enemy == null)
-            enemy = FindObjectOfType<Character>();
         var weapon = jsonManager.GetWeaponMasters("Weapon_Master")
                           .FirstOrDefault(w => w.Weapon_ID == player.weapon_Name);
         // 무기 장착 처리
         if (weapon != null)
         {
-            player.damage += weapon.Weapon_DMG;
+            int tempDamage = Convert.ToInt32(weapon.Weapon_DMG + (playerState.Strength * weapon.STR_Scaling)
+                + (playerState.DEX * weapon.DEX_Scaling)
+                + (playerState.Int * weapon.INT_Scaling)
+                + (playerState.MAG * weapon.MAG_Scaling)
+                + (playerState.Charisma * weapon.CHR_Scaling)
+                + (playerState.Divinity * weapon.DIV_Scaling));
+            player.damage += tempDamage;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(weapon.Option_1_ID))
                 player.OnHitOptions.Add(new Character.EquippedOption
@@ -64,37 +69,6 @@ public class EquipmentSystem : MonoBehaviour
                     item_ID = armor.Armor_ID
                 });
         }
-
-        //void ApplyWeaponOptions(Weapon_Master w)
-        //{
-        //    // 옵션 1
-        //    if (!string.IsNullOrEmpty(w.Option_1_ID))
-        //    {
-        //        //var ctx = new OptionContext
-        //        //{
-        //        //    User = player,
-        //        //    Target = player,           // 패시브 옵션이라면 자기 자신을 타겟으로
-        //        //    Value = w.Option_Value1,
-        //        //    // DamageDealt, TurnNumber 등은 옵션에 따라 채워주면 됨
-        //        //};
-        //        //optionManager.ApplyOption(w.Option_1_ID, ctx);
-        //        player.Option1_ID = w.Option_1_ID;
-        //        player.Option1_Value = w.Option_Value1;
-        //    }
-
-        //    // 옵션 2
-        //    if (!string.IsNullOrEmpty(w.Option_2_ID))
-        //    {
-        //        //var ctx = new OptionContext
-        //        //{
-        //        //    User = player,
-        //        //    Target = player,
-        //        //    Value = w.Option_Value2,
-        //        //};
-        //        //optionManager.ApplyOption(w.Option_2_ID, ctx);
-        //        player.Option2_ID = w.Option_2_ID;
-        //        player.Option2_Value = w.Option_Value2;
-        //    }
     }
 }
 

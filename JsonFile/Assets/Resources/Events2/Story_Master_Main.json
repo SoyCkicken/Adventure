@@ -98,9 +98,9 @@
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_8",
       "Main_Effect": null,
-      "Choice1_Text": "MainScript_1_1_9",
+      "Choice1_Text": null,
       "Choice1_Next_Scene": null,
-      "Choice2_Text": "MainScript_1_1_11",
+      "Choice2_Text": null,
       "Choice2_Next_Scene": null,
       "Choice3_Text": null,
       "Choice3_Next_Scene": null
