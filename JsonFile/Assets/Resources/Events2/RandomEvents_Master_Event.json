@@ -17,7 +17,7 @@
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_1_2",
       "Choice1_Text": "EventScript_1_3",
-      "Choice2_Text": "EventScript_1_4",
+      "Choice2_Text": "EventScript_1_6",
       "Choice3_Text": null
     },
     {
@@ -66,16 +66,6 @@
       "Random_Event_ID": "EventScene_1_7",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_1_7",
-      "Choice1_Text": null,
-      "Choice2_Text": null,
-      "Choice3_Text": null
-    },
-    {
-      "RandomEvent_Index": 1.0,
-      "Script_Index": 8.0,
-      "Random_Event_ID": "EventScene_1_8",
-      "Chapter_Index": 1.0,
-      "Event_Text": "EventScript_1_8",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null

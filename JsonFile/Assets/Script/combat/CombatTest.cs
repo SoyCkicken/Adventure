@@ -7,7 +7,6 @@ using MyGame;
 public class CombatTest : MonoBehaviour
 {
     public OptionManager optionManager;
-    public EquipmentSystem equipmentSystem;
     public Character player;
     public Character enemy;
 

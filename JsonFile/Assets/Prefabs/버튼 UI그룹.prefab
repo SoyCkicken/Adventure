@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -489.60004, y: -323.1108}
-  m_SizeDelta: {x: 979.2, y: 520.9783}
+  m_AnchoredPosition: {x: -399.97318, y: -323.1108}
+  m_SizeDelta: {x: 450, y: 520.9783}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4318772655267143392
 MonoBehaviour:
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 1
-  m_CellSize: {x: 800, y: 100}
+  m_CellSize: {x: 450, y: 70}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -75,15 +75,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4564335960930419283, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
       propertyPath: m_fontSize
-      value: 69.05
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4564335960930419283, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4564335960930419283, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5630296407657593681, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
       propertyPath: m_Pivot.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5630296407657593681, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
       propertyPath: m_Pivot.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5630296407657593681, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
       propertyPath: m_AnchorMax.x

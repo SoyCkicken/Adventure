@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public class PlayerState : MonoBehaviour
 {
@@ -68,7 +67,6 @@ public class PlayerState : MonoBehaviour
     private int temph;
     private int tempDi;
     public GameObject CloseButton;
-    private int E_State = 0;
     private int Experience_required = 100;//필요 경험치
     private int Experience = 100000;
     private void Awake()

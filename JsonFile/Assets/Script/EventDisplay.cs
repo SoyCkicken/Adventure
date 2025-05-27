@@ -15,7 +15,8 @@ public class EventDisplay : MonoBehaviour
     public GameObject SkipButton;
     public Transform choiceButtonParent;
     public GameObject choiceButtonPrefab;
-
+    public FontSizeManager fontSizeManager;
+    public GameObject TouchCatcher;
     private JsonManager jsonManager;
     
     private RandomEvents_Master_Event currentEvent;
@@ -25,9 +26,6 @@ public class EventDisplay : MonoBehaviour
     private bool isSkip = false;
     private bool isTyping = false;
     private Action<bool> onCompleteCallback;
-    
-    private Button skipButtonComponent;
-
     private System.Random rng = new System.Random();
     public int count;
     public int currCount = 0;
@@ -47,8 +45,11 @@ public class EventDisplay : MonoBehaviour
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
 
-        skipButtonComponent = SkipButton.GetComponent<Button>();
-        skipButtonComponent.onClick.AddListener(OnSkip);
+
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
+        {
+            OnSkip();
+        };
         count = rng.Next(1,2);
     }
 
@@ -93,7 +94,7 @@ public class EventDisplay : MonoBehaviour
         currentIndex = 0;
         currentEvent = eventList[currentIndex];
         ClearContent();
-        SkipButton.SetActive(true);
+        TouchCatcher.SetActive(true);
         PickNewGroup();
         //랜덤으로 바꿨음
         //DisplayCurrentEvent();
@@ -103,8 +104,8 @@ public class EventDisplay : MonoBehaviour
     {
         Debug.Log("랜덤 값을 뽑습니다");
         ClearContent();
-        skipButtonComponent.onClick.RemoveAllListeners();
-        skipButtonComponent.onClick.AddListener(OnSkip);
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.AddListener(OnSkip);
         if (eventGroups == null || eventGroups.Count == 0)
         {
             // 남은 그룹 없음 -> 메인 스토리 복귀ㄴ
@@ -164,11 +165,6 @@ public class EventDisplay : MonoBehaviour
         }
 
         GameObject last = activeBlocks.Count > 0 ? activeBlocks[activeBlocks.Count - 1] : null;
-        //Debug.Log(script.displayType);
-        bool isImage = script.displayType == "Image";
-        //Debug.Log(isImage);
-
-       
         switch (script.displayType)
         {
             case "IMAGE":
@@ -251,9 +247,15 @@ public class EventDisplay : MonoBehaviour
             //    StopRandomEvent();
             //}
             Debug.Log("지금 이벤트가 종료되어 여기break문으로 들어왔습니다");
-            skipButtonComponent.onClick.RemoveAllListeners();
-            skipButtonComponent.onClick.AddListener(() => PickNewGroup());
             SkipButton.SetActive(true);
+            TouchCatcher.SetActive(false);
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;  //이 부분이 추가가 되었음
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => {
+                PickNewGroup();
+                SkipButton.SetActive(false);
+            });
+            
             return;
         }
         // 다음 이벤트
@@ -306,6 +308,8 @@ public class EventDisplay : MonoBehaviour
     void CreateTextBlock(string text)
     {
         var go = Instantiate(TextPrefab, content);
+        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+        fontSizeManager.Register(tmp);
         activeBlocks.Add(go);
         //var tmp = go.GetComponent<TMP_Text>();
         StartCoroutine(TypeTextEffect(text, go));
@@ -315,7 +319,7 @@ public class EventDisplay : MonoBehaviour
     private void SetupChoices()
     {
         ClearChoiceButtons();
-        skipButtonComponent.onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         var choices = new List<(string code, string text)>();
         Debug.Log(GetScriptText(currentEvent.Choice1_Text));
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))

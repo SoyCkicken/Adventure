@@ -7,20 +7,23 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
 public class StoryDisplayManager : MonoBehaviour
 {
     public GameObject ImagePrefab;
     public GameObject TextPrefab;
     public GameObject SkipButton;
+    public GameObject TouchCatcher;
     public GameObject choiceButtonPrefab;
     public ScrollRect scrollRect;         // 에디터에서 연결
     public Transform content;
     public Transform choiceButtonParent;
-
+    public FontSizeManager fontSizeManager;
     public JsonManager jsonManager;
     public List<Story_Master_Main> storyList;
     public Story_Master_Main currentStory;
     private int currentIndex = 0;
+    public int currentStoryIndex = 0;
     public bool isSkip = false;
     public bool isTyping;
 
@@ -32,37 +35,24 @@ public class StoryDisplayManager : MonoBehaviour
     // 콜백 저장용
     private Action onCompleteCallback;
 
-    private void Awake()
-    {
-
-
-
-    }
-    void Start()
-    {
-        //this.StartMainStory(() =>
-        //{
-        //    Debug.Log("스토리 연출 완료!");
-        //});
-    }
-
-    void Update()
-    {
-
-    }
-
     /// <summary>
     /// 메인 스토리 연출 시작 (GameFlowManager에서 호출)
     /// </summary>
+    /// 
+
+    private void OnSkip()
+    {
+        if (isTyping)
+            isSkip = true;
+    }
     public void StartMainStory(Action onComplete)
     {
-
+        currentStoryIndex++;
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView+= () =>
         {
-            if (isTyping)
-                isSkip = true;
-        });
+            OnSkip();
+        };
 
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
@@ -76,15 +66,15 @@ public class StoryDisplayManager : MonoBehaviour
             return;
         }
 
-        storyList = storyList.OrderBy(s => s.Chapter_Index)
-                             .ThenBy(s => s.Event_Index)
-                             .ThenBy(s => s.Script_Index)
-                             .ToList();
+        storyList = storyList
+          .Where(s =>s.Event_Index == currentStoryIndex)
+          .OrderBy(e => e.Script_Index)
+          .ToList();
 
         currentIndex = 0;
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         currentStory = storyList[currentIndex];
-        SkipButton.SetActive(true);
+        TouchCatcher.SetActive(true);
         ClearContent();
         // 첫 시퀀스 표시
         DisplayCurrentStory();
@@ -183,6 +173,8 @@ public class StoryDisplayManager : MonoBehaviour
     private void CreateTextBlock(string text)
     {
         var go = Instantiate(TextPrefab, content);
+        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+        fontSizeManager.Register(tmp);
         //var tmp = go.GetComponent<TMP_Text>();
         StartCoroutine(TypeTextEffect(text, go));
         Testblocks.Add(go);
@@ -191,7 +183,6 @@ public class StoryDisplayManager : MonoBehaviour
     // 타입라이터 이펙트
     private IEnumerator TypeTextEffect(string fullText, GameObject go)
     {
-        SkipButton.SetActive(true);
         string temp = go.GetComponent<TMP_Text>().text + fullText;
         if (fullText != null)
         {
@@ -205,6 +196,7 @@ public class StoryDisplayManager : MonoBehaviour
                     go.GetComponent<TMP_Text>().text = temp.ToString();
                     break;
                 }
+                scrollRect.verticalNormalizedPosition = 0f;
                 go.GetComponent<TMP_Text>().text += fullText[i].ToString();
                 yield return new WaitForSeconds(0.05f);
                 //0.01초마다 한번씩 출력시킴
@@ -219,7 +211,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         // 2) 스크롤을 맨 아래(또는 맨 위)로 이동
         //    verticalNormalizedPosition == 1 → 맨 위, 0 → 맨 아래
-        scrollRect.verticalNormalizedPosition = 0f;
+        
 
         isTyping = false;
         SkipButton.SetActive(false);
@@ -347,7 +339,12 @@ public class StoryDisplayManager : MonoBehaviour
             Debug.Log("브레이크문 들어왔습니다");
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
-            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
+            SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => {
+                OnMainStoryComplete();
+                SkipButton.SetActive(false); });
+
+            
             return;
         }
 
@@ -363,7 +360,10 @@ public class StoryDisplayManager : MonoBehaviour
             Debug.Log("아무조건에도 맞지 않습니다");
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
-            SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
+            SkipButton.GetComponent<Button>().onClick.AddListener(() => {
+                OnMainStoryComplete();
+                SkipButton.SetActive(false);
+            });
         }
     }
 

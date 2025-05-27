@@ -30,23 +30,6 @@ namespace MyGame
             public string item_ID;
         }
         public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
-        public void ApplyWeapon(Weapon_Master weapon)
-        {
-            if (weapon == null) return;
-            
-            Debug.Log($"[{charaterName}] '{weapon.Weapon_Name}' 장착 → 공격력 +{weapon.Weapon_DMG} → 최종 공격력 {damage}");
-        }
-        /// <summary>
-        /// 방어구 장착 시 방어력 & 체력에 추가
-        /// </summary>
-        public void ApplyArmor(Armor_Master Armor)
-        {
-            if (Armor == null) return;
-            int tempArmorHP = (Armor.Armor_HP + ((playerState.Health*Armor.Armor_HP) + (playerState.Health * Armor.Armor_DEF)/5));
-            armor += Armor.Armor_DEF;
-            MaxHealth += tempArmorHP;
-            Debug.Log($"[{charaterName}] '{Armor.Armor_NAME}' 장착 → 방어력 +{Armor.Armor_DEF}, 체력 +{Armor.Armor_HP} → 최종 방어력 {armor}, 체력 {Health}");
-        }
 
         public void AddCritBuff(string buffID, int bonusPercent)
         {
