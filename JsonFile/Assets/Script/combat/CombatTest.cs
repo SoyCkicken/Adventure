@@ -96,13 +96,13 @@ public class CombatTest : MonoBehaviour
             if (target.Health <= 0)
             {
                 // attacker가 살아 있으면 attacker 승리
-                player.GetComponent<EquipmentSystem>().init();
+                player.GetComponent<EquipmentSystem>().Init();
                 battleOver = (player.Health > 0);
                 yield break;
             }
             else if(attacker.Health<=0)
             {
-                player.GetComponent<EquipmentSystem>().init();
+                player.GetComponent<EquipmentSystem>().Init();
                 battleOver = false;
                 yield break;
             }

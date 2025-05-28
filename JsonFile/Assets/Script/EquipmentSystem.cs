@@ -13,10 +13,10 @@ public class EquipmentSystem : MonoBehaviour
 
     private void Start()
     {
-        init();
+        Init();
     }
 
-    public void init()
+    public void Init()
     {
         // 자동 참조
         if (jsonManager == null)
