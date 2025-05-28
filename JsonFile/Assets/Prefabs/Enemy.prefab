@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1620391399126659264}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charaterName: 
+  playerState: {fileID: 0}
+  MaxHealth: 50
   Health: 50
   damage: 10
   speed: 1
@@ -52,4 +54,8 @@ MonoBehaviour:
   CitChance: 10
   weapon_Name: 
   armor_Name: 
+  MonPas_Effect1: 
+  MonPas_Value1: 0
+  MonPas_Effect2: 
+  MonPas_Value2: 0
   OnHitOptions: []

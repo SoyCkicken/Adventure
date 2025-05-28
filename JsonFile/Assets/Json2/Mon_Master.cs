@@ -13,7 +13,7 @@ public class Mon_Master
     public string MonPas_Effect1;
     public int Effect1_Stat;
     public string MonPas_Effect2;
-    public string Effect2_Stat;
+    public int Effect2_Stat;
     public int Get_EXP;
     public int Get_Soul;
 }

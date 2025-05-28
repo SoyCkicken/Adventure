@@ -19,6 +19,10 @@ namespace MyGame
         public Dictionary<string, int> critBuffs = new Dictionary<string, int>();
         public string weapon_Name;
         public string armor_Name;
+        public string MonPas_Effect1;
+        public int MonPas_Value1;
+        public string MonPas_Effect2;
+        public int MonPas_Value2;
         //람다식이라서 출력이 안되는거임
         public int CritChancePercent 
             => CitChance + critBuffs.Values.Sum(); //모든 크리티컬 확률 증가 적용해서
@@ -56,7 +60,7 @@ namespace MyGame
             Debug.Log($"{charaterName}이(가) 받는 데미지: {damage} → 방어구 {armor} 경감 → 실제 {reduced}. 현재 HP: {Health}");
             if (Health <= 0)
             {
-                Destroy(this);
+                //Destroy(this);
             }
             return reduced;
         }

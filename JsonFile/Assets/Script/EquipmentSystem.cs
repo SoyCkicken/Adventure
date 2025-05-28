@@ -11,7 +11,12 @@ public class EquipmentSystem : MonoBehaviour
     public JsonManager jsonManager;
     public Character player;
 
-    public void Start()
+    private void Start()
+    {
+        init();
+    }
+
+    public void init()
     {
         // 자동 참조
         if (jsonManager == null)
@@ -27,7 +32,7 @@ public class EquipmentSystem : MonoBehaviour
                 + (playerState.MAG * weapon.MAG_Scaling)
                 + (playerState.Charisma * weapon.CHR_Scaling)
                 + (playerState.Divinity * weapon.DIV_Scaling));
-            player.damage += tempDamage;
+            player.damage = tempDamage;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(weapon.Option_1_ID))
                 player.OnHitOptions.Add(new Character.EquippedOption
@@ -51,8 +56,8 @@ public class EquipmentSystem : MonoBehaviour
         // 방어구 장착 처리
         if (armor != null)
         {
-            player.armor += armor.Armor_DEF;
-            player.MaxHealth += armor.Armor_HP;
+            player.armor= armor.Armor_DEF;
+            player.MaxHealth = armor.Armor_HP;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(armor.Armor_Option1))
                 player.OnHitOptions.Add(new Character.EquippedOption

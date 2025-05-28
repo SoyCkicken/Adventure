@@ -27,6 +27,7 @@ public class CombatTest : MonoBehaviour
 
         // 전투 상태 초기화
         battleOver = false;
+        Debug.Log("전투로 넘어 갔습니다!");
         player.Health = player.MaxHealth;
         enemy.Health = enemy.MaxHealth;
 
@@ -95,11 +96,13 @@ public class CombatTest : MonoBehaviour
             if (target.Health <= 0)
             {
                 // attacker가 살아 있으면 attacker 승리
+                player.GetComponent<EquipmentSystem>().init();
                 battleOver = (player.Health > 0);
                 yield break;
             }
             else if(attacker.Health<=0)
             {
+                player.GetComponent<EquipmentSystem>().init();
                 battleOver = false;
                 yield break;
             }

@@ -90,11 +90,12 @@ public class MonsterRoarEffect : IOptionEffect
     public void Apply(OptionContext ctx)
     {
         //상대방의 방어력을 깎는다
+        Debug.Log($"ctx.Target.armor의 값은 {ctx.Target.armor}"+ $"ctx.Value의 값은 : {ctx.Value}");
         int debufArmor = ctx.Target.armor - ctx.Value;
-        Debug.Log(ctx.Target.armor);
-        ctx.armor = debufArmor;
-        Debug.Log(ctx.Target.armor);
-        Debug.Log(ctx.armor);
+        Debug.Log(debufArmor);
+        //Debug.Log($"ctx의 유저는 = {ctx.User}  , ctx.target = {ctx.Target} , ctx.target.armor {ctx.Target.armor}");
+        ctx.Target.armor = debufArmor;
+        Debug.Log($"몬스터 옵션 테스트용 debug 입니다 {ctx.Target.armor}");
     }
 }
 

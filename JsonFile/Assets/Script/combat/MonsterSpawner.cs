@@ -94,6 +94,7 @@ public class MonsterSpawner : MonoBehaviour
     public JsonManager jsonManager;
     public MonsterOptionManager monsterOptionManager;
     public CombatTest combatTest;
+    public GameObject enemy;
     public GameObject player;
 
     [Header("몬스터 프리팹")]
@@ -138,7 +139,9 @@ public class MonsterSpawner : MonoBehaviour
         // (3) 인스턴스 생성 후 필드에 저장
         _currentMonster = Instantiate(monsterPrefab, transform.position, Quaternion.identity);
         _currentMonster.name = data.Mon_Name;
+        if (enemy == null) enemy = GameObject.FindWithTag("Enemy");
 
+        Debug.Log($"몬스터의 Effect1_Stat의 값 : {data.Effect1_Stat}");
         // (4) Character 세팅
         var ch = _currentMonster.GetComponent<Character>();
         ch.charaterName = data.Mon_Name;
@@ -147,29 +150,34 @@ public class MonsterSpawner : MonoBehaviour
         ch.damage = data.Mon_ATK;
         ch.armor = data.Mon_Def;
         ch.speed = data.Mon_Speed;
+        ch.MonPas_Value1 = data.Effect1_Stat;
+        ch.MonPas_Value2 = data.Effect2_Stat;
 
         // (5) CombatTest에 할당
         combatTest.enemy = ch;
 
         // (6) 패시브 옵션 적용
         ApplyPassive(data.MonPas_Effect1, data.Effect1_Stat, data.Mon_ID, ch);
+        ApplyPassive(data.MonPas_Effect2, data.Effect2_Stat, data.Mon_ID, ch);
 
         Debug.Log($"[Spawn] {_currentMonster.name} 세팅 완료");
     }
 
     private void ApplyPassive(string optionID, int value, string sourceID, Character target)
     {
-        if (string.IsNullOrEmpty(optionID) || optionID == "--")
+        if (string.IsNullOrEmpty(optionID) || optionID == "--" || optionID == null)
             return;
 
         var ctx = new OptionContext
         {
-            User = target,
+            User = enemy.GetComponent<Character>(),
             Target = player.GetComponent<Character>(),
             option_ID = optionID,
             Value = value,
             // 필요한 추가 컨텍스트 필드 설정
         };
+        Debug.Log($"ApplyPassive에서의 {value}");
+        Debug.Log($"ApplyPassive = ctx.user의 값 : {ctx.User}\nApplyPassive = ctx.Target = {ctx.Target}");
         monsterOptionManager.ApplyMonsterOption(optionID, ctx);
     }
 }
