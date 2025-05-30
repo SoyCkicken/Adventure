@@ -34,7 +34,17 @@ namespace MyGame
             public string item_ID;
         }
         public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
-
+        [System.Serializable]
+        public struct MonsterOption
+        {
+            public string OptionID;
+            public int Value;
+        }
+        public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
+        public void Start()
+        {
+            Debug.Log($"{OnEnemyHitOptions}");
+        }
         public void AddCritBuff(string buffID, int bonusPercent)
         {
             Debug.Log($"{buffID} : {bonusPercent}");

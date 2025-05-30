@@ -5,23 +5,6 @@ using UnityEngine.TextCore.Text;
 using MyGame;
 using Unity.VisualScripting;
 
-
-
-//public class OptionContext
-//{
-//    public Character User;
-//    public Character Target;
-//    public int hp;
-
-//    // 기본 옵션 값 (ex: 스케일, 퍼센트 등)
-//    public int Value;
-
-//    // 상황별 추가 정보
-//    public int DamageDealt;   // 예: 라이프스틸
-//    public int TurnNumber;    // 예: 연소 스택
-//    // ...필요한 필드만 계속 추가
-//}
-
 // 1) 옵션 효과 인터페이스
 public interface IOptionEffect
 {
@@ -75,6 +58,7 @@ public class Critical : IOptionEffect
         ctx.User.AddCritBuff(buffKey, ctx.Value);
     }
 }
+//버프로 빼야 되나
 public class BurnEffect : IOptionEffect
 {
     public void Apply(OptionContext ctx)
@@ -85,19 +69,7 @@ public class BurnEffect : IOptionEffect
         Debug.Log(ctx.hp);
     }
 }
-public class MonsterRoarEffect : IOptionEffect
-{
-    public void Apply(OptionContext ctx)
-    {
-        //상대방의 방어력을 깎는다
-        Debug.Log($"ctx.Target.armor의 값은 {ctx.Target.armor}"+ $"ctx.Value의 값은 : {ctx.Value}");
-        int debufArmor = ctx.Target.armor - ctx.Value;
-        Debug.Log(debufArmor);
-        //Debug.Log($"ctx의 유저는 = {ctx.User}  , ctx.target = {ctx.Target} , ctx.target.armor {ctx.Target.armor}");
-        ctx.Target.armor = debufArmor;
-        Debug.Log($"몬스터 옵션 테스트용 debug 입니다 {ctx.Target.armor}");
-    }
-}
+
 
 // 4) OptionManager
 public class OptionManager : MonoBehaviour
@@ -113,7 +85,7 @@ public class OptionManager : MonoBehaviour
             {"Effect_Bleed",   new BleedEffect()},
             {"Effect_Fire",new AddFireDamage()},
             {"Effect_Critical",     new Critical()},
-            {"Effect_Healing",     new Healting()}, 
+            {"Effect_Healing",     new Healting()},
             // …추가
         };
     }

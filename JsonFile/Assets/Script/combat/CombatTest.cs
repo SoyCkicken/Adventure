@@ -7,6 +7,7 @@ using MyGame;
 public class CombatTest : MonoBehaviour
 {
     public OptionManager optionManager;
+    public MonsterOptionManager monsterOptionManager;
     public Character player;
     public Character enemy;
 
@@ -30,7 +31,8 @@ public class CombatTest : MonoBehaviour
         Debug.Log("전투로 넘어 갔습니다!");
         player.Health = player.MaxHealth;
         enemy.Health = enemy.MaxHealth;
-
+        if(monsterOptionManager == null)
+        monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
         // 실제 전투 코루틴 실행
         StartCoroutine(ProcessBattle());
     }
@@ -49,8 +51,8 @@ public class CombatTest : MonoBehaviour
     {
         // 두 캐릭터의 공격루프를 동시에 돌리고,
         // 둘 다 끝날 때까지 대기했다가 onComplete 호출
-        var playerLoop = StartCoroutine(AttackLoop(player, enemy, true));
-        var enemyLoop = StartCoroutine(AttackLoop(enemy, player, false));
+        var playerLoop = StartCoroutine(AttackLoop(player, enemy, true,false));
+        var enemyLoop = StartCoroutine(AttackLoop(enemy, player, false,true));
 
         yield return playerLoop;
         yield return enemyLoop;
@@ -67,7 +69,7 @@ public class CombatTest : MonoBehaviour
         onComplete?.Invoke(battleOver);
     }
 
-    private IEnumerator AttackLoop(Character attacker, Character target, bool isPlayer)
+    private IEnumerator AttackLoop(Character attacker, Character target, bool isPlayer ,bool isEnemy)
     {
         while (!battleOver)
         {
@@ -91,6 +93,28 @@ public class CombatTest : MonoBehaviour
                     optionManager.ApplyOption(opt.OptionID, ctx);
                 }
             }
+            if (isEnemy && attacker.OnEnemyHitOptions != null)
+            {
+                Debug.Log($"{enemy} ; {attacker.OnEnemyHitOptions}");
+                foreach (var opt in attacker.OnEnemyHitOptions)
+                {
+                    Debug.Log(attacker.OnEnemyHitOptions.Count);
+                    var ctx = new OptionContext
+                    {
+                        User = attacker,
+                        Target = target,
+                        option_ID = opt.OptionID,
+                        Value = opt.Value
+                    };
+                    //Debug.Log(ctx);
+                    Debug.Log(opt.OptionID);
+                    monsterOptionManager.ApplyOption(opt.OptionID, ctx);
+                }
+                
+                Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
+            }
+           
+
 
             // 죽음 판정
             if (target.Health <= 0)
