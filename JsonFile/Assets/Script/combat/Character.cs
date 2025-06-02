@@ -41,10 +41,6 @@ namespace MyGame
             public int Value;
         }
         public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
-        public void Start()
-        {
-            Debug.Log($"{OnEnemyHitOptions}");
-        }
         public void AddCritBuff(string buffID, int bonusPercent)
         {
             Debug.Log($"{buffID} : {bonusPercent}");

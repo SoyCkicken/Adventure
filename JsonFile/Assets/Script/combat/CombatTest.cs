@@ -13,6 +13,7 @@ public class CombatTest : MonoBehaviour
 
     // 전투 완료 콜백
     private Action<bool> onComplete;
+    // 전투 종료시 넘길 변수
     private bool battleOver;
 
     /// <summary>
@@ -95,7 +96,6 @@ public class CombatTest : MonoBehaviour
             }
             if (isEnemy && attacker.OnEnemyHitOptions != null)
             {
-                Debug.Log($"{enemy} ; {attacker.OnEnemyHitOptions}");
                 foreach (var opt in attacker.OnEnemyHitOptions)
                 {
                     Debug.Log(attacker.OnEnemyHitOptions.Count);
@@ -107,10 +107,11 @@ public class CombatTest : MonoBehaviour
                         Value = opt.Value
                     };
                     //Debug.Log(ctx);
-                    Debug.Log(opt.OptionID);
-                    monsterOptionManager.ApplyOption(opt.OptionID, ctx);
+                    if (opt.OptionID != "")
+                    {
+                        monsterOptionManager.ApplyOption(opt.OptionID, ctx);
+                    }
                 }
-                
                 Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
             }
            

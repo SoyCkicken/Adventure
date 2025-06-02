@@ -2277,7 +2277,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 972816518841547894, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
       propertyPath: m_text
-      value: "\uD14C\uC2A4\uD2B8\uC6A9 \uAE00\uC790 \uC785\uB2C8\uB2E4\uD655\uC778
+      value: "\uD14C\uC2A4\uD2B8\uC6A9 \uAE00\uC790 \uC785\uB2C8\uB2E4 \uD655\uC778
         \uBD80\uD0C1 \uB4DC\uB9BD\uB2C8\uB2E4."
       objectReference: {fileID: 0}
     - target: {fileID: 972816518841547894, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
@@ -2366,7 +2366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3638967336999837742, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1240
+      value: -1163
       objectReference: {fileID: 0}
     - target: {fileID: 3638967336999837742, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -10622,6 +10622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionManager: {fileID: 2041071672}
+  monsterOptionManager: {fileID: 0}
   player: {fileID: 2006169296}
   enemy: {fileID: 0}
 --- !u!4 &1515041321
@@ -13983,6 +13984,7 @@ MonoBehaviour:
   MonPas_Effect2: 
   MonPas_Value2: 0
   OnHitOptions: []
+  OnEnemyHitOptions: []
 --- !u!4 &2006169297
 Transform:
   m_ObjectHideFlags: 0
