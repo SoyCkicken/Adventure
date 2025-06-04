@@ -73,7 +73,9 @@ public class GameFlowManager : MonoBehaviour
         battleManager.StartBattle(playerWon =>
         {
             // 전투가 끝나면 다시 스토리로 돌아와서 다음 스크립트 진행
-            mainStoryManager.NextScene();
+                //승리해서 스토리 이어서 출력
+                //mainStoryManager.NextScene();
+                mainStoryManager.WinBattle(playerWon);
         });
     }
 
@@ -91,7 +93,8 @@ public class GameFlowManager : MonoBehaviour
         battleManager.StartBattle(playerWon =>
         {
             // 전투가 끝나면 다시 스토리로 돌아와서 다음 스크립트 진행
-            randomEventManager.AdvanceEvent();
+            //randomEventManager.AdvanceEvent();
+            randomEventManager.WinBattle(playerWon);
         });
     }
 

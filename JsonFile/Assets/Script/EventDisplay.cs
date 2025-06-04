@@ -34,6 +34,9 @@ public class EventDisplay : MonoBehaviour
 
     public bool toBattle = false;
 
+    private string winScriptCode;
+    private string loseScriptCode;
+
     private List<int> eventGroups;
     public List<RandomEvents_Master_Event> eventList;
     public List<RandomEvents_Master_Event> groupEvents;
@@ -178,6 +181,8 @@ public class EventDisplay : MonoBehaviour
                 }
                 break;
             case "BATTLE":
+                winScriptCode = script.NEXTWIN?.Trim();
+                loseScriptCode = script.NEXTLOSE?.Trim();
                 OnBattleJoin?.Invoke(script.KOR);
                 break;  
         }
@@ -228,12 +233,6 @@ public class EventDisplay : MonoBehaviour
             // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
             return;
         }
-
-
-
-
-
-
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
 
@@ -272,6 +271,24 @@ public class EventDisplay : MonoBehaviour
         }
     }
 
+    public void WinBattle(bool playerWin)
+    {
+        string nextCode = (playerWin == true) ? winScriptCode : loseScriptCode;
+        Debug.Log("전투 종료가 되어서 해당 부분으로 넘어갔습니다");
+        var nextNode = eventList.FirstOrDefault(s => s.Event_Text.Trim() == nextCode.Trim());
+        if (nextNode == null)
+        {
+            Debug.LogWarning($"다음 스크립트를 찾을 수 없습니다: {nextCode}");
+            //이벤트 강제 종료
+            StopRandomEvent();
+            return;
+        }
+        currentEvent = nextNode;
+        currentIndex = eventList.IndexOf(nextNode);
+        ClearContent();
+        DisplayCurrentEvent();
+
+    }
     private IEnumerator TypeTextEffect(string full, GameObject go)
     {
         //Debug.Log("타이핑중");

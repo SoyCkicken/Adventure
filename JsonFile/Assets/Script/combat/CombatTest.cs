@@ -120,9 +120,10 @@ public class CombatTest : MonoBehaviour
             // 죽음 판정
             if (target.Health <= 0)
             {
-                // attacker가 살아 있으면 attacker 승리
+                // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
                 player.GetComponent<EquipmentSystem>().Init();
-                battleOver = (player.Health > 0);
+                
+                Debug.Log(battleOver = (player.Health > 0));
                 yield break;
             }
             else if(attacker.Health<=0)

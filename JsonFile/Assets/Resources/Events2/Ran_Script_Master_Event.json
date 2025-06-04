@@ -1,164 +1,204 @@
 {
-    "Ran_Script_Master_Event": [
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 1.0,
-            "Script_Code": "EventScript_1_1",
-            "KOR": "안개 속으로 발을 들인다.\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 2.0,
-            "Script_Code": "EventScript_1_2",
-            "KOR": "Image001",
-            "displayType": "IMAGE",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 3.0,
-            "Script_Code": "EventScript_1_3",
-            "KOR": "숨을 죽인다.\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 4.0,
-            "Script_Code": "EventScript_1_4",
-            "KOR": "다행히 무사히 빠져나오며 영혼이 모여드는 기분을 받았다\n",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        },
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 5.0,
-            "Script_Code": "EventScript_1_5",
-            "KOR": "위험을 피한다.\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 6.0,
-            "Script_Code": "EventScript_1_6",
-            "KOR": "그림자를 따라간다.\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 1.0,
-            "EventScript_Index": 7.0,
-            "Script_Code": "EventScript_1_7",
-            "KOR": "허우적 대다가 넘어지며 다쳤지만 무사히 빠져나왔다.\n",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 1.0,
-            "Script_Code": "EventScript_2_1",
-            "KOR": "테스트용입니다 2_1",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 2.0,
-            "Script_Code": "EventScript_2_2",
-            "KOR": "고블린이다\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 3.0,
-            "Script_Code": "EventScript_2_3",
-            "KOR": "아직 나를 발견하지 못한것 같다\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 4.0,
-            "Script_Code": "EventScript_2_4",
-            "KOR": "기습한다\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 5.0,
-            "Script_Code": "EventScript_2_5",
-            "KOR": "기습에 성공했다\n",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 6.0,
-            "Script_Code": "EventScript_2_6",
-            "KOR": "다음 지역으로 넘어가기\n",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 7.0,
-            "Script_Code": "EventScript_2_7",
-            "KOR": "공격한다",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 8.0,
-            "Script_Code": "EventScript_2_8",
-            "KOR": "monster_002",
-            "displayType": "BATTLE",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 9.0,
-            "Script_Code": "EventScript_2_9",
-            "KOR": "전투 성공",
-            "displayType": "TEXT",
-            "EventBreak": null
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 10.0,
-            "Script_Code": "EventScript_2_10",
-            "KOR": "다음 지역으로 넘어가기",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        },
-        {
-            "Event_Index": 2.0,
-            "EventScript_Index": 11.0,
-            "Script_Code": "EventScript_2_11",
-            "KOR": "",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        },
-        {
-            "Event_Index": 3.0,
-            "EventScript_Index": 1.0,
-            "Script_Code": "EventScript_3_1",
-            "KOR": "테스트용입니다 3_1",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        },
-        {
-            "Event_Index": 4.0,
-            "EventScript_Index": 1.0,
-            "Script_Code": "EventScript_4_1",
-            "KOR": "테스트용입니다 4_1",
-            "displayType": "TEXT",
-            "EventBreak": "Break"
-        }
-    ]
+  "Ran_Script_Master_Event": [
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_1_1",
+      "KOR": "안개 속으로 발을 들인다.\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 2.0,
+      "Script_Code": "EventScript_1_2",
+      "KOR": "Image001",
+      "displayType": "IMAGE",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 3.0,
+      "Script_Code": "EventScript_1_3",
+      "KOR": "숨을 죽인다.\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 4.0,
+      "Script_Code": "EventScript_1_4",
+      "KOR": "다행히 무사히 빠져나오며 영혼이 모여드는 기분을 받았다\n",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 5.0,
+      "Script_Code": "EventScript_1_5",
+      "KOR": "위험을 피한다.\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 6.0,
+      "Script_Code": "EventScript_1_6",
+      "KOR": "그림자를 따라간다.\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 1.0,
+      "EventScript_Index": 7.0,
+      "Script_Code": "EventScript_1_7",
+      "KOR": "허우적 대다가 넘어지며 다쳤지만 무사히 빠져나왔다.\n",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_2_1",
+      "KOR": "테스트용입니다 2_1\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 2.0,
+      "Script_Code": "EventScript_2_2",
+      "KOR": "고블린이다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 3.0,
+      "Script_Code": "EventScript_2_3",
+      "KOR": "아직 나를 발견하지 못한것 같다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 4.0,
+      "Script_Code": "EventScript_2_4",
+      "KOR": "기습한다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 5.0,
+      "Script_Code": "EventScript_2_5",
+      "KOR": "미간에 바람구멍 하나 놔줬다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 6.0,
+      "Script_Code": "EventScript_2_6",
+      "KOR": "다음 지역으로 넘어가야지\n",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 7.0,
+      "Script_Code": "EventScript_2_7",
+      "KOR": "공격한다",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 8.0,
+      "Script_Code": "EventScript_2_8",
+      "KOR": "monster_001",
+      "displayType": "BATTLE",
+      "EventBreak": null,
+      "NEXTWIN": "EventScript_2_9",
+      "NEXTLOSE": "EventScript_2_10"
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 9.0,
+      "Script_Code": "EventScript_2_9",
+      "KOR": "전투 성공",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 10.0,
+      "Script_Code": "EventScript_2_10",
+      "KOR": "전투 실패",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 11.0,
+      "Script_Code": "EventScript_2_11",
+      "KOR": "다음 지역으로 넘어가야지",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_3_1",
+      "KOR": "테스트용입니다 3_1",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 4.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_4_1",
+      "KOR": "테스트용입니다 4_1",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    }
+  ]
 }

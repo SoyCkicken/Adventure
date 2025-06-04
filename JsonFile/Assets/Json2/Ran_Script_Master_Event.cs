@@ -10,4 +10,6 @@ public class Ran_Script_Master_Event
     public string KOR;
     public string displayType;
     public string EventBreak;
+    public string NEXTWIN;
+    public string NEXTLOSE;
 }

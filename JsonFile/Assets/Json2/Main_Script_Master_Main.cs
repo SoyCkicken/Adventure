@@ -11,4 +11,6 @@ public class Main_Script_Master_Main
     public string KOR;
     public string displayType;
     public string StoryBreak;
+    public string NEXTWIN;
+    public string NEXTLOSE;
 }

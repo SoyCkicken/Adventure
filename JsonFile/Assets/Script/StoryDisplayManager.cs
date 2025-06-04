@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.CompilerServices;
 
 
 public class StoryDisplayManager : MonoBehaviour
@@ -26,6 +27,8 @@ public class StoryDisplayManager : MonoBehaviour
     public int currentStoryIndex = 0;
     public bool isSkip = false;
     public bool isTyping;
+    private string winScriptCode;
+    private string loseScriptCode;
 
     private List<Main_Script_Master_Main> scriptEventsCache;
     public event Action<string> OnBattleJoin;
@@ -70,7 +73,6 @@ public class StoryDisplayManager : MonoBehaviour
           .Where(s =>s.Event_Index == currentStoryIndex)
           .OrderBy(e => e.Script_Index)
           .ToList();
-
         currentIndex = 0;
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         currentStory = storyList[currentIndex];
@@ -122,6 +124,8 @@ public class StoryDisplayManager : MonoBehaviour
                 case "BATTLE":
                     Debug.Log("배틀에 들어왔습니다");
                     Debug.Log(matchingScript.KOR);
+                    winScriptCode = matchingScript.NEXTWIN?.Trim();
+                    loseScriptCode = matchingScript.NEXTLOSE?.Trim();
                     OnBattleJoin?.Invoke(matchingScript.KOR);
                     break;
             }
@@ -308,12 +312,11 @@ public class StoryDisplayManager : MonoBehaviour
     public void NextScene()
     {
         if (isTyping) return;
-
         var next = storyList
         .FirstOrDefault(s => s.Chapter_Index == currentStory.Chapter_Index &&
                              s.Event_Index == currentStory.Event_Index &&
                              s.Script_Index == currentStory.Script_Index + 1);
-
+        //Debug.Log(next.Script_Text);
         var choices = new[]
    {
         currentStory.Choice1_Text,
@@ -347,8 +350,6 @@ public class StoryDisplayManager : MonoBehaviour
             
             return;
         }
-
-
         if (next != null)
         {
             currentIndex = storyList.IndexOf(next);
@@ -367,4 +368,20 @@ public class StoryDisplayManager : MonoBehaviour
         }
     }
 
+    public void WinBattle(bool battle)
+    {
+        string nextCode = (battle == true) ? winScriptCode : loseScriptCode;
+        Debug.Log("전투 종료가 되어서 해당 부분으로 넘어갔습니다");
+        var nextNode = storyList.FirstOrDefault(s => s.Script_Text.Trim() == nextCode.Trim());
+        if (nextNode == null)
+        {
+            Debug.LogWarning($"다음 스크립트를 찾을 수 없습니다: {nextCode}");
+            OnMainStoryComplete();
+            return;
+        }
+        currentStory = nextNode;
+        currentIndex = storyList.IndexOf(nextNode);
+        ClearContent();
+        DisplayCurrentStory();
+    }
 }
