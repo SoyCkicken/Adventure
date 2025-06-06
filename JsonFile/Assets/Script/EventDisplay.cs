@@ -18,6 +18,7 @@ public class EventDisplay : MonoBehaviour
     public FontSizeManager fontSizeManager;
     public GameObject TouchCatcher;
     private JsonManager jsonManager;
+    private SpriteBank spriteBank;
     
     private RandomEvents_Master_Event currentEvent;
     private int currentIndex = 0;
@@ -47,7 +48,8 @@ public class EventDisplay : MonoBehaviour
     {
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
-
+        if(spriteBank == null)
+            spriteBank = FindObjectOfType<SpriteBank>();
 
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {
@@ -318,7 +320,10 @@ public class EventDisplay : MonoBehaviour
     {
         //Debug.Log("이미지 블록 생성");
         var go = Instantiate(ImagePrefab, content);
-        go.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + name);
+        var image = go.GetComponent<Image>();
+        Sprite s = spriteBank.Load(name);
+        image.sprite = s;
+        //go.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + name);
         activeBlocks.Add(go);
     }
 

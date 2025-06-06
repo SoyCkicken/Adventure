@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Runtime.CompilerServices;
+using UnityEngine.U2D;
 
 
 public class StoryDisplayManager : MonoBehaviour
@@ -29,6 +30,8 @@ public class StoryDisplayManager : MonoBehaviour
     public bool isTyping;
     private string winScriptCode;
     private string loseScriptCode;
+
+    public SpriteBank spriteBank;
 
     private List<Main_Script_Master_Main> scriptEventsCache;
     public event Action<string> OnBattleJoin;
@@ -168,7 +171,14 @@ public class StoryDisplayManager : MonoBehaviour
     {
         var go = Instantiate(ImagePrefab, content);
         var img = go.GetComponent<Image>();
-        img.sprite = Resources.Load<Sprite>($"Images/{spriteName}");
+
+        Sprite s = spriteBank.Load(spriteName);
+        //img.sprite = Resources.Load<Sprite>($"Images/{spriteName}");
+        if (s != null)
+        {
+            img.sprite = s;
+        }
+        
         Testblocks.Add(go);
         NextScene();
     }
