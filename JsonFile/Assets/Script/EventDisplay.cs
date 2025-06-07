@@ -20,8 +20,8 @@ public class EventDisplay : MonoBehaviour
     public GameObject TouchCatcher;
     private JsonManager jsonManager;
     private SpriteBank spriteBank;
-    
-    
+    public ScrollRect scrollRect;
+
     private bool isSkip = false;
     private bool isTyping = false;
     private System.Random rng = new System.Random();
@@ -189,9 +189,7 @@ public class EventDisplay : MonoBehaviour
         {
             case "TEXT":
                 Debug.Log("텍스트 출력");
-                HandleTextDisplay(script.KOR, lastBlock);
-                if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-                    SetupChoices();
+                HandleTextDisplayWithChoice(script.KOR, lastBlock);
                 break;
 
             case "IMAGE":
@@ -210,13 +208,12 @@ public class EventDisplay : MonoBehaviour
         }
     }
 
-    private void HandleTextDisplay(string text, GameObject last)
+    private void HandleTextDisplayWithChoice(string text, GameObject lastBlock)
     {
-        //Debug.Log("텍스트인데 마지막 블록이 있는지 없는지 확인");
-        if (last == null || last.TryGetComponent<Image>(out _))
+        if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
             CreateTextBlock(text);
         else
-            StartCoroutine(TypeTextEffect(text, last));
+            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock));
     }
     private void ClearContent()
     {
@@ -321,29 +318,42 @@ public class EventDisplay : MonoBehaviour
         DisplayCurrentEvent();
 
     }
-    private IEnumerator TypeTextEffect(string full, GameObject go)
+    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go)
     {
-        //Debug.Log("타이핑중");
-        var tmp = go.GetComponent<TMP_Text>();
+        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         isTyping = true;
-        string complete = tmp.text + full;
+        string complete = tmp.text + fullText;
 
-        for (int i = 0; i < full.Length; i++)
+        for (int i = 0; i < fullText.Length; i++)
         {
             if (isSkip)
             {
                 tmp.text = complete;
                 break;
             }
-            tmp.text += full[i];
+            tmp.text += fullText[i];
+            scrollRect.verticalNormalizedPosition = 0f;
+            Canvas.ForceUpdateCanvases();
             yield return new WaitForSeconds(0.05f);
         }
 
         isTyping = false;
         isSkip = false;
-        SkipButton.SetActive(false);
-        AdvanceEvent();
-        StopCoroutine(TypeTextEffect(full,go));
+        SkipButton.SetActive(false); 
+        scrollRect.verticalNormalizedPosition = 0f;
+        Canvas.ForceUpdateCanvases();
+
+        // 타이핑이 끝난 후에 선택지 출력
+        if (!string.IsNullOrEmpty(currentEvent.Choice1_Text) ||
+            !string.IsNullOrEmpty(currentEvent.Choice2_Text) ||
+            !string.IsNullOrEmpty(currentEvent.Choice3_Text))
+        {
+            SetupChoices();
+        }
+        else
+        {
+           AdvanceEvent();
+        }
     }
 
     private void CreateImageBlock(string name)
@@ -365,7 +375,7 @@ public class EventDisplay : MonoBehaviour
         fontSizeManager.Register(tmp);
         activeBlocks.Add(go);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffect(text, go));
+        StartCoroutine(TypeTextEffectWithChoice(text, go));
     }
 
 

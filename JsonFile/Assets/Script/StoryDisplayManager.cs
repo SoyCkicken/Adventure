@@ -118,11 +118,7 @@ public class StoryDisplayManager : MonoBehaviour
                     break;
                 case "TEXT":
                     Debug.Log("텍스트 생성에 들어왔습니다");
-                    HandleTextDisplay(matchingScript.KOR, lastBlock);
-                    if (currentStory.Choice1_Text != "")
-                    {
-                        SetupChoices();
-                    }
+                    HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock);
                     break;
                 case "BATTLE":
                     Debug.Log("배틀에 들어왔습니다");
@@ -142,12 +138,12 @@ public class StoryDisplayManager : MonoBehaviour
 
 
     }
-    private void HandleTextDisplay(string text, GameObject lastBlock)
+    private void HandleTextDisplayWithChoice(string text, GameObject lastBlock)
     {
         if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
             CreateTextBlock(text);
         else
-            StartCoroutine(TypeTextEffect(text, lastBlock));
+            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock));
     }
 
 
@@ -190,46 +186,46 @@ public class StoryDisplayManager : MonoBehaviour
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         fontSizeManager.Register(tmp);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffect(text, go));
+        StartCoroutine(TypeTextEffectWithChoice(text, go));
         Testblocks.Add(go);
     }
 
     // 타입라이터 이펙트
-    private IEnumerator TypeTextEffect(string fullText, GameObject go)
+    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go)
     {
-        string temp = go.GetComponent<TMP_Text>().text + fullText;
-        if (fullText != null)
+        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+        isTyping = true;
+        string complete = tmp.text + fullText;
+
+        for (int i = 0; i < fullText.Length; i++)
         {
-            //타입핑 중 인지 확인
-            isTyping = true;
-            for (int i = 0; i < fullText.Length; i++)
+            if (isSkip)
             {
-                //버튼 누를때 활성화 되게 하면 될듯
-                if (isSkip == true)
-                {
-                    go.GetComponent<TMP_Text>().text = temp.ToString();
-                    scrollRect.verticalNormalizedPosition = 0f;
-                    Canvas.ForceUpdateCanvases();
-                    break;
-                }
-                scrollRect.verticalNormalizedPosition = 0f;
-                go.GetComponent<TMP_Text>().text += fullText[i].ToString();
-                Canvas.ForceUpdateCanvases();
-                yield return new WaitForSeconds(0.05f);
-                //0.01초마다 한번씩 출력시킴
+                tmp.text = complete;
+                break;
             }
+            tmp.text += fullText[i];
+            
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        isTyping = false;
+        isSkip = false;
+        SkipButton.SetActive(false);
+        scrollRect.verticalNormalizedPosition = 0f;
+        Canvas.ForceUpdateCanvases();
+
+        // 타이핑이 끝난 후에 선택지 출력
+        if (!string.IsNullOrEmpty(currentStory.Choice1_Text) ||
+            !string.IsNullOrEmpty(currentStory.Choice2_Text) ||
+            !string.IsNullOrEmpty(currentStory.Choice3_Text))
+        {
+            SetupChoices();
         }
         else
         {
-            //RamEvent같은 경우 설명 같은게 하나도 없기 때문에 에러가 발생을 하는데 그걸 막고자 if문 사용했음
-            yield break;
+            NextScene();
         }
-        isTyping = false;
-        SkipButton.SetActive(false);
-        isSkip = false;
-        scrollRect.verticalNormalizedPosition = 0f;
-        Canvas.ForceUpdateCanvases();
-        NextScene();
     }
 
     // 선택지 버튼 세팅

@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
-  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
+  TextPrefab: {fileID: 1008279081308593107, guid: c894de28c34d4be409b2c371c06af464, type: 3}
   SkipButton: {fileID: 1641275629}
   TouchCatcher: {fileID: 1787361090}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
@@ -346,12 +346,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 529089260}
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
-  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
+  TextPrefab: {fileID: 1008279081308593107, guid: c894de28c34d4be409b2c371c06af464, type: 3}
   SkipButton: {fileID: 1641275629}
   choiceButtonParent: {fileID: 465859462}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   fontSizeManager: {fileID: 914221062}
   TouchCatcher: {fileID: 1787361090}
+  scrollRect: {fileID: 646720213}
   count: 0
   currCount: 0
   currentGroup: 0
@@ -3678,8 +3679,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 1
-  m_VerticalFit: 1
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &537712831
 GameObject:
   m_ObjectHideFlags: 0
@@ -14093,8 +14094,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.768906}
-  m_SizeDelta: {x: 0, y: -180.7366}
+  m_AnchoredPosition: {x: 0, y: -33.305054}
+  m_SizeDelta: {x: 0, y: -145.85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1787361092
 MonoBehaviour:
