@@ -29,6 +29,9 @@ public class JsonManager : MonoBehaviour
     //적
     private Dictionary<string, List<Mon_Master>> Mon_MasterDict = new Dictionary<string, List<Mon_Master>>();
     private Dictionary<string, List<Mon_Effect_Master>> Mon_EffectMasterDict = new Dictionary<string, List<Mon_Effect_Master>>();
+    //선택지 관련
+    private Dictionary<string, List<Main_SuccessRate_Master_Main>> _mainSuccessRateByScene = new();
+    private Dictionary<string, List<Ran_SuccessRate_Master_Events>> _RanSuccessRateByScene = new();
     void Awake()
     {
         LoadAllJsonFiles();
@@ -92,25 +95,30 @@ public class JsonManager : MonoBehaviour
                 }
                 else if (fileName.Contains("Main_SuccessRate_Master_Main"))
                 {
-                    // ✅ jsonContent는 전체 JSON 문자열
                     var jObj = JObject.Parse(jsonContent);
-
-                    // ✅ 배열 부분만 추출
                     string arrayStr = jObj["Main_SuccessRate_Master_Main"].ToString();
-
-                    // ✅ 배열을 items로 감싸기
                     string wrappedJson = WrapJsonArray(arrayStr);
 
-                    // ✅ 파싱
                     Wrapper<Main_SuccessRate_Master_Main> wrapper = JsonUtility.FromJson<Wrapper<Main_SuccessRate_Master_Main>>(wrappedJson);
 
                     if (wrapper != null && wrapper.items != null)
                     {
                         string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
                         storyMastersuccessRateDict[cleanFileName] = wrapper.items;
+
+                        // ✅ Scene_Code 기준으로 정리
+                        foreach (var entry in wrapper.items)
+                        {
+                            if (!_mainSuccessRateByScene.TryGetValue(entry.Scene_Code, out var list))
+                            {
+                                list = new List<Main_SuccessRate_Master_Main>();
+                                _mainSuccessRateByScene[entry.Scene_Code] = list;
+                            }
+                            list.Add(entry);
+                        }
+
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
-
                 }
                 else if (fileName.Contains("Story_Effect_Master"))
                 {
@@ -180,20 +188,27 @@ public class JsonManager : MonoBehaviour
                 {
                     // ✅ jsonContent는 전체 JSON 문자열
                     var jObj = JObject.Parse(jsonContent);
-
-                    // ✅ 배열 부분만 추출
                     string arrayStr = jObj["Ran_SuccessRate_Master_Events"].ToString();
-
-                    // ✅ 배열을 items로 감싸기
                     string wrappedJson = WrapJsonArray(arrayStr);
 
-                    // ✅ 파싱
                     Wrapper<Ran_SuccessRate_Master_Events> wrapper = JsonUtility.FromJson<Wrapper<Ran_SuccessRate_Master_Events>>(wrappedJson);
 
                     if (wrapper != null && wrapper.items != null)
                     {
                         string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
                         RandomMasterSuccessRateDict[cleanFileName] = wrapper.items;
+
+                        // ✅ Scene_Code 기준으로 정리
+                        foreach (var entry in wrapper.items)
+                        {
+                            if (!_RanSuccessRateByScene.TryGetValue(entry.Scene_Code, out var list))
+                            {
+                                list = new List<Ran_SuccessRate_Master_Events>();
+                                _RanSuccessRateByScene[entry.Scene_Code] = list;
+                            }
+                            list.Add(entry);
+                        }
+
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }
@@ -385,6 +400,14 @@ public class JsonManager : MonoBehaviour
         Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
         return null;
     }
+    //확률 조회
+    public List<Main_SuccessRate_Master_Main> GetSuccessRatesMainByScene(string sceneCode)
+    {
+        if (_mainSuccessRateByScene.TryGetValue(sceneCode, out var list))
+            return list;
+
+        return new List<Main_SuccessRate_Master_Main>();
+    }
     public List<Main_SuccessRate_Master_Main> GetStoryMainSuccessRateMasters(string fileName)
     {
         if (storyMastersuccessRateDict.TryGetValue(fileName, out List<Main_SuccessRate_Master_Main> list))
@@ -413,6 +436,14 @@ public class JsonManager : MonoBehaviour
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
         return null;
+    }
+    //확률 조회
+    public List<Ran_SuccessRate_Master_Events> GetSuccessRatesRanByScene(string sceneCode)
+    {
+        if (_RanSuccessRateByScene.TryGetValue(sceneCode, out var list))
+            return list;
+
+        return new List<Ran_SuccessRate_Master_Events>();
     }
     public List<Ran_SuccessRate_Master_Events> GetRandomSuccessRateMasters(string fileName)
     {

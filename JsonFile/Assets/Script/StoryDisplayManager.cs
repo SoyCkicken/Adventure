@@ -30,9 +30,9 @@ public class StoryDisplayManager : MonoBehaviour
     public bool isTyping;
     private string winScriptCode;
     private string loseScriptCode;
-
+    public PlayerState playerState;
     public SpriteBank spriteBank;
-
+    private Dictionary<string, List<Main_SuccessRate_Master_Main>> _mainSuccessRateByScene = new();
     private List<Main_Script_Master_Main> scriptEventsCache;
     public event Action<string> OnBattleJoin;
     [Header("UI References")]
@@ -234,34 +234,73 @@ public class StoryDisplayManager : MonoBehaviour
     }
 
     // 선택지 버튼 세팅
+    //private void SetupChoices()
+    //{
+    //    List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
+
+    //    // 기존 버튼 삭제
+    //    foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
+
+    //    if (currentStory.Choice1_Text != "")
+    //    {
+    //        string code = currentStory.Choice1_Text;
+    //        Debug.Log(code);
+    //        string display = GetDisplayTextFromScript(code, scriptEventsCache);
+    //        //Debug.Log($"테스트용 문자열입니다 {display}");
+    //        availableChoices.Add((code, display));
+    //    }
+    //    if (currentStory.Choice2_Text != "")
+    //    {
+    //        string code = currentStory.Choice2_Text;
+    //        string display = GetDisplayTextFromScript(code, scriptEventsCache);
+    //        availableChoices.Add((code, display));
+    //    }
+    //    if (currentStory.Choice3_Text != "")
+    //    {
+    //        string code = currentStory.Choice3_Text;
+    //        string display = GetDisplayTextFromScript(code, scriptEventsCache);
+    //        availableChoices.Add((code, display));
+    //    }
+    //    CreateChoicebutton(availableChoices);
+    //}
+
     private void SetupChoices()
     {
-        List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
-
-        // 기존 버튼 삭제
+        List<(string destCode, string displayText, int choiceNo)> availableChoices = new();
         foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
 
-        if (currentStory.Choice1_Text != "")
+        if (!string.IsNullOrEmpty(currentStory.Choice1_Text))
+            availableChoices.Add((currentStory.Choice1_Text, GetDisplayTextFromScript(currentStory.Choice1_Text, scriptEventsCache), 1));
+        if (!string.IsNullOrEmpty(currentStory.Choice2_Text))
+            availableChoices.Add((currentStory.Choice2_Text, GetDisplayTextFromScript(currentStory.Choice2_Text, scriptEventsCache), 2));
+        if (!string.IsNullOrEmpty(currentStory.Choice3_Text))
+            availableChoices.Add((currentStory.Choice3_Text, GetDisplayTextFromScript(currentStory.Choice3_Text, scriptEventsCache), 3));
+
+        var successRateList = jsonManager.GetSuccessRatesMainByScene(currentStory.Scene_Code);
+
+        foreach (var (destCode, displayText, choiceNo) in availableChoices)
         {
-            string code = currentStory.Choice1_Text;
-            Debug.Log(code);
-            string display = GetDisplayTextFromScript(code, scriptEventsCache);
-            //Debug.Log($"테스트용 문자열입니다 {display}");
-            availableChoices.Add((code, display));
+            GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
+            TMP_Text btnText = buttonObj.GetComponentInChildren<TMP_Text>();
+            if (btnText != null) btnText.text = displayText;
+
+            var rateData = successRateList.FirstOrDefault(r => r.Choice_No == choiceNo);
+            Button btn = buttonObj.GetComponent<Button>();
+            btn.onClick.AddListener(() =>
+            {
+                if (rateData != null)
+                {
+                    float rate = EvaluateFormula(rateData.Success_Formula);
+                    bool isSuccess = UnityEngine.Random.value < rate;
+                    string nextCode = isSuccess ? rateData.Success_Next_Script : rateData.Fail_Next_Script;
+                    OnChoiceSelected(nextCode);
+                }
+                else
+                {
+                    OnChoiceSelected(destCode);
+                }
+            });
         }
-        if (currentStory.Choice2_Text != "")
-        {
-            string code = currentStory.Choice2_Text;
-            string display = GetDisplayTextFromScript(code, scriptEventsCache);
-            availableChoices.Add((code, display));
-        }
-        if (currentStory.Choice3_Text != "")
-        {
-            string code = currentStory.Choice3_Text;
-            string display = GetDisplayTextFromScript(code, scriptEventsCache);
-            availableChoices.Add((code, display));
-        }
-        CreateChoicebutton(availableChoices);
     }
 
     void CreateChoicebutton(List<(string destCode, string displayText)> availableChoices)
@@ -394,4 +433,64 @@ public class StoryDisplayManager : MonoBehaviour
         ClearContent();
         DisplayCurrentStory();
     }
+    private float EvaluateFormula(string formula)
+    {
+        if (string.IsNullOrEmpty(formula)) return 0f;
+        // 간단한 STR * 10 구조만 처리
+        if (formula.Contains("STR"))
+        {
+            int str = playerState.Strength; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("STR *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (str * percent) / 100f;
+        }
+        else if (formula.Contains("DEX"))
+        {
+            int DEX = playerState.DEX; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("DEX *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (DEX * percent) / 100f;
+        }
+        else if (formula.Contains("DIV"))
+        {
+            int DIV = playerState.Divinity; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("DIV *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (DIV * percent) / 100f;
+        }
+
+        else if (formula.Contains("INT"))
+        {
+            int INT = playerState.Int; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("INT *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (INT * percent) / 100f;
+        }
+
+        else if (formula.Contains("MAG"))
+        {
+            int MAG = playerState.MAG; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("MAG *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (MAG * percent) / 100f;
+        }
+
+        else if (formula.Contains("CHA"))
+        {
+            int CHA = playerState.Charisma; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("DEX *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (CHA * percent) / 100f;
+        }
+
+        else if (formula.Contains("HEALTH"))
+        {
+            int HEALTH = playerState.Health; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string factor = formula.Replace("HEALTH *", "").Trim();
+            if (float.TryParse(factor, out float percent))
+                return (HEALTH * percent) / 100f;
+        }
+        return 0f;
+    }
+
 }

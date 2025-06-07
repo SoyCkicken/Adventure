@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEngine.GraphicsBuffer;
 
 public class EventDisplay : MonoBehaviour
 {
@@ -278,6 +279,7 @@ public class EventDisplay : MonoBehaviour
         string nextCode = (playerWin == true) ? winScriptCode : loseScriptCode;
         Debug.Log("전투 종료가 되어서 해당 부분으로 넘어갔습니다");
         var nextNode = eventList.FirstOrDefault(s => s.Event_Text.Trim() == nextCode.Trim());
+        Debug.Log(nextNode.Event_Text);
         if (nextNode == null)
         {
             Debug.LogWarning($"다음 스크립트를 찾을 수 없습니다: {nextCode}");
@@ -286,7 +288,9 @@ public class EventDisplay : MonoBehaviour
             return;
         }
         currentEvent = nextNode;
+        Debug.Log(currentEvent.Event_Text);
         currentIndex = eventList.IndexOf(nextNode);
+        currentGroupIndex = currentEvent.Script_Index;
         ClearContent();
         DisplayCurrentEvent();
 

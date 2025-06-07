@@ -4,9 +4,9 @@ using System;
 [System.Serializable]
 public class Main_SuccessRate_Master_Main
 {
-    public bool Scene_Code;
-    public bool Choice_No;
-    public bool Success_Formula;
-    public bool Success_Next_Script;
-    public bool Fail_Next_Script;
+    public string Scene_Code;
+    public int Choice_No;
+    public string Success_Formula;
+    public string Success_Next_Script;
+    public string Fail_Next_Script;
 }

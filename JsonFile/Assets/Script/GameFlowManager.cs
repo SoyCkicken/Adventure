@@ -21,7 +21,7 @@ public class GameFlowManager : MonoBehaviour
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
         //randomEventManager.StartRandomEvent(OnRandomEventComplete);
 
-        EnterState(FlowState.MainStory);
+        EnterState(FlowState.RandomEvent);
     }
 
     void EnterState(FlowState next)
