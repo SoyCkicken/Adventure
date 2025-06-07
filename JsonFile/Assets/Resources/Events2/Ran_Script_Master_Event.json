@@ -164,9 +164,9 @@
       "Event_Index": 2.0,
       "EventScript_Index": 10.0,
       "Script_Code": "EventScript_2_10",
-      "KOR": "전투 실패",
+      "KOR": "전투 실패\n",
       "displayType": "TEXT",
-      "EventBreak": null,
+      "EventBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
     },

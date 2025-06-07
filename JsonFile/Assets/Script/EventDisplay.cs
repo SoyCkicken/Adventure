@@ -150,9 +150,9 @@ public class EventDisplay : MonoBehaviour
     /// </summary>
     private void DisplayCurrentEvent()
     {
-
-        Debug.Log(eventList[currentGroupIndex].Event_Text);
-        if (currentIndex < 0 || currentIndex >= eventList.Count || groupEvents == null)
+        Debug.LogWarning("이벤트 출력 부분 진입");
+        Debug.Log(groupEvents[currentGroupIndex].Event_Text);
+        if (currentIndex < 0 || currentIndex > groupEvents.Count || groupEvents == null)
         {
             Debug.LogError($"Invalid currentIndex: {currentIndex}");
             onCompleteCallback?.Invoke(false);
@@ -190,7 +190,9 @@ public class EventDisplay : MonoBehaviour
                 break;  
         }
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-            SetupChoices();
+        {
+            Debug.Log("지금 문제가 있어서 currentEvent.Choice1_Text에 이상한 값이 들어간것 같습니다!");
+        } /*SetupChoices();*/
 
     }
 
@@ -214,6 +216,7 @@ public class EventDisplay : MonoBehaviour
     {
         foreach (Transform t in choiceButtonParent)
             Destroy(t.gameObject);
+        //choices.Clear();
     }
 
     /// <summary>
@@ -278,7 +281,8 @@ public class EventDisplay : MonoBehaviour
     {
         string nextCode = (playerWin == true) ? winScriptCode : loseScriptCode;
         Debug.Log("전투 종료가 되어서 해당 부분으로 넘어갔습니다");
-        var nextNode = eventList.FirstOrDefault(s => s.Event_Text.Trim() == nextCode.Trim());
+        Debug.Log(nextCode);
+        var nextNode = groupEvents.FirstOrDefault(s => s.Event_Text.Trim() == nextCode.Trim());
         Debug.Log(nextNode.Event_Text);
         if (nextNode == null)
         {
@@ -289,8 +293,10 @@ public class EventDisplay : MonoBehaviour
         }
         currentEvent = nextNode;
         Debug.Log(currentEvent.Event_Text);
-        currentIndex = eventList.IndexOf(nextNode);
-        currentGroupIndex = currentEvent.Script_Index;
+        currentIndex = groupEvents.IndexOf(nextNode);
+        Debug.Log(currentIndex);
+        currentGroupIndex = currentEvent.Script_Index-1;
+        Debug.Log(currentGroupIndex);
         ClearContent();
         DisplayCurrentEvent();
 
@@ -374,6 +380,7 @@ public class EventDisplay : MonoBehaviour
             //여기가 문제인거 확인
             //currentGroupIndex = eventList.IndexOf(target);
             currentGroupIndex = target.Script_Index;
+           Debug.Log(target.Script_Index);
             DisplayCurrentEvent();
         }
         else
