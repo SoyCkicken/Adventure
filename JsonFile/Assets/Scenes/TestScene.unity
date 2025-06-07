@@ -321,7 +321,7 @@ MonoBehaviour:
     Script_Text: 
     Main_Effect: 0
     Choice1_Text: 
-    Choice1_Next_Scene: 
+    Choice1_Next_Scene: 0
     Choice2_Text: 
     Choice2_Next_Scene: 0
     Choice3_Text: 
@@ -357,7 +357,6 @@ MonoBehaviour:
   currentGroup: 0
   currentGroupIndex: 0
   toBattle: 1
-  eventList: []
   groupEvents: []
   activeBlocks: []
 --- !u!1 &49544497
@@ -3639,7 +3638,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 450, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &529089261
 MonoBehaviour:
@@ -3679,7 +3678,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
+  m_HorizontalFit: 1
   m_VerticalFit: 1
 --- !u!1 &537712831
 GameObject:
@@ -4755,7 +4754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 529089260}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 2
   m_Elasticity: 0.1
@@ -13260,6 +13259,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6054781469074965225, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -1731
+      objectReference: {fileID: 0}
     - target: {fileID: 6091933745264682440, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -14090,8 +14093,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -423.98}
+  m_AnchoredPosition: {x: 0, y: -21.768906}
+  m_SizeDelta: {x: 0, y: -180.7366}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1787361092
 MonoBehaviour:

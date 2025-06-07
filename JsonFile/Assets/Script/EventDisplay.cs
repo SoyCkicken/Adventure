@@ -21,13 +21,9 @@ public class EventDisplay : MonoBehaviour
     private JsonManager jsonManager;
     private SpriteBank spriteBank;
     
-    private RandomEvents_Master_Event currentEvent;
-    private int currentIndex = 0;
-    
     
     private bool isSkip = false;
     private bool isTyping = false;
-    private Action<bool> onCompleteCallback;
     private System.Random rng = new System.Random();
     public int count;
     public int currCount = 0;
@@ -40,11 +36,21 @@ public class EventDisplay : MonoBehaviour
     private string loseScriptCode;
 
     private List<int> eventGroups;
-    public List<RandomEvents_Master_Event> eventList;
     public List<RandomEvents_Master_Event> groupEvents;
-    private List<Ran_Script_Master_Event> scriptEventsCache;
     public List<GameObject> activeBlocks = new List<GameObject>();
     public event Action<string> OnBattleJoin;
+    // 이벤트 데이터들
+    private List<RandomEvents_Master_Event> eventList;
+    private RandomEvents_Master_Event currentEvent;
+    private int currentIndex = 0;
+
+    // 스크립트 캐시 (Ran_Script_Master_Event)
+    private List<Ran_Script_Master_Event> scriptEventsCache;
+
+    // 외부 콜백
+    private Action<bool> onCompleteCallback;
+
+
     private void Awake()
     {
         if (jsonManager == null)
@@ -71,40 +77,43 @@ public class EventDisplay : MonoBehaviour
     /// 랜덤 이벤트 연출 시작
     /// </summary>
     /// <param name="onComplete">전투 여부를 매개변수로 받는 콜백</param>
-    public void StartRandomEvent(Action<bool> onComplete = null)
+    public void StartEventSequence(Action<bool> onComplete)
     {
         onCompleteCallback = onComplete;
 
-        // 이벤트 데이터 로드 및 정렬
+        // JSON 데이터 로드
         eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event");
         if (eventList == null || eventList.Count == 0)
         {
-            Debug.LogError("RandomEvent 파일 로드 실패");
-            onCompleteCallback?.Invoke(toBattle);
+            Debug.LogError("RandomEvents_Master_Event 로드 실패");
+            onCompleteCallback?.Invoke(false);
             return;
         }
+
+        // 이벤트 정렬
         eventList = eventList.OrderBy(e => e.RandomEvent_Index)
                              .ThenBy(e => e.Script_Index)
                              .ToList();
 
-
         // 스크립트 캐시
         scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
 
+        //전체 이벤트 리스트에 추가
         eventGroups = eventList
             .Select(e => e.RandomEvent_Index)
             .Distinct()
             .ToList();
 
         // 초기화
-        currentIndex = 0;
-        currentEvent = eventList[currentIndex];
         ClearContent();
+        //터치 패널 초기화
         TouchCatcher.SetActive(true);
-        PickNewGroup();
-        //랜덤으로 바꿨음
+
+        // 첫 이벤트 출력
         //DisplayCurrentEvent();
+        PickNewGroup();
     }
+
 
     private void PickNewGroup()
     {
@@ -130,6 +139,7 @@ public class EventDisplay : MonoBehaviour
             .OrderBy(e => e.Script_Index)
             .ToList();
         currentGroupIndex = 0;
+        currentIndex = 0;
         
         // 첫 이벤트 실행
         DisplayCurrentEvent();
@@ -141,24 +151,27 @@ public class EventDisplay : MonoBehaviour
     /// </summary>
     public void StopRandomEvent()
     {
-        StopAllCoroutines();
-        ClearContent();
-        SkipButton.SetActive(false);
+        StopAllCoroutines();                    // 텍스트 출력 중단
+        ClearContent();                         // 텍스트, 이미지, 선택지 등 제거
+        SkipButton.SetActive(false);            // 스킵 버튼 비활성화
+        TouchCatcher.SetActive(false);          // 터치 패널도 비활성화
+        isTyping = false;
+        isSkip = false;
     }
     /// <summary>
     /// 현재 이벤트 노드 표시
     /// </summary>
     private void DisplayCurrentEvent()
     {
-        Debug.LogWarning("이벤트 출력 부분 진입");
-        Debug.Log(groupEvents[currentGroupIndex].Event_Text);
-        if (currentIndex < 0 || currentIndex > groupEvents.Count || groupEvents == null)
+        Debug.Log("이벤트 출력 시작");
+
+        if (groupEvents == null || currentGroupIndex >= groupEvents.Count)
         {
-            Debug.LogError($"Invalid currentIndex: {currentIndex}");
+            Debug.LogError("groupEvents가 비어있거나 인덱스 초과");
             onCompleteCallback?.Invoke(false);
             return;
         }
-        //Debug.Log(groupEvents[currentGroupIndex]);
+
         currentEvent = groupEvents[currentGroupIndex];
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
@@ -166,34 +179,35 @@ public class EventDisplay : MonoBehaviour
         if (script == null)
         {
             Debug.LogWarning($"스크립트 매칭 실패: {currentEvent.Event_Text}");
-            AdvanceEvent();
+            SetupSkipToEnd();  // → 이후 스킵 처리 및 복귀
             return;
         }
 
-        GameObject last = activeBlocks.Count > 0 ? activeBlocks[activeBlocks.Count - 1] : null;
+        GameObject lastBlock = activeBlocks.Count > 0 ? activeBlocks.Last() : null;
+
         switch (script.displayType)
         {
+            case "TEXT":
+                Debug.Log("텍스트 출력");
+                HandleTextDisplay(script.KOR, lastBlock);
+                if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
+                    SetupChoices();
+                break;
+
             case "IMAGE":
+                Debug.Log("이미지 출력");
                 CreateImageBlock(script.KOR);
                 break;
-            case "TEXT":
-                HandleTextDisplay(script.KOR, last);
-                if (currentEvent.Choice1_Text != null)
-                {
-                    SetupChoices();
-                }
-                break;
-            case "BATTLE":
-                winScriptCode = script.NEXTWIN?.Trim();
-                loseScriptCode = script.NEXTLOSE?.Trim();
-                OnBattleJoin?.Invoke(script.KOR);
-                break;  
-        }
-        if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-        {
-            Debug.Log("지금 문제가 있어서 currentEvent.Choice1_Text에 이상한 값이 들어간것 같습니다!");
-        } /*SetupChoices();*/
 
+            case "BATTLE":
+                Debug.Log("전투 시작");
+                winScriptCode = script.NEXTWIN?.Trim();
+                Debug.Log($"전투 승리시 들어갈 코드{winScriptCode}");
+                loseScriptCode = script.NEXTLOSE?.Trim();
+                Debug.Log($"전투 패배시 들어갈 코드{loseScriptCode}");
+                OnBattleJoin?.Invoke(script.KOR);
+                break;
+        }
     }
 
     private void HandleTextDisplay(string text, GameObject last)
@@ -224,79 +238,85 @@ public class EventDisplay : MonoBehaviour
     /// </summary>
     public void AdvanceEvent()
     {
+        if (isTyping) return;
+
+        // 현재 선택지 유무 확인
         var choices = new[]
-   {
+        {
         currentEvent.Choice1_Text,
         currentEvent.Choice2_Text,
         currentEvent.Choice3_Text
     }.Where(c => !string.IsNullOrEmpty(c)).ToList();
+
         if (choices.Count == 1)
         {
+            // 단일 선택지 자동 진행
             return;
         }
         else if (choices.Count > 1)
         {
-            // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
+            // 복수 선택지는 SetupChoices에서 처리
             return;
         }
+
+        // 다음 스크립트 찾기
+        var next = groupEvents.FirstOrDefault(e =>
+            e.RandomEvent_Index == currentEvent.RandomEvent_Index &&
+            e.Script_Index == currentEvent.Script_Index + 1);
+
+        // 스크립트 캐시에서 현재 스크립트 구조 확인
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
 
-        //Debug.Log(script.EventBreak);
-        if (currentEvent != null && script.EventBreak == "Break")
+        if (script != null && script.EventBreak == "Break")
         {
-            //currCount++;
-            //if (currCount == count)
-            //{
-            //    onCompleteCallback?.Invoke(false);
-            //    StopRandomEvent();
-            //}
-            Debug.Log("지금 이벤트가 종료되어 여기break문으로 들어왔습니다");
-            SkipButton.SetActive(true);
-            TouchCatcher.SetActive(false);
-            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-            SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;  //이 부분이 추가가 되었음
-            SkipButton.GetComponent<Button>().onClick.AddListener(() => {
-                PickNewGroup();
-                SkipButton.SetActive(false);
-            });
-            
+            Debug.Log("이벤트 종료: Break 문 탐지");
+            SetupSkipToEnd();
             return;
         }
-        // 다음 이벤트
-        if (currentGroupIndex + 1 < groupEvents.Count)
+
+        if (next != null)
         {
-            currentGroupIndex++;
+            currentEvent = next;
+            currentGroupIndex = groupEvents.IndexOf(next);
             DisplayCurrentEvent();
         }
         else
         {
-            // 이벤트 종료 후 메인 스토리 복귀
-            onCompleteCallback?.Invoke(toBattle);
-            StopRandomEvent();
+            Debug.Log("다음 노드 없음 → 이벤트 종료");
+            SetupSkipToEnd();
         }
     }
 
     public void WinBattle(bool playerWin)
     {
-        string nextCode = (playerWin == true) ? winScriptCode : loseScriptCode;
-        Debug.Log("전투 종료가 되어서 해당 부분으로 넘어갔습니다");
-        Debug.Log(nextCode);
-        var nextNode = groupEvents.FirstOrDefault(s => s.Event_Text.Trim() == nextCode.Trim());
-        Debug.Log(nextNode.Event_Text);
-        if (nextNode == null)
+        Debug.Log($"[WinBattle] 전투 결과: {playerWin}");
+        Debug.Log($"[WinBattle] winScriptCode: {winScriptCode}, loseScriptCode: {loseScriptCode}");
+
+        string nextCode = playerWin ? winScriptCode : loseScriptCode;
+
+        if (string.IsNullOrEmpty(nextCode))
         {
-            Debug.LogWarning($"다음 스크립트를 찾을 수 없습니다: {nextCode}");
-            //이벤트 강제 종료
+            Debug.LogWarning("전투 결과에 따른 다음 코드가 비어 있습니다.");
             StopRandomEvent();
             return;
         }
+
+        var nextNode = groupEvents.FirstOrDefault(s =>
+            s.Event_Text.Trim() == nextCode.Trim());
+
+        if (nextNode == null)
+        {
+            Debug.LogWarning($"다음 스크립트를 찾을 수 없습니다: {nextCode}");
+            StopRandomEvent();
+            return;
+        }
+
         currentEvent = nextNode;
-        Debug.Log(currentEvent.Event_Text);
-        currentIndex = groupEvents.IndexOf(nextNode);
-        Debug.Log(currentIndex);
-        currentGroupIndex = currentEvent.Script_Index-1;
-        Debug.Log(currentGroupIndex);
+        currentGroupIndex = groupEvents.IndexOf(nextNode);
+
+        Debug.Log($"[WinBattle] 다음 이벤트 이동: {currentEvent.Event_Text}");
+
         ClearContent();
         DisplayCurrentEvent();
 
@@ -335,6 +355,7 @@ public class EventDisplay : MonoBehaviour
         image.sprite = s;
         //go.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + name);
         activeBlocks.Add(go);
+        AdvanceEvent();
     }
 
     void CreateTextBlock(string text)
@@ -386,7 +407,6 @@ public class EventDisplay : MonoBehaviour
         else
         {
             Debug.LogWarning("이벤트 코드 미발견: " + code);
-            AdvanceEvent();
         }
     }
 
@@ -395,5 +415,21 @@ public class EventDisplay : MonoBehaviour
         var s = scriptEventsCache.FirstOrDefault(sv => sv.Script_Code.Trim() == code.Trim());
         Debug.Log(s);
         return s != null ? s.KOR : code;
+    }
+
+    //이 부분이 추가가 되었습니다!
+    private void SetupSkipToEnd()
+    {
+        //스킵 버튼에 있는 모든 추가 기능 삭제 후
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        //활성화 후
+        SkipButton.SetActive(true);
+        //터치 감지 기능 추가
+        SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
+        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            PickNewGroup();  // or onCompleteCallback?.Invoke(false); depending on context
+            SkipButton.SetActive(false);
+        });
     }
 }

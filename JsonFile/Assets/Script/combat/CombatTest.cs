@@ -57,16 +57,19 @@ public class CombatTest : MonoBehaviour
 
         yield return playerLoop;
         yield return enemyLoop;
-        if (battleOver == true)
+        if (player.Health >= 1)
         {
             //Destroy(enemy.gameObject);
             Debug.Log("플레이어가 승리하였습니다");
+            battleOver = true;
         }
         else
         {
             Debug.Log("플레이어가 패배하였습니다");
+            battleOver = false;
             
         }
+        player.GetComponent<EquipmentSystem>().Init();
         onComplete?.Invoke(battleOver);
     }
 
@@ -121,14 +124,12 @@ public class CombatTest : MonoBehaviour
             if (target.Health <= 0)
             {
                 // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
-                player.GetComponent<EquipmentSystem>().Init();
-                
+
                 Debug.Log(battleOver = (player.Health > 0));
                 yield break;
             }
             else if(attacker.Health<=0)
             {
-                player.GetComponent<EquipmentSystem>().Init();
                 battleOver = false;
                 yield break;
             }

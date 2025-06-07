@@ -208,10 +208,13 @@ public class StoryDisplayManager : MonoBehaviour
                 if (isSkip == true)
                 {
                     go.GetComponent<TMP_Text>().text = temp.ToString();
+                    scrollRect.verticalNormalizedPosition = 0f;
+                    Canvas.ForceUpdateCanvases();
                     break;
                 }
                 scrollRect.verticalNormalizedPosition = 0f;
                 go.GetComponent<TMP_Text>().text += fullText[i].ToString();
+                Canvas.ForceUpdateCanvases();
                 yield return new WaitForSeconds(0.05f);
                 //0.01초마다 한번씩 출력시킴
             }
@@ -221,49 +224,15 @@ public class StoryDisplayManager : MonoBehaviour
             //RamEvent같은 경우 설명 같은게 하나도 없기 때문에 에러가 발생을 하는데 그걸 막고자 if문 사용했음
             yield break;
         }
-        Canvas.ForceUpdateCanvases();
-
-        // 2) 스크롤을 맨 아래(또는 맨 위)로 이동
-        //    verticalNormalizedPosition == 1 → 맨 위, 0 → 맨 아래
-        
-
         isTyping = false;
         SkipButton.SetActive(false);
         isSkip = false;
+        scrollRect.verticalNormalizedPosition = 0f;
+        Canvas.ForceUpdateCanvases();
         NextScene();
     }
 
     // 선택지 버튼 세팅
-    //private void SetupChoices()
-    //{
-    //    List<(string destCode, string displayText)> availableChoices = new List<(string, string)>();
-
-    //    // 기존 버튼 삭제
-    //    foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
-
-    //    if (currentStory.Choice1_Text != "")
-    //    {
-    //        string code = currentStory.Choice1_Text;
-    //        Debug.Log(code);
-    //        string display = GetDisplayTextFromScript(code, scriptEventsCache);
-    //        //Debug.Log($"테스트용 문자열입니다 {display}");
-    //        availableChoices.Add((code, display));
-    //    }
-    //    if (currentStory.Choice2_Text != "")
-    //    {
-    //        string code = currentStory.Choice2_Text;
-    //        string display = GetDisplayTextFromScript(code, scriptEventsCache);
-    //        availableChoices.Add((code, display));
-    //    }
-    //    if (currentStory.Choice3_Text != "")
-    //    {
-    //        string code = currentStory.Choice3_Text;
-    //        string display = GetDisplayTextFromScript(code, scriptEventsCache);
-    //        availableChoices.Add((code, display));
-    //    }
-    //    CreateChoicebutton(availableChoices);
-    //}
-
     private void SetupChoices()
     {
         List<(string destCode, string displayText, int choiceNo)> availableChoices = new();
@@ -300,24 +269,6 @@ public class StoryDisplayManager : MonoBehaviour
                     OnChoiceSelected(destCode);
                 }
             });
-        }
-    }
-
-    void CreateChoicebutton(List<(string destCode, string displayText)> availableChoices)
-    {
-        if (availableChoices.Count > 0)
-        {
-            // 선택지가 있으면 버튼 생성
-            foreach (var choice in availableChoices)
-            {
-                GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
-                Button btn = buttonObj.GetComponent<Button>();
-                TMP_Text btnText = buttonObj.GetComponentInChildren<TMP_Text>();
-                if (btnText != null)
-                    btnText.text = choice.displayText;
-
-                btn.onClick.AddListener(() => { OnChoiceSelected(choice.destCode); });
-            }
         }
     }
     void OnChoiceSelected(string newSceneCode)
@@ -375,7 +326,7 @@ public class StoryDisplayManager : MonoBehaviour
         Debug.Log(choices.Count);
         if (choices.Count == 1)
         {
-            OnChoiceSelected(choices[0]);
+           //OnChoiceSelected(choices[0]);
             return;
         }
         else if (choices.Count > 1)

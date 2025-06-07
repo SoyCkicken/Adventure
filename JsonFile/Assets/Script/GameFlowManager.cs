@@ -50,7 +50,7 @@ public class GameFlowManager : MonoBehaviour
                 break;
             case FlowState.RandomEvent:
                 Debug.Log("이벤트스토리에 진입했습니다");
-                randomEventManager.StartRandomEvent(OnRandomEventComplete);
+                randomEventManager.StartEventSequence(OnRandomEventComplete);
                 break;
             case FlowState.Battle:
                 Debug.Log("전투스토리에 진입했습니다");
@@ -94,6 +94,7 @@ public class GameFlowManager : MonoBehaviour
         {
             // 전투가 끝나면 다시 스토리로 돌아와서 다음 스크립트 진행
             //randomEventManager.AdvanceEvent();
+            Debug.Log($"전투 결과 : {playerWon}");
             randomEventManager.WinBattle(playerWon);
         });
     }

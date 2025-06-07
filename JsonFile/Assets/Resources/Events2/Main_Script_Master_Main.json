@@ -282,7 +282,7 @@
       "Script_Code": "MainScript_1_2_5",
       "KOR": "벽돌을 옆으로 치운다.",
       "displayType": "TEXT",
-      "StoryBreak": null,
+      "StoryBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -337,7 +337,7 @@
       "Script_Code": "MainScript_1_2_10",
       "KOR": "무시하고 옆으로 지나간다.",
       "displayType": "TEXT",
-      "StoryBreak": null,
+      "StoryBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
     },

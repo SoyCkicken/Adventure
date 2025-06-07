@@ -369,7 +369,7 @@
       "Script_Text": "MainScript_1_2_4",
       "Main_Effect": null,
       "Choice1_Text": "MainScript_1_2_5",
-      "Choice1_Next_Scene": "MainScene_1_2_5",
+      "Choice1_Next_Scene": null,
       "Choice2_Text": null,
       "Choice2_Next_Scene": null,
       "Choice3_Text": null,
