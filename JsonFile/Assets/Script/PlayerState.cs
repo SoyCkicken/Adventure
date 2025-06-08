@@ -42,7 +42,9 @@ public class PlayerState : MonoBehaviour
     public int Charisma = 5;
     [SerializeField]
     public int Health = 5;
+    public int CurrentHealth;
     public int HP = 5;
+    public int CurrentMental;
     public int MP = 5;
     public int Level = 1;
     [Header("여기부터 능력치 UI관련되어 있는 옵션들입니다")]
@@ -72,6 +74,8 @@ public class PlayerState : MonoBehaviour
     private void Awake()
     {
         PlayerStateObject.SetActive(false);
+        CurrentHealth = 5;
+        CurrentMental = 5;
     }
 
     // Update is called once per frame
@@ -80,6 +84,10 @@ public class PlayerState : MonoBehaviour
         //최소 수치 보장
         if (Health / 3 >= 3)
         {
+            if (Health >= 15)
+            {
+                HP = 5;
+            }
             HP = Health / 3;
         }
         else
@@ -88,6 +96,10 @@ public class PlayerState : MonoBehaviour
         }
         if (Int / 3 >= 3)
         {
+            if (Int >= 15)
+            {
+                MP = 5;
+            }
             MP = Int / 3;
         }
         else

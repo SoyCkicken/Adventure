@@ -18,6 +18,7 @@ public class EquipmentSystem : MonoBehaviour
 
     public void Init()
     {
+        ClearInit();
         // 자동 참조
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
@@ -51,12 +52,16 @@ public class EquipmentSystem : MonoBehaviour
                     item_ID = weapon.Weapon_Name
                 });
         }
-        var armor = jsonManager.GetArmorMasters("Armor_Master")
-                         .FirstOrDefault(w => w.Armor_ID == player.armor_Name);
+        else
+        {
+            player.damage = 10;
+        }
+            var armor = jsonManager.GetArmorMasters("Armor_Master")
+                             .FirstOrDefault(w => w.Armor_ID == player.armor_Name);
         // 방어구 장착 처리
         if (armor != null)
         {
-            player.armor= armor.Armor_DEF;
+            player.armor = armor.Armor_DEF;
             player.MaxHealth = armor.Armor_HP;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(armor.Armor_Option1))
@@ -74,6 +79,16 @@ public class EquipmentSystem : MonoBehaviour
                     item_ID = armor.Armor_ID
                 });
         }
+        else
+        {
+            player.MaxHealth = 50;
+            player.armor = 5;
+
+        }
+    }
+    void ClearInit()
+    {
+        player.OnHitOptions.Clear();
     }
 }
 

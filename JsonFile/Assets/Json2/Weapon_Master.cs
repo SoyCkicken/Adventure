@@ -19,4 +19,6 @@ public class Weapon_Master
     public string Option_2_ID;
     public int Option_Value2;
     public string Description;
+    public string ItemType;
+    public string One_Handed;
 }

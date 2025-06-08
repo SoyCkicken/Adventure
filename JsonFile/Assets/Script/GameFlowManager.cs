@@ -11,7 +11,7 @@ public class GameFlowManager : MonoBehaviour
     public BattleManager battleManager;
     public MonsterSpawner monsterSpawner;
     private string pendingMonsterID;
-
+    public InventoryManager inventoryManager;
     void Start()
     {
 
@@ -128,5 +128,24 @@ public class GameFlowManager : MonoBehaviour
     {
         // 전투 끝나면 prevState로 복귀
         EnterState(prevState);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            var potion = new ItemData
+            {
+                Item_ID = "Potion_Heal",
+                Item_Type = "Consumable",
+                Item_Name = "빨간 포션",
+                Heal_Value = 25,
+                Mental_Heal_Value = 0,
+                Description = "체력을 회복하는 포션입니다.",
+                Icon = "potion_red"
+            };
+
+            inventoryManager.AddItemToInventory(potion);
+        }
     }
 }

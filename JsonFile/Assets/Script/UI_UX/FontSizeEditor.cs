@@ -9,12 +9,19 @@ public class FontSizeManager : MonoBehaviour
     public int fontSize = 24;
     public int minFontSize = 16;
     public int maxFontSize = 48;
-    public Button upbutton;
-    public Button downbutton;
+    public int TextLineSize = 0;
+    public int TextminLineSize = 0;
+    public int TextMaxLineSize = 12;
+    public Button upFontSizebutton;
+    public Button downFontSizebutton;
+    public Button upLineSizebutton;
+    public Button downLineSizebutton;
     public Button openOptionButton;
     public Button closeOptionButton;
     public GameObject optionUI;
+    public Button resetButton;
     public TMP_Text tMP;
+    public TMP_Text tMP2;
     //일부 추가를 해줘야 하는 애들이 있음
     public List<TMP_Text> registeredTexts = new List<TMP_Text>();
 
@@ -22,12 +29,13 @@ public class FontSizeManager : MonoBehaviour
     {
         //여기서 덮어씌우고
        fontSize = Convert.ToInt32(tMP.text);
+        TextLineSize = Convert.ToInt32(tMP2.text);
 
-        upbutton.onClick.AddListener(() =>
+        upFontSizebutton.onClick.AddListener(() =>
         {
             IncreaseFontSize();
         });
-        downbutton.onClick.AddListener(() =>
+        downFontSizebutton.onClick.AddListener(() =>
         {
             DecreaseFontSize();
         });
@@ -39,7 +47,10 @@ public class FontSizeManager : MonoBehaviour
         {
             optionUI.SetActive(false);
         });
-
+        resetButton.onClick.AddListener(() =>
+        {
+            resetTextSetting();
+        });
     }
 
     public void Register(TMP_Text text)
@@ -67,12 +78,37 @@ public class FontSizeManager : MonoBehaviour
         ApplyFontSizeToAll();
     }
 
+    public void IncreaseLineSize()
+    {
+        TextLineSize = Mathf.Min(TextLineSize + 2, TextMaxLineSize);
+        tMP.text = $"{fontSize}";
+        tMP.lineSpacing = TextLineSize;
+        ApplyFontSizeToAll();
+    }
+
+    public void DecreaseLineSize()
+    {
+        TextLineSize = Mathf.Max(TextLineSize - 2, TextminLineSize);
+        tMP.text = $"{TextLineSize}";
+        tMP.lineSpacing = TextLineSize;
+        ApplyFontSizeToAll();
+    }
+
+    public void resetTextSetting()
+    {
+        TextLineSize = 0;
+        fontSize = 24;
+        ApplyFontSizeToAll();
+    }
+
     public void ApplyFontSizeToAll()
     {
         foreach (var text in registeredTexts)
         {
             if (text != null)
                 text.fontSize = fontSize;
+            if (text != null)
+                text.lineSpacing = TextLineSize;
         }
     }
 }
