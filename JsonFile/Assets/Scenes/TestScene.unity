@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
-  TextPrefab: {fileID: 1008279081308593107, guid: c894de28c34d4be409b2c371c06af464, type: 3}
+  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
   SkipButton: {fileID: 1641275629}
   TouchCatcher: {fileID: 1787361090}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
@@ -346,7 +346,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 529089260}
   ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
-  TextPrefab: {fileID: 1008279081308593107, guid: c894de28c34d4be409b2c371c06af464, type: 3}
+  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
   SkipButton: {fileID: 1641275629}
   choiceButtonParent: {fileID: 465859462}
   choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}

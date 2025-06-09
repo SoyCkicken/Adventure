@@ -202,16 +202,19 @@ public class StoryDisplayManager : MonoBehaviour
             if (isSkip)
             {
                 tmp.text = complete;
+                go.transform.position = new Vector3(1, 0, 0);
                 break;
             }
             tmp.text += fullText[i];
-            
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
             yield return new WaitForSeconds(0.05f);
         }
 
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
+        Canvas.ForceUpdateCanvases();
         scrollRect.verticalNormalizedPosition = 0f;
         Canvas.ForceUpdateCanvases();
 
@@ -220,11 +223,19 @@ public class StoryDisplayManager : MonoBehaviour
             !string.IsNullOrEmpty(currentStory.Choice2_Text) ||
             !string.IsNullOrEmpty(currentStory.Choice3_Text))
         {
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
+            Canvas.ForceUpdateCanvases();
             SetupChoices();
+            
         }
         else
         {
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
+            Canvas.ForceUpdateCanvases();
             NextScene();
+            
         }
     }
 
@@ -336,6 +347,9 @@ public class StoryDisplayManager : MonoBehaviour
         if (script != null && script.StoryBreak == "Break")
         {
             Debug.Log("브레이크문 들어왔습니다");
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
+            Canvas.ForceUpdateCanvases();
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
