@@ -336,6 +336,7 @@ public class EventDisplay : MonoBehaviour
             tmp.text += fullText[i];
             scrollRect.verticalNormalizedPosition = 0f;
             Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
             yield return new WaitForSeconds(0.05f);
         }
 
@@ -344,6 +345,7 @@ public class EventDisplay : MonoBehaviour
         SkipButton.SetActive(false); 
         scrollRect.verticalNormalizedPosition = 0f;
         Canvas.ForceUpdateCanvases();
+        scrollRect.verticalNormalizedPosition = 0f;
 
         // 타이핑이 끝난 후에 선택지 출력
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text) ||
@@ -351,10 +353,14 @@ public class EventDisplay : MonoBehaviour
             !string.IsNullOrEmpty(currentEvent.Choice3_Text))
         {
             SetupChoices();
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
         }
         else
         {
            AdvanceEvent();
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
         }
     }
 
