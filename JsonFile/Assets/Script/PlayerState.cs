@@ -81,9 +81,9 @@ public class PlayerState : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(CurrentHealth >= HP)
+        if (CurrentHealth >= HP)
             CurrentHealth = HP;
-        if(CurrentMental>=MP)
+        if (CurrentMental >= MP)
             CurrentMental = MP;
         //최소 수치 보장
         if (Health / 3 >= 3)
@@ -93,7 +93,7 @@ public class PlayerState : MonoBehaviour
                 HP = 5;
             }
             HP = Health / 3;
-            
+
         }
         else
         {
@@ -130,7 +130,7 @@ public class PlayerState : MonoBehaviour
         }
 
     }
-   public void levelUp()
+    public void levelUp()
     {
         if (Experience > Experience_required)
         {
@@ -148,7 +148,7 @@ public class PlayerState : MonoBehaviour
             temph = Health;
             tempDi = Divinity;
         }
-       
+
     }
     public void resetPlayerState()
     {

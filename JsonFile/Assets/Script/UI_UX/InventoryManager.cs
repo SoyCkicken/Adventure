@@ -8,7 +8,6 @@ using MyGame;
 public class InventoryManager : MonoBehaviour
 {
     [Header("UI Components")]
-    
     public GameObject inventoryPanel;
     public Transform itemGridParent;
     public GameObject itemSlotPrefab;
@@ -23,6 +22,7 @@ public class InventoryManager : MonoBehaviour
     public Button OnInventoryButton;
     public Button OffInventoryButton;
     public Button OffItemDetailButton;
+
     [Header("Data References")]
     public EquipmentSystem equipmentSystem;
     public JsonManager jsonManager;
@@ -30,87 +30,95 @@ public class InventoryManager : MonoBehaviour
     public PlayerState playerState; // 스토리용 체력, 정신력
 
     private List<ItemData> inventoryItems = new List<ItemData>();
+    private List<ItemSlotUI> slotUIs = new();
+    private const int maxSlotCount = 15;
+
     private ItemData selectedItem;
 
     private void Start()
     {
-        inventoryItems.Add(new ItemData
-        {
-            Item_ID = "Potion_001",
-            Item_Type = "Consumable",
-            Item_Name = "빨간 포션",
-            Heal_Value = 30,
-            Mental_Heal_Value = 0,
-            Description = "체력을 30 회복하는 포션입니다.",
-            Icon = "potion_red"
-        });
+        // 테스트용 아이템 추가
+        inventoryItems.Add(new ItemData { Item_ID = "Potion_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });
+        inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
+        inventoryItems.Add(new ItemData { Item_ID = "Armor_001", Item_Type = "Armor", Icon = "sword_iron" });
 
-        inventoryItems.Add(new ItemData
-        {
-            Item_ID = "Weapon_002",
-            Item_Type = "Weapon",
-            One_Handed = "TRUE",
-            Icon = "sword_iron"
-        });
-        inventoryItems.Add(new ItemData
-        {
-            Item_ID = "Armor_001",
-            Item_Type = "Armor",
-            Icon = "sword_iron"
-        });
-        equipButton.onClick.AddListener(() => { OnClickEquip(); });
-        unequipButton.onClick.AddListener(() => { OnClickUnequip(); });
-        useButton.onClick.AddListener(() => { OnClickUse(); });
-        OnInventoryButton.onClick.AddListener(() =>
-        {
+        // UI 버튼 연결
+        equipButton.onClick.AddListener(OnClickEquip);
+        unequipButton.onClick.AddListener(OnClickUnequip);
+        useButton.onClick.AddListener(OnClickUse);
+
+        OnInventoryButton.onClick.AddListener(() => {
             OffInventoryButton.gameObject.SetActive(true);
             OnInventoryButton.gameObject.SetActive(false);
-            onInventory();
+            inventoryPanel.SetActive(true);
         });
-        OffInventoryButton.onClick.AddListener(() => { offInventroy();
+        OffInventoryButton.onClick.AddListener(() => {
+            inventoryPanel.SetActive(false);
             OffInventoryButton.gameObject.SetActive(false);
             OnInventoryButton.gameObject.SetActive(true);
-            offInventroy();
         });
-        OffItemDetailButton.onClick.AddListener(() => { itemDetailPanel.SetActive(false); });
-        LoadInventory();
+        OffItemDetailButton.onClick.AddListener(() => itemDetailPanel.SetActive(false));
 
+        // 슬롯 생성
+        for (int i = 0; i < maxSlotCount; i++)
+        {
+            var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
+            var slotUI = slotGO.GetComponent<ItemSlotUI>();
+            //slotUI.Clear();
+            slotUIs.Add(slotUI);
+        }
+
+        LoadInventory();
     }
-    void onInventory()
-    {
-        inventoryPanel.SetActive(true);
-    }
-    void offInventroy()
-    {
-        inventoryPanel.SetActive(false);
-    }
+
     public void LoadInventory()
     {
-        ClearInventoryUI();
+        foreach (var slot in slotUIs)
+            //slot.Clear();
 
-        foreach (var item in inventoryItems)
-        {
-            CreateItemSlot(item);
-        }
+        for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
+            slotUIs[i].Setup(inventoryItems[i], ShowItemDetail);
     }
 
-    void ClearInventoryUI()
+    public void AddItemToInventory(ItemData newItem)
     {
-        foreach (Transform child in itemGridParent)
+        if (inventoryItems.Count >= maxSlotCount)
         {
-            Destroy(child.gameObject);
+            Debug.LogWarning("인벤토리가 가득 찼습니다.");
+            return;
         }
+
+        inventoryItems.Add(newItem);
+        LoadInventory();
     }
 
     void ShowItemDetail(ItemData item)
     {
+        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
         selectedItem = item;
         itemDetailPanel.SetActive(true);
 
-        itemNameText.text = item.Item_Name;
+        if (item.Item_Type == "Weapon")
+        {
+            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
+            itemNameText.text = weapon?.Weapon_Name;
+            itemDescText.text = weapon?.Description;
+        }
+        else if (item.Item_Type == "Armor")
+        {
+            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
+            itemNameText.text = armor?.Armor_NAME;
+            itemDescText.text = armor?.Description;
+        }
+        else
+        {
+            itemNameText.text = item.Item_Name;
+            itemDescText.text = item.Description;
+        }
+
         itemStatText.text = GetStatText(item);
         itemOptionText.text = GetOptionText(item);
-        itemDescText.text = item.Description;
 
         equipButton.gameObject.SetActive(false);
         unequipButton.gameObject.SetActive(false);
@@ -138,10 +146,18 @@ public class InventoryManager : MonoBehaviour
 
     string GetStatText(ItemData item)
     {
+        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
         if (item.Item_Type == "Weapon")
-            return $"공격력: {item.Weapon_DMG}";
+        {
+            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
+            return $"공격력: {weapon?.Weapon_DMG}";
+        }
         else if (item.Item_Type == "Armor")
-            return $"방어력: {item.Armor_DEF}, 체력: {item.Armor_HP}";
+        {
+            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
+            return $"방어력: {armor?.Armor_DEF}, 체력: {armor?.Armor_HP}";
+        }
         else if (item.Item_Type == "Consumable")
         {
             List<string> effects = new();
@@ -155,10 +171,26 @@ public class InventoryManager : MonoBehaviour
     string GetOptionText(ItemData item)
     {
         List<string> options = new();
-        if (!string.IsNullOrEmpty(item.Option_1_ID))
-            options.Add($"{item.Option_1_ID} +{item.Option_Value1}");
-        if (!string.IsNullOrEmpty(item.Option_2_ID))
-            options.Add($"{item.Option_2_ID} +{item.Option_Value2}");
+        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+
+        if (item.Item_Type == "Weapon")
+        {
+            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
+            if (!string.IsNullOrEmpty(weapon?.Option_1_ID)) options.Add($"{weapon.Option_1_ID} +{weapon.Option_Value1}");
+            if (!string.IsNullOrEmpty(weapon?.Option_2_ID)) options.Add($"{weapon.Option_2_ID} +{weapon.Option_Value2}");
+        }
+        else if (item.Item_Type == "Armor")
+        {
+            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
+            if (!string.IsNullOrEmpty(armor?.Armor_Option1)) options.Add($"{armor.Armor_Option1} +{armor.Option1_Value}");
+            if (!string.IsNullOrEmpty(armor?.Armor_Option2)) options.Add($"{armor.Armor_Option2} +{armor.Option2_Value}");
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(item.Option_1_ID)) options.Add($"{item.Option_1_ID} +{item.Option_Value1}");
+            if (!string.IsNullOrEmpty(item.Option_2_ID)) options.Add($"{item.Option_2_ID} +{item.Option_Value2}");
+        }
         return string.Join("\n", options);
     }
 
@@ -180,7 +212,6 @@ public class InventoryManager : MonoBehaviour
             player.armor_Name = selectedItem.Item_ID;
             Debug.Log("장착(방어구) 버튼을 눌렀습니다!");
         }
-            
 
         equipmentSystem.Init();
         ShowItemDetail(selectedItem);
@@ -188,42 +219,37 @@ public class InventoryManager : MonoBehaviour
 
     public void OnClickUnequip()
     {
+        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+
         if (selectedItem == null) return;
 
         if (selectedItem.Item_Type == "Weapon")
         {
-            if (jsonManager != null)
+            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
+            if (weapon != null)
             {
-                var weapon = jsonManager.GetWeaponMasters("Weapon_Master")
-                    .FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
-                if (weapon != null)
-                {
-                    int weaponDamage = (int)(weapon.Weapon_DMG +
-                        playerState.Strength * weapon.STR_Scaling +
-                        playerState.DEX * weapon.DEX_Scaling +
-                        playerState.Int * weapon.INT_Scaling +
-                        playerState.MAG * weapon.MAG_Scaling +
-                        playerState.Charisma * weapon.CHR_Scaling +
-                        playerState.Divinity * weapon.DIV_Scaling);
-                    player.damage -= weaponDamage;
-                }
-                Debug.Log("무기를 장착 해제 했습니다");
+                int weaponDamage = (int)(weapon.Weapon_DMG +
+                    playerState.Strength * weapon.STR_Scaling +
+                    playerState.DEX * weapon.DEX_Scaling +
+                    playerState.Int * weapon.INT_Scaling +
+                    playerState.MAG * weapon.MAG_Scaling +
+                    playerState.Charisma * weapon.CHR_Scaling +
+                    playerState.Divinity * weapon.DIV_Scaling);
+                player.damage -= weaponDamage;
             }
             player.weapon_Name = null;
+            Debug.Log("무기를 장착 해제 했습니다");
         }
         else if (selectedItem.Item_Type == "Armor")
         {
-            if (jsonManager != null)
+            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
+            if (armor != null)
             {
-                var armor = jsonManager.GetArmorMasters("Armor_Master")
-                    .FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
-                if (armor != null)
-                {
-                    player.MaxHealth -= armor.Armor_HP;
-                }
-                Debug.Log("방어구를 장착 해제 했습니다");
+                player.MaxHealth -= armor.Armor_HP;
             }
             player.armor_Name = null;
+            Debug.Log("방어구를 장착 해제 했습니다");
         }
 
         player.OnHitOptions.RemoveAll(opt => opt.item_ID == selectedItem.Item_ID);
@@ -235,7 +261,6 @@ public class InventoryManager : MonoBehaviour
     {
         if (selectedItem == null || selectedItem.Item_Type != "Consumable") return;
 
-        // 스토리용 체력/정신력 회복
         if (selectedItem.Heal_Value > 0)
         {
             playerState.CurrentHealth = Mathf.Min(playerState.HP, playerState.CurrentHealth + selectedItem.Heal_Value);
@@ -247,30 +272,13 @@ public class InventoryManager : MonoBehaviour
             playerState.CurrentMental = Mathf.Min(playerState.MP, playerState.CurrentMental + selectedItem.Mental_Heal_Value);
             Debug.Log("정신력 회복 포션 사용 했습니다");
         }
+
         inventoryItems.Remove(selectedItem);
         itemDetailPanel.SetActive(false);
         LoadInventory();
     }
-
-    public void AddItemToInventory(ItemData newItem)
-    {
-        inventoryItems.Add(newItem);
-        CreateItemSlot(newItem);
-    }
-    private void CreateItemSlot(ItemData item)
-    {
-        var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
-        var slotUI = slotGO.GetComponent<ItemSlotUI>();
-        if (slotUI != null)
-        {
-            slotUI.Setup(item, ShowItemDetail);
-        }
-    }
 }
 
-
-
-// 참고용 아이템 데이터 클래스
 [System.Serializable]
 public class ItemData
 {

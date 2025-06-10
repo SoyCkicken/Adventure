@@ -78,6 +78,11 @@ public class StoryDisplayManager : MonoBehaviour
           .ToList();
         currentIndex = 0;
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
+        if (storyList.Count == 0)
+        {
+            Debug.LogWarning("스토리 다 썼음!!!!!!!!!!!!!!!!");
+            gameOver();
+        }
         currentStory = storyList[currentIndex];
         TouchCatcher.SetActive(true);
         ClearContent();
@@ -509,5 +514,8 @@ public class StoryDisplayManager : MonoBehaviour
         }
         return 0f;
     }
-
+    void gameOver()
+    {
+        Debug.Log("게임 끝났습니다 선생님들 일어나세요");
+    }
 }

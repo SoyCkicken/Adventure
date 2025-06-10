@@ -184,7 +184,177 @@
       "Event_Index": 3.0,
       "EventScript_Index": 1.0,
       "Script_Code": "EventScript_3_1",
-      "KOR": "테스트용입니다 3_1",
+      "KOR": "눈 앞에 허름한 다리 하나가 보인다 금방이라도 끊어 질 것처럼 보이지만\n여기를 지나서 가면 매우 빠르게 마을에 도착을 할수 있을 것이다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 2.0,
+      "Script_Code": "EventScript_3_2",
+      "KOR": "어떻게 할까\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 3.0,
+      "Script_Code": "EventScript_3_3",
+      "KOR": "위험해 보이니 피해서 가자\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 4.0,
+      "Script_Code": "EventScript_3_4",
+      "KOR": "조금 멀리 돌아가지만 이 허름한 다리를 지나는 것 보단 안전할것 같다\n",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 5.0,
+      "Script_Code": "EventScript_3_5",
+      "KOR": "다리를 건넌다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 6.0,
+      "Script_Code": "EventScript_3_6",
+      "KOR": "다리를 건너는 중 다리 끝에 몇 명의 사람들이 모여 있는게 보였다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 7.0,
+      "Script_Code": "EventScript_3_7",
+      "KOR": "\"어이 친구 무사히 이 다리를 건너고 싶으면 가진 돈 다 내놔\n안그럼 알지?\" ",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 8.0,
+      "Script_Code": "EventScript_3_8",
+      "KOR": "그 사람은 조그만한 칼 하나를 들고 다리의 기둥을 툭툭 치고 있었다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 9.0,
+      "Script_Code": "EventScript_3_9",
+      "KOR": "어떻게 하지",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 10.0,
+      "Script_Code": "EventScript_3_10",
+      "KOR": "가지고 있는 돈의 일부를 던진다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 11.0,
+      "Script_Code": "EventScript_3_11",
+      "KOR": "\"어이 친구 잘 선택한거야 크\"\n그 무리들은 던진 돈을 들고 숲으로 숨어버렸다.",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 12.0,
+      "Script_Code": "EventScript_3_12",
+      "KOR": "기분이 매우 나쁘지만 어떻게든 다리를 건넜다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 13.0,
+      "Script_Code": "EventScript_3_13",
+      "KOR": "뛰어서 돌파한다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 14.0,
+      "Script_Code": "EventScript_3_14",
+      "KOR": "산적들이 다급하게 다리를 잘라냈지만 순식간에 다리를 건넜다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 15.0,
+      "Script_Code": "EventScript_3_15",
+      "KOR": "\"어.. 우리 화해하지 않을래?\" 라고 말하는 산적을 두둘겨 패고 가지고 있던\n돈을 챙겨서 다음 여행을 떠났다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 16.0,
+      "Script_Code": "EventScript_3_16",
+      "KOR": "다음 이야기로\n",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 17.0,
+      "Script_Code": "EventScript_3_17",
+      "KOR": "재빨리 다리를 건너기 시작 했지만 산적들이 낡은 다리를 자르는 것보다는 늦어서 강으로 떨어져버렸다\n",
+      "displayType": "TEXT",
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 3.0,
+      "EventScript_Index": 18.0,
+      "Script_Code": "EventScript_3_18",
+      "KOR": "다음 이야기로\n",
       "displayType": "TEXT",
       "EventBreak": "Break",
       "NEXTWIN": null,

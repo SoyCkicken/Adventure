@@ -430,7 +430,9 @@ public class EventDisplay : MonoBehaviour
     {
         // 선택된 코드로 이동
         var target = eventList.FirstOrDefault(e => e.Event_Text.Trim() == code.Trim());
-        Debug.Log(target);
+        var targetscript = scriptEventsCache.FirstOrDefault(e => e.Script_Code.Trim() == code.Trim());
+        Debug.Log($"{targetscript.KOR} , {targetscript.EventBreak} ");
+        Debug.Log($"{target.Random_Event_ID}\n{target.Event_Text}");
         ClearContent();
         if (target != null)
         {
@@ -438,7 +440,23 @@ public class EventDisplay : MonoBehaviour
             //currentGroupIndex = eventList.IndexOf(target);
             currentGroupIndex = target.Script_Index;
            Debug.Log(target.Script_Index);
-            DisplayCurrentEvent();
+            if (targetscript.EventBreak == "Break")
+            {
+                //끝나는 선택지 누를 시 
+                //이벤트 종료 시킴
+                if (targetscript != null && targetscript.EventBreak == "Break")
+                {
+                    Debug.Log("이벤트 종료: Break 문 탐지");
+                    SetupSkipToEnd();
+                    return;
+                }
+            }
+            else
+            {
+                //이벤트 끝나는 부분이 아님
+                DisplayCurrentEvent();
+            }
+            
         }
         else
         {

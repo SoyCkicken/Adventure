@@ -17,6 +17,15 @@
       "Fail_Next_Script": "EventScript_1_6",
       "Success_Effect": "Effect_1",
       "Fail_Effect": "Effect_2"
+    },
+    {
+      "Scene_Code": "EventScene_3_9",
+      "Choice_No": 2.0,
+      "Success_Formula": "DEX * 10",
+      "Success_Next_Script": "EventScript_3_14",
+      "Fail_Next_Script": "EventScript_3_16",
+      "Success_Effect": null,
+      "Fail_Effect": null
     }
   ]
 }

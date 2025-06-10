@@ -9,7 +9,7 @@ public class Weapon_Master
     public int Weapon_DMG;
     public float STR_Scaling;
     public float DEX_Scaling;
-    public int INT_Scaling;
+    public float INT_Scaling;
     public float MAG_Scaling;
     public int DIV_Scaling;
     public int CHR_Scaling;
