@@ -12,4 +12,6 @@ public class Armor_Master
     public int Option1_Value;
     public string Armor_Option2;
     public int Option2_Value;
+    public string Description;
+    public string ItemType;
 }

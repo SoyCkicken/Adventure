@@ -6,7 +6,6 @@ public class Weapon_Master
 {
     public string Weapon_ID;
     public string Weapon_Name;
-    public string Weapon_Type;
     public int Weapon_DMG;
     public float STR_Scaling;
     public float DEX_Scaling;

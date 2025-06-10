@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static UnityEngine.GraphicsBuffer;
+using UnityEngine.Playables;
 
 public class EventDisplay : MonoBehaviour
 {
@@ -21,7 +22,8 @@ public class EventDisplay : MonoBehaviour
     private JsonManager jsonManager;
     private SpriteBank spriteBank;
     public ScrollRect scrollRect;
-
+    public PlayerState playerState;
+    
     private bool isSkip = false;
     private bool isTyping = false;
     private System.Random rng = new System.Random();
@@ -46,7 +48,7 @@ public class EventDisplay : MonoBehaviour
 
     // 스크립트 캐시 (Ran_Script_Master_Event)
     private List<Ran_Script_Master_Event> scriptEventsCache;
-
+    
     // 외부 콜백
     private Action<bool> onCompleteCallback;
 
@@ -383,20 +385,38 @@ public class EventDisplay : MonoBehaviour
     {
         ClearChoiceButtons();
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        var choices = new List<(string code, string text)>();
-        Debug.Log(GetScriptText(currentEvent.Choice1_Text));
+
+        var choices = new List<(string code, string text, int choiceNo)>();
+
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-            choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text)));
+            choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
         if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
-            choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text)));
+            choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text), 2));
         if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
-            choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text)));
+            choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
+
+        var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
+
         foreach (var ch in choices)
         {
             var btn = Instantiate(choiceButtonPrefab, choiceButtonParent).GetComponent<Button>();
             btn.GetComponentInChildren<TMP_Text>().text = ch.text;
-            Debug.Log(ch.code);
-            btn.onClick.AddListener(() => OnChoice(ch.code));
+
+            var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
+
+            btn.onClick.AddListener(() =>
+            {
+                string nextCode = ch.code; // 기본값
+
+                if (rateData != null)
+                {
+                    float chance = EvaluateFormula(rateData.Success_Formula);
+                    bool isSuccess = UnityEngine.Random.value < chance;
+                    nextCode = isSuccess ? rateData.Success_Next_Script : rateData.Fail_Next_Script;
+                }
+
+                OnChoice(nextCode);
+            });
         }
     }
 
@@ -441,5 +461,129 @@ public class EventDisplay : MonoBehaviour
             PickNewGroup();  // or onCompleteCallback?.Invoke(false); depending on context
             SkipButton.SetActive(false);
         });
+    }
+    private float EvaluateFormula(string formula)
+    {
+        if (string.IsNullOrEmpty(formula)) return 0f;
+        // 간단한 STR * 10 구조만 처리
+        if (formula.Contains("STR"))
+        {
+            int str = playerState.Strength; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("STR*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (str * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+
+
+        }
+        else if (formula.Contains("DEX"))
+        {
+            int DEX = playerState.DEX; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("DEX*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (DEX * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+        }
+        else if (formula.Contains("DIV"))
+        {
+            int DIV = playerState.Divinity; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("DIV*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (DIV * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+        }
+
+        else if (formula.Contains("INT"))
+        {
+            int INT = playerState.Int; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("INT*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (INT * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+        }
+
+        else if (formula.Contains("MAG"))
+        {
+            int MAG = playerState.MAG; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("MAG*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (MAG * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+        }
+
+        else if (formula.Contains("CHA"))
+        {
+            int CHA = playerState.Charisma; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("CHA*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (CHA * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+        }
+
+        else if (formula.Contains("HEALTH"))
+        {
+            int HEALTH = playerState.Health; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            string sanitized = formula.Replace(" ", ""); // 공백 제거
+            string factor = sanitized.Replace("HEALTH*", "");
+
+            if (float.TryParse(factor, out float percent))
+            {
+                //Debug.Log($"계산된 배율: {percent}");
+                return (HEALTH * percent) / 100f;
+            }
+            else
+            {
+                Debug.LogWarning($"배율 파싱 실패: {factor}");
+            }
+        }
+        return 0f;
     }
 }

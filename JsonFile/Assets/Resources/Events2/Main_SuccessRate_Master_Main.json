@@ -4,8 +4,8 @@
       "Scene_Code": "MainScene_1_2_4",
       "Choice_No": 1.0,
       "Success_Formula": "STR*10 ",
-      "Success_Next_Script": "MainScene_1_2_6",
-      "Fail_Next_Script": "MainScene_1_2_7"
+      "Success_Next_Script": "MainScript_1_2_6",
+      "Fail_Next_Script": "MainScript_1_2_7"
     }
   ]
 }

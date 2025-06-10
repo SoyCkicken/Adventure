@@ -81,6 +81,10 @@ public class PlayerState : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(CurrentHealth >= HP)
+            CurrentHealth = HP;
+        if(CurrentMental>=MP)
+            CurrentMental = MP;
         //최소 수치 보장
         if (Health / 3 >= 3)
         {
@@ -89,6 +93,7 @@ public class PlayerState : MonoBehaviour
                 HP = 5;
             }
             HP = Health / 3;
+            
         }
         else
         {

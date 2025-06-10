@@ -94,13 +94,14 @@ namespace MyGame
     {
         public Character User;      // 더미로 붙일 Character 컴포넌트
         public Character Target;
-        public int hp;              //체력
-        public int damage;
-        public float speed;         //공격속도
-        public int armor;           //방어력
-        public string option_ID;
-        public int Value;           // 옵션 값
+        public int Value;
         public string item_ID;
-       
+        public string option_ID;
+        public float hp; // 예시 추가
+        public override string ToString()
+        {
+            return $"[OptionContext] User: {User.name}, Target: {Target.name}, Value: {Value}, Item: {item_ID}, Option: {option_ID}";
+        }
+
     }
 }

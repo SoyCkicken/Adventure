@@ -33,9 +33,9 @@ public class AddFireDamage : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        int heal = Mathf.FloorToInt(ctx.Value);
-        ctx.Target.Health -= heal;
-        Debug.Log(heal);
+        int damage = Mathf.FloorToInt(ctx.Value);
+        ctx.Target.Health -= damage;
+        Debug.Log(damage);
         Debug.Log($"{ctx.Target.Health}");
     }
 }
@@ -65,7 +65,7 @@ public class BurnEffect : IOptionEffect
     {
         //예: 매 턴마다 추가 피해를 주는 스택을 만든다
         int heal = Mathf.FloorToInt((ctx.Value) * 3);
-        ctx.hp -= heal;
+        ctx.Target.Health -= heal;
         Debug.Log(ctx.hp);
     }
 }
@@ -75,19 +75,22 @@ public class BurnEffect : IOptionEffect
 public class OptionManager : MonoBehaviour
 {
     public JsonManager jsonManager;
-    List<Option_Master> option_Masters;
     Dictionary<string, IOptionEffect> effects;
+    private Dictionary<string, Option_Master> optionDict;
 
     void Awake()
     {
+        var options = jsonManager.GetOptionMasters("Option_Master");
+        optionDict = options.ToDictionary(x => x.Option_ID, x => x);
+
         effects = new Dictionary<string, IOptionEffect>()
-        {
-            {"Effect_Bleed",   new BleedEffect()},
-            {"Effect_Fire",new AddFireDamage()},
-            {"Effect_Critical",     new Critical()},
-            {"Effect_Healing",     new Healting()},
-            // …추가
-        };
+    {
+        {"Effect_Bleed",   new BleedEffect()},
+        {"Effect_Fire",    new AddFireDamage()},
+        {"Effect_Critical",new Critical()},
+        {"Effect_Healing", new Healting()},
+        // 필요에 따라 계속 추가
+    };
     }
 
     public void ApplyOption(string optionID, OptionContext ctx)

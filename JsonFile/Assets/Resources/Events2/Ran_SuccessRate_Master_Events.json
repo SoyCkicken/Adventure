@@ -4,8 +4,8 @@
       "Scene_Code": "EventScene_1_2",
       "Choice_No": 1.0,
       "Success_Formula": "STR * 10",
-      "Success_Next_Script": "EventScene_1_3",
-      "Fail_Next_Script": "EventScene_1_4",
+      "Success_Next_Script": "EventScript_1_3",
+      "Fail_Next_Script": "EventScript_1_6",
       "Success_Effect": "Effect_1",
       "Fail_Effect": "Effect_2"
     },
@@ -13,8 +13,8 @@
       "Scene_Code": "EventScene_1_2",
       "Choice_No": 2.0,
       "Success_Formula": "MAG * 5",
-      "Success_Next_Script": "EventScene_1_3",
-      "Fail_Next_Script": "EventScene_1_4",
+      "Success_Next_Script": "EventScript_1_3",
+      "Fail_Next_Script": "EventScript_1_6",
       "Success_Effect": "Effect_1",
       "Fail_Effect": "Effect_2"
     }

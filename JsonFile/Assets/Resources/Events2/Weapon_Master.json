@@ -3,7 +3,6 @@
     {
       "Weapon_ID": "Weapon_001",
       "Weapon_Name": "철검",
-      "Weapon_Type": true,
       "Weapon_DMG": 100.0,
       "STR_Scaling": 1.2,
       "DEX_Scaling": 1.2,
@@ -22,7 +21,6 @@
     {
       "Weapon_ID": "Weapon_002",
       "Weapon_Name": "붉은 용의 검",
-      "Weapon_Type": true,
       "Weapon_DMG": 150.0,
       "STR_Scaling": 1.1,
       "DEX_Scaling": 1.1,
@@ -36,12 +34,11 @@
       "Option_Value2": 5.0,
       "Description": "붉은 용의 비늘로 제작된 검",
       "ItemType": "Weapon",
-      "One-Handed": false
+      "One-Handed": true
     },
     {
       "Weapon_ID": "Weapon_003",
-      "Weapon_Name": "마법 지팡이",
-      "Weapon_Type": false,
+      "Weapon_Name": "떡갈나무 지팡이",
       "Weapon_DMG": 60.0,
       "STR_Scaling": 0.0,
       "DEX_Scaling": 0.0,
@@ -56,6 +53,24 @@
       "Description": "초보 마법사가 사용하기 적합한 지팡이",
       "ItemType": "Weapon",
       "One-Handed": false
+    },
+    {
+      "Weapon_ID": "Weapon_004",
+      "Weapon_Name": null,
+      "Weapon_DMG": null,
+      "STR_Scaling": null,
+      "DEX_Scaling": null,
+      "INT_Scaling": null,
+      "MAG_Scaling": null,
+      "DIV_Scaling": null,
+      "CHR_Scaling": null,
+      "Option_1_ID": null,
+      "Option_Value1": null,
+      "Option_2_ID": null,
+      "Option_Value2": null,
+      "Description": null,
+      "ItemType": null,
+      "One-Handed": null
     }
   ]
 }

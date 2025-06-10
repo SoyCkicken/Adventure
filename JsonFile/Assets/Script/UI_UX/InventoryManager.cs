@@ -8,6 +8,7 @@ using MyGame;
 public class InventoryManager : MonoBehaviour
 {
     [Header("UI Components")]
+    
     public GameObject inventoryPanel;
     public Transform itemGridParent;
     public GameObject itemSlotPrefab;
@@ -19,7 +20,9 @@ public class InventoryManager : MonoBehaviour
     public Button equipButton;
     public Button unequipButton;
     public Button useButton;
-
+    public Button OnInventoryButton;
+    public Button OffInventoryButton;
+    public Button OffItemDetailButton;
     [Header("Data References")]
     public EquipmentSystem equipmentSystem;
     public JsonManager jsonManager;
@@ -58,9 +61,29 @@ public class InventoryManager : MonoBehaviour
         equipButton.onClick.AddListener(() => { OnClickEquip(); });
         unequipButton.onClick.AddListener(() => { OnClickUnequip(); });
         useButton.onClick.AddListener(() => { OnClickUse(); });
+        OnInventoryButton.onClick.AddListener(() =>
+        {
+            OffInventoryButton.gameObject.SetActive(true);
+            OnInventoryButton.gameObject.SetActive(false);
+            onInventory();
+        });
+        OffInventoryButton.onClick.AddListener(() => { offInventroy();
+            OffInventoryButton.gameObject.SetActive(false);
+            OnInventoryButton.gameObject.SetActive(true);
+            offInventroy();
+        });
+        OffItemDetailButton.onClick.AddListener(() => { itemDetailPanel.SetActive(false); });
         LoadInventory();
-    }
 
+    }
+    void onInventory()
+    {
+        inventoryPanel.SetActive(true);
+    }
+    void offInventroy()
+    {
+        inventoryPanel.SetActive(false);
+    }
     public void LoadInventory()
     {
         ClearInventoryUI();
