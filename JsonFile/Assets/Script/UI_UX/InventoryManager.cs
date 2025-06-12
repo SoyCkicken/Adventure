@@ -22,6 +22,8 @@ public class InventoryManager : MonoBehaviour
     public Button OnInventoryButton;
     public Button OffInventoryButton;
     public Button OffItemDetailButton;
+    public TextMeshProUGUI DPSText;
+    public TextMeshProUGUI HPText;
 
     [Header("Data References")]
     public EquipmentSystem equipmentSystem;
@@ -30,6 +32,8 @@ public class InventoryManager : MonoBehaviour
     public PlayerState playerState; // 스토리용 체력, 정신력
 
     private List<ItemData> inventoryItems = new List<ItemData>();
+    public ItemSlotUI weaponEquipSlot;
+    public ItemSlotUI armorEquipSlot;
     private List<ItemSlotUI> slotUIs = new();
     private const int maxSlotCount = 15;
 
@@ -64,7 +68,7 @@ public class InventoryManager : MonoBehaviour
         {
             var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
             var slotUI = slotGO.GetComponent<ItemSlotUI>();
-            //slotUI.Clear();
+            slotUI.Clear();
             slotUIs.Add(slotUI);
         }
 
@@ -74,7 +78,7 @@ public class InventoryManager : MonoBehaviour
     public void LoadInventory()
     {
         foreach (var slot in slotUIs)
-            //slot.Clear();
+            slot.Clear();
 
         for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
             slotUIs[i].Setup(inventoryItems[i], ShowItemDetail);
@@ -196,63 +200,56 @@ public class InventoryManager : MonoBehaviour
 
     public void OnClickEquip()
     {
-        if (selectedItem == null)
-        {
-            Debug.Log("selectedItem이 없습니다");
-            return;
-        }
+        if (selectedItem == null) return;
 
+        // 장착 시 기존 장비는 인벤토리로
         if (selectedItem.Item_Type == "Weapon")
         {
+            if (weaponEquipSlot.CurrentItem != null)
+                AddItemToInventory(weaponEquipSlot.CurrentItem);
+
+            weaponEquipSlot.Setup(selectedItem, ShowItemDetail);
+            inventoryItems.Remove(selectedItem);
             player.weapon_Name = selectedItem.Item_ID;
-            Debug.Log("장착(무기) 버튼을 눌렀습니다!");
         }
         else if (selectedItem.Item_Type == "Armor")
         {
+            if (armorEquipSlot.CurrentItem != null)
+                AddItemToInventory(armorEquipSlot.CurrentItem);
+
+            armorEquipSlot.Setup(selectedItem, ShowItemDetail);
+            inventoryItems.Remove(selectedItem);
             player.armor_Name = selectedItem.Item_ID;
-            Debug.Log("장착(방어구) 버튼을 눌렀습니다!");
         }
 
         equipmentSystem.Init();
+        LoadInventory();
         ShowItemDetail(selectedItem);
     }
 
     public void OnClickUnequip()
     {
-        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-
         if (selectedItem == null) return;
+
+        if (inventoryItems.Count >= maxSlotCount)
+        {
+            Debug.Log("인벤토리가 가득 찼습니다. 장착 해제 실패");
+            return;
+        }
 
         if (selectedItem.Item_Type == "Weapon")
         {
-            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
-            if (weapon != null)
-            {
-                int weaponDamage = (int)(weapon.Weapon_DMG +
-                    playerState.Strength * weapon.STR_Scaling +
-                    playerState.DEX * weapon.DEX_Scaling +
-                    playerState.Int * weapon.INT_Scaling +
-                    playerState.MAG * weapon.MAG_Scaling +
-                    playerState.Charisma * weapon.CHR_Scaling +
-                    playerState.Divinity * weapon.DIV_Scaling);
-                player.damage -= weaponDamage;
-            }
             player.weapon_Name = null;
-            Debug.Log("무기를 장착 해제 했습니다");
+            weaponEquipSlot.Clear();
+            AddItemToInventory(selectedItem);
         }
         else if (selectedItem.Item_Type == "Armor")
         {
-            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
-            if (armor != null)
-            {
-                player.MaxHealth -= armor.Armor_HP;
-            }
             player.armor_Name = null;
-            Debug.Log("방어구를 장착 해제 했습니다");
+            armorEquipSlot.Clear();
+            AddItemToInventory(selectedItem);
         }
 
-        player.OnHitOptions.RemoveAll(opt => opt.item_ID == selectedItem.Item_ID);
         equipmentSystem.Init();
         ShowItemDetail(selectedItem);
     }

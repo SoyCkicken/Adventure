@@ -44,7 +44,6 @@ public class EventDisplay : MonoBehaviour
     // 이벤트 데이터들
     private List<RandomEvents_Master_Event> eventList;
     private RandomEvents_Master_Event currentEvent;
-    private int currentIndex = 0;
 
     // 스크립트 캐시 (Ran_Script_Master_Event)
     private List<Ran_Script_Master_Event> scriptEventsCache;
@@ -141,7 +140,6 @@ public class EventDisplay : MonoBehaviour
             .OrderBy(e => e.Script_Index)
             .ToList();
         currentGroupIndex = 0;
-        currentIndex = 0;
         
         // 첫 이벤트 실행
         DisplayCurrentEvent();

@@ -39,7 +39,7 @@ public class JsonManager : MonoBehaviour
 
     private void LoadAllJsonFiles()
     {
-        TextAsset[] jsonFiles = Resources.LoadAll<TextAsset>("Events2");
+        TextAsset[] jsonFiles = Resources.LoadAll<TextAsset>("Events");
 
         foreach (TextAsset jsonFile in jsonFiles)
         {

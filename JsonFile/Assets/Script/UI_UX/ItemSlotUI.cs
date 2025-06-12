@@ -8,7 +8,7 @@ public class ItemSlotUI : MonoBehaviour
     public Button button;
     private ItemData data;
     private System.Action<ItemData> onClickCallback;
-
+    public ItemData CurrentItem { get; }
     private void Awake()
     {
         button = this.GetComponent<Button>();
@@ -18,11 +18,18 @@ public class ItemSlotUI : MonoBehaviour
     public void Setup(ItemData item, System.Action<ItemData> onClick)
     {
         data = item;
-        //이미지 지금 없음!
         onClickCallback = onClick;
+        //이미지 지금 없음!
         //icon.sprite = Resources.Load<Sprite>($"Icons/{item.Icon}");
         Debug.Log("아이템 슬롯의 SetUp가 호출 되었습니다");
         Debug.Log($"아이템 슬롯의 Data 의 값입니다{data}");
+    }
+    public void Clear()
+    {
+        data = null;
+        //icon.sprite = null;
+        //icon.enabled = false;
+        onClickCallback = null;
     }
 
     public void OnClick()
