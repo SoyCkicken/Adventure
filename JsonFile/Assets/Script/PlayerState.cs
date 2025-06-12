@@ -29,17 +29,17 @@ public class PlayerState : MonoBehaviour
     [SerializeField]
     public JsonManager jsonManager;
     [SerializeField]
-    public int Strength = 5;
+    public int STR = 5;
     [SerializeField]
-    public int DEX = 5;
+    public int AGI = 5;
     [SerializeField]
-    public int Divinity = 5;
+    public int DIV = 5;
     [SerializeField]
-    public int Int = 5;
+    public int INT = 5;
     [SerializeField]
     public int MAG = 5;
     [SerializeField]
-    public int Charisma = 5;
+    public int CHA = 5;
     [SerializeField]
     public int Health = 5;
     public int CurrentHealth;
@@ -51,13 +51,19 @@ public class PlayerState : MonoBehaviour
     public GameObject PlayerStateObject;
     public int point;
     [SerializeField]
-    public TMP_Text Strengthtext = null;
-    public TMP_Text DEXtext = null;
-    public TMP_Text CharismaText = null;
-    public TMP_Text DivinityText = null;
-    public TMP_Text IntText = null;
-    public TMP_Text MAGtext = null;
-    public TMP_Text HealthText = null;
+    public TMP_Text StateSTRhtext = null;
+    public TMP_Text StateAGItext = null;
+    public TMP_Text StateCHAText = null;
+    public TMP_Text StateDIVText = null;
+    public TMP_Text StateINTText = null;
+    public TMP_Text StateMAGtext = null;
+    public TMP_Text StateHealthText = null;
+    public TMP_Text UISSTRtext = null;
+    public TMP_Text UIDEXtext = null;
+    public TMP_Text UICHAText = null;
+    public TMP_Text UIDIVText = null;
+    public TMP_Text UIINTText = null;
+    public TMP_Text UIMAGtext = null;
     //public TMP_Text levelTEXT = null;
     public List<GameObject> buttons;
     private int tempp;
@@ -69,6 +75,7 @@ public class PlayerState : MonoBehaviour
     private int temph;
     private int tempDi;
     public GameObject CloseButton;
+    public InventoryManager InventoryManager;
     private int Experience_required = 100;//필요 경험치
     private int Experience = 100000;
     private void Awake()
@@ -76,6 +83,7 @@ public class PlayerState : MonoBehaviour
         PlayerStateObject.SetActive(false);
         CurrentHealth = 5;
         CurrentMental = 5;
+        updateState();
     }
 
     // Update is called once per frame
@@ -99,13 +107,13 @@ public class PlayerState : MonoBehaviour
         {
             HP = 3;
         }
-        if (Int / 3 >= 3)
+        if (INT / 3 >= 3)
         {
-            if (Int >= 15)
+            if (INT >= 15)
             {
                 MP = 5;
             }
-            MP = Int / 3;
+            MP = INT / 3;
         }
         else
         {
@@ -126,6 +134,7 @@ public class PlayerState : MonoBehaviour
             foreach (GameObject b in buttons)
             {
                 b.SetActive(false);
+                
             }
         }
 
@@ -140,26 +149,26 @@ public class PlayerState : MonoBehaviour
             point += 3;
             tempp = point;
             PlayerStateObject.SetActive(true);
-            temps = Strength;
-            tempd = DEX;
-            tempc = Charisma;
-            tempi = Int;
+            temps = STR;
+            tempd = AGI;
+            tempc = CHA;
+            tempi = INT;
             tempm = MAG;
             temph = Health;
-            tempDi = Divinity;
+            tempDi = DIV;
         }
 
     }
     public void resetPlayerState()
     {
         point = tempp;
-        Strength = temps;
-        DEX = tempd;
-        Charisma = tempc;
-        Int = tempi;
+        STR = temps;
+        AGI = tempd;
+        CHA = tempc;
+        INT = tempi;
         MAG = tempm;
         Health = temph;
-        tempDi = Divinity;
+        tempDi = DIV;
         updateState();
     }
     public void closePlayerState()
@@ -169,35 +178,44 @@ public class PlayerState : MonoBehaviour
     }
     public void updateState()
     {
-        Strengthtext.text = Strength.ToString();
-        DEXtext.text = DEX.ToString();
-        CharismaText.text = Charisma.ToString();
-        IntText.text = Int.ToString();
-        MAGtext.text = MAG.ToString();
-        HealthText.text = Health.ToString();
-        DivinityText.text = Divinity.ToString();
+        StateSTRhtext.text = STR.ToString();
+        StateAGItext.text = AGI.ToString();
+        StateCHAText.text = CHA.ToString();
+        StateINTText.text = INT.ToString();
+        StateMAGtext.text = MAG.ToString();
+        StateHealthText.text = Health.ToString();
+        StateDIVText.text = DIV.ToString();
+
+        UISSTRtext.text = STR.ToString();
+        UIDEXtext.text = AGI.ToString();
+        UICHAText.text = CHA.ToString();
+        UIINTText.text = INT.ToString();
+        UIMAGtext.text = MAG.ToString() ;
+        UIDIVText.text = DIV.ToString() ;
+        InventoryManager.updateDPS_MaxHealth();
+        InventoryManager.UpdateInventoryByStrength();
     }
     public void AddStrength()
     {
-        Strength++;
+        STR++;
         point--;
         updateState();
     }
     public void AddDEX()
     {
-        DEX++;
+        AGI++;
         point--;
         updateState();
     }
     public void AddCHR()
     {
-        Charisma++;
+        CHA++;
         point--;
         updateState();
     }
     public void AddINT()
     {
-        Int++;
+        INT++;
         point--;
         updateState();
     }
@@ -215,7 +233,7 @@ public class PlayerState : MonoBehaviour
     }
     public void AddDivinity()
     {
-        Divinity++;
+        DIV++;
         point--;
         updateState();
     }

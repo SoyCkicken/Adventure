@@ -24,6 +24,8 @@ public class InventoryManager : MonoBehaviour
     public Button OffItemDetailButton;
     public TextMeshProUGUI DPSText;
     public TextMeshProUGUI HPText;
+    public GameObject pendingItemUIPrefab;
+    public Transform pendingItemUIParent;
 
     [Header("Data References")]
     public EquipmentSystem equipmentSystem;
@@ -35,28 +37,35 @@ public class InventoryManager : MonoBehaviour
     public ItemSlotUI weaponEquipSlot;
     public ItemSlotUI armorEquipSlot;
     private List<ItemSlotUI> slotUIs = new();
-    private const int maxSlotCount = 15;
+    private List<ItemData> pendingItems = new();
+    private const int minSlotCount = 10;
+    private int currnetSlotCount;
+    private const int maxSlotCount = 21;
 
     private ItemData selectedItem;
 
     private void Start()
     {
         // 테스트용 아이템 추가
+        // 소모 아이템 같은 경우 아직 구조가 정해지지 않아서 이렇게 되어 있음
         inventoryItems.Add(new ItemData { Item_ID = "Potion_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });
+        // 여기 부터는 실질 적으로 아이템의 정보가 DATA로 들어가 있음
         inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
         inventoryItems.Add(new ItemData { Item_ID = "Armor_001", Item_Type = "Armor", Icon = "sword_iron" });
-
+        int currnetSlotCount = GetInventorySizeFromStrength(playerState.STR);
         // UI 버튼 연결
         equipButton.onClick.AddListener(OnClickEquip);
         unequipButton.onClick.AddListener(OnClickUnequip);
         useButton.onClick.AddListener(OnClickUse);
 
-        OnInventoryButton.onClick.AddListener(() => {
+        OnInventoryButton.onClick.AddListener(() =>
+        {
             OffInventoryButton.gameObject.SetActive(true);
             OnInventoryButton.gameObject.SetActive(false);
             inventoryPanel.SetActive(true);
         });
-        OffInventoryButton.onClick.AddListener(() => {
+        OffInventoryButton.onClick.AddListener(() =>
+        {
             inventoryPanel.SetActive(false);
             OffInventoryButton.gameObject.SetActive(false);
             OnInventoryButton.gameObject.SetActive(true);
@@ -64,15 +73,16 @@ public class InventoryManager : MonoBehaviour
         OffItemDetailButton.onClick.AddListener(() => itemDetailPanel.SetActive(false));
 
         // 슬롯 생성
-        for (int i = 0; i < maxSlotCount; i++)
-        {
-            var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
-            var slotUI = slotGO.GetComponent<ItemSlotUI>();
-            slotUI.Clear();
-            slotUIs.Add(slotUI);
-        }
-
+        //for (int i = 0; i < currnetSlotCount; i++)
+        //{
+        //    var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
+        //    var slotUI = slotGO.GetComponent<ItemSlotUI>();
+        //    slotUI.Clear();
+        //    slotUIs.Add(slotUI);
+        //}
+        UpdateInventoryByStrength();
         LoadInventory();
+        updateDPS_MaxHealth();
     }
 
     public void LoadInventory()
@@ -96,6 +106,60 @@ public class InventoryManager : MonoBehaviour
         LoadInventory();
     }
 
+    // 힘에 따라 칸수 조절인데
+    public void UpdateInventoryByStrength()
+    {
+        int newCount = GetInventorySizeFromStrength(playerState.STR);
+
+        if (newCount < currnetSlotCount)
+        {
+            HandleInventoryShrink(newCount);
+        }
+        else if (newCount > currnetSlotCount)
+        {
+            for (int i = currnetSlotCount; i < newCount; i++)
+            {
+                var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
+                var slotUI = slotGO.GetComponent<ItemSlotUI>();
+                slotUI.Clear();
+                slotUIs.Add(slotUI);
+            }
+        }
+
+        currnetSlotCount = newCount;
+        LoadInventory();
+        TryRecoverPendingItems();
+    }
+
+    public void HandleInventoryShrink(int newCount)
+    {
+        //아이템의 칸수가 넘어가면 마지막 칸수 - 1번째 부터 임시 칸수로 이동 시킴
+
+        while (inventoryItems.Count > newCount)
+        {
+            var item = inventoryItems[^1];
+            inventoryItems.RemoveAt(inventoryItems.Count - 1);
+            pendingItems.Add(item);
+
+            var ui = Instantiate(pendingItemUIPrefab, pendingItemUIParent);
+            var uiScript = ui.GetComponent<PendingItemUI>();
+            uiScript.Setup(item, jsonManager);
+        }
+    }
+    //혹시 아이템 칸수가 부족해질 경우 임시 아이템으로 빼버림
+    private void TryRecoverPendingItems()
+    {
+        while (pendingItems.Count > 0 && inventoryItems.Count < currnetSlotCount)
+        {
+          
+            var item = pendingItems[0];
+            pendingItems.RemoveAt(0);
+            inventoryItems.Add(item);
+
+            if (pendingItemUIParent.childCount > 0)
+                Destroy(pendingItemUIParent.GetChild(0).gameObject);
+        }
+    }
     void ShowItemDetail(ItemData item)
     {
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
@@ -220,10 +284,12 @@ public class InventoryManager : MonoBehaviour
             armorEquipSlot.Setup(selectedItem, ShowItemDetail);
             inventoryItems.Remove(selectedItem);
             player.armor_Name = selectedItem.Item_ID;
+
         }
 
         equipmentSystem.Init();
         LoadInventory();
+        updateDPS_MaxHealth();
         ShowItemDetail(selectedItem);
     }
 
@@ -251,6 +317,7 @@ public class InventoryManager : MonoBehaviour
         }
 
         equipmentSystem.Init();
+        updateDPS_MaxHealth();
         ShowItemDetail(selectedItem);
     }
 
@@ -274,7 +341,202 @@ public class InventoryManager : MonoBehaviour
         itemDetailPanel.SetActive(false);
         LoadInventory();
     }
+    public void updateDPS_MaxHealth()
+    {
+        DPSText.text = (player.damage * player.speed).ToString("0.0");
+        HPText.text = player.MaxHealth.ToString();
+        //Debug.Log($"플레이어의 공격력 : {player.damage}\n플레이어의 속도 : {player.speed}\n플레이어의 체력 : {player.MaxHealth}");
+    }
+    int GetInventorySizeFromStrength(int strength)
+    {
+        return Mathf.Clamp(10 +(strength / 3), minSlotCount, maxSlotCount);
+    }
 }
+
+
+
+
+
+//using UnityEngine;
+//using UnityEngine.UI;
+//using TMPro;
+//using System.Collections.Generic;
+//using System.Linq;
+//using MyGame;
+
+//public class InventoryManager : MonoBehaviour
+//{
+//    [Header("UI Components")]
+//    public GameObject inventoryPanel;
+//    public Transform itemGridParent;
+//    public GameObject itemSlotPrefab;
+//    public GameObject itemDetailPanel;
+//    public TextMeshProUGUI itemNameText;
+//    public TextMeshProUGUI itemStatText;
+//    public TextMeshProUGUI itemOptionText;
+//    public TextMeshProUGUI itemDescText;
+//    public Button equipButton;
+//    public Button unequipButton;
+//    public Button useButton;
+//    public TextMeshProUGUI DPSText;
+//    public TextMeshProUGUI HPText;
+
+//    [Header("Pending Slot UI")]
+//    public GameObject pendingItemUIPrefab;
+//    public Transform pendingItemUIParent;
+
+//    [Header("Data References")]
+//    public EquipmentSystem equipmentSystem;
+//    public JsonManager jsonManager;
+//    public Character player;
+//    public PlayerState playerState;
+
+//    private List<ItemData> inventoryItems = new();
+//    private List<ItemSlotUI> slotUIs = new();
+//    private List<ItemData> pendingItems = new();
+//    private const int minSlotCount = 10;
+//    private const int maxSlotCount = 21;
+//    private int currnetSlotCount;
+
+//    private ItemData selectedItem;
+
+//    private void Start()
+//    {
+//        inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
+//        currnetSlotCount = GetInventorySizeFromStrength(playerState.Strength);
+
+//        for (int i = 0; i < currnetSlotCount; i++)
+//        {
+//            var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
+//            var slotUI = slotGO.GetComponent<ItemSlotUI>();
+//            slotUI.Clear();
+//            slotUIs.Add(slotUI);
+//        }
+
+//        LoadInventory();
+//        updateDPS_MaxHealth();
+//    }
+
+//    public void LoadInventory()
+//    {
+//        foreach (var slot in slotUIs)
+//            slot.Clear();
+
+//        for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
+//            slotUIs[i].Setup(inventoryItems[i], ShowItemDetail);
+//    }
+
+//    public void AddItemToInventory(ItemData newItem)
+//    {
+//        if (inventoryItems.Count >= currnetSlotCount)
+//        {
+//            Debug.LogWarning("인벤토리가 가득 찼습니다.");
+//            return;
+//        }
+
+//        inventoryItems.Add(newItem);
+//        LoadInventory();
+//    }
+
+
+
+//    void ShowItemDetail(ItemData item)
+//    {
+//        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+//        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+//        selectedItem = item;
+//        itemDetailPanel.SetActive(true);
+
+//        if (item.Item_Type == "Weapon")
+//        {
+//            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
+//            itemNameText.text = weapon?.Weapon_Name;
+//            itemDescText.text = weapon?.Description;
+//        }
+//        else if (item.Item_Type == "Armor")
+//        {
+//            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
+//            itemNameText.text = armor?.Armor_NAME;
+//            itemDescText.text = armor?.Description;
+//        }
+//        else
+//        {
+//            itemNameText.text = item.Item_Name;
+//            itemDescText.text = item.Description;
+//        }
+
+//        itemStatText.text = GetStatText(item);
+//        itemOptionText.text = GetOptionText(item);
+
+//        equipButton.gameObject.SetActive(false);
+//        unequipButton.gameObject.SetActive(false);
+//        useButton.gameObject.SetActive(false);
+
+//        switch (item.Item_Type)
+//        {
+//            case "Weapon":
+//                bool isWeaponEquipped = (item.Item_ID == player.weapon_Name);
+//                equipButton.gameObject.SetActive(!isWeaponEquipped);
+//                unequipButton.gameObject.SetActive(isWeaponEquipped);
+//                break;
+
+//            case "Armor":
+//                bool isArmorEquipped = (item.Item_ID == player.armor_Name);
+//                equipButton.gameObject.SetActive(!isArmorEquipped);
+//                unequipButton.gameObject.SetActive(isArmorEquipped);
+//                break;
+
+//            case "Consumable":
+//                useButton.gameObject.SetActive(true);
+//                break;
+//        }
+//    }
+
+//    string GetStatText(ItemData item)
+//    {
+//        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+//        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+//        if (item.Item_Type == "Weapon")
+//        {
+//            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == item.Item_ID);
+//            return $"공격력: {weapon?.Weapon_DMG}";
+//        }
+//        else if (item.Item_Type == "Armor")
+//        {
+//            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == item.Item_ID);
+//            return $"방어력: {armor?.Armor_DEF}, 체력: {armor?.Armor_HP}";
+//        }
+//        else if (item.Item_Type == "Consumable")
+//        {
+//            List<string> effects = new();
+//            if (item.Heal_Value > 0) effects.Add($"체력 회복: {item.Heal_Value}");
+//            if (item.Mental_Heal_Value > 0) effects.Add($"정신력 회복: {item.Mental_Heal_Value}");
+//            return string.Join(", ", effects);
+//        }
+//        return "";
+//    }
+
+//    string GetOptionText(ItemData item)
+//    {
+//        List<string> options = new();
+//        if (!string.IsNullOrEmpty(item.Option_1_ID))
+//            options.Add($"{item.Option_1_ID} +{item.Option_Value1}");
+//        if (!string.IsNullOrEmpty(item.Option_2_ID))
+//            options.Add($"{item.Option_2_ID} +{item.Option_Value2}");
+//        return string.Join("\\n", options);
+//    }
+
+//    void updateDPS_MaxHealth()
+//    {
+//        DPSText.text = (player.damage * player.speed).ToString("0.0");
+//        HPText.text = player.MaxHealth.ToString();
+//    }
+
+//    int GetInventorySizeFromStrength(int strength)
+//    {
+//        return Mathf.Clamp(10 + Mathf.FloorToInt(strength / 3f), 10, 21);
+//    }
+//}
 
 [System.Serializable]
 public class ItemData

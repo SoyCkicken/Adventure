@@ -21,8 +21,8 @@ public class ItemSlotUI : MonoBehaviour
         onClickCallback = onClick;
         //이미지 지금 없음!
         //icon.sprite = Resources.Load<Sprite>($"Icons/{item.Icon}");
-        Debug.Log("아이템 슬롯의 SetUp가 호출 되었습니다");
-        Debug.Log($"아이템 슬롯의 Data 의 값입니다{data}");
+        //Debug.Log("아이템 슬롯의 SetUp가 호출 되었습니다");
+        //Debug.Log($"아이템 슬롯의 Data 의 값입니다{data}");
     }
     public void Clear()
     {

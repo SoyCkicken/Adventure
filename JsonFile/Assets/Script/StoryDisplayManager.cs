@@ -396,7 +396,7 @@ public class StoryDisplayManager : MonoBehaviour
         // 간단한 STR * 10 구조만 처리
         if (formula.Contains("STR"))
         {
-            int str = playerState.Strength; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int str = playerState.STR; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("STR*", "");
 
@@ -414,7 +414,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else if (formula.Contains("DEX"))
         {
-            int DEX = playerState.DEX; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int DEX = playerState.AGI; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("DEX*", "");
 
@@ -430,7 +430,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else if (formula.Contains("DIV"))
         {
-            int DIV = playerState.Divinity; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int DIV = playerState.DIV; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("DIV*", "");
 
@@ -447,7 +447,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         else if (formula.Contains("INT"))
         {
-            int INT = playerState.Int; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int INT = playerState.INT; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("INT*", "");
 
@@ -481,7 +481,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         else if (formula.Contains("CHA"))
         {
-            int CHA = playerState.Charisma; // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int CHA = playerState.CHA; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("CHA*", "");
 
