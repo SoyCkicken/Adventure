@@ -1,0 +1,31 @@
+{
+  "Ran_SuccessRate_Master_Events": [
+    {
+      "Scene_Code": "EventScene_1_2",
+      "Choice_No": 1.0,
+      "Success_Formula": "STR * 10",
+      "Success_Next_Script": "EventScript_1_3",
+      "Fail_Next_Script": "EventScript_1_6",
+      "Success_Effect": "Effect_1",
+      "Fail_Effect": "Effect_2"
+    },
+    {
+      "Scene_Code": "EventScene_1_2",
+      "Choice_No": 2.0,
+      "Success_Formula": "MAG * 5",
+      "Success_Next_Script": "EventScript_1_3",
+      "Fail_Next_Script": "EventScript_1_6",
+      "Success_Effect": "Effect_1",
+      "Fail_Effect": "Effect_2"
+    },
+    {
+      "Scene_Code": "EventScene_3_9",
+      "Choice_No": 2.0,
+      "Success_Formula": "DEX * 10",
+      "Success_Next_Script": "EventScript_3_14",
+      "Fail_Next_Script": "EventScript_3_16",
+      "Success_Effect": null,
+      "Fail_Effect": null
+    }
+  ]
+}
