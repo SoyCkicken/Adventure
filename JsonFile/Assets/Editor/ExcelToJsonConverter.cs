@@ -11,8 +11,8 @@ public class ExcelAutoGenerator : EditorWindow
 {
     // ✅ 변수: 경로 설정
     private string excelFolderPath = "Assets/ExcelFiles";
-    private string jsonOutputFolder = "Assets/Resources/Events2";
-    private string classOutputFolder = "Assets/Json2";
+    private string jsonOutputFolder = "Assets/Resources/Events";
+    private string classOutputFolder = "Assets/Json";
 
     private List<string> excelFilePaths = new List<string>();
 
