@@ -12,7 +12,8 @@ public class RemoteTester : MonoBehaviour
     public Button mainStoryButton;
     public Button randomStoryButton;
     public Button battleButton;
-    public Button WeaponTestButton;
+    public Button weaponTestButton;
+    public Button reMoveButton;
 
     [Header("오른쪽 버튼 프리팹 및 부모")]
     public GameObject buttonPrefab;
@@ -43,7 +44,8 @@ public class RemoteTester : MonoBehaviour
         mainStoryButton.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
         randomStoryButton.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
         battleButton.onClick.AddListener(() => ShowOptions(enemyIDs, OnBattleSelected));
-        WeaponTestButton.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
+        weaponTestButton.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
+        reMoveButton.onClick.AddListener(() => RemoveAllInventory());
     }
 
     // 오른쪽 패널 버튼 생성
@@ -114,5 +116,10 @@ public class RemoteTester : MonoBehaviour
         {
             Debug.LogError($"[리모컨] 무기 {weaponID}의 ItemData를 찾을 수 없습니다.");
         }
+    }
+    void RemoveAllInventory()
+    {
+        Debug.Log("[리모컨] 인벤토리에 있는 모든 아이템 삭제");
+        //inventoryManager.ClearAllItems();
     }
 }
