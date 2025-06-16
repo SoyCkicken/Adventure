@@ -16,6 +16,7 @@ public class InventoryManager : MonoBehaviour
     public TextMeshProUGUI itemStatText;
     public TextMeshProUGUI itemOptionText;
     public TextMeshProUGUI itemDescText;
+    public TextMeshProUGUI itemTypeText;
     public Button equipButton;
     public Button unequipButton;
     public Button useButton;
@@ -101,7 +102,8 @@ public class InventoryManager : MonoBehaviour
             Debug.LogWarning("인벤토리가 가득 찼습니다.");
             return;
         }
-
+        Debug.Log($"아이템 추가 완료 : {newItem}");
+        
         inventoryItems.Add(newItem);
         LoadInventory();
     }
@@ -172,17 +174,20 @@ public class InventoryManager : MonoBehaviour
             var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
             itemNameText.text = weapon?.Weapon_Name;
             itemDescText.text = weapon?.Description;
+            itemTypeText.text = weapon?.ItemType;
         }
         else if (item.Item_Type == "Armor")
         {
             var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
             itemNameText.text = armor?.Armor_NAME;
             itemDescText.text = armor?.Description;
+            itemTypeText.text = armor?.ItemType;
         }
         else
         {
             itemNameText.text = item.Item_Name;
             itemDescText.text = item.Description;
+            itemTypeText.text = item.Item_Type;
         }
 
         itemStatText.text = GetStatText(item);
@@ -352,191 +357,6 @@ public class InventoryManager : MonoBehaviour
         return Mathf.Clamp(10 +(strength / 3), minSlotCount, maxSlotCount);
     }
 }
-
-
-
-
-
-//using UnityEngine;
-//using UnityEngine.UI;
-//using TMPro;
-//using System.Collections.Generic;
-//using System.Linq;
-//using MyGame;
-
-//public class InventoryManager : MonoBehaviour
-//{
-//    [Header("UI Components")]
-//    public GameObject inventoryPanel;
-//    public Transform itemGridParent;
-//    public GameObject itemSlotPrefab;
-//    public GameObject itemDetailPanel;
-//    public TextMeshProUGUI itemNameText;
-//    public TextMeshProUGUI itemStatText;
-//    public TextMeshProUGUI itemOptionText;
-//    public TextMeshProUGUI itemDescText;
-//    public Button equipButton;
-//    public Button unequipButton;
-//    public Button useButton;
-//    public TextMeshProUGUI DPSText;
-//    public TextMeshProUGUI HPText;
-
-//    [Header("Pending Slot UI")]
-//    public GameObject pendingItemUIPrefab;
-//    public Transform pendingItemUIParent;
-
-//    [Header("Data References")]
-//    public EquipmentSystem equipmentSystem;
-//    public JsonManager jsonManager;
-//    public Character player;
-//    public PlayerState playerState;
-
-//    private List<ItemData> inventoryItems = new();
-//    private List<ItemSlotUI> slotUIs = new();
-//    private List<ItemData> pendingItems = new();
-//    private const int minSlotCount = 10;
-//    private const int maxSlotCount = 21;
-//    private int currnetSlotCount;
-
-//    private ItemData selectedItem;
-
-//    private void Start()
-//    {
-//        inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
-//        currnetSlotCount = GetInventorySizeFromStrength(playerState.Strength);
-
-//        for (int i = 0; i < currnetSlotCount; i++)
-//        {
-//            var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
-//            var slotUI = slotGO.GetComponent<ItemSlotUI>();
-//            slotUI.Clear();
-//            slotUIs.Add(slotUI);
-//        }
-
-//        LoadInventory();
-//        updateDPS_MaxHealth();
-//    }
-
-//    public void LoadInventory()
-//    {
-//        foreach (var slot in slotUIs)
-//            slot.Clear();
-
-//        for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
-//            slotUIs[i].Setup(inventoryItems[i], ShowItemDetail);
-//    }
-
-//    public void AddItemToInventory(ItemData newItem)
-//    {
-//        if (inventoryItems.Count >= currnetSlotCount)
-//        {
-//            Debug.LogWarning("인벤토리가 가득 찼습니다.");
-//            return;
-//        }
-
-//        inventoryItems.Add(newItem);
-//        LoadInventory();
-//    }
-
-
-
-//    void ShowItemDetail(ItemData item)
-//    {
-//        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-//        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-//        selectedItem = item;
-//        itemDetailPanel.SetActive(true);
-
-//        if (item.Item_Type == "Weapon")
-//        {
-//            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
-//            itemNameText.text = weapon?.Weapon_Name;
-//            itemDescText.text = weapon?.Description;
-//        }
-//        else if (item.Item_Type == "Armor")
-//        {
-//            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
-//            itemNameText.text = armor?.Armor_NAME;
-//            itemDescText.text = armor?.Description;
-//        }
-//        else
-//        {
-//            itemNameText.text = item.Item_Name;
-//            itemDescText.text = item.Description;
-//        }
-
-//        itemStatText.text = GetStatText(item);
-//        itemOptionText.text = GetOptionText(item);
-
-//        equipButton.gameObject.SetActive(false);
-//        unequipButton.gameObject.SetActive(false);
-//        useButton.gameObject.SetActive(false);
-
-//        switch (item.Item_Type)
-//        {
-//            case "Weapon":
-//                bool isWeaponEquipped = (item.Item_ID == player.weapon_Name);
-//                equipButton.gameObject.SetActive(!isWeaponEquipped);
-//                unequipButton.gameObject.SetActive(isWeaponEquipped);
-//                break;
-
-//            case "Armor":
-//                bool isArmorEquipped = (item.Item_ID == player.armor_Name);
-//                equipButton.gameObject.SetActive(!isArmorEquipped);
-//                unequipButton.gameObject.SetActive(isArmorEquipped);
-//                break;
-
-//            case "Consumable":
-//                useButton.gameObject.SetActive(true);
-//                break;
-//        }
-//    }
-
-//    string GetStatText(ItemData item)
-//    {
-//        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-//        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-//        if (item.Item_Type == "Weapon")
-//        {
-//            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == item.Item_ID);
-//            return $"공격력: {weapon?.Weapon_DMG}";
-//        }
-//        else if (item.Item_Type == "Armor")
-//        {
-//            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == item.Item_ID);
-//            return $"방어력: {armor?.Armor_DEF}, 체력: {armor?.Armor_HP}";
-//        }
-//        else if (item.Item_Type == "Consumable")
-//        {
-//            List<string> effects = new();
-//            if (item.Heal_Value > 0) effects.Add($"체력 회복: {item.Heal_Value}");
-//            if (item.Mental_Heal_Value > 0) effects.Add($"정신력 회복: {item.Mental_Heal_Value}");
-//            return string.Join(", ", effects);
-//        }
-//        return "";
-//    }
-
-//    string GetOptionText(ItemData item)
-//    {
-//        List<string> options = new();
-//        if (!string.IsNullOrEmpty(item.Option_1_ID))
-//            options.Add($"{item.Option_1_ID} +{item.Option_Value1}");
-//        if (!string.IsNullOrEmpty(item.Option_2_ID))
-//            options.Add($"{item.Option_2_ID} +{item.Option_Value2}");
-//        return string.Join("\\n", options);
-//    }
-
-//    void updateDPS_MaxHealth()
-//    {
-//        DPSText.text = (player.damage * player.speed).ToString("0.0");
-//        HPText.text = player.MaxHealth.ToString();
-//    }
-
-//    int GetInventorySizeFromStrength(int strength)
-//    {
-//        return Mathf.Clamp(10 + Mathf.FloorToInt(strength / 3f), 10, 21);
-//    }
-//}
 
 [System.Serializable]
 public class ItemData

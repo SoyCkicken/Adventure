@@ -8,8 +8,8 @@
       "KOR": "C1E1_town",
       "displayType": "IMAGE",
       "StoryBreak": null,
-      "NEXTWIN": null,
-      "NEXTLOSE": null
+      "NEXTWIN": "null",
+      "NEXTLOSE": "null"
     },
     {
       "Chapter_Index": 1.0,
@@ -29,7 +29,7 @@
       "Script_Code": "MainScript_1_1_3",
       "KOR": "마을 사람들이 특별히 따돌리진 않았다\r\n하지만 당신을 향한 시선에는 어딘가 설명하기 어려운 거리감이 배어 있었다.\r\n나는 그게 더 편했다.\r\n누구와도 엮이지 않으면, 누군가를 잃는 일도 없을 테니까..\r\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -172,7 +172,7 @@
       "Script_Code": "MainScript_1_1_16",
       "KOR": "\"이번에도 살아남았네… 왜… 도대체 왜…\"\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -293,7 +293,7 @@
       "Script_Code": "MainScript_1_2_2",
       "KOR": "무너진 가게 앞\n진흙투성이가 된 거리 한복판에서 목소리가 들렸다.\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -315,7 +315,7 @@
       "Script_Code": "MainScript_1_2_4",
       "KOR": "\"생존자다…!\"\n아직 누군가 살아 있었다.\n나는 조심스레 다가갔고 \n그곳에는 벽돌 더미에 깔린 어린 소년이 있었다.\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -337,7 +337,7 @@
       "Script_Code": "MainScript_1_2_6",
       "KOR": "나는 소년이랑 눈이 마주쳤고 \n나는 손을 소년에게 뻗었다.\n하지만 아이는 눈을 크게 뜨고 움찔거렸다.\n본능적으로 나를 두려워하는 눈빛이였다…\n\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -370,7 +370,7 @@
       "Script_Code": "MainScript_1_2_9",
       "KOR": "나는 손을 거두고 \n\"…괜찮아.\"\n라고 작은 목소리로 중얼거렸다…\n나는 재빠르게 그를 살릴려고 벽돌을 치웠다..\n\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -392,7 +392,7 @@
       "Script_Code": "MainScript_1_2_11",
       "KOR": "하지만 그 소년은 숨이 점점 거칠어 지다가 \n결국 숨이 끊어져 버렸다.",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -414,7 +414,7 @@
       "Script_Code": "MainScript_1_2_13",
       "KOR": "나는 천천히 일어났다\n\"나는… 또 살아남았고..\"\n\"넌… 결국 이렇게 떠나는 구나….\"\n\"왜…. 왜 매번 이렇게 되는거지….\"\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -436,7 +436,7 @@
       "Script_Code": "MainScript_1_2_15",
       "KOR": "무시하고 옆으로 지나간다",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },

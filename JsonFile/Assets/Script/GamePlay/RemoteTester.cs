@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
+using System.Linq;
+using static Unity.VisualScripting.FlowStateWidget;
 
 public class RemoteTester : MonoBehaviour
 {
@@ -9,6 +12,7 @@ public class RemoteTester : MonoBehaviour
     public Button mainStoryButton;
     public Button randomStoryButton;
     public Button battleButton;
+    public Button WeaponTestButton;
 
     [Header("오른쪽 버튼 프리팹 및 부모")]
     public GameObject buttonPrefab;
@@ -18,18 +22,28 @@ public class RemoteTester : MonoBehaviour
     public StoryDisplayManager storyDisplayManager;
     public EventDisplay eventDisplay;
     public GameFlowManager gameFlowManager;
-    //public 
+    public InventoryManager inventoryManager;
+    public JsonManager jsonManager;
 
     // 가상 시나리오 / 적 ID 리스트
     private List<string> mainStories = new List<string> { "MainScene_1", "MainScene_2", "MainScene_3" };
     private List<string> randomStories = new List<string> { "EventScene_1", "EventScene_2", "EventScene_3", "EventScene_4" };
     private List<string> enemyIDs = new List<string> { "monster_001", "monster_002", "monster_003" };
+    private List<string> WeaponID = new List<string>();
+    private List<ItemData> WeaponitemData = new List<ItemData>();
 
     private void Start()
     {
+        var allWeapons = jsonManager.GetWeaponMasters("Weapon_Master").ToList();
+        foreach (var weapon in allWeapons)
+        {
+            WeaponID.Add(weapon.Weapon_ID);
+            WeaponitemData.Add(new ItemData { Item_ID = weapon.Weapon_ID, Item_Name = weapon.Weapon_Name, Item_Type = weapon.ItemType });
+        }
         mainStoryButton.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
         randomStoryButton.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
         battleButton.onClick.AddListener(() => ShowOptions(enemyIDs, OnBattleSelected));
+        WeaponTestButton.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
     }
 
     // 오른쪽 패널 버튼 생성
@@ -58,6 +72,8 @@ public class RemoteTester : MonoBehaviour
             //일단 정지 시키고 실행
             storyDisplayManager.StopMainStory();
             eventDisplay.StopRandomEvent();
+            storyDisplayManager.storyList.Clear();
+            eventDisplay.groupEvents.Clear();
             FindObjectOfType<StoryDisplayManager>().LoadMainStory(id);
         }
 
@@ -71,6 +87,8 @@ public class RemoteTester : MonoBehaviour
             //일단 정지 시키고 실행
             storyDisplayManager.StopMainStory();
             eventDisplay.StopRandomEvent();
+            storyDisplayManager.storyList.Clear();
+            eventDisplay.groupEvents.Clear();
             FindObjectOfType<EventDisplay>().LoadEventStory(id);
         }
     }
@@ -78,6 +96,23 @@ public class RemoteTester : MonoBehaviour
     void OnBattleSelected(string enemyID)
     {
         Debug.Log($"[리모컨] 전투 시작: {enemyID}");
+        storyDisplayManager.StopMainStory();
+        eventDisplay.StopRandomEvent();
+        storyDisplayManager.storyList.Clear();
+        eventDisplay.groupEvents.Clear();
         FindObjectOfType<GameFlowManager>().ForceBattleWithMonster(enemyID);
+    }
+    void WeaponAddInventory(string weaponID)
+    {
+        Debug.Log($"[리모컨] 아이템 추가 시작: {weaponID}");
+        var itemData = WeaponitemData.FirstOrDefault(i => i.Item_ID == weaponID);
+        if (itemData != null)
+        {
+            inventoryManager.AddItemToInventory(itemData);
+        }
+        else
+        {
+            Debug.LogError($"[리모컨] 무기 {weaponID}의 ItemData를 찾을 수 없습니다.");
+        }
     }
 }

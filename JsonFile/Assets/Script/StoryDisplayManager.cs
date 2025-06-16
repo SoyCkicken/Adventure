@@ -96,6 +96,8 @@ public class StoryDisplayManager : MonoBehaviour
     public void StopMainStory()
     {
         StopAllCoroutines();
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView = null;
         // currentIndex는 마지막 진행 지점을 자동 보존합니다.
         ClearContent();
         SkipButton.SetActive(false);
@@ -107,6 +109,7 @@ public class StoryDisplayManager : MonoBehaviour
         var matchingScript = scriptEventsCache.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
         //Debug.Log(matchingScript.KOR);
         GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
+        Debug.Log($"[MainStory] currentIndex: {currentIndex}, listCount: {storyList.Count}");
         if (matchingScript == null)
         {
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -519,34 +522,55 @@ public class StoryDisplayManager : MonoBehaviour
     }
 
     public void LoadMainStory(int id)
-    { 
+    {
+        var flowManager = FindObjectOfType<GameFlowManager>();
+        if (flowManager != null && !flowManager.CanEnterFlow())
+        {
+            Debug.LogWarning("다른 상태가 진행 중입니다. 메인 스토리를 시작할 수 없습니다.");
+            //return;
+        }
+
+        flowManager?.SetState(GameFlowManager.FlowState.MainStory);
+
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {
             OnSkip();
         };
-
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
+        storyList.Clear();
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
+
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 파일을 불러오는 데 실패했습니다.");
             onCompleteCallback?.Invoke();
+            flowManager?.SetState(GameFlowManager.FlowState.None); // 실패 시 상태 복구
+            return;
+        }
+        Debug.Log($"[MainStory] currentIndex: {currentIndex}, listCount: {storyList.Count}");
+        storyList = storyList
+            .Where(s => s.Event_Index == id)
+            .OrderBy(e => e.Script_Index)
+            .ToList();
+
+        if (storyList.Count == 0)
+        {
+            Debug.LogError($"Event_Index {id}에 해당하는 스토리가 없습니다.");
+            onCompleteCallback?.Invoke();
+            flowManager?.SetState(GameFlowManager.FlowState.None); // 실패 시 상태 복구
             return;
         }
 
-
-
-        storyList = storyList
-          .Where(s => s.Event_Index == id)
-          .OrderBy(e => e.Script_Index)
-          .ToList();
         currentIndex = 0;
-
         currentStory = storyList[currentIndex];
+
         TouchCatcher.SetActive(true);
+        isTyping = false;
         ClearContent();
+
         // 첫 시퀀스 표시
         DisplayCurrentStory();
     }

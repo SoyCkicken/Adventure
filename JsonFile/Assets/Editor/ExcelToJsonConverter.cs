@@ -196,7 +196,7 @@ public class ExcelAutoGenerator : EditorWindow
 
             string strVal = value.ToString();
 
-            //if (!(strVal.Equals("true", StringComparison.OrdinalIgnoreCase) || strVal.Equals("false", StringComparison.OrdinalIgnoreCase)))
+            if (!(strVal.Equals("true", StringComparison.OrdinalIgnoreCase) || strVal.Equals("false", StringComparison.OrdinalIgnoreCase)))
                 isBool = false;
 
             if (!int.TryParse(strVal, out _))

@@ -220,6 +220,7 @@ public class EventDisplay : MonoBehaviour
         foreach (var go in activeBlocks)
             Destroy(go);
         activeBlocks.Clear();
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView = null;
         ClearChoiceButtons();
     }
 
