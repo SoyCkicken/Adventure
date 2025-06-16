@@ -483,6 +483,171 @@
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 1.0,
+      "Script_Code": "MainScript_1_3_1",
+      "KOR": "갑자기 나뭇잎 사이로 괴물이 튀어나왔다\n더 이상 인간이라고 부르기 어려운 형체였다..",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 2.0,
+      "Script_Code": "MainScript_1_3_2",
+      "KOR": "나는 본능적으로 뒤로 물러섰다.\n\"…젠장…\"",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 3.0,
+      "Script_Code": "MainScript_1_3_3",
+      "KOR": "무기…\n손에 쥘 만한 무엇이든\n나는 주변을 둘러보다가 땅에 떨어진 무기를 발견했다.",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 4.0,
+      "Script_Code": "MainScript_1_3_4",
+      "KOR": "검",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 5.0,
+      "Script_Code": "MainScript_1_3_5",
+      "KOR": "활",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 6.0,
+      "Script_Code": "MainScript_1_3_6",
+      "KOR": "단검",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 7.0,
+      "Script_Code": "MainScript_1_3_7",
+      "KOR": "지팡이",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 8.0,
+      "Script_Code": "MainScript_1_3_8",
+      "KOR": "나는 본능적으로 몸을 틀면서\n땅에 떨어진 무기를 주웠다.\n괴물과 싸움을 시작했다.",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 9.0,
+      "Script_Code": "MainScript_1_3_9",
+      "KOR": "monster_001",
+      "displayType": "Battle",
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 10.0,
+      "Script_Code": "MainScript_1_3_10",
+      "KOR": "괴물은 쓰러졌고 나는 한동안 그 자리에 서서\n괴물의 시체를 바라보았다.",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 11.0,
+      "Script_Code": "MainScript_1_3_11",
+      "KOR": "위습은 조용히 빛을 뿜어냈고\n나는 말했다.\n\"….지금까지는 그저 흘러갔지만,\n이젠 내가 움직여야겠네..\"",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 12.0,
+      "Script_Code": "MainScript_1_3_12",
+      "KOR": "지금까지의 삶은 버티는 것이었다.\n하지만 이제는 다르다.\n무언가를 향해 걸어가야 한다는 걸, 그는 알았다.",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 13.0,
+      "Script_Code": "MainScript_1_3_13",
+      "KOR": "처음으로, 그가 앞으로 나아갔다.",
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 4.0,
+      "Script_Index": 1.0,
+      "Script_Code": "MainScript_1_4_1",
+      "KOR": null,
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 4.0,
+      "Script_Index": null,
+      "Script_Code": null,
+      "KOR": null,
+      "displayType": null,
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
     }
   ]
 }

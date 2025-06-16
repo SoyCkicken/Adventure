@@ -374,6 +374,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
     }
 
+    //전투 결과에 따른 스토리 넘기기
     public void WinBattle(bool battle)
     {
         string nextCode = (battle == true) ? winScriptCode : loseScriptCode;
@@ -390,6 +391,8 @@ public class StoryDisplayManager : MonoBehaviour
         ClearContent();
         DisplayCurrentStory();
     }
+    //선택지에 확률 적용
+    //지금 같은 경우 확률이 버튼에 출력이 되고 있지는 않음
     private float EvaluateFormula(string formula)
     {
         if (string.IsNullOrEmpty(formula)) return 0f;
@@ -513,6 +516,39 @@ public class StoryDisplayManager : MonoBehaviour
             }
         }
         return 0f;
+    }
+
+    public void LoadMainStory(int id)
+    { 
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
+        {
+            OnSkip();
+        };
+
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+        storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
+        Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
+        if (storyList == null || storyList.Count == 0)
+        {
+            Debug.LogError("Story_Master 파일을 불러오는 데 실패했습니다.");
+            onCompleteCallback?.Invoke();
+            return;
+        }
+
+
+
+        storyList = storyList
+          .Where(s => s.Event_Index == id)
+          .OrderBy(e => e.Script_Index)
+          .ToList();
+        currentIndex = 0;
+
+        currentStory = storyList[currentIndex];
+        TouchCatcher.SetActive(true);
+        ClearContent();
+        // 첫 시퀀스 표시
+        DisplayCurrentStory();
     }
     void gameOver()
     {

@@ -22,6 +22,7 @@ public class GameFlowManager : MonoBehaviour
         //randomEventManager.StartRandomEvent(OnRandomEventComplete);
 
         EnterState(FlowState.MainStory);
+        //EnterState(FlowState.RandomEvent);
     }
 
     void EnterState(FlowState next)
@@ -128,6 +129,26 @@ public class GameFlowManager : MonoBehaviour
     {
         // 전투 끝나면 prevState로 복귀
         EnterState(prevState);
+    }
+
+    public void ForceBattleWithMonster(string monsterID)
+    {
+        Debug.Log($"[리모컨] 수동 전투 실행: {monsterID}");
+
+        // 전투 외 상태라면 스토리 종료나 UI 닫기 처리 필요
+        mainStoryManager?.StopMainStory();
+
+        // 몬스터 스폰
+        monsterSpawner.SpawnMonsterByID(monsterID);
+
+        // 전투 시작
+        battleManager.StartBattle(playerWon =>
+        {
+            Debug.Log($"[리모컨] 전투 종료 - 결과: {(playerWon ? "승리" : "패배")}");
+
+            // 테스트 환경에서는 스토리 연결 없이 결과만 확인
+            // 원하면 여기서 테스트용 결과 UI 띄우거나 리셋해도 됨
+        });
     }
 
     private void Update()

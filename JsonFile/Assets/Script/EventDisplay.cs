@@ -608,4 +608,58 @@ public class EventDisplay : MonoBehaviour
         }
         return 0f;
     }
+
+    public void LoadEventStory(int groupID)
+    {
+        Debug.Log($"[리모컨] 수동 로드된 이벤트 그룹 ID: {groupID}");
+
+        // JSON 데이터가 없다면 초기화부터
+        if (eventList == null || eventList.Count == 0)
+        {
+            eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event");
+            if (eventList == null || eventList.Count == 0)
+            {
+                Debug.LogError("RandomEvents_Master_Event 로드 실패");
+                return;
+            }
+
+            eventList = eventList.OrderBy(e => e.RandomEvent_Index)
+                                 .ThenBy(e => e.Script_Index)
+                                 .ToList();
+        }
+
+        // 스크립트 캐시도 마찬가지로 초기화
+        if (scriptEventsCache == null || scriptEventsCache.Count == 0)
+        {
+            scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
+        }
+
+        // 해당 그룹 ID가 존재하는지 확인
+        var matchedEvents = eventList
+            .Where(e => e.RandomEvent_Index == groupID)
+            .OrderBy(e => e.Script_Index)
+            .ToList();
+
+        if (matchedEvents == null || matchedEvents.Count == 0)
+        {
+            Debug.LogWarning($"[리모컨] 해당 그룹 ID({groupID})의 이벤트가 없습니다.");
+            return;
+        }
+
+        // UI 초기화 및 변수 설정
+        ClearContent();
+        TouchCatcher.SetActive(true);
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.AddListener(OnSkip);
+
+        // 실행 세팅
+        currentGroup = groupID;
+        groupEvents = matchedEvents;
+        currentGroupIndex = 0;
+
+        // 이벤트 출력
+        DisplayCurrentEvent();
+
+    }
+
 }
