@@ -3,7 +3,14 @@
     {
       "Option_ID": "Option_001",
       "Option_Description": "추가 공격력",
-      "Effect_ID": "Effect_001"
+      "Effect_ID": "Effect_001",
+      "Option_Type": "OnHit"
+    },
+    {
+      "Option_ID": "Option_002",
+      "Option_Description": "크리티컬 확률 증가",
+      "Effect_ID": "Effect_002",
+      "Option_Type": "Passive"
     }
   ]
 }

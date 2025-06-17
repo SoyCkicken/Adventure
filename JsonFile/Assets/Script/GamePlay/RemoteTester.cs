@@ -14,6 +14,7 @@ public class RemoteTester : MonoBehaviour
     public Button battleButton;
     public Button weaponTestButton;
     public Button reMoveButton;
+    public Button armorTestButton;
 
     [Header("오른쪽 버튼 프리팹 및 부모")]
     public GameObject buttonPrefab;
@@ -31,7 +32,9 @@ public class RemoteTester : MonoBehaviour
     private List<string> randomStories = new List<string> { "EventScene_1", "EventScene_2", "EventScene_3", "EventScene_4" };
     private List<string> enemyIDs = new List<string> { "monster_001", "monster_002", "monster_003" };
     private List<string> WeaponID = new List<string>();
+    private List<string> ArmorID = new List<string>();
     private List<ItemData> WeaponitemData = new List<ItemData>();
+    private List<ItemData> ArmoritemData = new List<ItemData>();
 
     private void Start()
     {
@@ -41,10 +44,17 @@ public class RemoteTester : MonoBehaviour
             WeaponID.Add(weapon.Weapon_ID);
             WeaponitemData.Add(new ItemData { Item_ID = weapon.Weapon_ID, Item_Name = weapon.Weapon_Name, Item_Type = weapon.ItemType });
         }
+        var allArmors = jsonManager.GetArmorMasters("Armor_Master").ToList();
+        foreach (var armor in allArmors)
+        {
+            ArmorID.Add(armor.Armor_ID);
+            ArmoritemData.Add(new ItemData { Item_ID = armor.Armor_ID, Item_Name = armor.Armor_NAME, Item_Type = armor.ItemType });
+        }
         mainStoryButton.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
         randomStoryButton.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
         battleButton.onClick.AddListener(() => ShowOptions(enemyIDs, OnBattleSelected));
         weaponTestButton.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
+        armorTestButton.onClick.AddListener(() => ShowOptions(ArmorID, ArmorAddInventory));
         reMoveButton.onClick.AddListener(() => RemoveAllInventory());
     }
 
@@ -117,6 +127,16 @@ public class RemoteTester : MonoBehaviour
             Debug.LogError($"[리모컨] 무기 {weaponID}의 ItemData를 찾을 수 없습니다.");
         }
     }
+    void ArmorAddInventory(string armorID)
+    {
+        Debug.Log($"[리모컨] 아이템 추가 시작 : {armorID}");
+        var itemData = ArmoritemData.FirstOrDefault(i => i.Item_ID == armorID);
+        if (itemData != null)
+        {
+            inventoryManager.AddItemToInventory(itemData);
+        }
+    }
+
     void RemoveAllInventory()
     {
         Debug.Log("[리모컨] 인벤토리에 있는 모든 아이템 삭제");

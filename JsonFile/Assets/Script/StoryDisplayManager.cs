@@ -55,7 +55,7 @@ public class StoryDisplayManager : MonoBehaviour
     {
         currentStoryIndex++;
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView+= () =>
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {
             OnSkip();
         };
@@ -73,7 +73,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
 
         storyList = storyList
-          .Where(s =>s.Event_Index == currentStoryIndex)
+          .Where(s => s.Event_Index == currentStoryIndex)
           .OrderBy(e => e.Script_Index)
           .ToList();
         currentIndex = 0;
@@ -182,7 +182,7 @@ public class StoryDisplayManager : MonoBehaviour
         {
             img.sprite = s;
         }
-        
+
         Testblocks.Add(go);
         NextScene();
     }
@@ -217,7 +217,7 @@ public class StoryDisplayManager : MonoBehaviour
             scrollRect.verticalNormalizedPosition = 0f;
             Canvas.ForceUpdateCanvases();
             tmp.text += fullText[i];
-            
+
             yield return new WaitForSeconds(0.05f);
         }
 
@@ -335,13 +335,31 @@ public class StoryDisplayManager : MonoBehaviour
         Debug.Log(choices.Count);
         if (choices.Count == 1)
         {
-           //OnChoiceSelected(choices[0]);
+            //OnChoiceSelected(choices[0]);
             return;
         }
         else if (choices.Count > 1)
         {
             // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
             return;
+        }
+
+        if (!string.IsNullOrEmpty(currentStory.Next_Scene))
+        {
+            Debug.Log($"[NEXTSCENE] 현재 씬 {currentStory.Scene_Code} → {currentStory.Next_Scene}");
+
+            var nextStory = storyList.FirstOrDefault(s => s.Scene_Code == currentStory.Next_Scene);
+            if (nextStory != null)
+            {
+                currentStory = nextStory;
+                currentIndex = storyList.IndexOf(nextStory);
+                DisplayCurrentStory();
+                return;
+            }
+            else
+            {
+                Debug.LogWarning($"[NEXTSCENE] {currentStory.Next_Scene} 씬을 찾지 못했습니다.");
+            }
         }
 
         var script = scriptEventsCache
@@ -354,9 +372,10 @@ public class StoryDisplayManager : MonoBehaviour
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
             SkipButton.GetComponent<Button>().onClick.AddListener(() => {
                 OnMainStoryComplete();
-                SkipButton.SetActive(false); });
+                SkipButton.SetActive(false);
+            });
 
-            
+
             return;
         }
         if (next != null)

@@ -40,8 +40,7 @@ public class EquipmentSystem : MonoBehaviour
                 {
                     OptionID = weapon.Option_1_ID,
                     Value = weapon.Option_Value1,
-
-                    item_ID = weapon.Weapon_Name
+                    item_ID = weapon.Weapon_ID
 
                 });
             if (!string.IsNullOrEmpty(weapon.Option_2_ID))
@@ -49,7 +48,7 @@ public class EquipmentSystem : MonoBehaviour
                 {
                     OptionID = weapon.Option_2_ID,
                     Value = weapon.Option_Value2,
-                    item_ID = weapon.Weapon_Name
+                    item_ID = weapon.Weapon_ID
                 });
         }
         else
@@ -69,7 +68,7 @@ public class EquipmentSystem : MonoBehaviour
                 {
                     OptionID = armor.Armor_Option1,
                     Value = armor.Option1_Value,
-                    item_ID = armor.Armor_NAME
+                    item_ID = armor.Armor_ID
                 });
             if (!string.IsNullOrEmpty(armor.Armor_Option2))
                 player.OnHitOptions.Add(new Character.EquippedOption

@@ -139,7 +139,7 @@
       "Script_Code": "MainScript_1_1_13",
       "KOR": "나는 그 광경을 멍하니 바라보고만 있었다.\n마치… 이 모든 장면을 어디선가 본 것처럼.\n기억도, 감정도, 이 상황을 처음 겪는 사람의 것과는 달랐다.\n",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -480,7 +480,7 @@
       "Script_Code": "MainScript_1_2_19",
       "KOR": "나는 천천히 걸음을 옮겼고\n푸른 위습은 그 옆을 따라왔다.\n두 존재는 그렇게, 죽음이 남긴 마을을 등지고 나아가고 있었다.",
       "displayType": "TEXT",
-      "StoryBreak": null,
+      "StoryBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -490,7 +490,7 @@
       "Script_Index": 1.0,
       "Script_Code": "MainScript_1_3_1",
       "KOR": "갑자기 나뭇잎 사이로 괴물이 튀어나왔다\n더 이상 인간이라고 부르기 어려운 형체였다..",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -501,7 +501,7 @@
       "Script_Index": 2.0,
       "Script_Code": "MainScript_1_3_2",
       "KOR": "나는 본능적으로 뒤로 물러섰다.\n\"…젠장…\"",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -512,7 +512,7 @@
       "Script_Index": 3.0,
       "Script_Code": "MainScript_1_3_3",
       "KOR": "무기…\n손에 쥘 만한 무엇이든\n나는 주변을 둘러보다가 땅에 떨어진 무기를 발견했다.",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -523,7 +523,7 @@
       "Script_Index": 4.0,
       "Script_Code": "MainScript_1_3_4",
       "KOR": "검",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -534,7 +534,7 @@
       "Script_Index": 5.0,
       "Script_Code": "MainScript_1_3_5",
       "KOR": "활",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -545,7 +545,7 @@
       "Script_Index": 6.0,
       "Script_Code": "MainScript_1_3_6",
       "KOR": "단검",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -556,7 +556,7 @@
       "Script_Index": 7.0,
       "Script_Code": "MainScript_1_3_7",
       "KOR": "지팡이",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
@@ -567,7 +567,7 @@
       "Script_Index": 8.0,
       "Script_Code": "MainScript_1_3_8",
       "KOR": "나는 본능적으로 몸을 틀면서\n땅에 떨어진 무기를 주웠다.\n괴물과 싸움을 시작했다.",
-      "displayType": null,
+      "displayType": "TEXT",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null

@@ -16,16 +16,19 @@ namespace MyGame
         public float speed = 1f;
         public int armor = 5;
         public int CitChance = 10; //일반적인 크리티컬 확률
-        public Dictionary<string, int> critBuffs = new Dictionary<string, int>();
+      
         public string weapon_Name;
         public string armor_Name;
         public string MonPas_Effect1;
         public int MonPas_Value1;
         public string MonPas_Effect2;
         public int MonPas_Value2;
-        //람다식이라서 출력이 안되는거임
-        public int CritChancePercent 
-            => CitChance + critBuffs.Values.Sum(); //모든 크리티컬 확률 증가 적용해서
+        
+        //옵션들 리스트에 기록
+        public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
+        public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
+        public Dictionary<string, BuffData> activeBuffs = new();
+        //이 부분은 캐릭터 클래스의 하위에 있어야 되는 부분이라서 맨 아래로 안배고 맨 위에 넣음
         [System.Serializable]
         public struct EquippedOption
         {
@@ -33,26 +36,15 @@ namespace MyGame
             public int Value;
             public string item_ID;
         }
-        public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
+
         [System.Serializable]
         public struct MonsterOption
         {
             public string OptionID;
             public int Value;
         }
-        public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
-        public void AddCritBuff(string buffID, int bonusPercent)
-        {
-            Debug.Log($"{buffID} : {bonusPercent}");
-            if (critBuffs.ContainsKey(buffID))
-            {
-                //Debug.Log("중복 적용 되었습니다");
-                return; // 이미 적용되었으면 무시
 
-            }
-            critBuffs[buffID] = bonusPercent;
-            Debug.Log($"[{charaterName}] 크리티컬 버프 적용: +{bonusPercent}%. 최종 확률 = {CritChancePercent}%");
-        }
+       
         public void Heal(int amount)
         {
             Health += amount;
@@ -76,8 +68,8 @@ namespace MyGame
         {
             Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
-            bool isCrit = UnityEngine.Random.Range(0, 100) < CritChancePercent ? true : false;
-            Debug.Log($"{isCrit} , {CritChancePercent} ");
+            bool isCrit = UnityEngine.Random.Range(0, 100) < CitChance ? true : false;
+            Debug.Log($"{isCrit} , {CitChance} ");
             
             if (isCrit)
             {
@@ -89,7 +81,28 @@ namespace MyGame
             
                
         }
+        public void AddBuff(BuffData buff)
+        {
+            if (activeBuffs.ContainsKey(buff.BuffID))
+            {
+                Debug.Log($"버프 중복 적용 무시됨: {buff.BuffID}");
+                return;
+            }
+
+            activeBuffs[buff.BuffID] = buff;
+
+            if (buff.OptionID == "Option_002") // 치명타 확률 증가
+            {
+                Debug.Log($"치명타 확률 +{buff.Value}% 버프 적용됨");
+                CitChance += buff.Value;
+            }
+                
+
+            // 필요 시 스탯 반영
+        }
+
     }
+    //클래스들은 밑으로 뺐음
     public class OptionContext
     {
         public Character User;      // 더미로 붙일 Character 컴포넌트
@@ -104,4 +117,17 @@ namespace MyGame
         }
 
     }
+
+    [System.Serializable]
+    public class BuffData
+    {
+        public string BuffID;         // 고유 ID (예: "crit_001", "burn_stack", etc)
+        public string OptionID;      // 옵션 효과 ID (예: "101" → 치명타 확률)
+        public int Value;            // 수치
+        public float Duration;       // 지속 시간 (0 = 영구)
+        public string SourceItemID;  // 버프 유래 (ex: 장비ID)
+        public bool IsPassive;       // 패시브인지 여부
+    }
+
+    
 }
