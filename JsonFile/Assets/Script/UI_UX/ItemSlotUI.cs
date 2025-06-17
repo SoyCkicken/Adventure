@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.U2D;
 using UnityEngine.UI;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class ItemSlotUI : MonoBehaviour
 {
@@ -8,19 +10,44 @@ public class ItemSlotUI : MonoBehaviour
     public Button button;
     private ItemData data;
     private System.Action<ItemData> onClickCallback;
-    public ItemData CurrentItem { get; }
+    public SpriteBank spriteBank;
+    public ItemData CurrentItem { get; set; }
     private void Awake()
     {
         button = this.GetComponent<Button>();
         button.onClick.AddListener(OnClick);
+        if (spriteBank == null)
+            spriteBank = FindObjectOfType<SpriteBank>();
     }
 
     public void Setup(ItemData item, System.Action<ItemData> onClick)
     {
         data = item;
+        CurrentItem = item;
         onClickCallback = onClick;
+        if (spriteBank == null)
+            spriteBank = FindObjectOfType<SpriteBank>();
+
         //이미지 지금 없음!
-        //icon.sprite = Resources.Load<Sprite>($"Icons/{item.Icon}");
+        if (!string.IsNullOrEmpty(item.Item_Name))
+        {
+            Debug.Log(item.Item_Name);
+            if (icon == null)
+            {
+                Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
+                return;
+            }
+            Sprite s = spriteBank.Load(item.Item_Name);
+            if (s != null)
+            {
+                icon.sprite = s;
+            }
+        }
+        else
+        {
+            icon.sprite = null;
+        }
+        
         //Debug.Log("아이템 슬롯의 SetUp가 호출 되었습니다");
         //Debug.Log($"아이템 슬롯의 Data 의 값입니다{data}");
     }

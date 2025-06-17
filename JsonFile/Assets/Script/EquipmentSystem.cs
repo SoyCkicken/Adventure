@@ -84,12 +84,17 @@ public class EquipmentSystem : MonoBehaviour
         {
             player.MaxHealth = 50;
             player.armor = 5;
-
+            player.speed = 1.5f;
+            player.CitChance = 10;
         }
     }
     void ClearInit()
     {
         player.OnHitOptions.Clear();
+        player.MaxHealth = 50;
+        player.armor = 5;
+        player.speed = 1.5f;
+        player.CitChance = 10;
     }
 }
 

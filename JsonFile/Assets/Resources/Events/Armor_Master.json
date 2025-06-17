@@ -23,6 +23,18 @@
       "Option2_Value": 0.0,
       "Description": "단단한 가죽으로 만든 갑옷이다. 사용자의 몸을 지켜준다",
       "ItemType": "Armor"
+    },
+    {
+      "Armor_ID": "Armor_003",
+      "Armor_NAME": "천 갑옷",
+      "Armor_DEF": 0.0,
+      "Armor_HP": 50.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "천으로 만든 갑옷이다",
+      "ItemType": "Armor"
     }
   ]
 }

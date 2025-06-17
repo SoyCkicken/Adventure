@@ -96,9 +96,31 @@ namespace MyGame
                 Debug.Log($"치명타 확률 +{buff.Value}% 버프 적용됨");
                 CitChance += buff.Value;
             }
-                
-
             // 필요 시 스탯 반영
+        }
+        //장착 해제 시 버프 해제
+        public void RemoveBuffByItem(string itemID)
+        {
+            var toRemove = activeBuffs
+                .Where(kv => kv.Value.SourceItemID == itemID)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            foreach (var key in toRemove)
+            {
+                var buff = activeBuffs[key];
+
+                // 스탯 롤백 처리
+                if (buff.OptionID == "Option_002") // 치명타 확률 감소
+                {
+                    CitChance -= buff.Value;
+                    Debug.Log(CitChance);
+                    Debug.Log($"치명타 확률 -{buff.Value}% 버프 제거됨");
+                }
+
+                activeBuffs.Remove(key);
+                Debug.Log($"[Buff 제거] {key}");
+            }
         }
 
     }

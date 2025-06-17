@@ -304,23 +304,45 @@ public class InventoryManager : MonoBehaviour
         if (selectedItem == null) return;
 
         // 장착 시 기존 장비는 인벤토리로
+       
         if (selectedItem.Item_Type == "Weapon")
         {
-            if (weaponEquipSlot.CurrentItem != null)
+            Debug.Log(selectedItem.Item_Type);
+            
+            if (weaponEquipSlot.CurrentItem != null &&
+                weaponEquipSlot.CurrentItem != selectedItem)
+            {
+                Debug.Log(weaponEquipSlot.CurrentItem.Item_Type);
                 AddItemToInventory(weaponEquipSlot.CurrentItem);
-
+                player.RemoveBuffByItem(weaponEquipSlot.CurrentItem.Item_ID);
+                weaponEquipSlot.Clear();
+                Debug.Log("무기가 장착 중이라서 장착 해제 처리됩니다");
+                equipmentSystem.Init();
+                Debug.Log(player.CitChance);
+            }
             weaponEquipSlot.Setup(selectedItem, ShowItemDetail);
             inventoryItems.Remove(selectedItem);
             player.weapon_Name = selectedItem.Item_ID;
+            
         }
         else if (selectedItem.Item_Type == "Armor")
         {
-            if (armorEquipSlot.CurrentItem != null)
+            Debug.Log(selectedItem.Item_Type);
+            if (armorEquipSlot.CurrentItem != null &&
+                armorEquipSlot.CurrentItem != selectedItem)
+            {
+                Debug.Log(armorEquipSlot.CurrentItem.Item_Type);
                 AddItemToInventory(armorEquipSlot.CurrentItem);
-
+                player.RemoveBuffByItem(armorEquipSlot.CurrentItem.Item_ID);
+                armorEquipSlot.Clear();
+                Debug.Log("방어구가 장착 중이라서 장착 해제 처리됩니다");
+                equipmentSystem.Init();
+                Debug.Log(player.CitChance);
+            }
             armorEquipSlot.Setup(selectedItem, ShowItemDetail);
             inventoryItems.Remove(selectedItem);
             player.armor_Name = selectedItem.Item_ID;
+
 
         }
 
@@ -333,7 +355,6 @@ public class InventoryManager : MonoBehaviour
     public void OnClickUnequip()
     {
         if (selectedItem == null) return;
-
         if (inventoryItems.Count >= maxSlotCount)
         {
             Debug.Log("인벤토리가 가득 찼습니다. 장착 해제 실패");
@@ -345,12 +366,15 @@ public class InventoryManager : MonoBehaviour
             player.weapon_Name = null;
             weaponEquipSlot.Clear();
             AddItemToInventory(selectedItem);
+            player.RemoveBuffByItem(selectedItem.Item_ID);
+
         }
         else if (selectedItem.Item_Type == "Armor")
         {
             player.armor_Name = null;
             armorEquipSlot.Clear();
             AddItemToInventory(selectedItem);
+            player.RemoveBuffByItem(selectedItem.Item_ID);
         }
 
         equipmentSystem.Init();
