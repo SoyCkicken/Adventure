@@ -94,7 +94,7 @@ public class CombatTest : MonoBehaviour
                         option_ID = opt.OptionID,
                         Value = opt.Value
                     };
-                    optionManager.ApplyOption(opt.OptionID, ctx);
+                    OptionManager.ApplyOnHitOnly(opt.OptionID, ctx);
                 }
             }
             if (isEnemy && attacker.OnEnemyHitOptions != null)

@@ -3,9 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using MyGame;
-using Unity.VisualScripting;
-using System.Xml;
-using static UnityEditor.Progress;
+using Character = MyGame.Character;
 
 // 1) 옵션 효과 인터페이스
 public interface IOptionEffect
@@ -113,31 +111,43 @@ public class OptionManager : MonoBehaviour
         { "null", "" } // 방어 처리
     };
 
-    public void ApplyOption(string optionID, OptionContext ctx)
+    public static void ApplyOption(string optionID, OptionContext ctx)
     {
-        // Debug.Log("옵션 적용되었습니다");
-        var opt = jsonManager.GetOptionMasters("Option_Master")
-                     .FirstOrDefault(x => x.Option_ID == optionID);
-        //if (opt.Option_ID != null)
-        //{
-        //    Debug.Log($"옵션 아이디 : {opt.Option_ID}\n옵션 effect : {opt.Effect_ID}");
-        //}
+        var opt = GetOption(optionID); // 이미 캐싱된 optionDict에서 가져오는 방식으로 수정
 
         if (opt == null)
         {
-            Debug.Log("옵션이 없습니다");
+            Debug.LogWarning($"[OptionManager] {optionID} 옵션 정보 없음");
             return;
         }
-        ;
 
-        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+        if (!effects.TryGetValue(opt.Effect_ID, out var effect))
         {
-            effect.Apply(ctx);
-            Debug.Log(ctx);
+            Debug.LogError($"[OptionManager] Effect_ID {opt.Effect_ID} → 미등록 효과");
+            return;
         }
 
-        else
-            Debug.LogError($"미등록 Effect_ID {opt.Effect_ID}");
+        switch (opt.Option_Type)
+        {
+            case "OnEquip":
+            case "Passive":
+                effect.Apply(ctx);
+                break;
+
+            case "OnHit":
+                ctx.User.OnHitOptions.Add(new Character.EquippedOption
+                {
+                    OptionID = optionID,
+                    Value = ctx.Value,
+                    item_ID = ctx.item_ID
+                });
+                Debug.Log($"[OptionManager] OnHit 옵션 {optionID} 등록 완료");
+                break;
+
+            default:
+                Debug.LogWarning($"[OptionManager] 미지원 Option_Type: {opt.Option_Type}");
+                break;
+        }
     }
 
     public static string GetOptionDescription(string optionID)
@@ -154,5 +164,17 @@ public class OptionManager : MonoBehaviour
             return opt;
         Debug.LogWarning($"[OptionManager] {optionID} 옵션 정보를 찾을 수 없습니다.");
         return null;
+    }
+    public static void ApplyOnHitOnly(string optionID, OptionContext ctx)
+    {
+        var opt = GetOption(optionID);
+
+        if (opt == null || opt.Option_Type != "OnHit")
+            return;
+
+        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+        {
+            effect.Apply(ctx);
+        }
     }
 }

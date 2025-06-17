@@ -121,7 +121,10 @@ public class EventDisplay : MonoBehaviour
         Debug.Log("랜덤 값을 뽑습니다");
         ClearContent();
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        SkipButton.GetComponent<Button>().onClick.AddListener(OnSkip);
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
+        {
+            OnSkip();
+        };
         if (eventGroups == null || eventGroups.Count == 0)
         {
             // 남은 그룹 없음 -> 메인 스토리 복귀ㄴ
@@ -164,7 +167,11 @@ public class EventDisplay : MonoBehaviour
     private void DisplayCurrentEvent()
     {
         Debug.Log("이벤트 출력 시작");
-
+        SkipButton.SetActive(true);
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
+        {
+            OnSkip();
+        };
         if (groupEvents == null || currentGroupIndex >= groupEvents.Count)
         {
             Debug.LogError("groupEvents가 비어있거나 인덱스 초과");
@@ -341,7 +348,7 @@ public class EventDisplay : MonoBehaviour
 
         isTyping = false;
         isSkip = false;
-        SkipButton.SetActive(false); 
+        SkipButton.SetActive(false);
         scrollRect.verticalNormalizedPosition = 0f;
         Canvas.ForceUpdateCanvases();
         scrollRect.verticalNormalizedPosition = 0f;

@@ -114,6 +114,7 @@ public class StoryDisplayManager : MonoBehaviour
         {
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
+            Debug.Log("버튼 초기화 되는 중 이였음!");
             SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
         }
         else if (matchingScript != null)

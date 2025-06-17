@@ -13,6 +13,7 @@ public class EquipmentSystem : MonoBehaviour
 
     private void Start()
     {
+        OptionManager.Initialize(jsonManager);
         Init();
     }
 
@@ -64,11 +65,12 @@ public class EquipmentSystem : MonoBehaviour
             player.MaxHealth = armor.Armor_HP;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(armor.Armor_Option1))
-                player.OnHitOptions.Add(new Character.EquippedOption
+                OptionManager.ApplyOption(armor.Armor_Option1, new OptionContext
                 {
-                    OptionID = armor.Armor_Option1,
+                    User = player,
                     Value = armor.Option1_Value,
-                    item_ID = armor.Armor_ID
+                    item_ID = armor.Armor_ID,
+                    option_ID = armor.Armor_Option1
                 });
             if (!string.IsNullOrEmpty(armor.Armor_Option2))
                 player.OnHitOptions.Add(new Character.EquippedOption

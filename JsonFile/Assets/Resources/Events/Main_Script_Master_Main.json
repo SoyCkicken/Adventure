@@ -260,7 +260,7 @@
       "Script_Code": "MainScript_1_1_24",
       "KOR": "나는 그 뒤를 따랐다. \n그리고 그렇게, 이야기는 움직이기 시작했다.\n",
       "displayType": "TEXT",
-      "StoryBreak": null,
+      "StoryBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -271,7 +271,7 @@
       "Script_Code": "MainScript_1_1_25",
       "KOR": "다음 이야기로",
       "displayType": "TEXT",
-      "StoryBreak": "Break",
+      "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
