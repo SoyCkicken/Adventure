@@ -1,28 +1,27 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using MyGame;
 using Character = MyGame.Character;
 
-// 1) ¿É¼Ç È¿°ú ÀÎÅÍÆäÀÌ½º
+// 1) ì˜µì…˜ íš¨ê³¼ ì¸í„°í˜ì´ìŠ¤
 public interface IOptionEffect
 {
     /// <summary>
-    /// ¿É¼Ç È¿°ú¸¦ Àû¿ë
+    /// ì˜µì…˜ íš¨ê³¼ë¥¼ ì ìš©
     /// </summary>
-    /// <param name="user">È¿°ú¸¦ ¹ßµ¿ÇÑ ÁÖÃ¼</param>
-    /// <param name="target">È¿°ú¸¦ ¹Ş´Â ´ë»ó</param>
-    /// <param name="value">¿É¼ÇÀÇ ¼öÄ¡°ª</param>
+    /// <param name="user">íš¨ê³¼ë¥¼ ë°œë™í•œ ì£¼ì²´</param>
+    /// <param name="target">íš¨ê³¼ë¥¼ ë°›ëŠ” ëŒ€ìƒ</param>
+    /// <param name="value">ì˜µì…˜ì˜ ìˆ˜ì¹˜ê°’</param>
     void Apply(OptionContext ctx);
 }
 
-// 2) È¿°ú ±¸Çö ¿¹½Ã: ÃâÇ÷ È¿°ú
+// 2) íš¨ê³¼ êµ¬í˜„ ì˜ˆì‹œ: ì¶œí˜ˆ íš¨ê³¼
 public class AddDamage : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-
         int damage = Mathf.FloorToInt(ctx.Value);
         ctx.Target.Health -= damage;
         Debug.Log(damage);
@@ -40,21 +39,30 @@ public class AddFireDamage : IOptionEffect
         Debug.Log($"{ctx.Target.Health}");
     }
 }
-public class Healting : IOptionEffect
+public class HealtingBuff : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        int heal = Mathf.FloorToInt(ctx.Value);
-        ctx.User.Health += heal;
-        Debug.Log(heal);
-        Debug.Log(ctx.User.Health);
+        var buff = new BuffData
+        {
+            BuffID = $"{ctx.item_ID}_{ctx.option_ID}_onhit",
+            OptionID = ctx.option_ID,
+            Value = ctx.Value,
+            Duration = 5f,
+            Elapsed = 0f,
+            IsDebuff = true,
+            Target = ctx.User,
+            SourceItemID = ctx.item_ID
+        };
+        ctx.Target.AddBuff(buff);
+        Debug.Log($"{ctx.User}ì—ê²Œ ë²„í”„ ì ìš© : {ctx.option_ID}");
     }
 }
 public class CriticalBuff : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        // Å°¸¦ ¡°ÀåºñID_¿É¼ÇID¡± ·Î ÇÕÃÄ¼­
+        // í‚¤ë¥¼ â€œì¥ë¹„ID_ì˜µì…˜IDâ€ ë¡œ í•©ì³ì„œ
         var buffKey = new BuffData
         {
             BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
@@ -66,7 +74,7 @@ public class CriticalBuff : IOptionEffect
         ctx.User.AddBuff(buffKey);
     }
 }
-//¹öÇÁ·Î »©¾ß µÇ³ª
+//ë²„í”„ë¡œ ë¹¼ì•¼ ë˜ë‚˜
 public class BurnDebuffEffect : IOptionEffect
 {
     public void Apply(OptionContext ctx)
@@ -85,11 +93,9 @@ public class BurnDebuffEffect : IOptionEffect
         };
 
         ctx.Target.AddBuff(debuff);
-        Debug.Log($"{ctx.Target}¿¡°Ô ¹öÇÁ Àû¿ë : {ctx.option_ID}");
+        Debug.Log($"{ctx.Target}ì—ê²Œ ë²„í”„ ì ìš© : {ctx.option_ID}");
     }
 }
-
-
 
 // 4) OptionManager
 public class OptionManager : MonoBehaviour
@@ -109,31 +115,31 @@ public class OptionManager : MonoBehaviour
     { "Effect_001", new AddDamage() },
     { "Effect_002", new CriticalBuff() },
     { "Effect_003", new BurnDebuffEffect() },
-    { "Effect_004", new AddFireDamage() },
+    { "Effect_004", new HealtingBuff() },
 };
-    //È¿°ú¿¡ ´ëÇÑ ÀÌ¸§
+    //íš¨ê³¼ì— ëŒ€í•œ ì´ë¦„
     private static Dictionary<string, string> optionDescriptions = new()
     {
-        { "Option_001", "Ãß°¡ µ¥¹ÌÁö" },
-        { "Option_002", "Ãß°¡ °ø°İ ¼Óµµ" },
-        { "Option_003", "È­»ó ÇÇÇØ" },
-        { "Option_004", "ÈíÇ÷" },
-        { "null", "" } // ¹æ¾î Ã³¸®
+        { "Option_001", "ì¶”ê°€ ë°ë¯¸ì§€" },
+        { "Option_002", "í¬ë¦¬í‹°ì»¬ í™•ë¥  ì¦ê°€" },
+        { "Option_003", "í™”ìƒ í”¼í•´" },
+        { "Option_004", "íšŒë³µ ë²„í”„" },
+        { "null", "" } // ë°©ì–´ ì²˜ë¦¬
     };
 
     public static void ApplyOption(string optionID, OptionContext ctx)
     {
-        var opt = GetOption(optionID); // ÀÌ¹Ì Ä³½ÌµÈ optionDict¿¡¼­ °¡Á®¿À´Â ¹æ½ÄÀ¸·Î ¼öÁ¤
+        var opt = GetOption(optionID); // ì´ë¯¸ ìºì‹±ëœ optionDictì—ì„œ ê°€ì ¸ì˜¤ëŠ” ë°©ì‹ìœ¼ë¡œ ìˆ˜ì •
 
         if (opt == null)
         {
-            Debug.LogWarning($"[OptionManager] {optionID} ¿É¼Ç Á¤º¸ ¾øÀ½");
+            Debug.LogWarning($"[OptionManager] {optionID} ì˜µì…˜ ì •ë³´ ì—†ìŒ");
             return;
         }
 
         if (!effects.TryGetValue(opt.Effect_ID, out var effect))
         {
-            Debug.LogError($"[OptionManager] Effect_ID {opt.Effect_ID} ¡æ ¹Ìµî·Ï È¿°ú");
+            Debug.LogError($"[OptionManager] Effect_ID {opt.Effect_ID} â†’ ë¯¸ë“±ë¡ íš¨ê³¼");
             return;
         }
 
@@ -151,11 +157,11 @@ public class OptionManager : MonoBehaviour
                     Value = ctx.Value,
                     item_ID = ctx.item_ID
                 });
-                Debug.Log($"[OptionManager] OnHit ¿É¼Ç {optionID} µî·Ï ¿Ï·á");
+                Debug.Log($"[OptionManager] OnHit ì˜µì…˜ {optionID} ë“±ë¡ ì™„ë£Œ");
                 break;
 
             default:
-                Debug.LogWarning($"[OptionManager] ¹ÌÁö¿ø Option_Type: {opt.Option_Type}");
+                Debug.LogWarning($"[OptionManager] ë¯¸ì§€ì› Option_Type: {opt.Option_Type}");
                 break;
         }
     }
@@ -165,14 +171,14 @@ public class OptionManager : MonoBehaviour
         if (string.IsNullOrEmpty(optionID) || optionID == "null")
             return null;
 
-        return optionDescriptions.TryGetValue(optionID, out var desc) ? desc : $"¿É¼Ç({optionID})";
+        return optionDescriptions.TryGetValue(optionID, out var desc) ? desc : $"ì˜µì…˜({optionID})";
     }
 
     public static Option_Master GetOption(string optionID)
     {
         if (optionDict.TryGetValue(optionID, out var opt))
             return opt;
-        Debug.LogWarning($"[OptionManager] {optionID} ¿É¼Ç Á¤º¸¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+        Debug.LogWarning($"[OptionManager] {optionID} ì˜µì…˜ ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         return null;
     }
     public static void ApplyOnHitOnly(string optionID, OptionContext ctx)
@@ -187,4 +193,251 @@ public class OptionManager : MonoBehaviour
             effect.Apply(ctx);
         }
     }
+    public static void ApplyBuffEffect(BuffData buff)
+    {
+        var opt = GetOption(buff.OptionID);
+        if (opt == null) return;
+
+        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+        {
+            var ctx = new OptionContext
+            {
+                User = buff.User, // ëŒ€ë¶€ë¶„ì˜ ê²½ìš° ë””ë²„í”„ëŠ” Targetì—ê²Œ ì ìš©
+                Target = buff.Target,
+                Value = buff.Value,
+                option_ID = buff.OptionID,
+                item_ID = buff.SourceItemID
+            };
+            effect.Apply(ctx);
+        }
+    }
+    public static void ApplyDeBuffEffect(BuffData buff)
+    {
+        var opt = GetOption(buff.OptionID);
+        if (opt == null) return;
+
+        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+        {
+            var ctx = new OptionContext
+            {
+                User = buff.User, // ëŒ€ë¶€ë¶„ì˜ ê²½ìš° ë””ë²„í”„ëŠ” Targetì—ê²Œ ì ìš©
+                Target = buff.Target,
+                Value = buff.Value,
+                option_ID = buff.OptionID,
+                item_ID = buff.SourceItemID
+            };
+            effect.Apply(ctx);
+        }
+    }
+
 }
+
+
+
+//using System.Collections.Generic;
+//using System.Linq;
+//using UnityEngine;
+//using UnityEngine.TextCore.Text;
+//using MyGame;
+//using Character = MyGame.Character;
+
+//// 1) ì˜µì…˜ íš¨ê³¼ ì¸í„°í˜ì´ìŠ¤
+//public interface IOptionEffect
+//{
+//    void Apply(OptionContext ctx);
+//}
+
+//// === ì‹¤ì œ íš¨ê³¼ êµ¬í˜„ ===
+//public class AddDamage : IOptionEffect
+//{
+//    public void Apply(OptionContext ctx)
+//    {
+//        int damage = Mathf.FloorToInt(ctx.Value);
+//        ctx.Target.Health -= damage;
+//        Debug.Log(damage);
+//        Debug.Log(ctx.Target.Health);
+//    }
+//}
+
+//public class AddFireDamage : IOptionEffect
+//{
+//    public void Apply(OptionContext ctx)
+//    {
+//        int damage = Mathf.FloorToInt(ctx.Value);
+//        ctx.Target.Health -= damage;
+//        Debug.Log(damage);
+//        Debug.Log($"{ctx.Target.Health}");
+//    }
+//}
+
+//public class HealtingBuff : IOptionEffect
+//{
+//    public void Apply(OptionContext ctx)
+//    {
+//        int healing = Mathf.FloorToInt(ctx.Target.MaxHealth * 0.02f);
+//        ctx.Target.Health += healing;
+//        if (ctx.Target.Health > ctx.Target.MaxHealth)
+//            ctx.Target.Health = ctx.Target.MaxHealth;
+//        Debug.Log($"[íšŒë³µ íš¨ê³¼] {ctx.Target.charaterName} +{healing} â†’ í˜„ì¬ HP: {ctx.Target.Health}");
+//    }
+//}
+
+//public class CriticalBuff : IOptionEffect
+//{
+//    public void Apply(OptionContext ctx)
+//    {
+//        var buff = new BuffData
+//        {
+//            BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
+//            OptionID = ctx.option_ID,
+//            Value = ctx.Value,
+//            SourceItemID = ctx.item_ID,
+//            IsPassive = true,
+//            User = ctx.User
+//        };
+//        ctx.User.AddBuff(buff);
+//    }
+//}
+
+//public class BurnDebuffEffect : IOptionEffect
+//{
+//    public void Apply(OptionContext ctx)
+//    {
+//        int damage = Mathf.FloorToInt(ctx.Target.MaxHealth * 0.02f);
+//        ctx.Target.Health -= damage;
+//        Debug.Log($"[ğŸ”¥í™”ìƒ í”¼í•´] {ctx.Target.charaterName} â†’ {damage} í”¼í•´. í˜„ì¬ HP: {ctx.Target.Health}");
+//    }
+//}
+
+//// === ì˜µì…˜ ë§¤ë‹ˆì € ===
+//public class OptionManager : MonoBehaviour
+//{
+//    public JsonManager jsonManager;
+//    private static Dictionary<string, Option_Master> optionDict = new();
+
+//    public static void Initialize(JsonManager json)
+//    {
+//        var options = json.GetOptionMasters("Option_Master");
+//        optionDict = options.ToDictionary(x => x.Option_ID, x => x);
+//    }
+
+//    private static Dictionary<string, IOptionEffect> effects = new()
+//    {
+//        { "Effect_001", new AddDamage() },
+//        { "Effect_002", new CriticalBuff() },
+//        { "Effect_003", new BurnDebuffEffect() },
+//        { "Effect_004", new HealtingBuff() },
+//    };
+
+//    private static Dictionary<string, string> optionDescriptions = new()
+//    {
+//        { "Option_001", "ì¶”ê°€ ë°ë¯¸ì§€" },
+//        { "Option_002", "í¬ë¦¬í‹°ì»¬ í™•ë¥  ì¦ê°€" },
+//        { "Option_003", "í™”ìƒ í”¼í•´" },
+//        { "Option_004", "íšŒë³µ ë²„í”„" },
+//        { "null", "" }
+//    };
+
+//    public static void ApplyOption(string optionID, OptionContext ctx)
+//    {
+//        var opt = GetOption(optionID);
+//        if (opt == null)
+//        {
+//            Debug.LogWarning($"[OptionManager] {optionID} ì˜µì…˜ ì •ë³´ ì—†ìŒ");
+//            return;
+//        }
+
+//        if (!effects.TryGetValue(opt.Effect_ID, out var effect))
+//        {
+//            Debug.LogError($"[OptionManager] Effect_ID {opt.Effect_ID} â†’ ë¯¸ë“±ë¡ íš¨ê³¼");
+//            return;
+//        }
+
+//        switch (opt.Option_Type)
+//        {
+//            case "OnEquip":
+//            case "Passive":
+//                effect.Apply(ctx);
+//                break;
+
+//            case "OnHit":
+//                ctx.User.OnHitOptions.Add(new Character.EquippedOption
+//                {
+//                    OptionID = optionID,
+//                    Value = ctx.Value,
+//                    item_ID = ctx.item_ID
+//                });
+//                Debug.Log($"[OptionManager] OnHit ì˜µì…˜ {optionID} ë“±ë¡ ì™„ë£Œ");
+//                break;
+
+//            default:
+//                Debug.LogWarning($"[OptionManager] ë¯¸ì§€ì› Option_Type: {opt.Option_Type}");
+//                break;
+//        }
+//    }
+
+//    public static string GetOptionDescription(string optionID)
+//    {
+//        if (string.IsNullOrEmpty(optionID) || optionID == "null")
+//            return null;
+
+//        return optionDescriptions.TryGetValue(optionID, out var desc) ? desc : $"ì˜µì…˜({optionID})";
+//    }
+
+//    public static Option_Master GetOption(string optionID)
+//    {
+//        if (optionDict.TryGetValue(optionID, out var opt))
+//            return opt;
+//        Debug.LogWarning($"[OptionManager] {optionID} ì˜µì…˜ ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+//        return null;
+//    }
+
+//    public static void ApplyOnHitOnly(string optionID, OptionContext ctx)
+//    {
+//        var opt = GetOption(optionID);
+//        if (opt == null || opt.Option_Type != "OnHit") return;
+
+//        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+//        {
+//            effect.Apply(ctx);
+//        }
+//    }
+
+//    public static void ApplyBuffEffect(BuffData buff)
+//    {
+//        var opt = GetOption(buff.OptionID);
+//        if (opt == null) return;
+
+//        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+//        {
+//            var ctx = new OptionContext
+//            {
+//                User = buff.User,
+//                Target = buff.Target,
+//                Value = buff.Value,
+//                option_ID = buff.OptionID,
+//                item_ID = buff.SourceItemID
+//            };
+//            effect.Apply(ctx);
+//        }
+//    }
+
+//    public static void ApplyDeBuffEffect(BuffData buff)
+//    {
+//        var opt = GetOption(buff.OptionID);
+//        if (opt == null) return;
+
+//        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+//        {
+//            var ctx = new OptionContext
+//            {
+//                User = buff.User,
+//                Target = buff.Target,
+//                Value = buff.Value,
+//                option_ID = buff.OptionID,
+//                item_ID = buff.SourceItemID
+//            };
+//            effect.Apply(ctx);
+//        }
+//    }
+//}

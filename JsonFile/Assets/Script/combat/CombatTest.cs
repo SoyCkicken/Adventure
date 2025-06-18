@@ -126,11 +126,15 @@ public class CombatTest : MonoBehaviour
                 // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
 
                 Debug.Log(battleOver = (player.Health > 0));
+                enemy.RemoveTemporaryBuffs();
+                player.RemoveTemporaryBuffs();
                 yield break;
             }
             else if(attacker.Health<=0)
             {
                 battleOver = false;
+                enemy.RemoveTemporaryBuffs();
+                player.RemoveTemporaryBuffs();
                 yield break;
             }
         }
