@@ -7,6 +7,12 @@ namespace MyGame
 {
     public class Character : MonoBehaviour
     {
+
+        private void Update()
+        {
+            UpdateBuffs(Time.deltaTime);
+        }
+
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
         public string charaterName;
         public PlayerState playerState;
@@ -85,7 +91,16 @@ namespace MyGame
         {
             if (activeBuffs.ContainsKey(buff.BuffID))
             {
-                Debug.Log($"버프 중복 적용 무시됨: {buff.BuffID}");
+                Debug.Log($" {buff.Target}에게 버프 중복 적용 무시됨: {buff.BuffID}");
+                return;
+            }
+
+            if (activeBuffs.TryGetValue(buff.BuffID, out var existing))
+            {
+                // 중복일 경우: 시간만 초기화
+                existing.Elapsed = 0f;
+                existing.Duration = buff.Duration;
+                Debug.Log($"[Buff 갱신] {buff.BuffID} → 지속 시간 초기화");
                 return;
             }
 
@@ -95,6 +110,13 @@ namespace MyGame
             {
                 Debug.Log($"치명타 확률 +{buff.Value}% 버프 적용됨");
                 CitChance += buff.Value;
+            }
+            if (buff.OptionID == "Option_003")
+            {
+                int Damagehp = Convert.ToInt32(buff.Target.MaxHealth*0.02);
+                buff.Target.Health-= Damagehp;
+
+                Debug.Log($"화상 디버프 적용중 : {buff.Target}에게 화상 피해 : {Damagehp}를 적용중입니다");
             }
             // 필요 시 스탯 반영
         }
@@ -123,6 +145,54 @@ namespace MyGame
             }
         }
 
+        //디 버프 , 버프 용 버프 업데이트 함수
+        public void UpdateBuffs(float deltaTime)
+        {
+            var expired = new List<string>();
+
+            foreach (var kv in activeBuffs)
+            {
+                var buff = kv.Value;
+                if (buff.Duration > 0)
+                {
+                    buff.Elapsed += deltaTime;
+                    if (buff.Elapsed >= buff.Duration)
+                        expired.Add(kv.Key);
+                    //Debug.Log("버프 업데이트됨");
+
+                    if (buff.OptionID == "Option_003" && buff.IsDebuff)
+                    {
+                        float tickInterval = 1f; // 1초마다 피해
+                        int ticks = (int)(buff.Elapsed / tickInterval) - (int)((buff.Elapsed - deltaTime) / tickInterval);
+                        for (int i = 0; i < ticks; i++)
+                        {
+                            int damage = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+                            buff.Target.Health -= damage;
+                            Debug.Log($"[화상 지속 피해] {buff.Target.charaterName} → {damage} 피해. 남은 HP: {buff.Target.Health}");
+                        }
+                    }
+                }
+
+                foreach (var key in expired)
+                {
+                    RemoveBuff(key);
+                    Debug.Log($"[버프 만료] {key}");
+                }
+            }
+        }
+
+        //버프 제거용
+        public void RemoveBuff(string buffID)
+        {
+            if (!activeBuffs.TryGetValue(buffID, out var buff))
+                return;
+
+            if (buff.OptionID == "Option_002")
+                CitChance -= buff.Value;
+
+            activeBuffs.Remove(buffID);
+        }
+
     }
     //클래스들은 밑으로 뺐음
     public class OptionContext
@@ -146,9 +216,14 @@ namespace MyGame
         public string BuffID;         // 고유 ID (예: "crit_001", "burn_stack", etc)
         public string OptionID;      // 옵션 효과 ID (예: "101" → 치명타 확률)
         public int Value;            // 수치
+
         public float Duration;       // 지속 시간 (0 = 영구)
+        public float Elapsed = 0f;      // 경과 시간
+
         public string SourceItemID;  // 버프 유래 (ex: 장비ID)
         public bool IsPassive;       // 패시브인지 여부
+        public bool IsDebuff;           // 🔥 디버프 여부
+        public Character Target;        // 🔥 디버프일 경우 대상 (적 캐릭터)
     }
 
     

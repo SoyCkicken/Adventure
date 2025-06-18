@@ -37,19 +37,20 @@ public class EquipmentSystem : MonoBehaviour
             player.damage = tempDamage;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(weapon.Option_1_ID))
-                player.OnHitOptions.Add(new Character.EquippedOption
+                OptionManager.ApplyOption(weapon.Option_1_ID, new OptionContext
                 {
-                    OptionID = weapon.Option_1_ID,
+                    User = player,
                     Value = weapon.Option_Value1,
-                    item_ID = weapon.Weapon_ID
-
+                    item_ID = weapon.Weapon_ID,
+                    option_ID = weapon.Option_1_ID
                 });
             if (!string.IsNullOrEmpty(weapon.Option_2_ID))
-                player.OnHitOptions.Add(new Character.EquippedOption
+                OptionManager.ApplyOption(weapon.Option_2_ID, new OptionContext
                 {
-                    OptionID = weapon.Option_2_ID,
+                    User = player,
                     Value = weapon.Option_Value2,
-                    item_ID = weapon.Weapon_ID
+                    item_ID = weapon.Weapon_ID,
+                    option_ID = weapon.Option_2_ID
                 });
         }
         else
@@ -73,11 +74,12 @@ public class EquipmentSystem : MonoBehaviour
                     option_ID = armor.Armor_Option1
                 });
             if (!string.IsNullOrEmpty(armor.Armor_Option2))
-                player.OnHitOptions.Add(new Character.EquippedOption
+                OptionManager.ApplyOption(armor.Armor_Option2, new OptionContext
                 {
-                    OptionID = armor.Armor_Option2,
+                    User = player,
                     Value = armor.Option2_Value,
-                    item_ID = armor.Armor_ID
+                    item_ID = armor.Armor_ID,
+                    option_ID = armor.Armor_Option2
                 });
         }
         else

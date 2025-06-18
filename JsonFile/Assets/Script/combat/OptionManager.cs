@@ -67,17 +67,27 @@ public class CriticalBuff : IOptionEffect
     }
 }
 //버프로 빼야 되나
-public class BurnEffect : IOptionEffect
+public class BurnDebuffEffect : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
-        //예: 매 턴마다 추가 피해를 주는 스택을 만든다
-        int heal = Mathf.FloorToInt((ctx.Value) * 3);
-        ctx.Target.Health -= heal;
-        Debug.Log(ctx.hp);
+        var debuff = new BuffData
+        {
+            BuffID = $"{ctx.item_ID}_{ctx.option_ID}_onhit",
+            OptionID = ctx.option_ID,
+            Value = ctx.Value,
+            Duration = 5f,
+            Elapsed = 0f,
+            IsDebuff = true,
+            Target = ctx.Target,
+            SourceItemID = ctx.item_ID
+
+        };
+
+        ctx.Target.AddBuff(debuff);
+        Debug.Log($"{ctx.Target}에게 버프 적용 : {ctx.option_ID}");
     }
 }
-
 
 
 
@@ -98,7 +108,7 @@ public class OptionManager : MonoBehaviour
 {
     { "Effect_001", new AddDamage() },
     { "Effect_002", new CriticalBuff() },
-    { "Effect_003", new Healting() },
+    { "Effect_003", new BurnDebuffEffect() },
     { "Effect_004", new AddFireDamage() },
 };
     //효과에 대한 이름
@@ -106,7 +116,7 @@ public class OptionManager : MonoBehaviour
     {
         { "Option_001", "추가 데미지" },
         { "Option_002", "추가 공격 속도" },
-        { "Option_003", "출혈" },
+        { "Option_003", "화상 피해" },
         { "Option_004", "흡혈" },
         { "null", "" } // 방어 처리
     };
