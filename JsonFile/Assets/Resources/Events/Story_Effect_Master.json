@@ -3,20 +3,37 @@
     {
       "Effect_ID": "Effect_1",
       "Effect_Description": "Soul +100",
-      "Effect_Type": 1.0,
+      "Effect_Type": 2.0,
+      "EffectItem_Code": "Soul",
       "Effect_Value": "100"
     },
     {
       "Effect_ID": "Effect_2",
       "Effect_Description": "체력 -10",
-      "Effect_Type": 1.0,
+      "Effect_Type": 3.0,
+      "EffectItem_Code": "HP",
       "Effect_Value": "-10"
     },
     {
       "Effect_ID": "Effect_3",
+      "Effect_Description": "검 아이템 획득",
+      "Effect_Type": 1.0,
+      "EffectItem_Code": "Weapon_001",
+      "Effect_Value": 1.0
+    },
+    {
+      "Effect_ID": "Effect_4",
       "Effect_Description": "아이템 획득",
       "Effect_Type": 1.0,
-      "Effect_Value": "회복 포션"
+      "EffectItem_Code": "Weapon_002",
+      "Effect_Value": 1.0
+    },
+    {
+      "Effect_ID": "Effect_5",
+      "Effect_Description": "아이템 획득",
+      "Effect_Type": 1.0,
+      "EffectItem_Code": "Weapon_003",
+      "Effect_Value": 1.0
     }
   ]
 }
