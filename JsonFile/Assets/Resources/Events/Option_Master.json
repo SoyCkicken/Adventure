@@ -23,6 +23,30 @@
       "Option_Description": "공격 적중 시 체력 회복 버프 적용",
       "Effect_ID": "Effect_004",
       "Option_Type": "OnHit"
+    },
+    {
+      "Option_ID": "Option_005",
+      "Option_Description": "공격 속도 증가",
+      "Effect_ID": "Effect_005",
+      "Option_Type": "Passive"
+    },
+    {
+      "Option_ID": "Option_006",
+      "Option_Description": null,
+      "Effect_ID": "Effect_006",
+      "Option_Type": null
+    },
+    {
+      "Option_ID": "Option_007",
+      "Option_Description": null,
+      "Effect_ID": "Effect_007",
+      "Option_Type": null
+    },
+    {
+      "Option_ID": "Option_008",
+      "Option_Description": null,
+      "Effect_ID": "Effect_008",
+      "Option_Type": null
     }
   ]
 }

@@ -39,6 +39,42 @@ public class AddFireDamage : IOptionEffect
         Debug.Log($"{ctx.Target.Health}");
     }
 }
+
+public class CriticalBuff : IOptionEffect
+{
+    public void Apply(OptionContext ctx)
+    {
+        // 키를 “장비ID_옵션ID” 로 합쳐서
+        var buffKey = new BuffData
+        {
+            BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
+            User = ctx.User,
+            OptionID = ctx.option_ID,
+            Value = ctx.Value,
+            SourceItemID = ctx.item_ID,
+            IsPassive = true
+        };
+        ctx.User.AddBuff(buffKey);
+    }
+}
+
+public class SpeedBuff : IOptionEffect
+{
+    public void Apply(OptionContext ctx)
+    {
+        var buffKey = new BuffData
+        {
+            BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
+            User = ctx.User,
+            OptionID = ctx.option_ID,
+            Value = ctx.Value,
+            SourceItemID = ctx.item_ID,
+            IsPassive = true
+        };
+        ctx.User.AddBuff(buffKey);
+    }
+}
+
 public class HealtingBuff : IOptionEffect
 {
     public void Apply(OptionContext ctx)
@@ -54,24 +90,8 @@ public class HealtingBuff : IOptionEffect
             Target = ctx.User,
             SourceItemID = ctx.item_ID
         };
-        ctx.Target.AddBuff(buff);
+        ctx.User.AddBuff(buff);
         Debug.Log($"{ctx.User}에게 버프 적용 : {ctx.option_ID}");
-    }
-}
-public class CriticalBuff : IOptionEffect
-{
-    public void Apply(OptionContext ctx)
-    {
-        // 키를 “장비ID_옵션ID” 로 합쳐서
-        var buffKey = new BuffData
-        {
-            BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
-            OptionID = ctx.option_ID,
-            Value = ctx.Value,
-            SourceItemID = ctx.item_ID,
-            IsPassive = true
-        };
-        ctx.User.AddBuff(buffKey);
     }
 }
 //버프로 빼야 되나
@@ -116,6 +136,8 @@ public class OptionManager : MonoBehaviour
     { "Effect_002", new CriticalBuff() },
     { "Effect_003", new BurnDebuffEffect() },
     { "Effect_004", new HealtingBuff() },
+    { "Effect_005", new HealtingBuff() },
+
 };
     //효과에 대한 이름
     private static Dictionary<string, string> optionDescriptions = new()
@@ -148,6 +170,7 @@ public class OptionManager : MonoBehaviour
             case "OnEquip":
             case "Passive":
                 effect.Apply(ctx);
+                Debug.Log($"{ctx.item_ID}장착시 , 패시브 아이템 적용 됨");
                 break;
 
             case "OnHit":

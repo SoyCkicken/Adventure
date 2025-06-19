@@ -9,9 +9,15 @@ namespace MyGame
     public class Character : MonoBehaviour
     {
 
-        private void Update()
+        //private void Update()
+        //{
+        //    UpdateBuffs(Time.deltaTime);
+        //}
+
+        private void StartBuffRoutine()
         {
-            //UpdateBuffs(Time.deltaTime);
+            if (buffCoroutine != null) return;
+            buffCoroutine = StartCoroutine(BuffTickRoutine());
         }
 
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
@@ -112,86 +118,74 @@ namespace MyGame
             {
                 int Damagehp = Convert.ToInt32(buff.Target.MaxHealth * 0.02);
                 buff.Target.Health -= Damagehp;
-                StartCoroutine(BurnDebuff(buff));
+                //StartCoroutine(BurnDebuff(buff));
                 Debug.Log($"화상 디버프 적용중 : {buff.Target}에게 화상 피해 : {Damagehp}를 적용중입니다");
             }
             if (buff.OptionID == "Option_004")
             {
                 int Healinghp = Convert.ToInt32(buff.Target.MaxHealth * 0.02);
+                //StartCoroutine(HealthingBuff(buff));
                 Debug.Log($"회복 버프 적용중 : {buff.Target}에게 체력 회복 : {Healinghp}를 적용중입니다");
             }
+            if (buff.OptionID == "Option_005")
+            {
+                float multiplier = buff.Value / 100f;
+                speed *= (1f + multiplier);  // 예: 20% → speed *= 1.2f
+                Debug.Log($"[공속 증가] {charaterName} → speed x{1f + multiplier} = {speed}");
+                Debug.Log($"공격 속도 버프 {buff.Value}%만큼 증가");
+            }
+            StartBuffRoutine();
             // 필요 시 스탯 반영
         }
-        //public void AddBuff(BuffData buff)
-        //{
-        //    if (activeBuffs.TryGetValue(buff.BuffID, out var existing))
-        //    {
-        //        existing.Elapsed = 0f;
-        //        existing.Duration = buff.Duration;
-        //        Debug.Log($"[Buff 갱신] {buff.BuffID}");
-        //        return;
-        //    }
 
-        //    activeBuffs[buff.BuffID] = buff;
+        private IEnumerator BuffTickRoutine()
+        {
+            WaitForSeconds wait = new WaitForSeconds(1f);
 
-        //    if (buff.OptionID == "Option_002")
-        //        CitChance += buff.Value;
-        //    if (buff.OptionID == "Option_003")
-        //    {
-        //        int Damagehp = Convert.ToInt32(buff.Target.MaxHealth * 0.02);
-        //        buff.Target.Health -= Damagehp;
-        //        //StartCoroutine(BurnDebuff(buff));
-        //        Debug.Log($"화상 디버프 적용중 : {buff.Target}에게 화상 피해 : {Damagehp}를 적용중입니다");
-        //    }
-        //    if (buff.OptionID == "Option_004")
-        //    {
-        //        int Healinghp = Convert.ToInt32(buff.Target.MaxHealth * 0.02);
-        //        Debug.Log($"회복 버프 적용중 : {buff.Target}에게 체력 회복 : {Healinghp}를 적용중입니다");
-        //    }
+            while (true)
+            {
+                var expired = new List<string>();
 
-        //    // 코루틴이 없으면 시작
-        //    if (buffCoroutine == null)
-        //        buffCoroutine = StartCoroutine(BuffTickLoop());
-        //}
+                foreach (var kv in activeBuffs)
+                {
+                    var buff = kv.Value;
+                    buff.Elapsed += 1f;
 
-        //버프 루프 코루틴 함수
-        //public IEnumerator BuffTickLoop()
-        //{
-        //    while (true)
-        //    {
-        //        yield return new WaitForSeconds(1f);
+                    // 매 1초마다 적용되는 효과
+                    switch (buff.OptionID)
+                    {
+                        case "Option_003": // 화상
+                            int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+                            buff.Target.Health -= dmg;
+                            Debug.Log($"[화상 Tick] {buff.Target.charaterName} → {dmg} 피해");
+                            break;
 
-        //        var expired = new List<string>();
+                        case "Option_004": // 회복
+                            int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+                            buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
+                            Debug.Log($"[회복 Tick] {buff.Target.charaterName} → {heal} 회복");
+                            break;
+                    }
 
-        //        foreach (var kv in activeBuffs)
-        //        {
-        //            var buff = kv.Value;
-        //            buff.Elapsed += 1f;
+                    if (buff.Elapsed >= buff.Duration)
+                        expired.Add(kv.Key);
+                }
 
-        //            // 🔥 디버프 효과
-        //            if (buff.IsDebuff)
-        //            {
-        //                OptionManager.ApplyDeBuffEffect(buff);
-        //            }
+                foreach (var key in expired)
+                    RemoveBuff(key);
 
-        //            // 🟢 버프 효과 (예: 지속 회복 등)
-        //            if (!buff.IsDebuff)
-        //            {
-        //                OptionManager.ApplyBuffEffect(buff);
-        //            }
+                // 만료되면 루프 종료
+                if (activeBuffs.Count == 0)
+                {
+                    buffCoroutine = null;
+                    yield break;
+                }
 
-        //            if (buff.Duration > 0 && buff.Elapsed >= buff.Duration)
-        //            {
-        //                expired.Add(kv.Key);
-        //            }
-        //        }
+                yield return wait;
+            }
+        }
 
-        //        foreach (var key in expired)
-        //        {
-        //            RemoveBuff(key);
-        //        }
-        //    }
-        //}
+
 
         //장착 해제 시 버프 해제
         public void RemoveBuffByItem(string itemID)
@@ -206,11 +200,14 @@ namespace MyGame
                 var buff = activeBuffs[key];
 
                 // 스탯 롤백 처리
-                if (buff.OptionID == "Option_002") // 치명타 확률 감소
-                {
+                //이건 버프로 능력치 올라갔던거 초기화 해주는부분인데 올라가는 부분이 없으면 빼고 작업하면됨
+                if (buff.OptionID == "Option_002")
                     CitChance -= buff.Value;
-                    Debug.Log(CitChance);
-                    Debug.Log($"치명타 확률 -{buff.Value}% 버프 제거됨");
+                if (buff.OptionID == "Option_005")
+                {
+                    float multiplier = buff.Value / 100f;
+                    speed /= (1f + multiplier);  // 원래 속도로 복원
+                    Debug.Log($"[공속 복원] {charaterName} → speed 복구 = {speed}");
                 }
 
                 activeBuffs.Remove(key);
@@ -276,9 +273,11 @@ namespace MyGame
             if (!activeBuffs.TryGetValue(buffID, out var buff))
                 return;
 
-            //이건 버프로 능력치 올라갔던거 초기화 해주는부분인데 올라가는 부분이 없으면 빼고 작업하면됨
-            if (buff.OptionID == "Option_002")
-                CitChance -= buff.Value;
+            if (buff.IsPassive)
+            {
+                Debug.Log($"[패시브 버프 유지됨] {buffID}");
+                return;
+            }
 
             activeBuffs.Remove(buffID);
         }
@@ -296,27 +295,6 @@ namespace MyGame
                 RemoveBuff(key);
                 Debug.Log($"[전투 종료] 일시적 버프 제거됨: {key}");
             }
-        }
-
-        public IEnumerator BurnDebuff(BuffData buff)
-        {
-            float tickInterval = 1f;
-            float elapsed = 0f;
-
-            while (elapsed < buff.Duration)
-            {
-                int damage = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-                buff.Target.Health -= damage;
-
-                Debug.Log($"[화상 지속 피해] {buff.Target.charaterName} → {damage} 피해. 남은 HP: {buff.Target.Health}");
-
-                elapsed += tickInterval;
-                yield return new WaitForSeconds(tickInterval);
-            }
-
-            // 디버프 종료 처리
-            buff.Target.RemoveBuff(buff.BuffID); // 버프 목록에서도 제거
-            Debug.Log($"[화상 디버프 종료] {buff.Target.charaterName}");
         }
     }
     //클래스들은 밑으로 뺐음

@@ -10,7 +10,8 @@
       "Armor_Option2": "null",
       "Option2_Value": 0.0,
       "Description": "튼튼한 철로 만든 철 갑옷이다 사용자의 몸을 든든하게 지켜준다",
-      "ItemType": "Armor"
+      "ItemType": "Armor",
+      "Item_Price": 10.0
     },
     {
       "Armor_ID": "Armor_002",
@@ -22,7 +23,8 @@
       "Armor_Option2": "null",
       "Option2_Value": 0.0,
       "Description": "단단한 가죽으로 만든 갑옷이다. 사용자의 몸을 지켜준다",
-      "ItemType": "Armor"
+      "ItemType": "Armor",
+      "Item_Price": 10.0
     },
     {
       "Armor_ID": "Armor_003",
@@ -34,7 +36,99 @@
       "Armor_Option2": "null",
       "Option2_Value": 0.0,
       "Description": "천으로 만든 갑옷이다",
-      "ItemType": "Armor"
+      "ItemType": "Armor",
+      "Item_Price": 10.0
+    },
+    {
+      "Armor_ID": "Armor_004",
+      "Armor_NAME": "테스트 갑옷1",
+      "Armor_DEF": 1.0,
+      "Armor_HP": 1.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 1",
+      "ItemType": "Armor",
+      "Item_Price": 1.0
+    },
+    {
+      "Armor_ID": "Armor_005",
+      "Armor_NAME": "테스트 갑옷2",
+      "Armor_DEF": 2.0,
+      "Armor_HP": 2.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 2",
+      "ItemType": "Armor",
+      "Item_Price": 2.0
+    },
+    {
+      "Armor_ID": "Armor_006",
+      "Armor_NAME": "테스트 갑옷3",
+      "Armor_DEF": 3.0,
+      "Armor_HP": 3.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 3",
+      "ItemType": "Armor",
+      "Item_Price": 3.0
+    },
+    {
+      "Armor_ID": "Armor_007",
+      "Armor_NAME": "테스트 갑옷4",
+      "Armor_DEF": 4.0,
+      "Armor_HP": 4.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 4",
+      "ItemType": "Armor",
+      "Item_Price": 4.0
+    },
+    {
+      "Armor_ID": "Armor_008",
+      "Armor_NAME": "테스트 갑옷5",
+      "Armor_DEF": 5.0,
+      "Armor_HP": 5.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 5",
+      "ItemType": "Armor",
+      "Item_Price": 5.0
+    },
+    {
+      "Armor_ID": "Armor_009",
+      "Armor_NAME": "테스트 갑옷6",
+      "Armor_DEF": 6.0,
+      "Armor_HP": 6.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 6",
+      "ItemType": "Armor",
+      "Item_Price": 6.0
+    },
+    {
+      "Armor_ID": "Armor_010",
+      "Armor_NAME": "테스트 갑옷7",
+      "Armor_DEF": 7.0,
+      "Armor_HP": 7.0,
+      "Armor_Option1": "null",
+      "Option1_Value": 0.0,
+      "Armor_Option2": "null",
+      "Option2_Value": 0.0,
+      "Description": "테스트 갑옷 7",
+      "ItemType": "Armor",
+      "Item_Price": 7.0
     }
   ]
 }

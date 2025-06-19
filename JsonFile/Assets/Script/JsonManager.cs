@@ -32,6 +32,9 @@ public class JsonManager : MonoBehaviour
     //선택지 관련
     private Dictionary<string, List<Main_SuccessRate_Master_Main>> _mainSuccessRateByScene = new();
     private Dictionary<string, List<Ran_SuccessRate_Master_Events>> _RanSuccessRateByScene = new();
+    //상인 관련
+    private Dictionary<string, List<BlackSmith>> BlackSmith_Item_Dict = new Dictionary<string, List<BlackSmith>>();
+    
     void Awake()
     {
         LoadAllJsonFiles();
@@ -362,6 +365,27 @@ public class JsonManager : MonoBehaviour
                     }
                 }
                 //플레이어 + 적 (데이터가 적만 있어서 적만 추가를 해놨음)
+                else if (fileName.Contains("BlackSmith"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["BlackSmith"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<BlackSmith> wrapper = JsonUtility.FromJson<Wrapper<BlackSmith>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        BlackSmith_Item_Dict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
 
                 else
                 {
@@ -390,14 +414,14 @@ public class JsonManager : MonoBehaviour
             return list;
         }
             
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Master_Main 데이터가 없습니다.");
         return null;
     }
     public List<Main_Script_Master_Main> GetStoryMainScriptMasters(string fileName)
     {
         if (storyMasterScriptDict.TryGetValue(fileName, out List<Main_Script_Master_Main> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Main_Script_Master_Main 데이터가 없습니다.");
         return null;
     }
     //확률 조회
@@ -412,14 +436,14 @@ public class JsonManager : MonoBehaviour
     {
         if (storyMastersuccessRateDict.TryGetValue(fileName, out List<Main_SuccessRate_Master_Main> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Main_SuccessRate_Master_Main 데이터가 없습니다.");
         return null;
     }
     public List<Story_Effect_Master> GetStoryMainEffectMasters(string fileName)
     {
         if (storyMasterEffectDict.TryGetValue(fileName, out List<Story_Effect_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Story_Effect_Master 데이터가 없습니다.");
         return null;
     }
     //이벤트 스토리
@@ -427,14 +451,14 @@ public class JsonManager : MonoBehaviour
     {
         if (RandomMasterDict.TryGetValue(fileName, out List<RandomEvents_Master_Event> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} RandomEvents_Master_Event 데이터가 없습니다.");
         return null;
     }
     public List<Ran_Script_Master_Event> GetRandomScriptMasters(string fileName)
     {
         if (RandomMasterScriptDict.TryGetValue(fileName, out List<Ran_Script_Master_Event> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Ran_Script_Master_Event 데이터가 없습니다.");
         return null;
     }
     //확률 조회
@@ -449,14 +473,14 @@ public class JsonManager : MonoBehaviour
     {
         if (RandomMasterSuccessRateDict.TryGetValue(fileName, out List<Ran_SuccessRate_Master_Events> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Ran_SuccessRate_Master_Events 데이터가 없습니다.");
         return null;
     }
     public List<Event_Effect_Master> GetRanomEffectMasters(string fileName)
     {
         if (RandomMasterEffectDict.TryGetValue(fileName, out List<Event_Effect_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Event_Effect_Master 데이터가 없습니다.");
         return null;
     }
     //아이템 목록
@@ -464,28 +488,28 @@ public class JsonManager : MonoBehaviour
     {
         if (WeaponMasterDict.TryGetValue(fileName, out List<Weapon_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Weapon_Master 데이터가 없습니다.");
         return null;
     }
     public List<Armor_Master> GetArmorMasters(string fileName)
     {
         if (ArmorMasterDict.TryGetValue(fileName, out List<Armor_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Armor_Master 데이터가 없습니다.");
         return null;
     }
     public List<Item_Master> GetItemMasters(string fileName)
     {
         if (ItemMasterDict.TryGetValue(fileName, out List<Item_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Item_Master 데이터가 없습니다.");
         return null;
     }
     public List<Option_Master> GetOptionMasters(string fileName)
     {
         if (Option_MasterDict.TryGetValue(fileName, out List<Option_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Option_Master 데이터가 없습니다.");
         return null;
     }
     //몬스터
@@ -493,18 +517,25 @@ public class JsonManager : MonoBehaviour
     {
         if (Mon_MasterDict.TryGetValue(fileName, out List<Mon_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Mon_Master 데이터가 없습니다.");
         return null;
     }
     public List<Mon_Effect_Master> GetMonEffectMasters(string fileName)
     {
         if (Mon_EffectMasterDict.TryGetValue(fileName, out List<Mon_Effect_Master> list))
             return list;
-        Debug.LogWarning($"[JsonManager] {fileName} Story_Master 데이터가 없습니다.");
+        Debug.LogWarning($"[JsonManager] {fileName} Mon_Effect_Master 데이터가 없습니다.");
         return null;
     }
 
-    //몬스터
+    //상인
+    public List<BlackSmith> GetBlackSmiths(string fileName)
+    {
+        if (BlackSmith_Item_Dict.TryGetValue(fileName, out List<BlackSmith> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} BlackSmith 데이터가 없습니다.");
+        return null;
+    }
 
     // 전체 로드된 Story_Master 파일명 리스트
     public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);

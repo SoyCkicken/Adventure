@@ -77,7 +77,7 @@ public class PlayerState : MonoBehaviour
     public GameObject CloseButton;
     public InventoryManager InventoryManager;
     private int Experience_required = 100;//필요 경험치
-    private int Experience = 100000;
+    public int Experience = 100000;
     private void Awake()
     {
         PlayerStateObject.SetActive(false);

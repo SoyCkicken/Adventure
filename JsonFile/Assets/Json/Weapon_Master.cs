@@ -10,9 +10,9 @@ public class Weapon_Master
     public float STR_Scaling;
     public float DEX_Scaling;
     public float INT_Scaling;
-    public int MAG_Scaling;
-    public int DIV_Scaling;
-    public int CHR_Scaling;
+    public float MAG_Scaling;
+    public float DIV_Scaling;
+    public float CHR_Scaling;
     public string Option_1_ID;
     public int Option_Value1;
     public string Option_2_ID;
@@ -20,4 +20,5 @@ public class Weapon_Master
     public string Description;
     public string ItemType;
     public bool One_Handed;
+    public int Item_Price;
 }

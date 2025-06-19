@@ -53,10 +53,6 @@ public class EquipmentSystem : MonoBehaviour
                     option_ID = weapon.Option_2_ID
                 });
         }
-        else
-        {
-            player.damage = 10;
-        }
             var armor = jsonManager.GetArmorMasters("Armor_Master")
                              .FirstOrDefault(w => w.Armor_ID == player.armor_Name);
         // 规绢备 厘馒 贸府
@@ -81,13 +77,6 @@ public class EquipmentSystem : MonoBehaviour
                     item_ID = armor.Armor_ID,
                     option_ID = armor.Armor_Option2
                 });
-        }
-        else
-        {
-            player.MaxHealth = 50;
-            player.armor = 5;
-            player.speed = 1.5f;
-            player.CitChance = 10;
         }
     }
     void ClearInit()
