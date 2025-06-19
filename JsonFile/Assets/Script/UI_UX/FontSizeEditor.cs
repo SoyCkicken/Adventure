@@ -19,6 +19,7 @@ public class FontSizeManager : MonoBehaviour
     public Button openOptionButton;
     public Button closeOptionButton;
     public GameObject optionUI;
+    public ScrollRect scrollRect;
     public Button resetButton;
     public TMP_Text tMP;
     public TMP_Text tMP2;
@@ -38,6 +39,14 @@ public class FontSizeManager : MonoBehaviour
         downFontSizebutton.onClick.AddListener(() =>
         {
             DecreaseFontSize();
+        });
+        upLineSizebutton.onClick.AddListener(() =>
+        {
+            IncreaseLineSize();
+        });
+        downLineSizebutton.onClick.AddListener(() =>
+        {
+            DecreaseLineSize();
         });
         openOptionButton.onClick.AddListener(() =>
         {
@@ -66,7 +75,7 @@ public class FontSizeManager : MonoBehaviour
     {
         fontSize = Mathf.Min(fontSize + 2, maxFontSize);
         tMP.text = $"{fontSize}";
-        tMP.fontSize = fontSize;
+        //tMP.fontSize = fontSize;
         ApplyFontSizeToAll();
     }
 
@@ -74,23 +83,23 @@ public class FontSizeManager : MonoBehaviour
     {
         fontSize = Mathf.Max(fontSize - 2, minFontSize);
         tMP.text = $"{fontSize}";
-        tMP.fontSize = fontSize;
+        //tMP.fontSize = fontSize;
         ApplyFontSizeToAll();
     }
 
     public void IncreaseLineSize()
     {
         TextLineSize = Mathf.Min(TextLineSize + 2, TextMaxLineSize);
-        tMP.text = $"{fontSize}";
-        tMP.lineSpacing = TextLineSize;
+        tMP2.text = $"{TextLineSize}";
+        //tMP2.lineSpacing = TextLineSize;
         ApplyFontSizeToAll();
     }
 
     public void DecreaseLineSize()
     {
         TextLineSize = Mathf.Max(TextLineSize - 2, TextminLineSize);
-        tMP.text = $"{TextLineSize}";
-        tMP.lineSpacing = TextLineSize;
+        tMP2.text = $"{TextLineSize}";
+        //tMP2.lineSpacing = TextLineSize;
         ApplyFontSizeToAll();
     }
 
@@ -109,6 +118,15 @@ public class FontSizeManager : MonoBehaviour
                 text.fontSize = fontSize;
             if (text != null)
                 text.lineSpacing = TextLineSize;
+        }
+
+        Canvas.ForceUpdateCanvases();
+        if (scrollRect != null && scrollRect.content != null)
+        {
+            var rt = scrollRect.content as RectTransform;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+            // 스크롤 포지션 유지 or 맨 아래로 보낼 때:
+            scrollRect.verticalNormalizedPosition = 0f;
         }
     }
 }

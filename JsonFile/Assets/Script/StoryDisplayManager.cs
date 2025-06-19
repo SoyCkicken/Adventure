@@ -211,12 +211,15 @@ public class StoryDisplayManager : MonoBehaviour
             if (isSkip)
             {
                 tmp.text = complete;
-                scrollRect.verticalNormalizedPosition = 0f;
                 Canvas.ForceUpdateCanvases();
+                var contentRect = scrollRect.content as RectTransform;
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+                scrollRect.verticalNormalizedPosition = 0f;
                 break;
             }
-            scrollRect.verticalNormalizedPosition = 0f;
             Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+            scrollRect.verticalNormalizedPosition = 0f;
             tmp.text += fullText[i];
 
             yield return new WaitForSeconds(0.05f);
@@ -225,8 +228,9 @@ public class StoryDisplayManager : MonoBehaviour
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
-        scrollRect.verticalNormalizedPosition = 0f;
         Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+        scrollRect.verticalNormalizedPosition = 0f;
 
         // 타이핑이 끝난 후에 선택지 출력
         if (!string.IsNullOrEmpty(currentStory.Choice1_Text) ||

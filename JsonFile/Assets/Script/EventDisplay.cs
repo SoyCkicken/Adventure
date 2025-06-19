@@ -337,11 +337,16 @@ public class EventDisplay : MonoBehaviour
             if (isSkip)
             {
                 tmp.text = complete;
+                Canvas.ForceUpdateCanvases();
+                var contentRect = scrollRect.content as RectTransform;
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+                scrollRect.verticalNormalizedPosition = 0f;
                 break;
             }
             tmp.text += fullText[i];
-            scrollRect.verticalNormalizedPosition = 0f;
             Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+            scrollRect.verticalNormalizedPosition = 0f;
             scrollRect.verticalNormalizedPosition = 0f;
             yield return new WaitForSeconds(0.05f);
         }
@@ -349,8 +354,8 @@ public class EventDisplay : MonoBehaviour
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
-        scrollRect.verticalNormalizedPosition = 0f;
         Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
         scrollRect.verticalNormalizedPosition = 0f;
 
         // 타이핑이 끝난 후에 선택지 출력
