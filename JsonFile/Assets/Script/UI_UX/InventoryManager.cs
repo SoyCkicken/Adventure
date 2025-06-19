@@ -62,7 +62,8 @@ public class InventoryManager : MonoBehaviour
         unequipButton.onClick.AddListener(OnClickUnequip);
         useButton.onClick.AddListener(OnClickUse);
         removeButton.onClick.AddListener(OnClickRemove);
-
+        //기본적으로 비활성화 시켜둠
+        itemDetailPanel.SetActive(false);
         OnInventoryButton.onClick.AddListener(() =>
         {
             OffInventoryButton.gameObject.SetActive(true);
