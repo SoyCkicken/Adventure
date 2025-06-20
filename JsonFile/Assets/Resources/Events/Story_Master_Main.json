@@ -7,7 +7,7 @@
       "Scene_Code": "MainScene_1_1_1",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_1",
-      "Main_Effect": null,
+      "Main_Effect": "[\"Effect_001\",\"Effect_002\",\"Effect_004\"]",
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,

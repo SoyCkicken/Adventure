@@ -119,6 +119,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else if (matchingScript != null)
         {
+            Debug.Log(matchingScript);
             switch (matchingScript.displayType)
             {
                 case "IMAGE":
@@ -246,70 +247,156 @@ public class StoryDisplayManager : MonoBehaviour
     }
 
     // 선택지 버튼 세팅
+    //private void SetupChoices()
+    //{
+    //    List<(string destCode, string displayText, int choiceNo)> availableChoices = new();
+    //    foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
+
+    //    if (!string.IsNullOrEmpty(currentStory.Choice1_Text))
+    //        availableChoices.Add((currentStory.Choice1_Text, GetDisplayTextFromScript(currentStory.Choice1_Text, scriptEventsCache), 1));
+    //    if (!string.IsNullOrEmpty(currentStory.Choice2_Text))
+    //        availableChoices.Add((currentStory.Choice2_Text, GetDisplayTextFromScript(currentStory.Choice2_Text, scriptEventsCache), 2));
+    //    if (!string.IsNullOrEmpty(currentStory.Choice3_Text))
+    //        availableChoices.Add((currentStory.Choice3_Text, GetDisplayTextFromScript(currentStory.Choice3_Text, scriptEventsCache), 3));
+
+    //    var successRateList = jsonManager.GetSuccessRatesMainByScene(currentStory.Scene_Code);
+
+    //    foreach (var (destCode, displayText, choiceNo) in availableChoices)
+    //    {
+    //        GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
+    //        TMP_Text btnText = buttonObj.GetComponentInChildren<TMP_Text>();
+    //        if (btnText != null) btnText.text = displayText;
+
+    //        var rateData = successRateList.FirstOrDefault(r => r.Choice_No == choiceNo);
+    //        Button btn = buttonObj.GetComponent<Button>();
+    //        btn.onClick.AddListener(() =>
+    //        {
+    //            if (rateData != null)
+    //            {
+    //                float rate = EvaluateFormula(rateData.Success_Formula);
+    //                bool isSuccess = UnityEngine.Random.value < rate;
+    //                Debug.Log($"성공 했는지 실패 했는지 여부 :{isSuccess}");
+    //                string nextCode = isSuccess ? rateData.Success_Next_Script : rateData.Fail_Next_Script;
+    //                OnChoiceSelected(nextCode);
+    //            }
+    //            else
+    //            {
+    //                OnChoiceSelected(destCode);
+    //            }
+    //        });
+    //    }
+    //}
+    //void OnChoiceSelected(string newSceneCode)
+    //{
+    //    // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
+    //    if (newSceneCode.StartsWith("MainScript"))
+    //    {
+    //        newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
+    //        //버튼 눌렸으면 삭제 시킴
+    //        foreach (Transform child in choiceButtonParent)
+    //        {
+    //            Destroy(child.gameObject);
+    //        }
+    //    }
+
+    //    Story_Master_Main nextStory = FindStoryBySceneCode(newSceneCode);
+    //    if (nextStory != null)
+    //    {
+    //        currentStory = nextStory;
+    //        DisplayCurrentStory();
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning("해당 Scene_Code를 가진 스토리를 찾을 수 없습니다: " + newSceneCode);
+    //    }
+
+    //}
     private void SetupChoices()
     {
-        List<(string destCode, string displayText, int choiceNo)> availableChoices = new();
-        foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
+        // 기존 버튼 클리어
+        foreach (Transform t in choiceButtonParent)
+            Destroy(t.gameObject);
 
-        if (!string.IsNullOrEmpty(currentStory.Choice1_Text))
-            availableChoices.Add((currentStory.Choice1_Text, GetDisplayTextFromScript(currentStory.Choice1_Text, scriptEventsCache), 1));
-        if (!string.IsNullOrEmpty(currentStory.Choice2_Text))
-            availableChoices.Add((currentStory.Choice2_Text, GetDisplayTextFromScript(currentStory.Choice2_Text, scriptEventsCache), 2));
-        if (!string.IsNullOrEmpty(currentStory.Choice3_Text))
-            availableChoices.Add((currentStory.Choice3_Text, GetDisplayTextFromScript(currentStory.Choice3_Text, scriptEventsCache), 3));
-
+        // 성공 확률 데이터
         var successRateList = jsonManager.GetSuccessRatesMainByScene(currentStory.Scene_Code);
 
-        foreach (var (destCode, displayText, choiceNo) in availableChoices)
+        // 1~3번 선택지 반복 처리
+        for (int i = 1; i <= 3; i++)
         {
-            GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
-            TMP_Text btnText = buttonObj.GetComponentInChildren<TMP_Text>();
-            if (btnText != null) btnText.text = displayText;
+            // Choice#_Text 필드 읽기
+            var choiceText = i == 1 ? currentStory.Choice1_Text
+                            : i == 2 ? currentStory.Choice2_Text
+                            : currentStory.Choice3_Text;
+            if (string.IsNullOrEmpty(choiceText))
+                continue;
 
-            var rateData = successRateList.FirstOrDefault(r => r.Choice_No == choiceNo);
-            Button btn = buttonObj.GetComponent<Button>();
+            // 화면에 보여줄 문자열
+            var display = GetDisplayTextFromScript(choiceText, scriptEventsCache);
+
+            // 우선 사용해야 할 Next_Scene (override)
+            var overrideScene = i == 1 ? currentStory.Choice1_Next_Scene
+                              : i == 2 ? currentStory.Choice2_Next_Scene
+                              : currentStory.Choice3_Next_Scene;
+            overrideScene = overrideScene?.Trim();
+
+            // 성공률이 있을 경우 가져오기
+            var rateData = successRateList.FirstOrDefault(r => r.Choice_No == i);
+
+            // 버튼 생성
+            var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
+            var btn = go.GetComponent<Button>();
+            var txt = go.GetComponentInChildren<TMP_Text>();
+            txt.text = display;
+
             btn.onClick.AddListener(() =>
             {
+                string nextCode = null;
+
                 if (rateData != null)
                 {
+                    // 성공/실패 분기
                     float rate = EvaluateFormula(rateData.Success_Formula);
-                    bool isSuccess = UnityEngine.Random.value < rate;
-                    Debug.Log($"성공 했는지 실패 했는지 여부 :{isSuccess}");
-                    string nextCode = isSuccess ? rateData.Success_Next_Script : rateData.Fail_Next_Script;
-                    OnChoiceSelected(nextCode);
+                    bool ok = UnityEngine.Random.value < rate;
+                    nextCode = ok
+                        ? rateData.Success_Next_Script?.Trim()
+                        : rateData.Fail_Next_Script?.Trim();
                 }
-                else
-                {
-                    OnChoiceSelected(destCode);
-                }
+
+                // 성공률 분기가 없거나 분기 결과가 비어있으면 overrideScene 사용
+                if (string.IsNullOrEmpty(nextCode))
+                    nextCode = !string.IsNullOrEmpty(overrideScene)
+                        ? overrideScene
+                        : choiceText.Trim();
+
+                OnChoiceSelected(nextCode);
             });
         }
     }
-    void OnChoiceSelected(string newSceneCode)
-    {
-        // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
-        if (newSceneCode.StartsWith("MainScript"))
-        {
-            newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
-            //버튼 눌렸으면 삭제 시킴
-            foreach (Transform child in choiceButtonParent)
-            {
-                Destroy(child.gameObject);
-            }
-        }
 
-        Story_Master_Main nextStory = FindStoryBySceneCode(newSceneCode);
-        if (nextStory != null)
+    private void OnChoiceSelected(string newSceneCode)
+    {
+        // MainScript → MainScene 교정
+        if (newSceneCode.StartsWith("MainScript"))
+            newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
+
+        // 버튼 제거
+        foreach (Transform t in choiceButtonParent)
+            Destroy(t.gameObject);
+
+        // 실제 다음 스토리 찾기
+        var next = storyList.FirstOrDefault(s => s.Scene_Code.Trim() == newSceneCode.Trim());
+        if (next != null)
         {
-            currentStory = nextStory;
+            currentStory = next;
             DisplayCurrentStory();
         }
         else
         {
-            Debug.LogWarning("해당 Scene_Code를 가진 스토리를 찾을 수 없습니다: " + newSceneCode);
+            Debug.LogWarning($"선택된 씬을 찾을 수 없습니다: {newSceneCode}");
+            onCompleteCallback?.Invoke();
         }
-
     }
+
     Story_Master_Main FindStoryBySceneCode(string sceneCode)
     {
         return storyList.FirstOrDefault(s => s.Scene_Code.Trim() == sceneCode.Trim());

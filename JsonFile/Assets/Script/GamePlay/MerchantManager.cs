@@ -20,8 +20,9 @@ public class MerchantManager : MonoBehaviour
 
     [Header("UI")]
     public Transform itemGridParent;
-    public GameObject merchantSlotPrefab;
-    public GameObject merchantDetailPanel;
+    public GameObject Merchant_Invantory;
+    public GameObject MerchantSlotPrefab;
+    public GameObject MerchantDetailPanel;
     [Header("패널에 들어가 있는 부속품들")]
     public TMP_Text MerchantItem_Name;
     public TMP_Text MerchantItem_Decription;
@@ -41,8 +42,9 @@ public class MerchantManager : MonoBehaviour
 
     void Start()
     {
-        MerchantItem_ClearButton.onClick.AddListener(() => { merchantDetailPanel.gameObject.SetActive(false); });
-        merchantDetailPanel.SetActive(false);
+        MerchantItem_ClearButton.onClick.AddListener(() => { MerchantDetailPanel.gameObject.SetActive(false); });
+        
+        
         // 1) JsonManager 에서 상인용 리스트 가져오기
         allItems = jsonManager.GetBlackSmiths(merchantKey);
         if (allItems == null || allItems.Count == 0)
@@ -59,13 +61,15 @@ public class MerchantManager : MonoBehaviour
         
         PopulateShop();
         RefreshGoldUI();
+        MerchantDetailPanel.SetActive(false);
+        Merchant_Invantory.SetActive(false);
     }
 
     void PopulateShop()
     {
         foreach (var bs in shopItems)
         {
-            var go = Instantiate(merchantSlotPrefab, itemGridParent);
+            var go = Instantiate(MerchantSlotPrefab, itemGridParent);
             var slot = go.GetComponent<MerchantSlotUI>();
             slot.Setup(bs, OnClickMerchantItem);
             itemButtons[bs] = go;
@@ -77,7 +81,7 @@ public class MerchantManager : MonoBehaviour
         Debug.Log("정보창 출력 부분");
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
         var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-        merchantDetailPanel.SetActive(true);
+        MerchantDetailPanel.SetActive(true);
 
         if (bs.Item_Type == "Weapon")
         {
@@ -138,7 +142,7 @@ public class MerchantManager : MonoBehaviour
         //}
         var slotUI = itemButtons[bs].GetComponent<MerchantSlotUI>();
         slotUI.MarkSold();
-        merchantDetailPanel.SetActive(false);
+        MerchantDetailPanel.SetActive(false);
         Debug.Log($"[{bs.Weapon_Name}] 구매 완료! 남은 골드: {playerState.Experience}");
     }
 

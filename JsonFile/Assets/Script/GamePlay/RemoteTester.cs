@@ -28,7 +28,7 @@ public class RemoteTester : MonoBehaviour
     public JsonManager jsonManager;
 
     // 가상 시나리오 / 적 ID 리스트
-    private List<string> mainStories = new List<string> { "MainScene_1", "MainScene_2", "MainScene_3" };
+    private List<string> mainStories = new List<string> { "MainScene_1", "MainScene_2", "MainScene_3", "MainScene_4" };
     private List<string> randomStories = new List<string> { "EventScene_1", "EventScene_2", "EventScene_3", "EventScene_4" };
     private List<string> enemyIDs = new List<string> { "monster_001", "monster_002", "monster_003" };
     private List<string> WeaponID = new List<string>();

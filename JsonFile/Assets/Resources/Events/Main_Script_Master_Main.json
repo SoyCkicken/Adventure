@@ -567,7 +567,7 @@
       "Script_Index": 9.0,
       "Script_Code": "MainScript_1_3_9",
       "KOR": "monster_001",
-      "displayType": "Battle",
+      "displayType": "BATTLE",
       "StoryBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null

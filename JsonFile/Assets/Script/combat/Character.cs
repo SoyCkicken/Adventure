@@ -25,9 +25,9 @@ namespace MyGame
         public PlayerState playerState;
         public int MaxHealth = 50;
         public int Health;
-        public int damage = 10;
-        public float speed = 1f;
-        public int armor = 5;
+        public int damage;
+        public float speed;
+        public int armor;
         public int CitChance = 10; //일반적인 크리티컬 확률
       
         public string weapon_Name;

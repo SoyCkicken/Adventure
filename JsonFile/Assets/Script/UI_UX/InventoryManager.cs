@@ -363,6 +363,7 @@ public class InventoryManager : MonoBehaviour
 
     // 3) 스탯 등 초기화 & 재적용
     equipmentSystem.Init();
+        Debug.Log("인벤토리에서 초기화 됨");
     LoadInventory();
     updateDPS_MaxHealth();
     ShowItemDetail(selectedItem);

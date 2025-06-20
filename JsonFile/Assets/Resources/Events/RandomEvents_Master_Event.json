@@ -336,7 +336,7 @@
       "Random_Event_ID": "EventScene_3_16",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_3_16",
-      "Choice1_Text": null,
+      "Choice1_Text": "EventScript_3_17",
       "Choice2_Text": null,
       "Choice3_Text": null
     },
@@ -346,7 +346,7 @@
       "Random_Event_ID": "EventScene_3_17",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_3_17",
-      "Choice1_Text": "EventScript_3_17",
+      "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
     },
