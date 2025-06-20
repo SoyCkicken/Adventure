@@ -180,3 +180,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buyButton: {fileID: 7723920057672879839}
   spriteBank: {fileID: 0}
+  _icon: {fileID: 3572017501750453876}

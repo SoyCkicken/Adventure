@@ -13,6 +13,9 @@ public class MerchantSlotUI : MonoBehaviour
     //[SerializeField] TMP_Text priceText;
     [SerializeField] Button buyButton;
     public SpriteBank spriteBank;
+    BlackSmith _data;
+    Image _icon;
+    TMP_Text _priceText;
 
 
     public void Awake()
@@ -21,15 +24,19 @@ public class MerchantSlotUI : MonoBehaviour
             spriteBank = FindObjectOfType<SpriteBank>();
 
     }
-
-    private BlackSmith item;
     public void Setup(BlackSmith bs, Action<BlackSmith> onClick)
     {
-        item = bs;
+        _data = bs;
         //nameText.text = bs.Weapon_Name;
         //priceText.text = $"{bs.Item_Price:0.##}G";
         // 아이콘은 SpriteBank 로 로드하거나 미리 연결해두세요.
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(() => onClick(item));
+        buyButton.onClick.AddListener(() => onClick(_data));
+    }
+
+    public void MarkSold()
+    {
+        _data = null;
+        buyButton.interactable = false;
     }
 }
