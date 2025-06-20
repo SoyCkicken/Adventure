@@ -130,6 +130,11 @@ public class StoryDisplayManager : MonoBehaviour
                     Debug.Log("텍스트 생성에 들어왔습니다");
                     HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock);
                     break;
+                case "CLAER":
+                    Debug.Log("클리어 후 텍스트 생성에 들어왔습니다");
+                    ClearContent();
+                    HandleTextDisplayWithChoice(matchingScript.KOR, null);
+                    break;
                 case "BATTLE":
                     Debug.Log("배틀에 들어왔습니다");
                     Debug.Log(matchingScript.KOR);
