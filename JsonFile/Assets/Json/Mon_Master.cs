@@ -1,7 +1,6 @@
-// 자동 생성된 클래스 (엑셀 시트명 기반)
 using System;
-
-[System.Serializable]
+using System.Collections.Generic;
+[Serializable]
 public class Mon_Master
 {
     public string Mon_ID;

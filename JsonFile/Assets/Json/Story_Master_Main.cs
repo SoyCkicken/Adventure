@@ -1,7 +1,6 @@
-// 자동 생성된 클래스 (엑셀 시트명 기반)
 using System;
-
-[System.Serializable]
+using System.Collections.Generic;
+[Serializable]
 public class Story_Master_Main
 {
     public int Chapter_Index;
@@ -10,7 +9,7 @@ public class Story_Master_Main
     public string Scene_Code;
     public string Next_Scene;
     public string Script_Text;
-    public string Main_Effect;
+    public string[] Main_Effect;
     public string Choice1_Text;
     public string Choice1_Next_Scene;
     public string Choice2_Text;
