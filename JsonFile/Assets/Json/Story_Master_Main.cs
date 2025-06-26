@@ -9,7 +9,7 @@ public class Story_Master_Main
     public string Scene_Code;
     public string Next_Scene;
     public string Script_Text;
-    public string[] Main_Effect;
+    public List<EffectTrigger> Main_Effect;
     public string Choice1_Text;
     public string Choice1_Next_Scene;
     public string Choice2_Text;

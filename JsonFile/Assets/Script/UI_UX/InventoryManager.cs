@@ -26,6 +26,7 @@ public class InventoryManager : MonoBehaviour
     public Button removeButton;
     public TextMeshProUGUI DPSText;
     public TextMeshProUGUI HPText;
+    public TMP_Text SoulTEXT;
     public GameObject pendingItemUIPrefab;
     public Transform pendingItemUIParent;
     
@@ -459,7 +460,10 @@ public class InventoryManager : MonoBehaviour
     {
         return Mathf.Clamp(10 + (strength / 3), minSlotCount, maxSlotCount);
     }
-
+    public void updateSoulText()
+    {
+        SoulTEXT.text = $"Gold: {playerState.Experience:0}";
+    }
     public void OnClickRemove()
     {
         if (selectedItem == null) return;

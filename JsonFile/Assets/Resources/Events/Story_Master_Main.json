@@ -7,12 +7,7 @@
       "Scene_Code": "MainScene_1_1_1",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_1",
-      "Main_Effect": [
-        "Effect_001",
-        "Effect_002",
-        "Effect_004",
-        ""
-      ],
+      "Main_Effect": null,
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -42,7 +37,21 @@
       "Scene_Code": "MainScene_1_1_3",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_3",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": 100
+        },
+        {
+          "ID": "Effect_002",
+          "Value": -1
+        },
+        {
+          "ID": "Effect_003",
+          "Code": "Weapon_005",
+          "Value": 1
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,

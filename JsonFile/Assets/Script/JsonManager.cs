@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -539,6 +540,40 @@ public class JsonManager : MonoBehaviour
 
     // 전체 로드된 Story_Master 파일명 리스트
     public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);
+    public ItemData GetItemDataFromCode(string code)
+    {
+        if (string.IsNullOrEmpty(code)) return null;
+
+        if (code.StartsWith("Weapon_"))
+        {
+            var weapon = GetWeaponMasters("Weapon_Master").FirstOrDefault(w => w.Weapon_ID == code);
+            if (weapon != null)
+            {
+                return new ItemData
+                {
+                    Item_ID = weapon.Weapon_ID,
+                    Item_Name = weapon.Weapon_Name,
+                    Item_Type = weapon.ItemType
+                };
+            }
+        }
+        else if (code.StartsWith("Armor_"))
+        {
+            var armor = GetArmorMasters("Armor_Master").FirstOrDefault(a => a.Armor_ID == code);
+            if (armor != null)
+            {
+                return new ItemData
+                {
+                    Item_ID = armor.Armor_ID,
+                    Item_Name = armor.Armor_NAME,
+                    Item_Type = armor.ItemType
+                };
+            }
+        }
+
+        // 기타 타입 확장 가능
+        return null;
+    }
 }
 
 /// <summary>

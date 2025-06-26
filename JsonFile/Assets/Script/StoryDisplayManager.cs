@@ -34,6 +34,7 @@ public class StoryDisplayManager : MonoBehaviour
     public SpriteBank spriteBank;
     private Dictionary<string, List<Main_SuccessRate_Master_Main>> _mainSuccessRateByScene = new();
     private List<Main_Script_Master_Main> scriptEventsCache;
+    public InventoryManager inventoryManager; // 아이템 지급을 위해 필요
     public event Action<string> OnBattleJoin;
     [Header("UI References")]
     public List<GameObject> Testblocks = new List<GameObject>();
@@ -110,6 +111,13 @@ public class StoryDisplayManager : MonoBehaviour
         //Debug.Log(matchingScript.KOR);
         GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
         Debug.Log($"[MainStory] currentIndex: {currentIndex}, listCount: {storyList.Count}");
+        if (currentStory.Main_Effect != null && currentStory.Main_Effect.Count > 0)
+        {
+            Debug.Log("이펙트 테스트에 들어오긴 했음");
+            ApplyEffects(currentStory.Main_Effect);
+
+        }
+
         if (matchingScript == null)
         {
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -512,6 +520,43 @@ public class StoryDisplayManager : MonoBehaviour
     }
     //선택지에 확률 적용
     //지금 같은 경우 확률이 버튼에 출력이 되고 있지는 않음
+
+    private void ApplyEffects(List<EffectTrigger> effects)
+    {
+        foreach (var effect in effects)
+        {
+            switch (effect.ID)
+            {
+                case "Effect_001":
+                    playerState.Experience += effect.Value;
+                    Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
+                    inventoryManager.updateSoulText();
+                    break;
+
+                case "Effect_002":
+                    playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - Mathf.Abs(effect.Value));
+                    Debug.Log($"체력 {effect.Value} 감소 → 현재: {playerState.CurrentHealth}");
+                    break;
+
+                case "Effect_003": // 아이템 추가
+                    ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
+                    Debug.Log($"{item.Item_Name} , {item.Item_ID} , {item.Item_Type}");
+                    if (item != null)
+                    {
+                        inventoryManager.AddItemToInventory(item); // 또는 AddItem(item)
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
+                    }
+                    break;
+
+                default:
+                    Debug.LogWarning($"알 수 없는 이펙트 ID: {effect.ID}");
+                    break;
+            }
+        }
+    }
     private float EvaluateFormula(string formula)
     {
         if (string.IsNullOrEmpty(formula)) return 0f;

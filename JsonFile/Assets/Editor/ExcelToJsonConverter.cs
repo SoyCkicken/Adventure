@@ -401,19 +401,19 @@ public class ExcelAutoGenerator : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.Label("\uD83D\uDCC1 \uD3F4\uB354 \uACBD\uB85C \uC124\uC815", EditorStyles.boldLabel);
+        GUILayout.Label("📁 폴더 경로 설정", EditorStyles.boldLabel);
 
-        excelFolderPath = EditorGUILayout.TextField("\uC5D0\uD070 \uD30C\uC77C \uD3F4\uB354", excelFolderPath);
-        jsonOutputFolder = EditorGUILayout.TextField("JSON \uC800\uC7A5 \uD3F4\uB354", jsonOutputFolder);
-        classOutputFolder = EditorGUILayout.TextField("C# \uD074\uB798\uC2A4 \uC800\uC7A5 \uD3F4\uB354", classOutputFolder);
+        excelFolderPath = EditorGUILayout.TextField("엑셀 파일 폴더", excelFolderPath);
+        jsonOutputFolder = EditorGUILayout.TextField("JSON 저장 폴더", jsonOutputFolder);
+        classOutputFolder = EditorGUILayout.TextField("C# 클래스 저장 폴더", classOutputFolder);
 
-        if (GUILayout.Button("\uD3F4\uB354 \uB2E4\uC2DC \uC2A4\uCE94")) ScanExcelFiles();
+        if (GUILayout.Button("폴더 다시 스캔")) ScanExcelFiles();
 
-        GUILayout.Label($"\uC778\uC2DC\uB41C \uC5D0\uD070 \uD30C\uC77C \uC218: {excelFilePaths.Count}", EditorStyles.label);
+        GUILayout.Label($"인식된 엑셀 파일 수: {excelFilePaths.Count}", EditorStyles.label);
         foreach (var file in excelFilePaths)
             EditorGUILayout.LabelField("- " + file);
 
-        if (GUILayout.Button("\uBAA8\uB4E0 \uC5D0\uD070 \uD30C\uC77C \uBCC0\uD658 (\uC2DC\uD2B8\uBCC4 JSON + Class)"))
+        if (GUILayout.Button("모든 엑셀 파일 변환 (시트별 JSON + Class)"))
         {
             foreach (var file in excelFilePaths)
                 ConvertExcel(file);
@@ -431,6 +431,7 @@ public class ExcelAutoGenerator : EditorWindow
             if (file.EndsWith(".xls") || file.EndsWith(".xlsx"))
                 excelFilePaths.Add(file);
         }
+        Debug.Log("모든 파일을 스캔 완료 했습니다");
     }
 
     private void ConvertExcel(string path)
@@ -444,6 +445,7 @@ public class ExcelAutoGenerator : EditorWindow
         {
             CreateJson(table);
             CreateCSharpClass(table);
+            Debug.Log($"{table.TableName}를 변환 중입니다");
         }
     }
 
@@ -517,7 +519,7 @@ public class ExcelAutoGenerator : EditorWindow
         {
             string val = row[column]?.ToString();
             if (string.IsNullOrWhiteSpace(val)) continue;
-            if (val.TrimStart().StartsWith("[")) return "List<EffectTrigger>"; // 커스텀 객체 리스트
+            if (val.TrimStart().StartsWith("[")) return "List<EffectTrigger>";
         }
 
         return InferSimpleType(table, column);
@@ -542,3 +544,5 @@ public class ExcelAutoGenerator : EditorWindow
 
     private static string SanitizeVariableName(string name) => System.Text.RegularExpressions.Regex.Replace(name.Replace(" ", "_").Replace("-", "_"), @"[^a-zA-Z0-9_]", "");
 }
+
+

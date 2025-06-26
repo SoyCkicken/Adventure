@@ -42,10 +42,10 @@ public class PlayerState : MonoBehaviour
     public int CHA = 5;
     [SerializeField]
     public int Health = 5;
-    public int CurrentHealth;
-    public int HP = 5;
-    public int CurrentMental;
-    public int MP = 5;
+    public int CurrentHealth = 0;
+    public int HP = 0;
+    public int CurrentMental = 0;
+    public int MP = 0;
     public int Level = 1;
     [Header("여기부터 능력치 UI관련되어 있는 옵션들입니다")]
     public GameObject PlayerStateObject;
@@ -81,19 +81,8 @@ public class PlayerState : MonoBehaviour
     private void Awake()
     {
         PlayerStateObject.SetActive(false);
-        CurrentHealth = 5;
-        CurrentMental = 5;
-        updateState();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (CurrentHealth >= HP)
-            CurrentHealth = HP;
-        if (CurrentMental >= MP)
-            CurrentMental = MP;
-        //최소 수치 보장
+        //시작할때 체력 제한을 두고
         if (Health / 3 >= 3)
         {
             if (Health >= 15)
@@ -119,25 +108,19 @@ public class PlayerState : MonoBehaviour
         {
             MP = 3;
         }
+        CurrentHealth = HP;
+        CurrentMental = MP;
+        updateState();
+    }
 
-        if (point > 0)
-        {
-            CloseButton.SetActive(false);
-            foreach (GameObject b in buttons)
-            {
-                b.SetActive(true);
-            }
-        }
-        else
-        {
-            CloseButton.SetActive(true);
-            foreach (GameObject b in buttons)
-            {
-                b.SetActive(false);
-                
-            }
-        }
-
+    // Update is called once per frame
+    void Update()
+    {
+        if (CurrentHealth >= HP)
+            CurrentHealth = HP;
+        if (CurrentMental >= MP)
+            CurrentMental = MP;
+        //최소 수치 보장
     }
     public void levelUp()
     {
@@ -217,6 +200,18 @@ public class PlayerState : MonoBehaviour
     {
         INT++;
         point--;
+        if (INT / 3 >= 3)
+        {
+            if (INT >= 15)
+            {
+                MP = 5;
+            }
+            MP = INT / 3;
+        }
+        else
+        {
+            MP = 3;
+        }
         updateState();
     }
     public void AddMAG()
@@ -229,6 +224,19 @@ public class PlayerState : MonoBehaviour
     {
         Health++;
         point--;
+        if (Health / 3 >= 3)
+        {
+            if (Health >= 15)
+            {
+                HP = 5;
+            }
+            HP = Health / 3;
+
+        }
+        else
+        {
+            HP = 3;
+        }
         updateState();
     }
     public void AddDivinity()
