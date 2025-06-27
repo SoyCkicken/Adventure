@@ -791,6 +791,61 @@
       "StoryBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 5.0,
+      "Script_Index": 1.0,
+      "Script_Code": "MainScript_1_5_1",
+      "KOR": "상인을 만났다",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 5.0,
+      "Script_Index": 2.0,
+      "Script_Code": "MainScript_1_5_2",
+      "KOR": "거래를 한다",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 5.0,
+      "Script_Index": 3.0,
+      "Script_Code": "MainScript_1_5_3",
+      "KOR": "그냥 간다",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 5.0,
+      "Script_Index": 4.0,
+      "Script_Code": "MainScript_1_5_4",
+      "KOR": "General",
+      "displayType": "MERCHANT",
+      "StoryBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 5.0,
+      "Script_Index": 5.0,
+      "Script_Code": "MainScript_1_5_5",
+      "KOR": "다음 스토리로 넘어감",
+      "displayType": "TEXT",
+      "StoryBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
     }
   ]
 }

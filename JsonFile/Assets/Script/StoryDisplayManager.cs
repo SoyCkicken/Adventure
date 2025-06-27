@@ -2,12 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Runtime.CompilerServices;
-using UnityEngine.U2D;
+
 
 
 public class StoryDisplayManager : MonoBehaviour
@@ -150,6 +148,10 @@ public class StoryDisplayManager : MonoBehaviour
                     loseScriptCode = matchingScript.NEXTLOSE?.Trim();
                     OnBattleJoin?.Invoke(matchingScript.KOR);
                     break;
+                case "MERCHANT":
+                    string merchantKey = matchingScript.KOR.Trim();  // KOR이 실제 키값임
+                    OpenMerchant(merchantKey);
+                    break;
             }
         }
         else
@@ -258,72 +260,6 @@ public class StoryDisplayManager : MonoBehaviour
             NextScene();
         }
     }
-
-    // 선택지 버튼 세팅
-    //private void SetupChoices()
-    //{
-    //    List<(string destCode, string displayText, int choiceNo)> availableChoices = new();
-    //    foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
-
-    //    if (!string.IsNullOrEmpty(currentStory.Choice1_Text))
-    //        availableChoices.Add((currentStory.Choice1_Text, GetDisplayTextFromScript(currentStory.Choice1_Text, scriptEventsCache), 1));
-    //    if (!string.IsNullOrEmpty(currentStory.Choice2_Text))
-    //        availableChoices.Add((currentStory.Choice2_Text, GetDisplayTextFromScript(currentStory.Choice2_Text, scriptEventsCache), 2));
-    //    if (!string.IsNullOrEmpty(currentStory.Choice3_Text))
-    //        availableChoices.Add((currentStory.Choice3_Text, GetDisplayTextFromScript(currentStory.Choice3_Text, scriptEventsCache), 3));
-
-    //    var successRateList = jsonManager.GetSuccessRatesMainByScene(currentStory.Scene_Code);
-
-    //    foreach (var (destCode, displayText, choiceNo) in availableChoices)
-    //    {
-    //        GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceButtonParent);
-    //        TMP_Text btnText = buttonObj.GetComponentInChildren<TMP_Text>();
-    //        if (btnText != null) btnText.text = displayText;
-
-    //        var rateData = successRateList.FirstOrDefault(r => r.Choice_No == choiceNo);
-    //        Button btn = buttonObj.GetComponent<Button>();
-    //        btn.onClick.AddListener(() =>
-    //        {
-    //            if (rateData != null)
-    //            {
-    //                float rate = EvaluateFormula(rateData.Success_Formula);
-    //                bool isSuccess = UnityEngine.Random.value < rate;
-    //                Debug.Log($"성공 했는지 실패 했는지 여부 :{isSuccess}");
-    //                string nextCode = isSuccess ? rateData.Success_Next_Script : rateData.Fail_Next_Script;
-    //                OnChoiceSelected(nextCode);
-    //            }
-    //            else
-    //            {
-    //                OnChoiceSelected(destCode);
-    //            }
-    //        });
-    //    }
-    //}
-    //void OnChoiceSelected(string newSceneCode)
-    //{
-    //    // 만약 newSceneCode가 "MainScript"로 시작하면 "MainScene"으로 변환
-    //    if (newSceneCode.StartsWith("MainScript"))
-    //    {
-    //        newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
-    //        //버튼 눌렸으면 삭제 시킴
-    //        foreach (Transform child in choiceButtonParent)
-    //        {
-    //            Destroy(child.gameObject);
-    //        }
-    //    }
-
-    //    Story_Master_Main nextStory = FindStoryBySceneCode(newSceneCode);
-    //    if (nextStory != null)
-    //    {
-    //        currentStory = nextStory;
-    //        DisplayCurrentStory();
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("해당 Scene_Code를 가진 스토리를 찾을 수 없습니다: " + newSceneCode);
-    //    }
-
-    //}
     private void SetupChoices()
     {
         // 기존 버튼 클리어
@@ -682,6 +618,23 @@ public class StoryDisplayManager : MonoBehaviour
         return 0f;
     }
 
+    private void OpenMerchant(string key)
+    {
+        Debug.Log("상점 로드 시도");
+        var merchantManager = FindObjectOfType<MerchantManager>();
+        if (merchantManager != null)
+        {
+            Debug.Log("상점 로드 진행중");
+            ClearContent();
+            merchantManager.OpenShop(key, OnMerchantClosed);
+        }
+    }
+    private void OnMerchantClosed()
+    {
+        Debug.Log("상점 닫힘. 다음 스토리로 진행.");
+        NextScene(); // 또는 DisplayNextEvent 등
+    }
+    //리모컨에서 사용중인거
     public void LoadMainStory(int id)
     {
         var flowManager = FindObjectOfType<GameFlowManager>();

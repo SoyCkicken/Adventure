@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using MyGame;
+using UnityEngine.Timeline;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -172,6 +173,8 @@ public class InventoryManager : MonoBehaviour
     {
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
         var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+        var itemMasters = jsonManager.GetItemMasters("Item_Master");
+        
         selectedItem = item;
         itemDetailPanel.SetActive(true);
 
@@ -189,11 +192,19 @@ public class InventoryManager : MonoBehaviour
             itemDescText.text = armor?.Description;
             itemTypeText.text = "방어구";
         }
+        else if (item.Item_Type == "Consumable")
+        {
+            var Consumptionitem = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+            itemNameText.text = Consumptionitem?.Item_NAME;
+            itemDescText.text = Consumptionitem?.Item_Description;
+            itemTypeText.text = "소비 아이템";
+        }
         else
         {
-            itemNameText.text = item.Item_Name;
-            itemDescText.text = item.Description;
-            itemTypeText.text = "소비아이템";
+            var Normalitem = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+            itemNameText.text = Normalitem?.Item_NAME;
+            itemDescText.text = Normalitem?.Item_Description;
+            itemTypeText.text = "일반 아이템";
         }
 
         itemStatText.text = GetStatText(item);
@@ -211,6 +222,7 @@ public class InventoryManager : MonoBehaviour
                 equipButton.gameObject.SetActive(!isWeaponEquipped);
                 unequipButton.gameObject.SetActive(isWeaponEquipped);
                 removeButton.gameObject.SetActive (!isWeaponEquipped);
+                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 break;
 
             case "Armor":
@@ -218,10 +230,20 @@ public class InventoryManager : MonoBehaviour
                 equipButton.gameObject.SetActive(!isArmorEquipped);
                 unequipButton.gameObject.SetActive(isArmorEquipped);
                 removeButton.gameObject.SetActive(!isArmorEquipped);
+                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 break;
 
             case "Consumable":
                 useButton.gameObject.SetActive(true);
+                removeButton.gameObject.SetActive(true);
+                var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+                selectedItem.Option_1_ID = master.Item_Option1;
+                selectedItem.Option_Value1 = master.Option1_Value;
+                selectedItem.Option_2_ID = master.Item_Option2;
+                selectedItem.Option_Value2 = master.Option2_Value;
+                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                break;
+            case "Item":
                 removeButton.gameObject.SetActive(true);
                 break;
         }
@@ -304,66 +326,22 @@ public class InventoryManager : MonoBehaviour
     public void OnClickEquip()
     {
         if (selectedItem == null) return;
-
-        // 장착 시 기존 장비는 인벤토리로
-       
-        //if (selectedItem.Item_Type == "Weapon")
-        //{
-        //    //Debug.Log(selectedItem.Item_Type);
-            
-        //    if (weaponEquipSlot.CurrentItem != null &&
-        //        weaponEquipSlot.CurrentItem != selectedItem)
-        //    {
-        //        //Debug.Log(weaponEquipSlot.CurrentItem.Item_Type);
-        //        AddItemToInventory(weaponEquipSlot.CurrentItem);
-        //        player.RemoveBuffByItem(weaponEquipSlot.CurrentItem.Item_ID);
-        //        weaponEquipSlot.Clear();
-        //        //Debug.Log("무기가 장착 중이라서 장착 해제 처리됩니다");
-        //        //Debug.Log(player.CitChance);
-        //    }
-        //    weaponEquipSlot.Setup(selectedItem, ShowItemDetail);
-        //    inventoryItems.Remove(selectedItem);
-        //    player.weapon_Name = selectedItem.Item_ID;
-            
-        //}
-        //else if (selectedItem.Item_Type == "Armor")
-        //{
-        //    //Debug.Log(selectedItem.Item_Type);
-        //    if (armorEquipSlot.CurrentItem != null &&
-        //        armorEquipSlot.CurrentItem != selectedItem)
-        //    {
-        //        //Debug.Log(armorEquipSlot.CurrentItem.Item_Type);
-        //        AddItemToInventory(armorEquipSlot.CurrentItem);
-        //        player.RemoveBuffByItem(armorEquipSlot.CurrentItem.Item_ID);
-        //        armorEquipSlot.Clear();
-        //        //Debug.Log("방어구가 장착 중이라서 장착 해제 처리됩니다");
-        //        //Debug.Log(player.CitChance);
-        //    }
-        //    armorEquipSlot.Setup(selectedItem, ShowItemDetail);
-        //    inventoryItems.Remove(selectedItem);
-        //    player.armor_Name = selectedItem.Item_ID;
-        //}
-
-        //equipmentSystem.Init();
-        //LoadInventory();
-        //updateDPS_MaxHealth();
-        //ShowItemDetail(selectedItem);
-
         if (selectedItem.Item_Type == "Weapon")
-    {
+        {
         weaponEquipSlot.Setup(selectedItem, ShowItemDetail);
         inventoryItems.Remove(selectedItem);
         player.weapon_Name = selectedItem.Item_ID;
-    }
-    else if (selectedItem.Item_Type == "Armor")
-    {
+        }
+        else if (selectedItem.Item_Type == "Armor")
+        {
         armorEquipSlot.Setup(selectedItem, ShowItemDetail);
         inventoryItems.Remove(selectedItem);
         player.armor_Name = selectedItem.Item_ID;
-    }
+        }
+        
 
-    // 3) 스탯 등 초기화 & 재적용
-    equipmentSystem.Init();
+        // 3) 스탯 등 초기화 & 재적용
+        equipmentSystem.Init();
         Debug.Log("인벤토리에서 초기화 됨");
     LoadInventory();
     updateDPS_MaxHealth();
@@ -421,9 +399,10 @@ public class InventoryManager : MonoBehaviour
             }
             player.armor_Name = null;
         }
+       
 
 
-        equipmentSystem.Init();
+            equipmentSystem.Init();
         LoadInventory();
         updateDPS_MaxHealth();
         itemDetailPanel.SetActive(false);
@@ -433,20 +412,34 @@ public class InventoryManager : MonoBehaviour
     public void OnClickUse()
     {
         if (selectedItem == null || selectedItem.Item_Type != "Consumable") return;
+        var itemMasters = jsonManager.GetItemMasters("Item_Master");
+        var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+        //if (selectedItem.Heal_Value > 0)
+        //{
+        //    playerState.CurrentHealth = Mathf.Min(playerState.HP, playerState.CurrentHealth + selectedItem.Heal_Value);
+        //    Debug.Log("체력 회복 포션 사용 했습니다");
+        //}
 
-        if (selectedItem.Heal_Value > 0)
+        //if (selectedItem.Mental_Heal_Value > 0)
+        //{
+        //    playerState.CurrentMental = Mathf.Min(playerState.MP, playerState.CurrentMental + selectedItem.Mental_Heal_Value);
+        //    Debug.Log("정신력 회복 포션 사용 했습니다");
+        //}
+        //else
+        //{
+        //    Debug.Log("무언가를 사용했습니다");
+        //}
+        Debug.Log("아이템 사용을 시도 했습니다");
+        OptionManager.UseItem(selectedItem, new OptionContext
         {
-            playerState.CurrentHealth = Mathf.Min(playerState.HP, playerState.CurrentHealth + selectedItem.Heal_Value);
-            Debug.Log("체력 회복 포션 사용 했습니다");
-        }
+            User = player,
+            playerState = playerState,
+            option_ID = master.Item_Option1,
 
-        if (selectedItem.Mental_Heal_Value > 0)
-        {
-            playerState.CurrentMental = Mathf.Min(playerState.MP, playerState.CurrentMental + selectedItem.Mental_Heal_Value);
-            Debug.Log("정신력 회복 포션 사용 했습니다");
-        }
+            Value = master.Option1_Value
+        });
 
-        inventoryItems.Remove(selectedItem);
+            inventoryItems.Remove(selectedItem);
         itemDetailPanel.SetActive(false);
         LoadInventory();
     }

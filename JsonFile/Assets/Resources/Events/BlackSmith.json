@@ -2,133 +2,133 @@
   "BlackSmith": [
     {
       "Item_ID": "Weapon_001",
-      "Weapon_Name": "낡은 검",
+      "Item_Name": "낡은 검",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_002",
-      "Weapon_Name": "나무 활",
+      "Item_Name": "나무 활",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_003",
-      "Weapon_Name": "낡은 단검",
+      "Item_Name": "낡은 단검",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_004",
-      "Weapon_Name": "낡은 지팡이",
+      "Item_Name": "낡은 지팡이",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_005",
-      "Weapon_Name": "화염 검",
+      "Item_Name": "화염 검",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_006",
-      "Weapon_Name": "테스트 무기1",
+      "Item_Name": "테스트 무기1",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_007",
-      "Weapon_Name": "테스트 무기2",
+      "Item_Name": "테스트 무기2",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_008",
-      "Weapon_Name": "테스트 무기3",
+      "Item_Name": "테스트 무기3",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_009",
-      "Weapon_Name": "테스트 무기4",
+      "Item_Name": "테스트 무기4",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_010",
-      "Weapon_Name": "테스트 무기5",
+      "Item_Name": "테스트 무기5",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_011",
-      "Weapon_Name": "테스트 무기6",
+      "Item_Name": "테스트 무기6",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Weapon_012",
-      "Weapon_Name": "테스트 무기7",
+      "Item_Name": "테스트 무기7",
       "Item_Type": "Weapon",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Armor_001",
-      "Weapon_Name": "철 갑옷",
+      "Item_Name": "철 갑옷",
       "Item_Type": "Armor",
       "Item_Price": 10.0
     },
     {
       "Item_ID": "Armor_002",
-      "Weapon_Name": "가죽 갑옷",
+      "Item_Name": "가죽 갑옷",
       "Item_Type": "Armor",
       "Item_Price": 10.0
     },
     {
       "Item_ID": "Armor_003",
-      "Weapon_Name": "천 갑옷",
+      "Item_Name": "천 갑옷",
       "Item_Type": "Armor",
       "Item_Price": 10.0
     },
     {
       "Item_ID": "Armor_004",
-      "Weapon_Name": "테스트 갑옷1",
+      "Item_Name": "테스트 갑옷1",
       "Item_Type": "Armor",
       "Item_Price": 1.0
     },
     {
       "Item_ID": "Armor_005",
-      "Weapon_Name": "테스트 갑옷2",
+      "Item_Name": "테스트 갑옷2",
       "Item_Type": "Armor",
       "Item_Price": 2.0
     },
     {
       "Item_ID": "Armor_006",
-      "Weapon_Name": "테스트 갑옷3",
+      "Item_Name": "테스트 갑옷3",
       "Item_Type": "Armor",
       "Item_Price": 3.0
     },
     {
       "Item_ID": "Armor_007",
-      "Weapon_Name": "테스트 갑옷4",
+      "Item_Name": "테스트 갑옷4",
       "Item_Type": "Armor",
       "Item_Price": 4.0
     },
     {
       "Item_ID": "Armor_008",
-      "Weapon_Name": "테스트 갑옷5",
+      "Item_Name": "테스트 갑옷5",
       "Item_Type": "Armor",
       "Item_Price": 5.0
     },
     {
       "Item_ID": "Armor_009",
-      "Weapon_Name": "테스트 갑옷6",
+      "Item_Name": "테스트 갑옷6",
       "Item_Type": "Armor",
       "Item_Price": 6.0
     },
     {
       "Item_ID": "Armor_010",
-      "Weapon_Name": "테스트 갑옷7",
+      "Item_Name": "테스트 갑옷7",
       "Item_Type": "Armor",
       "Item_Price": 7.0
     }

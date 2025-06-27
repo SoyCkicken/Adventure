@@ -300,6 +300,7 @@ namespace MyGame
     //클래스들은 밑으로 뺐음
     public class OptionContext
     {
+        public PlayerState playerState; 
         public Character User;      // 더미로 붙일 Character 컴포넌트
         public Character Target;
         public int Value;

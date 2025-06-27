@@ -32,13 +32,13 @@
     },
     {
       "Option_ID": "Option_006",
-      "Option_Description": null,
+      "Option_Description": "체력을 회복합니다",
       "Effect_ID": "Effect_006",
       "Option_Type": null
     },
     {
       "Option_ID": "Option_007",
-      "Option_Description": null,
+      "Option_Description": "정신력을 회복합니다",
       "Effect_ID": "Effect_007",
       "Option_Type": null
     },

@@ -1,0 +1,124 @@
+{
+  "General": [
+    {
+      "Item_ID": "Item_001",
+      "Item_Name": "빨간 포션",
+      "Item_Type": "Consumable",
+      "Item_Price": 50.0
+    },
+    {
+      "Item_ID": "Item_002",
+      "Item_Name": "삽",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_003",
+      "Item_Name": "곡괭이",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_004",
+      "Item_Name": "나무사다리",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_005",
+      "Item_Name": "쓰레기",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_006",
+      "Item_Name": "도로롱인형",
+      "Item_Type": "Consumable",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_007",
+      "Item_Name": "테스트1",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_008",
+      "Item_Name": "테스트2",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_009",
+      "Item_Name": "테스트3",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_010",
+      "Item_Name": "테스트4",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_011",
+      "Item_Name": "테스트5",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_012",
+      "Item_Name": "테스트6",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_013",
+      "Item_Name": "테스트7",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_014",
+      "Item_Name": "테스트8",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_015",
+      "Item_Name": "테스트9",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_016",
+      "Item_Name": "테스트10",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_017",
+      "Item_Name": "테스트11",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_018",
+      "Item_Name": "테스트12",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_019",
+      "Item_Name": "테스트13",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    },
+    {
+      "Item_ID": "Item_020",
+      "Item_Name": "테스트14",
+      "Item_Type": "Item",
+      "Item_Price": 10.0
+    }
+  ]
+}

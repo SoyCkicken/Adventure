@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,11 +7,12 @@ using MyGame;
 using TMPro;
 using static UnityEditor.Progress;
 using Unity.VisualScripting;
+using UnityEngine.Timeline;
 
 public class MerchantManager : MonoBehaviour
 {
-    [Header("µ¥ÀÌÅÍ")]
-    [Tooltip("JsonManager.GetBlackSmiths ¿¡ ³Ñ±æ Å°(ÆÄÀÏ¸í)")]
+    [Header("ë°ì´í„°")]
+    [Tooltip("JsonManager.GetBlackSmiths ì— ë„˜ê¸¸ í‚¤(íŒŒì¼ëª…)")]
     public string merchantKey = "BlackSmith";
     public int displayCount = 10;
     public JsonManager jsonManager;
@@ -23,7 +24,7 @@ public class MerchantManager : MonoBehaviour
     public GameObject Merchant_Invantory;
     public GameObject MerchantSlotPrefab;
     public GameObject MerchantDetailPanel;
-    [Header("ÆĞ³Î¿¡ µé¾î°¡ ÀÖ´Â ºÎ¼ÓÇ°µé")]
+    [Header("íŒ¨ë„ì— ë“¤ì–´ê°€ ìˆëŠ” ë¶€ì†í’ˆë“¤")]
     public TMP_Text MerchantItem_Name;
     public TMP_Text MerchantItem_Decription;
     public TMP_Text MerchantItem_Type;
@@ -31,29 +32,38 @@ public class MerchantManager : MonoBehaviour
     public TMP_Text MerchantItem_Option;
     public Button MerchantItem_ClearButton;
     public Button MerchantItem_BuyButton;
+    public Button MerchantItem_CloseButton;
 
-
+    //ìƒì  ë‹«ì•˜ë‹¤ëŠ”ê²ƒì„ ë„˜ê¸¸ë ¤ê³  ë§Œë“  ì•¡ì…˜í•¨ìˆ˜
+    public Action onCloseCallback;
     public TMP_Text goldText;
 
-    private List<BlackSmith> allItems;
-    private List<BlackSmith> shopItems;
+    private List<MerchantItem> allItems;
+    private List<MerchantItem> shopItems;
 
-    private Dictionary<BlackSmith, GameObject> itemButtons = new();
+    private Dictionary<MerchantItem, GameObject> itemButtons = new();
 
     void Start()
     {
+        //íŒ¨ë„ ë‹«ê¸°
         MerchantItem_ClearButton.onClick.AddListener(() => { MerchantDetailPanel.gameObject.SetActive(false); });
-        
-        
-        // 1) JsonManager ¿¡¼­ »óÀÎ¿ë ¸®½ºÆ® °¡Á®¿À±â
-        allItems = jsonManager.GetBlackSmiths(merchantKey);
+        MerchantItem_CloseButton.onClick.AddListener(() => {
+            Debug.Log("ìƒì  ë‹«ê¸°ë¥¼ ì‹œë„ í–ˆìŠµë‹ˆë‹¤");
+            Merchant_Invantory.gameObject.SetActive(false);
+            inventoryManager.inventoryPanel.SetActive(false);
+            onCloseCallback?.Invoke();  // â¬… ë‹«ì„ ë•Œ ì½œë°± ì‹¤í–‰
+        });
+
+
+            // 1) JsonManager ì—ì„œ ìƒì¸ìš© ë¦¬ìŠ¤íŠ¸ ê°€ì ¸ì˜¤ê¸°
+            allItems = jsonManager.GetMerchantItems(merchantKey);
         if (allItems == null || allItems.Count == 0)
         {
-            Debug.LogError($"[{merchantKey}] »óÀÎ ¾ÆÀÌÅÛ ·Îµå ½ÇÆĞ");
+            Debug.LogError($"[{merchantKey}] ìƒì¸ ì•„ì´í…œ ë¡œë“œ ì‹¤íŒ¨");
             return;
         }
 
-        // 2) ¹«ÀÛÀ§·Î ¼¯¾î¼­ displayCount °³¸¸ ÃßÃâ
+        // 2) ë¬´ì‘ìœ„ë¡œ ì„ì–´ì„œ displayCount ê°œë§Œ ì¶”ì¶œ
         shopItems = allItems
             .OrderBy(_ => Guid.NewGuid())
             .Take(displayCount)
@@ -76,57 +86,66 @@ public class MerchantManager : MonoBehaviour
         }
     }
 
-    void OnClickMerchantItem(BlackSmith bs)
+    void OnClickMerchantItem(MerchantItem bs)
     {
-        Debug.Log("Á¤º¸Ã¢ Ãâ·Â ºÎºĞ");
+        Debug.Log("ì •ë³´ì°½ ì¶œë ¥ ë¶€ë¶„");
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
         var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+        var itemMasters = jsonManager.GetItemMasters("Item_Master");
         MerchantDetailPanel.SetActive(true);
 
         if (bs.Item_Type == "Weapon")
         {
-            Debug.Log("¹«±âÀÔ´Ï´Ù.");
+            Debug.Log("ë¬´ê¸°ì…ë‹ˆë‹¤.");
             var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == bs.Item_ID);
             MerchantItem_Name.text = weapon?.Weapon_Name;
             MerchantItem_Decription.text = weapon?.Description;
-            MerchantItem_Type.text = "¹«±â";
+            MerchantItem_Type.text = "ë¬´ê¸°";
         }
         else if (bs.Item_Type == "Armor")
         {
-            Debug.Log("¹æ¾î±¸ÀÔ´Ï´Ù.");
+            Debug.Log("ë°©ì–´êµ¬ì…ë‹ˆë‹¤.");
             var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == bs.Item_ID);
             MerchantItem_Name.text = armor?.Armor_NAME;
             MerchantItem_Decription.text = armor?.Description;
-            MerchantItem_Type.text = "¹æ¾î±¸";
+            MerchantItem_Type.text = "ë°©ì–´êµ¬";
         }
-        //else
-        //{
-        //    MerchantItem_Name.text = bs.Item_ID;
-        //    MerchantItem_Type.text = "¼Òºñ¾ÆÀÌÅÛ";
-        //}
-        //Debug.Log("¹«±âÀÔ´Ï´Ù.");
-        MerchantItem_State.text = GetStatText(ConvertToItemData(bs));
+        else if (bs.Item_Type == "Consumable")
+        {
+            var Consumable = itemMasters.FirstOrDefault(i => i.Item_ID == bs.Item_ID);
+            MerchantItem_Name.text = Consumable?.Item_NAME;
+            MerchantItem_Decription.text = Consumable?.Item_Description;
+            MerchantItem_Type.text = "ì†Œë¹„ ì•„ì´í…œ";
+        }
+        else
+        {
+            var item = itemMasters.FirstOrDefault(i => i.Item_ID == bs.Item_ID);
+            MerchantItem_Name.text = item?.Item_NAME;
+            MerchantItem_Decription.text = item?.Item_Description;
+            MerchantItem_Type.text = "ì¼ë°˜ ì•„ì´í…œ";
+        }
+            //Debug.Log("ë¬´ê¸°ì…ë‹ˆë‹¤.");
+            MerchantItem_State.text = GetStatText(ConvertToItemData(bs));
         MerchantItem_Option.text = GetOptionText(ConvertToItemData(bs));
 
         MerchantItem_BuyButton.gameObject.SetActive(true);
         MerchantItem_BuyButton.onClick.AddListener(() =>
         {
             ConfirmPopup.Show(
-                $"[{bs.Weapon_Name}] À»(¸¦) {bs.Item_Price:0.##} °ñµå¿¡ ±¸¸ÅÇÏ½Ã°Ú½À´Ï±î?", () =>
+                $"[{bs.Item_Name}] ì„(ë¥¼) {bs.Item_Price:0.##} ê³¨ë“œì— êµ¬ë§¤í•˜ì‹œê² ìŠµë‹ˆê¹Œ?", () =>
                 {
                     TryBuy(bs);
-
                 }
             );
         });
        
     }
 
-    void TryBuy(BlackSmith bs)
+    void TryBuy(MerchantItem bs)
     {
         if (playerState.Experience < bs.Item_Price)
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù.");
+            Debug.Log("ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
             return;
         }
 
@@ -143,7 +162,7 @@ public class MerchantManager : MonoBehaviour
         var slotUI = itemButtons[bs].GetComponent<MerchantSlotUI>();
         slotUI.MarkSold();
         MerchantDetailPanel.SetActive(false);
-        Debug.Log($"[{bs.Weapon_Name}] ±¸¸Å ¿Ï·á! ³²Àº °ñµå: {playerState.Experience}");
+        Debug.Log($"[{bs.Item_Name}] êµ¬ë§¤ ì™„ë£Œ! ë‚¨ì€ ê³¨ë“œ: {playerState.Experience}");
     }
 
     void RefreshGoldUI()
@@ -152,18 +171,22 @@ public class MerchantManager : MonoBehaviour
             goldText.text = $"Gold: {playerState.Experience:0}";
     }
 
-    // BlackSmith ¡æ ItemData ·Î º¯È¯
-    ItemData ConvertToItemData(BlackSmith bs)
+    // BlackSmith â†’ ItemData ë¡œ ë³€í™˜
+    ItemData ConvertToItemData(MerchantItem bs)
     {
         return new ItemData
         {
             Item_ID = bs.Item_ID,
             Item_Type = bs.Item_Type,
-            Item_Name = bs.Weapon_Name,
+            Item_Name = bs.Item_Name,
             Item_Price = bs.Item_Price,
             //Heal_Value = bs.Heal_Value,
             //Mental_Heal_Value = bs.Mental_Heal_Value
-            // ÇÊ¿äÇÑ °æ¿ì Ãß°¡ ÇÊµå(Heal_Value µî)µµ Ã¤¿ö ÁÖ¼¼¿ä.
+            // í•„ìš”í•œ ê²½ìš° ì¶”ê°€ í•„ë“œ(Heal_Value ë“±)ë„ ì±„ì›Œ ì£¼ì„¸ìš”.
+            Option_1_ID = bs.Item_Option_1,
+            Option_Value1 = (int)bs.Item_Option_value1,
+            Option_2_ID = bs.Item_Option_2,
+            Option_Value2 = (int)bs.Item_Option_value2
         };
     }
 
@@ -174,18 +197,18 @@ public class MerchantManager : MonoBehaviour
         if (item.Item_Type == "Weapon")
         {
             var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == item.Item_ID);
-            return $"°ø°İ·Â: {weapon?.Weapon_DMG}";
+            return $"ê³µê²©ë ¥: {weapon?.Weapon_DMG}";
         }
         else if (item.Item_Type == "Armor")
         {
             var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == item.Item_ID);
-            return $"¹æ¾î·Â: {armor?.Armor_DEF}, Ã¼·Â: {armor?.Armor_HP}";
+            return $"ë°©ì–´ë ¥: {armor?.Armor_DEF}, ì²´ë ¥: {armor?.Armor_HP}";
         }
         else if (item.Item_Type == "Consumable")
         {
             List<string> effects = new();
-            if (item.Heal_Value > 0) effects.Add($"Ã¼·Â È¸º¹: {item.Heal_Value}");
-            if (item.Mental_Heal_Value > 0) effects.Add($"Á¤½Å·Â È¸º¹: {item.Mental_Heal_Value}");
+            if (item.Heal_Value > 0) effects.Add($"ì²´ë ¥ íšŒë³µ: {item.Heal_Value}");
+            if (item.Mental_Heal_Value > 0) effects.Add($"ì •ì‹ ë ¥ íšŒë³µ: {item.Mental_Heal_Value}");
             return string.Join(", ", effects);
         }
         return "";
@@ -239,5 +262,58 @@ public class MerchantManager : MonoBehaviour
         }
 
         return string.Join("\n", options);
+    }
+
+    public void OpenShop(string merchantKey, System.Action onClose)
+    {
+        
+        this.merchantKey = merchantKey;
+        Debug.Log(merchantKey);
+        Debug.Log(this.merchantKey);
+        onCloseCallback = onClose;
+        ClearShopUI(); // ê¸°ì¡´ ìŠ¬ë¡¯ ì œê±°
+        LoadAndDisplayItems(merchantKey); // JsonManagerì—ì„œ merchantKey ê¸°ì¤€ìœ¼ë¡œ ì•„ì´í…œ ë¡œë“œ
+        gameObject.SetActive(true);
+        Merchant_Invantory.SetActive(true);
+        inventoryManager.inventoryPanel.SetActive(true);
+
+    }
+
+    void ClearShopUI()
+    {
+        foreach (Transform child in itemGridParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // ìƒì  ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
+        shopItems?.Clear();
+
+        // ìŠ¬ë¡¯ ë²„íŠ¼ ì°¸ì¡° ì´ˆê¸°í™” (ë²„íŠ¼ í´ë¦­ ë§‰ê¸° ë“± ê´€ë ¨)
+        if (itemButtons != null)
+            itemButtons.Clear();
+    }
+
+    void LoadAndDisplayItems(string merchantKey)
+    {
+        Debug.Log("ì—¬ê¸°ê¹Œì§€ ë“¤ì–´ì™”ìŒ!");
+        allItems = jsonManager.GetMerchantItems(merchantKey);
+
+        if (allItems == null || allItems.Count == 0)
+        {
+            Debug.LogError($"[{merchantKey}] ìƒì¸ ì•„ì´í…œ ë¡œë“œ ì‹¤íŒ¨");
+            return;
+        }
+
+        // 2) ë¬´ì‘ìœ„ë¡œ ì„ì–´ì„œ displayCount ê°œë§Œ ì¶”ì¶œ
+        shopItems = allItems
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(displayCount)
+            .ToList();
+
+        PopulateShop();
+        RefreshGoldUI();
+        MerchantDetailPanel.SetActive(false);
+        Merchant_Invantory.SetActive(false);
     }
 }

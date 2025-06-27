@@ -1,0 +1,34 @@
+{
+  "Mon_concentrate": [
+    {
+      "Mon_ID": "monster_001",
+      "MonParts1_HP": null,
+      "MonParts2_HP": null,
+      "MonParts3_HP": null,
+      "MonParts1_Hit": null,
+      "MonParts2_Hit": null,
+      "MonParts3_Hit": null,
+      "MonParts1_DMG": null,
+      "MonParts2_DMG": null,
+      "MonParts3_DMG": null,
+      "MonParts1_Break": null,
+      "MonParts2_Break": null,
+      "MonParts3_Break": null
+    },
+    {
+      "Mon_ID": "monster_002",
+      "MonParts1_HP": null,
+      "MonParts2_HP": null,
+      "MonParts3_HP": null,
+      "MonParts1_Hit": null,
+      "MonParts2_Hit": null,
+      "MonParts3_Hit": null,
+      "MonParts1_DMG": null,
+      "MonParts2_DMG": null,
+      "MonParts3_DMG": null,
+      "MonParts1_Break": null,
+      "MonParts2_Break": null,
+      "MonParts3_Break": null
+    }
+  ]
+}

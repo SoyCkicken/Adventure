@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -35,7 +37,9 @@ public class JsonManager : MonoBehaviour
     private Dictionary<string, List<Ran_SuccessRate_Master_Events>> _RanSuccessRateByScene = new();
     //상인 관련
     private Dictionary<string, List<BlackSmith>> BlackSmith_Item_Dict = new Dictionary<string, List<BlackSmith>>();
-    
+    private Dictionary<string, List<Gradient>> Gradient_Item_Dict = new Dictionary<string, List<Gradient>>();
+
+    private Dictionary<string, List<MerchantItem>> merchantItemCache = new();
     void Awake()
     {
         LoadAllJsonFiles();
@@ -387,6 +391,27 @@ public class JsonManager : MonoBehaviour
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }
+                else if (fileName.Contains("Gradient"))
+                {
+                    // ✅ jsonContent는 전체 JSON 문자열
+                    var jObj = JObject.Parse(jsonContent);
+
+                    // ✅ 배열 부분만 추출
+                    string arrayStr = jObj["Gradient"].ToString();
+
+                    // ✅ 배열을 items로 감싸기
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    // ✅ 파싱
+                    Wrapper<Gradient> wrapper = JsonUtility.FromJson<Wrapper<Gradient>>(wrappedJson);
+
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        Gradient_Item_Dict[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                    }
+                }
 
                 else
                 {
@@ -506,6 +531,37 @@ public class JsonManager : MonoBehaviour
         Debug.LogWarning($"[JsonManager] {fileName} Item_Master 데이터가 없습니다.");
         return null;
     }
+    public List<ItemData> GetItemDataList(string fileKey)
+    {
+        if (!ItemMasterDict.TryGetValue(fileKey, out var itemMasters))
+        {
+            Debug.LogError($"[JsonManager] Item_Master {fileKey} 데이터 없음");
+            return new List<ItemData>();
+        }
+
+        List<ItemData> list = new();
+        foreach (var m in itemMasters)
+        {
+            list.Add(new ItemData
+            {
+                Item_ID = m.Item_ID,
+                Item_Name = m.Item_NAME,
+                Item_Type = m.ItemType,
+                Item_Price = m.Item_Price,
+                Description = m.Item_Description,
+
+                Option_1_ID = m.Item_Option1,
+                Option_Value1 = m.Option1_Value,
+                Option_2_ID = m.Item_Option2,
+                Option_Value2 = m.Option2_Value,
+
+                Heal_Value = 0,
+                Mental_Heal_Value = 0
+            });
+        }
+
+        return list;
+    }
     public List<Option_Master> GetOptionMasters(string fileName)
     {
         if (Option_MasterDict.TryGetValue(fileName, out List<Option_Master> list))
@@ -532,11 +588,73 @@ public class JsonManager : MonoBehaviour
     //상인
     public List<BlackSmith> GetBlackSmiths(string fileName)
     {
+        Debug.Log(fileName);
         if (BlackSmith_Item_Dict.TryGetValue(fileName, out List<BlackSmith> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} BlackSmith 데이터가 없습니다.");
         return null;
     }
+    public List<Gradient> GetGradients(string fileName)
+    {
+        Debug.Log(fileName);
+        if (Gradient_Item_Dict.TryGetValue(fileName, out List<Gradient> list))
+            return list;
+        Debug.LogWarning($"[JsonManager] {fileName} BlackSmith 데이터가 없습니다.");
+        return null;
+    }
+
+    public List<MerchantItem> GetMerchantItems(string fileKey)
+    {
+        // 1. 캐시 확인
+        if (merchantItemCache.TryGetValue(fileKey, out var cachedList))
+            return cachedList;
+
+        // 2. JSON 파일 로드
+        TextAsset jsonFile = Resources.Load<TextAsset>("Events/" + fileKey);
+        if (jsonFile == null)
+        {
+            Debug.LogError($"[JsonManager] 상점 JSON 파일 {fileKey} 로드 실패");
+            return new List<MerchantItem>();
+        }
+
+        try
+        {
+            // 3. JSON 파싱 (JObject로 수동 파싱)
+            var root = JsonConvert.DeserializeObject<Dictionary<string, JArray>>(jsonFile.text);
+            if (!root.TryGetValue(fileKey, out var rawArray))
+            {
+                Debug.LogError($"[JsonManager] JSON에 {fileKey} 키를 찾을 수 없음");
+                return new List<MerchantItem>();
+            }
+
+            var convertedList = new List<MerchantItem>();
+
+            foreach (var token in rawArray)
+            {
+                var obj = token as JObject;
+                if (obj == null) continue;
+
+                var item = new MerchantItem
+                {
+                    Item_ID = obj["Item_ID"]?.ToString(),
+                    Item_Type = obj["Item_Type"]?.ToString(),
+                    Item_Name = obj["Item_Name"]?.ToString(),
+                    Item_Price = (int)(obj["Item_Price"]?.ToObject<float>() ?? 0f) // <-- float → int 변환
+                };
+
+                convertedList.Add(item);
+            }
+
+            merchantItemCache[fileKey] = convertedList;
+            return convertedList;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[JsonManager] JSON 파싱 중 오류 발생: {ex.Message}");
+            return new List<MerchantItem>();
+        }
+    }
+
 
     // 전체 로드된 Story_Master 파일명 리스트
     public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);
@@ -567,6 +685,19 @@ public class JsonManager : MonoBehaviour
                     Item_ID = armor.Armor_ID,
                     Item_Name = armor.Armor_NAME,
                     Item_Type = armor.ItemType
+                };
+            }
+        }
+        else if (code.StartsWith("Item_"))
+        {
+            var Item = GetItemMasters("Item_Master").FirstOrDefault(i => i.Item_NAME == code);
+            if (Item != null)
+            {
+                return new ItemData
+                {
+                    Item_ID = Item.Item_ID,
+                    Item_Name = Item.Item_NAME,
+                    Item_Type = Item.ItemType
                 };
             }
         }

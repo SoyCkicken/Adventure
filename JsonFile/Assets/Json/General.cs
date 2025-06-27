@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 [Serializable]
-public class BlackSmith
+public class General
 {
     public string Item_ID;
     public string Item_Name;

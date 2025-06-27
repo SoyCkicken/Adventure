@@ -13,7 +13,7 @@ public class MerchantSlotUI : MonoBehaviour
     //[SerializeField] TMP_Text priceText;
     [SerializeField] Button buyButton;
     public SpriteBank spriteBank;
-    BlackSmith _data;
+    MerchantItem _data;
     Image _icon;
     TMP_Text _priceText;
 
@@ -24,7 +24,7 @@ public class MerchantSlotUI : MonoBehaviour
             spriteBank = FindObjectOfType<SpriteBank>();
 
     }
-    public void Setup(BlackSmith bs, Action<BlackSmith> onClick)
+    public void Setup(MerchantItem bs, Action<MerchantItem> onClick)
     {
         _data = bs;
         //nameText.text = bs.Weapon_Name;

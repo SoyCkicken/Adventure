@@ -1,4 +1,6 @@
 // [1] BossPartCombatManager.cs
+using Spine;
+using Spine.Unity;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -11,33 +13,45 @@ public class BossPartCombatManager : MonoBehaviour
     public Slider legSlider;
     public Slider headSlider;
     public Slider totalHPSlider;
-
+    public SkeletonAnimation BossSkeleton;
     private Boss testBoss;
     private Player testPlayer;
     private bool isPlayerTurn = true;
+    private bool isRightArmBroken = false;
+
 
     void Start()
     {
+        SkeletonAnimation skeletonAnim = BossSkeleton.GetComponent<SkeletonAnimation>();
+        var skeleton = skeletonAnim.Skeleton;
+
         testBoss = new Boss("테스트보스", 100);
 
         testBoss.RegisterPart("팔", 50, () =>
         {
             Log("팔이 부서져 공격이 불가능합니다!");
+            
+            skeleton.FindSlot("R-arm").Attachment = null;
+            isRightArmBroken = true;
         });
 
         testBoss.RegisterPart("다리", 50, () =>
         {
             Log("다리가 부서져 이동이 불가능합니다!");
+            skeleton.FindSlot("R-leg").Attachment = null;
         });
 
         testBoss.RegisterPart("머리", 50, () =>
         {
+
             Log("머리가 부서져 즉사했습니다!");
+            skeleton.FindSlot("head").Attachment = null;
             testBoss.Kill();
             Log("보스를 처치했습니다! (머리 파괴)");
+            skeletonAnim.AnimationState.SetEmptyAnimation(0, 0.2f);
         });
 
-        testPlayer = new Player("플레이어", 100);
+        testPlayer = new Player("플레이어", 5000);
 
         UpdateSliders();
         Log("플레이어의 턴입니다.");
@@ -45,6 +59,7 @@ public class BossPartCombatManager : MonoBehaviour
 
     public void AttackPart(string partName)
     {
+        SkeletonAnimation skeletonAnim = BossSkeleton.GetComponent<SkeletonAnimation>();
         if (!isPlayerTurn)
         {
             Log("지금은 플레이어 턴이 아닙니다.");
@@ -63,6 +78,7 @@ public class BossPartCombatManager : MonoBehaviour
         if (testBoss.IsDead)
         {
             Log("보스를 처치했습니다!");
+            skeletonAnim.AnimationState.SetEmptyAnimation(0, 0.2f);
             return;
         }
 
@@ -75,7 +91,13 @@ public class BossPartCombatManager : MonoBehaviour
     void EnemyTurn()
     {
         if (testBoss.IsDead) return;
-
+        if (isRightArmBroken)
+        {
+            Debug.Log("팔이 부러져서 공격이 불가능합니다");
+            isPlayerTurn = true;
+            Log("플레이어의 턴입니다");
+            return;
+        }
         testPlayer.TakeDamage(testBoss.attackPower);
         Log($"보스가 플레이어를 공격했습니다. ({testBoss.attackPower} 데미지)");
 
@@ -107,7 +129,7 @@ public class BossPartCombatManager : MonoBehaviour
 public class Player
 {
     public string Name;
-    public int MaxHP;
+    public int MaxHP = 500;
     public int CurrentHP;
     public int AttackPower = 30;
 
