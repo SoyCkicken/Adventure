@@ -75,7 +75,20 @@ public class TESTBoss : MonoBehaviour
         return parts.ContainsKey(name) && parts[name].IsBroken;
     }
 
-    //
+    public List<string> GetAttackableParts()
+    {
+        List<string> result = new();
+
+        foreach (var kv in parts)
+        {
+            if (!kv.Value.IsBroken)
+                result.Add(kv.Key);
+        }
+
+        return result;
+    }
+
+    //공격하는 부분
     public void PerformAttack(TESTPlayer target)
     {
         if (IsPartBroken("팔"))

@@ -16,19 +16,27 @@ public class BossPartCombatManager : MonoBehaviour
     public SkeletonAnimation BossSkeleton;
     public TESTBoss testBoss;
     public TESTPlayer testPlayer;
+    [Header("여기는 임시 버튼 선택입니다")]
+    public TMP_Text selectedPartText;
+    public Button leftButton;
+    public Button rightButton;
+    public Button attackButton;
     private bool isPlayerTurn = true;
-
+    private int currentIndex = 0;
 
     /// <summary>
     /// 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
     /// </summary>
     void Start()
     {
+        leftButton.onClick.AddListener(() => { OnClickLeft(); });
+        rightButton.onClick.AddListener(() => { OnClickRight(); });
+        attackButton.onClick.AddListener(() => { OnClickAttack(); });
         UpdateSliders();
         Log("플레이어의 턴입니다.");
     }
 
-    public void AttackPart(string partName)
+    public void OnClickAttack()
     {
         if (!isPlayerTurn)
         {
@@ -36,23 +44,25 @@ public class BossPartCombatManager : MonoBehaviour
             return;
         }
 
-        if (!testBoss.CanAttackPart(partName))
+        var parts = testBoss.GetAttackableParts();
+        if (parts.Count == 0)
         {
-            Log($"{partName} 부위는 이미 파괴되어 공격할 수 없습니다.");
+            Log("공격 가능한 부위가 없습니다.");
             return;
         }
 
-        // ▶ 플레이어가 보스의 특정 부위를 공격하도록 위임
-        testPlayer.PerformAttack(testBoss, partName);
-        Log($"플레이어가 {partName} 부위를 공격했습니다.");
+        string selectedPart = parts[currentIndex];
+        testPlayer.PerformAttack(testBoss, selectedPart);
+        Log($"플레이어가 {selectedPart} 부위를 공격했습니다.");
 
         if (testBoss.IsDead)
         {
+            testBoss.PlayDeathAnimation();
             Log("보스를 처치했습니다!");
-            testBoss.PlayDeathAnimation(); // 애니메이션도 Boss 내부로 옮김
             return;
         }
-
+        currentIndex = 0;
+        UpdateSelectedPartUI();
         isPlayerTurn = false;
         UpdateSliders();
         Invoke(nameof(EnemyTurn), 1.5f);
@@ -81,7 +91,40 @@ public class BossPartCombatManager : MonoBehaviour
         isPlayerTurn = true;
         Log("플레이어의 턴입니다.");
     }
+    void UpdateSelectedPartUI()
+    {
+        var parts = testBoss.GetAttackableParts();
 
+        if (parts.Count == 0)
+        {
+            selectedPartText.text = "공격 가능한 부위 없음";
+            return;
+        }
+
+        // 선택된 인덱스가 유효한지 검사 → 유효하지 않으면 0으로 초기화
+        if (currentIndex >= parts.Count || currentIndex < 0)
+            currentIndex = 0;
+
+        selectedPartText.text = $"선택된 부위: {parts[currentIndex]}";
+    }
+
+    public void OnClickLeft()
+    {
+        var parts = testBoss.GetAttackableParts();
+        if (parts.Count == 0) return;
+
+        currentIndex = (currentIndex - 1 + parts.Count) % parts.Count;
+        UpdateSelectedPartUI();
+    }
+
+    public void OnClickRight()
+    {
+        var parts = testBoss.GetAttackableParts();
+        if (parts.Count == 0) return;
+
+        currentIndex = (currentIndex + 1) % parts.Count;
+        UpdateSelectedPartUI();
+    }
 
     void UpdateSliders()
     {
