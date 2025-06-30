@@ -1,5 +1,4 @@
-﻿// [1] BossPartCombatManager.cs
-using Spine;
+﻿using Spine;
 using Spine.Unity;
 using System.Collections.Generic;
 using TMPro;
@@ -23,6 +22,12 @@ public class BossPartCombatManager : MonoBehaviour
     public Button attackButton;
     private bool isPlayerTurn = true;
     private int currentIndex = 0;
+    [Header("사운드 설정")]
+    public AudioSource audioSource;
+    public AudioClip hitSound;      // 플레이어 공격 성공
+    public AudioClip damageSound;   // 보스 공격 성공
+    public AudioClip DodgeSound;    // 누구든 간에 회피 성공시 재생
+
 
     /// <summary>
     /// 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
@@ -54,7 +59,7 @@ public class BossPartCombatManager : MonoBehaviour
         string selectedPart = parts[currentIndex];
         testPlayer.PerformAttack(testBoss, selectedPart);
         Log($"플레이어가 {selectedPart} 부위를 공격했습니다.");
-
+        //PlayHitSound();
         if (testBoss.IsDead)
         {
             Log("보스를 처치했습니다!");
@@ -85,11 +90,13 @@ public class BossPartCombatManager : MonoBehaviour
         {
             Log("플레이어가 사망했습니다...");
             return;
+            // Optionally, add game over logic here
         }
 
         isPlayerTurn = true;
         Log("플레이어의 턴입니다.");
     }
+
     void UpdateSelectedPartUI()
     {
         var parts = testBoss.GetAttackableParts();
@@ -133,6 +140,22 @@ public class BossPartCombatManager : MonoBehaviour
         totalHPSlider.value = testBoss.GetTotalHPPercent();
     }
 
+    public void PlayHitSound()
+    {
+        if (hitSound != null && audioSource != null)
+            audioSource.PlayOneShot(hitSound);
+    }
+
+    public void PlayDamageSound()
+    {
+        if (damageSound != null && audioSource != null)
+            audioSource.PlayOneShot(damageSound);
+    }
+    public void PlayDodgeSound()
+    {
+        if (DodgeSound != null && audioSource != null)
+            audioSource.PlayOneShot(DodgeSound);
+    }
     public void Log(string message)
     {
         logText.text += message + "\n";

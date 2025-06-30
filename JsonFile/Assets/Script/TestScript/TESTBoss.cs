@@ -176,11 +176,13 @@ public class TESTBoss : MonoBehaviour
         if (roll >= hitChance)
         {
             Debug.Log("[Boss] 공격이 빗나갔습니다.");
+            BossPartCombatManager.PlayDodgeSound();
             return;
         }
 
         target.TakeDamage(attackPower);
         Debug.Log($"[Boss] 플레이어에게 {attackPower} 데미지 적중!");
+        BossPartCombatManager.PlayDamageSound();
     }
 
     public void PlayDeathAnimation()
