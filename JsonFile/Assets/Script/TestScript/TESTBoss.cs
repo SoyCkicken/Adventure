@@ -1,21 +1,29 @@
 using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TESTBoss : MonoBehaviour
 {
     [Header("기본 스탯")]
+    public BossPartCombatManager BossPartCombatManager;
     public string bossName;
     public int attackPower = 50;
     public int MaxTotalHP;
     public int CurrentTotalHP;
+    public int hitChance = 80;
+
+    // 그룹 키워드 (팔, 다리 등)
+    private readonly string[] armGroupKeys = { "팔" };
+    private readonly string[] legGroupKeys = { "다리" };
 
     [Header("부위 정보")]
     public List<PartInfo> partList = new();
 
     private Dictionary<string, MonsterPart> parts = new();
     public bool IsDead => CurrentTotalHP <= 0;
+    private bool isAttackDisabled = false;
 
     void Start()
     {
@@ -23,17 +31,75 @@ public class TESTBoss : MonoBehaviour
 
         foreach (var part in partList)
         {
-            RegisterPart(part.partName, part.hp, () =>
+            if (part.partName.Contains("머리"))
             {
-                Debug.Log($"[Boss] {part.partName} 부위가 파괴되었습니다.");
-                // 슬롯 파괴 연동은 여기서도 가능
-            });
+                RegisterPart(part.partName, part.hp, part.EvadeRate, () =>
+                {
+                    BossPartCombatManager.Log("[Boss] 머리 부위가 파괴되었습니다. 즉사 처리됨!\n");
+                    Kill();
+                    PlayDeathAnimation();
+                });
+            }
+            else
+            {
+                RegisterPart(part.partName, part.hp, part.EvadeRate, () =>
+                {
+                    BossPartCombatManager.Log($"[Boss] {part.partName} 부위가 파괴되었습니다!\n");
+
+                    // 파괴 조건 체크
+                    CheckArmCondition();
+                    CheckLegCondition();
+                });
+            }
         }
     }
 
-    public void RegisterPart(string name, int hp, System.Action onBreak)
+    private List<string> GetPartNamesContaining(params string[] keywords)
     {
-        parts[name] = new MonsterPart(name, hp, onBreak);
+        List<string> result = new();
+        foreach (var kv in parts)
+        {
+            foreach (var keyword in keywords)
+            {
+                if (kv.Key.Contains(keyword))
+                {
+                    result.Add(kv.Key);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private void CheckArmCondition()
+    {
+        var armParts = GetPartNamesContaining(armGroupKeys);
+        Debug.Log(armParts.Count);
+        bool allArmsBroken = armParts.All(partName => IsPartBroken(partName));
+
+        if (allArmsBroken)
+        {
+            isAttackDisabled = true;
+            BossPartCombatManager.Log("[Boss] 모든 팔이 파괴되어 공격할 수 없습니다.\n");
+        }
+    }
+
+    private void CheckLegCondition()
+    {
+        var legParts = GetPartNamesContaining(legGroupKeys);
+        Debug.Log(legParts.Count);
+        bool allLegsBroken = legParts.All(partName => IsPartBroken(partName));
+
+        if (allLegsBroken && parts.ContainsKey("머리"))
+        {
+            parts["머리"].EvadeRate = 0;
+            BossPartCombatManager.Log("[Boss] 모든 다리가 파괴되어 머리 회피율이 0%로 변경되었습니다.\n");
+        }
+    }   
+
+    public void RegisterPart(string name, int hp, int evadeRate, System.Action onBreak)
+    {
+        parts[name] = new MonsterPart(name, hp, evadeRate, onBreak);
     }
 
     public void DamagePart(string name, int amount)
@@ -50,7 +116,6 @@ public class TESTBoss : MonoBehaviour
     {
         CurrentTotalHP = 0;
         Debug.Log("보스가 사망하였습니다.");
-
     }
 
     public float GetPartHPPercent(string name)
@@ -75,31 +140,44 @@ public class TESTBoss : MonoBehaviour
         return parts.ContainsKey(name) && parts[name].IsBroken;
     }
 
+    public int GetEvadeRate(string partName)
+    {
+        if (!parts.ContainsKey(partName)) return 0;
+        return parts[partName].EvadeRate;
+    }
+
     public List<string> GetAttackableParts()
     {
         List<string> result = new();
-
         foreach (var kv in parts)
         {
             if (!kv.Value.IsBroken)
                 result.Add(kv.Key);
         }
-
         return result;
     }
 
-    //공격하는 부분
     public void PerformAttack(TESTPlayer target)
     {
-        if (IsPartBroken("팔"))
+        if (isAttackDisabled)
         {
-            Debug.Log("[Boss] 팔이 부서져 공격할 수 없습니다.");
+            Debug.Log("[Boss] 모든 팔이 파괴되어 공격할 수 없습니다.");
             return;
         }
+
         if (target == null || target.IsDead) return;
 
+        int roll = Random.Range(0, 100);
+        Debug.Log($"[Boss] 명중 굴림: {roll} vs 명중 필요치: {hitChance}");
+
+        if (roll >= hitChance)
+        {
+            Debug.Log("[Boss] 공격이 빗나갔습니다.");
+            return;
+        }
+
         target.TakeDamage(attackPower);
-        Debug.Log($"[Boss] 플레이어에게 {attackPower} 데미지를 입혔습니다.");
+        Debug.Log($"[Boss] 플레이어에게 {attackPower} 데미지 적중!");
     }
 
     public void PlayDeathAnimation()
@@ -117,6 +195,8 @@ public class TESTBoss : MonoBehaviour
     {
         public string partName;
         public int hp;
+        public string slotName;
+        public int EvadeRate = 0;
     }
 
     public class MonsterPart
@@ -124,14 +204,16 @@ public class TESTBoss : MonoBehaviour
         public string Name;
         public int MaxHP;
         public int CurrentHP;
+        public int EvadeRate;
         public System.Action OnBreak;
         public bool IsBroken => CurrentHP <= 0;
 
-        public MonsterPart(string name, int hp, System.Action onBreak)
+        public MonsterPart(string name, int hp, int evadeRate, System.Action onBreak)
         {
             Name = name;
             MaxHP = hp;
             CurrentHP = hp;
+            EvadeRate = evadeRate;
             OnBreak = onBreak;
         }
 

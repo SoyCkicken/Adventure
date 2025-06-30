@@ -57,7 +57,6 @@ public class BossPartCombatManager : MonoBehaviour
 
         if (testBoss.IsDead)
         {
-            testBoss.PlayDeathAnimation();
             Log("보스를 처치했습니다!");
             return;
         }
@@ -134,7 +133,7 @@ public class BossPartCombatManager : MonoBehaviour
         totalHPSlider.value = testBoss.GetTotalHPPercent();
     }
 
-    void Log(string message)
+    public void Log(string message)
     {
         logText.text += message + "\n";
     }
