@@ -1,3 +1,4 @@
+using Spine;
 using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ public class TESTBoss : MonoBehaviour
 {
     [Header("기본 스탯")]
     public BossPartCombatManager BossPartCombatManager;
+    public SkeletonAnimation skeletonAnimation;
     public string bossName;
     public int attackPower = 50;
     public int MaxTotalHP;
@@ -28,7 +30,7 @@ public class TESTBoss : MonoBehaviour
     void Start()
     {
         CurrentTotalHP = MaxTotalHP;
-
+       var skeleton = skeletonAnimation.skeleton;
         foreach (var part in partList)
         {
             if (part.partName.Contains("머리"))
@@ -36,6 +38,7 @@ public class TESTBoss : MonoBehaviour
                 RegisterPart(part.partName, part.hp, part.EvadeRate, () =>
                 {
                     BossPartCombatManager.Log("[Boss] 머리 부위가 파괴되었습니다. 즉사 처리됨!\n");
+                    skeleton.FindSlot(part.slotName).Attachment = null;
                     Kill();
                     PlayDeathAnimation();
                 });
@@ -45,7 +48,7 @@ public class TESTBoss : MonoBehaviour
                 RegisterPart(part.partName, part.hp, part.EvadeRate, () =>
                 {
                     BossPartCombatManager.Log($"[Boss] {part.partName} 부위가 파괴되었습니다!\n");
-
+                    skeleton.FindSlot(part.slotName).Attachment = null;
                     // 파괴 조건 체크
                     CheckArmCondition();
                     CheckLegCondition();
@@ -182,7 +185,7 @@ public class TESTBoss : MonoBehaviour
 
     public void PlayDeathAnimation()
     {
-        var skeletonAnim = GetComponent<SkeletonAnimation>();
+        var skeletonAnim = skeletonAnimation.GetComponent<SkeletonAnimation>();
         if (skeletonAnim != null)
         {
             skeletonAnim.AnimationState.SetEmptyAnimation(0, 0.2f);
