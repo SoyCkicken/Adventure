@@ -14,228 +14,85 @@ public class BossPartCombatManager : MonoBehaviour
     public Slider headSlider;
     public Slider totalHPSlider;
     public SkeletonAnimation BossSkeleton;
-    private Boss testBoss;
-    private Player testPlayer;
+    public TESTBoss testBoss;
+    public TESTPlayer testPlayer;
     private bool isPlayerTurn = true;
-    private bool isRightArmBroken = false;
 
 
+    /// <summary>
+    /// 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
+    /// </summary>
     void Start()
     {
-        SkeletonAnimation skeletonAnim = BossSkeleton.GetComponent<SkeletonAnimation>();
-        var skeleton = skeletonAnim.Skeleton;
-
-        testBoss = new Boss("�׽�Ʈ����", 100);
-
-        testBoss.RegisterPart("��", 50, () =>
-        {
-            Log("���� �μ��� ������ �Ұ����մϴ�!");
-
-            skeleton.FindSlot("R-arm").Attachment = null;
-            isRightArmBroken = true;
-        });
-
-        testBoss.RegisterPart("�ٸ�", 50, () =>
-        {
-            Log("�ٸ��� �μ��� �̵��� �Ұ����մϴ�!");
-            skeleton.FindSlot("R-leg").Attachment = null;
-        });
-
-        testBoss.RegisterPart("�Ӹ�", 50, () =>
-        {
-
-            Log("�Ӹ��� �μ��� ����߽��ϴ�!");
-            skeleton.FindSlot("head").Attachment = null;
-            testBoss.Kill();
-            Log("������ óġ�߽��ϴ�! (�Ӹ� �ı�)");
-            skeletonAnim.AnimationState.SetEmptyAnimation(0, 0.2f);
-        });
-
-        testPlayer = new Player("�÷��̾�", 5000);
-
         UpdateSliders();
-        Log("�÷��̾��� ���Դϴ�.");
+        Log("플레이어의 턴입니다.");
     }
 
     public void AttackPart(string partName)
     {
-        SkeletonAnimation skeletonAnim = BossSkeleton.GetComponent<SkeletonAnimation>();
         if (!isPlayerTurn)
         {
-            Log("������ �÷��̾� ���� �ƴմϴ�.");
+            Log("지금은 플레이어의 턴이 아닙니다.");
             return;
         }
 
         if (!testBoss.CanAttackPart(partName))
         {
-            Log($"{partName} ������ �̹� �ı��Ǿ� ������ �� �����ϴ�.");
+            Log($"{partName} 부위는 이미 파괴되어 공격할 수 없습니다.");
             return;
         }
 
-        testBoss.DamagePart(partName, testPlayer.AttackPower);
-        Log($"�÷��̾ {partName} ������ �����߽��ϴ�.\n");
+        // ▶ 플레이어가 보스의 특정 부위를 공격하도록 위임
+        testPlayer.PerformAttack(testBoss, partName);
+        Log($"플레이어가 {partName} 부위를 공격했습니다.");
 
         if (testBoss.IsDead)
         {
-            Log("������ óġ�߽��ϴ�!");
-            skeletonAnim.AnimationState.SetEmptyAnimation(0, 0.2f);
+            Log("보스를 처치했습니다!");
+            testBoss.PlayDeathAnimation(); // 애니메이션도 Boss 내부로 옮김
             return;
         }
 
         isPlayerTurn = false;
         UpdateSliders();
-
         Invoke(nameof(EnemyTurn), 1.5f);
     }
 
     void EnemyTurn()
     {
         if (testBoss.IsDead) return;
-        if (isRightArmBroken)
+
+        if (testBoss.IsPartBroken("팔")) // 보스 내부에서 부위 확인하도록 구조 개선
         {
-            Debug.Log("���� �η����� ������ �Ұ����մϴ�");
+            Log("보스의 팔이 파괴되어 공격할 수 없습니다.");
             isPlayerTurn = true;
-            Log("�÷��̾��� ���Դϴ�");
+            Log("플레이어의 턴입니다.");
             return;
         }
-        testPlayer.TakeDamage(testBoss.attackPower);
-        Log($"������ �÷��̾ �����߽��ϴ�. ({testBoss.attackPower} ������)");
+        testBoss.PerformAttack(testPlayer);
+        Log($"보스가 플레이어를 공격했습니다. ({testBoss.attackPower} 데미지)");
 
         if (testPlayer.IsDead)
         {
-            Log("�÷��̾ ���������ϴ�...");
+            Log("플레이어가 사망했습니다...");
             return;
         }
 
         isPlayerTurn = true;
-        Log("�÷��̾��� ���Դϴ�.");
+        Log("플레이어의 턴입니다.");
     }
+
 
     void UpdateSliders()
     {
-        armSlider.value = testBoss.GetPartHPPercent("��");
-        legSlider.value = testBoss.GetPartHPPercent("�ٸ�");
-        headSlider.value = testBoss.GetPartHPPercent("�Ӹ�");
+        armSlider.value = testBoss.GetPartHPPercent("팔");
+        legSlider.value = testBoss.GetPartHPPercent("다리");
+        headSlider.value = testBoss.GetPartHPPercent("머리");
         totalHPSlider.value = testBoss.GetTotalHPPercent();
     }
 
     void Log(string message)
     {
         logText.text += message + "\n";
-    }
-}
-
-// [2] Player.cs
-public class Player
-{
-    public string Name;
-    public int MaxHP = 500;
-    public int CurrentHP;
-    public int AttackPower = 30;
-
-    public bool IsDead => CurrentHP <= 0;
-
-    public Player(string name, int hp)
-    {
-        Name = name;
-        MaxHP = hp;
-        CurrentHP = hp;
-    }
-
-    public void TakeDamage(int amount)
-    {
-        CurrentHP -= amount;
-        CurrentHP = Mathf.Max(CurrentHP, 0);
-    }
-}
-
-// [3] Boss.cs
-public class Boss
-{
-    public string name;
-    public int attackPower = 50;
-    public int MaxTotalHP;
-    public int CurrentTotalHP;
-    private Dictionary<string, MonsterPart> parts = new();
-
-    public bool IsDead => CurrentTotalHP <= 0;
-
-    public Boss(string name, int totalHP)
-    {
-        this.name = name;
-        MaxTotalHP = totalHP;
-        CurrentTotalHP = totalHP;
-    }
-
-    public void RegisterPart(string name, int hp, System.Action onBreak)
-    {
-        parts[name] = new MonsterPart(name, hp, onBreak);
-    }
-
-    public void DamagePart(string name, int amount)
-    {
-        if (!parts.ContainsKey(name)) return;
-
-        if (IsDead) return;
-
-        parts[name].Damage(amount);
-        CurrentTotalHP -= amount;
-        CurrentTotalHP = Mathf.Max(CurrentTotalHP, 0);
-    }
-
-    public void Kill()
-    {
-        CurrentTotalHP = 0;
-    }
-
-    public float GetPartHPPercent(string name)
-    {
-        if (parts.ContainsKey(name))
-        {
-            return parts[name].CurrentHP / (float)parts[name].MaxHP;
-        }
-        return 0f;
-    }
-
-    public float GetTotalHPPercent()
-    {
-        return CurrentTotalHP / (float)MaxTotalHP;
-    }
-
-    public bool CanAttackPart(string name)
-    {
-        return parts.ContainsKey(name) && !parts[name].IsBroken;
-    }
-}
-
-// [4] MonsterPart.cs
-public class MonsterPart
-{
-    public string Name;
-    public int MaxHP;
-    public int CurrentHP;
-    public System.Action OnBreak;
-
-    public bool IsBroken => CurrentHP <= 0;
-
-    public MonsterPart(string name, int hp, System.Action onBreak)
-    {
-        Name = name;
-        MaxHP = hp;
-        CurrentHP = hp;
-        OnBreak = onBreak;
-    }
-
-    public void Damage(int amount)
-    {
-        if (IsBroken) return;
-
-        CurrentHP -= amount;
-        CurrentHP = Mathf.Max(CurrentHP, 0);
-
-        if (IsBroken)
-        {
-            OnBreak?.Invoke();
-        }
     }
 }
