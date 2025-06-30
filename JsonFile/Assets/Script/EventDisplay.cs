@@ -196,14 +196,16 @@ public class EventDisplay : MonoBehaviour
         {
             case "TEXT":
                 Debug.Log("텍스트 출력");
-                HandleTextDisplayWithChoice(script.KOR, lastBlock);
+                HandleTextDisplayWithChoice(script.KOR, lastBlock,false);
                 break;
 
             case "IMAGE":
                 Debug.Log("이미지 출력");
                 CreateImageBlock(script.KOR);
                 break;
-
+            case "CLEAR" :
+                HandleTextDisplayWithChoice(script.KOR, lastBlock,true);
+                break;
             case "BATTLE":
                 Debug.Log("전투 시작");
                 winScriptCode = script.NEXTWIN?.Trim();
@@ -215,12 +217,12 @@ public class EventDisplay : MonoBehaviour
         }
     }
 
-    private void HandleTextDisplayWithChoice(string text, GameObject lastBlock)
+    private void HandleTextDisplayWithChoice(string text, GameObject lastBlock,bool isClear)
     {
         if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
-            CreateTextBlock(text);
+            CreateTextBlock(text, isClear);
         else
-            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock));
+            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear));
     }
     private void ClearContent()
     {
@@ -326,7 +328,7 @@ public class EventDisplay : MonoBehaviour
         DisplayCurrentEvent();
 
     }
-    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go)
+    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         isTyping = true;
@@ -369,9 +371,24 @@ public class EventDisplay : MonoBehaviour
         }
         else
         {
-           AdvanceEvent();
-            Canvas.ForceUpdateCanvases();
-            scrollRect.verticalNormalizedPosition = 0f;
+            SkipButton.SetActive(true);
+            CanvasGroup group = SkipButton.GetComponent<CanvasGroup>();
+            if (group != null) group.blocksRaycasts = true;
+
+            Button skipBtn = SkipButton.GetComponent<Button>();
+            skipBtn.onClick.RemoveAllListeners();
+
+            skipBtn.onClick.AddListener(() =>
+            {
+                SkipButton.SetActive(false);
+                if (isClear)
+                {
+                    Debug.Log("[EventDisplay] ClearContent 호출됨");
+                    ClearContent();
+                }
+                Debug.Log("AdvanceEvent 호출됨");
+                AdvanceEvent();
+            });
         }
     }
 
@@ -387,14 +404,14 @@ public class EventDisplay : MonoBehaviour
         AdvanceEvent();
     }
 
-    void CreateTextBlock(string text)
+    void CreateTextBlock(string text,bool isClear)
     {
         var go = Instantiate(TextPrefab, content);
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         fontSizeManager.Register(tmp);
         activeBlocks.Add(go);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffectWithChoice(text, go));
+        StartCoroutine(TypeTextEffectWithChoice(text, go , isClear));
     }
 
 

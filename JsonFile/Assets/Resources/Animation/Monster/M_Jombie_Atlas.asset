@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
-  m_Name: M_Jombie_Idle_Atlas
+  m_Name: M_Jombie_Atlas
   m_EditorClassIdentifier: 
   textureLoadingMode: 0
   onDemandTextureLoader: {fileID: 0}
-  atlasFile: {fileID: 4900000, guid: a858018d337a9c44ea8438d9bd1e8112, type: 3}
+  atlasFile: {fileID: 4900000, guid: 986a105881b22834f8a909557bded586, type: 3}
   materials:
-  - {fileID: 2100000, guid: 193dd63656786bc44825f6f31346e483, type: 2}
+  - {fileID: 2100000, guid: 6119e682e0b9d894385412b95367ddae, type: 2}

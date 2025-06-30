@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1b3b4b945939a54ea0b23d3396115fb, type: 3}
-  m_Name: M_Jombie_Idle_SkeletonData
+  m_Name: M_Jombie_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: ab277e40ed71a3f4bb903e48862dc27f, type: 2}
+  - {fileID: 11400000, guid: 766d4c0381e579c48b1edb28a34e0a29, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: 81de8a39521a24948851c71c30d40830, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: 11da01fc706adbc429755f83860b36e5, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
     requiresBlendModeMaterials: 0
@@ -28,4 +28,4 @@ MonoBehaviour:
   toAnimation: []
   duration: []
   defaultMix: 0.2
-  controller: {fileID: 9100000, guid: 75594e0facdef864aa49c244a6bae30d, type: 2}
+  controller: {fileID: 0}

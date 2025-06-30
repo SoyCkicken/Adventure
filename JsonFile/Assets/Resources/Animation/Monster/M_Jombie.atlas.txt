@@ -1,4 +1,4 @@
-M_Jombie_Idle.png
+M_Jombie.png
 size:1899,675
 filter:Linear,Linear
 pma:true

@@ -641,7 +641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: e9bf1faf0d066884f82a9041acc25f89, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 4002028e1f71b9d40a3e2c83d79740df, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -669,7 +669,7 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: animation
+  _animationName: Idle
   loop: 1
   timeScale: 1
 --- !u!23 &132658773
@@ -692,7 +692,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 193dd63656786bc44825f6f31346e483, type: 2}
+  - {fileID: 2100000, guid: 6119e682e0b9d894385412b95367ddae, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2808,7 +2808,7 @@ MonoBehaviour:
   legSlider: {fileID: 718466262}
   headSlider: {fileID: 1054761548}
   totalHPSlider: {fileID: 86138723}
-  BossSkeleton: {fileID: 0}
+  BossSkeleton: {fileID: 132658772}
   testBoss: {fileID: 112556436}
   testPlayer: {fileID: 323465207}
   selectedPartText: {fileID: 657518236}
@@ -3512,6 +3512,10 @@ PrefabInstance:
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 132658772}
+    - target: {fileID: 8351479834907204782, guid: f0ca284188661854f98fddf35fea957b, type: 3}
+      propertyPath: partList.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8351479834907204782, guid: f0ca284188661854f98fddf35fea957b, type: 3}
       propertyPath: BossPartCombatManager
       value: 

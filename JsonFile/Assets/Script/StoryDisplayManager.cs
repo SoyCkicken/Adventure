@@ -139,12 +139,12 @@ public class StoryDisplayManager : MonoBehaviour
                     {
                         NextScene();
                     }
-                    HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock);
+                    HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock, false);
                     break;
                 case "CLAER":
                     Debug.Log("클리어 후 텍스트 생성에 들어왔습니다");
-                    HandleTextDisplayWithChoice(matchingScript.KOR, null);
-                    ClearContent();
+                    HandleTextDisplayWithChoice(matchingScript.KOR, null, true);
+                    //ClearContent();
                     break;
                 case "BATTLE":
                     Debug.Log("배틀에 들어왔습니다");
@@ -168,12 +168,12 @@ public class StoryDisplayManager : MonoBehaviour
 
 
     }
-    private void HandleTextDisplayWithChoice(string text, GameObject lastBlock)
+    private void HandleTextDisplayWithChoice(string text, GameObject lastBlock, bool isClear)
     {
         if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
-            CreateTextBlock(text);
+            CreateTextBlock(text, isClear);
         else
-            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock));
+            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear));
     }
 
 
@@ -210,18 +210,18 @@ public class StoryDisplayManager : MonoBehaviour
     }
 
     // 텍스트 블록 생성 (초기화만)
-    private void CreateTextBlock(string text)
+    private void CreateTextBlock(string text,bool isClear)
     {
         var go = Instantiate(TextPrefab, content);
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         fontSizeManager.Register(tmp);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffectWithChoice(text, go));
+        StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
         Testblocks.Add(go);
     }
 
     // 타입라이터 이펙트
-    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go)
+    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go,bool isClear)
     {
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         isTyping = true;
@@ -262,8 +262,20 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else
         {
-            NextScene();
-        }
+            Debug.Log("");
+            SkipButton.SetActive(true);
+            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
+            SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                SkipButton.SetActive(false);
+                if (isClear)
+                    
+                    ClearContent();
+                NextScene();
+            });
+        };
+
     }
     private void SetupChoices()
     {

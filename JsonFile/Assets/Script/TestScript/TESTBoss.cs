@@ -109,9 +109,18 @@ public class TESTBoss : MonoBehaviour
     {
         if (!parts.ContainsKey(name)) return;
         if (IsDead) return;
-
+        var skeletonAnim = skeletonAnimation.GetComponent<SkeletonAnimation>();
         parts[name].Damage(amount);
         CurrentTotalHP -= amount;
+        skeletonAnim.AnimationState.SetAnimation(0, "Hit", false);
+        if (CurrentTotalHP <= 0)
+        {
+            skeletonAnim.AnimationState.SetEmptyAnimation(0, 0.2f);
+        }
+        else
+        {
+            skeletonAnim.AnimationState.AddAnimation(0, "Idle", true, 1.0f);
+        }
         CurrentTotalHP = Mathf.Max(CurrentTotalHP, 0);
     }
 
