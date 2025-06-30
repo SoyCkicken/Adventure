@@ -109,6 +109,7 @@ public class StoryDisplayManager : MonoBehaviour
         //Debug.Log(matchingScript.KOR);
         GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
         Debug.Log($"[MainStory] currentIndex: {currentIndex}, listCount: {storyList.Count}");
+        Debug.Log($"[MainStory] 지금 Effect = {currentStory.Main_Effect.ToString()}");
         if (currentStory.Main_Effect != null && currentStory.Main_Effect.Count > 0)
         {
             Debug.Log("이펙트 테스트에 들어오긴 했음");
@@ -134,6 +135,10 @@ public class StoryDisplayManager : MonoBehaviour
                     break;
                 case "TEXT":
                     Debug.Log("텍스트 생성에 들어왔습니다");
+                    if (matchingScript.StoryBreak == "Break")
+                    {
+                        NextScene();
+                    }
                     HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock);
                     break;
                 case "CLAER":
@@ -411,11 +416,12 @@ public class StoryDisplayManager : MonoBehaviour
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            SkipButton.GetComponent<Button>().onClick.AddListener(() => {
-                OnMainStoryComplete();
-                SkipButton.SetActive(false);
-            });
-
+            //SkipButton.GetComponent<Button>().onClick.AddListener(() => {
+            //    OnMainStoryComplete();
+            //    SkipButton.SetActive(false);
+            //});
+            OnMainStoryComplete();
+            SkipButton.SetActive(false);
 
             return;
         }

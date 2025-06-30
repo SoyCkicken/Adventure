@@ -9,11 +9,11 @@
       "Script_Text": "MainScript_1_1_1",
       "Main_Effect": null,
       "Choice1_Text": null,
-      "Choice1_Next_Scene": null,
+      "Choice1_Next_Scene": "MainScene_1_1_1",
       "Choice2_Text": null,
-      "Choice2_Next_Scene": null,
+      "Choice2_Next_Scene": "MainScene_1_1_1",
       "Choice3_Text": null,
-      "Choice3_Next_Scene": null
+      "Choice3_Next_Scene": "MainScene_1_1_1"
     },
     {
       "Chapter_Index": 1.0,
@@ -126,7 +126,12 @@
       "Scene_Code": "MainScene_1_1_8",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_8",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": 100
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -366,6 +371,21 @@
       "Scene_Code": "MainScene_1_1_24",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_24",
+      "Main_Effect": null,
+      "Choice1_Text": "MainScript_1_1_25",
+      "Choice1_Next_Scene": null,
+      "Choice2_Text": null,
+      "Choice2_Next_Scene": null,
+      "Choice3_Text": null,
+      "Choice3_Next_Scene": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 1.0,
+      "Script_Index": 25.0,
+      "Scene_Code": "MainScene_1_1_25",
+      "Next_Scene": null,
+      "Script_Text": "MainScript_1_1_25",
       "Main_Effect": null,
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
@@ -652,6 +672,21 @@
       "Next_Scene": null,
       "Script_Text": "MainScript_1_2_19",
       "Main_Effect": null,
+      "Choice1_Text": "MainScript_1_2_20",
+      "Choice1_Next_Scene": null,
+      "Choice2_Text": null,
+      "Choice2_Next_Scene": null,
+      "Choice3_Text": null,
+      "Choice3_Next_Scene": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 2.0,
+      "Script_Index": 20.0,
+      "Scene_Code": "MainScene_1_2_20",
+      "Next_Scene": null,
+      "Script_Text": "MainScript_1_2_20",
+      "Main_Effect": null,
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -681,7 +716,12 @@
       "Scene_Code": "MainScene_1_3_2",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_3_2",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": 100
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -696,7 +736,12 @@
       "Scene_Code": "MainScene_1_3_3",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_3_3",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": 100
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -711,13 +756,18 @@
       "Scene_Code": "MainScene_1_3_4",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_3_4",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": 100
+        }
+      ],
       "Choice1_Text": "MainScript_1_3_5",
-      "Choice1_Next_Scene": "MainScene_1_3_8",
+      "Choice1_Next_Scene": null,
       "Choice2_Text": "MainScript_1_3_6",
-      "Choice2_Next_Scene": "MainScene_1_3_8",
+      "Choice2_Next_Scene": null,
       "Choice3_Text": "MainScript_1_3_7",
-      "Choice3_Next_Scene": "MainScene_1_3_8"
+      "Choice3_Next_Scene": null
     },
     {
       "Chapter_Index": 1.0,
@@ -726,7 +776,13 @@
       "Scene_Code": "MainScene_1_3_5",
       "Next_Scene": "MainScene_1_3_8",
       "Script_Text": "MainScript_1_3_5",
-      "Main_Effect": "{\"ID\":\"Effect_003\",\"Code\":\"Weapon_001\",\"Value\":1}]",
+      "Main_Effect": [
+        {
+          "ID": "Effect_003",
+          "Code": "Weapon_001",
+          "Value": 1
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -741,7 +797,13 @@
       "Scene_Code": "MainScene_1_3_6",
       "Next_Scene": "MainScene_1_3_8",
       "Script_Text": "MainScript_1_3_6",
-      "Main_Effect": "{\"ID\":\"Effect_003\",\"Code\":\"Weapon_002\",\"Value\":1}]",
+      "Main_Effect": [
+        {
+          "ID": "Effect_002",
+          "Code": "Weapon_003",
+          "Value": 1
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -756,7 +818,13 @@
       "Scene_Code": "MainScene_1_3_7",
       "Next_Scene": "MainScene_1_3_8",
       "Script_Text": "MainScript_1_3_7",
-      "Main_Effect": "{\"ID\":\"Effect_003\",\"Code\":\"Weapon_004\",\"Value\":1}]",
+      "Main_Effect": [
+        {
+          "ID": "Effect_003",
+          "Code": "Weapon_004",
+          "Value": 1
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
@@ -861,6 +929,21 @@
       "Scene_Code": "MainScene_1_3_14",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_3_14",
+      "Main_Effect": null,
+      "Choice1_Text": "MainScript_1_3_15",
+      "Choice1_Next_Scene": null,
+      "Choice2_Text": null,
+      "Choice2_Next_Scene": null,
+      "Choice3_Text": null,
+      "Choice3_Next_Scene": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 3.0,
+      "Script_Index": 15.0,
+      "Scene_Code": "MainScene_1_3_15",
+      "Next_Scene": null,
+      "Script_Text": "MainScript_1_3_15",
       "Main_Effect": null,
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
@@ -1086,6 +1169,21 @@
       "Scene_Code": "MainScene_1_4_15",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_4_15",
+      "Main_Effect": null,
+      "Choice1_Text": "MainScript_1_4_16",
+      "Choice1_Next_Scene": null,
+      "Choice2_Text": null,
+      "Choice2_Next_Scene": null,
+      "Choice3_Text": null,
+      "Choice3_Next_Scene": null
+    },
+    {
+      "Chapter_Index": 1.0,
+      "Event_Index": 4.0,
+      "Script_Index": 16.0,
+      "Scene_Code": "MainScene_1_4_16",
+      "Next_Scene": null,
+      "Script_Text": "MainScript_1_4_16",
       "Main_Effect": null,
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,

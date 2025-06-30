@@ -36,7 +36,7 @@
       "Random_Event_ID": "EventScene_1_4",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_1_4",
-      "Choice1_Text": null,
+      "Choice1_Text": "EventScript_1_8",
       "Choice2_Text": null,
       "Choice3_Text": null
     },
@@ -66,6 +66,16 @@
       "Random_Event_ID": "EventScene_1_7",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_1_7",
+      "Choice1_Text": "EventScript_1_8",
+      "Choice2_Text": null,
+      "Choice3_Text": null
+    },
+    {
+      "RandomEvent_Index": 1.0,
+      "Script_Index": 8.0,
+      "Random_Event_ID": "EventScene_1_8",
+      "Chapter_Index": 1.0,
+      "Event_Text": "EventScript_1_8",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
@@ -97,7 +107,7 @@
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_2_3",
       "Choice1_Text": "EventScript_2_4",
-      "Choice2_Text": "EventScript_2_7",
+      "Choice2_Text": "EventScript_2_6",
       "Choice3_Text": null
     },
     {
@@ -116,7 +126,7 @@
       "Random_Event_ID": "EventScene_2_5",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_2_5",
-      "Choice1_Text": null,
+      "Choice1_Text": "EventScript_2_10",
       "Choice2_Text": null,
       "Choice3_Text": null
     },
@@ -126,7 +136,7 @@
       "Random_Event_ID": "EventScene_2_6",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_2_6",
-      "Choice1_Text": "EventScript_2_11",
+      "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
     },
@@ -156,7 +166,7 @@
       "Random_Event_ID": "EventScene_2_9",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_2_9",
-      "Choice1_Text": null,
+      "Choice1_Text": "EventScript_2_10",
       "Choice2_Text": null,
       "Choice3_Text": null
     },
@@ -166,16 +176,6 @@
       "Random_Event_ID": "EventScene_2_10",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_2_10",
-      "Choice1_Text": "EventScript_2_11",
-      "Choice2_Text": null,
-      "Choice3_Text": null
-    },
-    {
-      "RandomEvent_Index": 2.0,
-      "Script_Index": 11.0,
-      "Random_Event_ID": "EventScene_2_11",
-      "Chapter_Index": 1.0,
-      "Event_Text": "EventScript_2_11",
       "Choice1_Text": null,
       "Choice2_Text": null,
       "Choice3_Text": null
@@ -216,7 +216,7 @@
       "Random_Event_ID": "EventScene_3_4",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_3_4",
-      "Choice1_Text": null,
+      "Choice1_Text": "EventScript_3_17",
       "Choice2_Text": null,
       "Choice3_Text": null
     },
@@ -446,7 +446,7 @@
       "Random_Event_ID": "EventScene_4_10",
       "Chapter_Index": 1.0,
       "Event_Text": "EventScript_4_10",
-      "Choice1_Text": null,
+      "Choice1_Text": "EventScript_4_11",
       "Choice2_Text": null,
       "Choice3_Text": null
     },

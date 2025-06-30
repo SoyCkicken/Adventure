@@ -71,6 +71,16 @@
       "NEXTLOSE": null
     },
     {
+      "Event_Index": 1.0,
+      "EventScript_Index": 8.0,
+      "Script_Code": "EventScript_1_8",
+      "KOR": "다음 이야기로",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
       "Event_Index": 2.0,
       "EventScript_Index": 1.0,
       "Script_Code": "EventScript_2_1",
@@ -124,16 +134,6 @@
       "Event_Index": 2.0,
       "EventScript_Index": 6.0,
       "Script_Code": "EventScript_2_6",
-      "KOR": "다음 이야기로\n",
-      "displayType": "TEXT",
-      "EventBreak": "Break",
-      "NEXTWIN": null,
-      "NEXTLOSE": null
-    },
-    {
-      "Event_Index": 2.0,
-      "EventScript_Index": 7.0,
-      "Script_Code": "EventScript_2_7",
       "KOR": "공격한다",
       "displayType": "TEXT",
       "EventBreak": null,
@@ -142,19 +142,29 @@
     },
     {
       "Event_Index": 2.0,
-      "EventScript_Index": 8.0,
-      "Script_Code": "EventScript_2_8",
+      "EventScript_Index": 7.0,
+      "Script_Code": "EventScript_2_7",
       "KOR": "monster_002",
       "displayType": "BATTLE",
       "EventBreak": null,
-      "NEXTWIN": "EventScript_2_9",
-      "NEXTLOSE": "EventScript_2_10"
+      "NEXTWIN": "EventScript_2_8",
+      "NEXTLOSE": "EventScript_2_9"
+    },
+    {
+      "Event_Index": 2.0,
+      "EventScript_Index": 8.0,
+      "Script_Code": "EventScript_2_8",
+      "KOR": "전투 성공",
+      "displayType": "TEXT",
+      "EventBreak": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
     },
     {
       "Event_Index": 2.0,
       "EventScript_Index": 9.0,
       "Script_Code": "EventScript_2_9",
-      "KOR": "전투 성공",
+      "KOR": "전투 실패\n",
       "displayType": "TEXT",
       "EventBreak": "Break",
       "NEXTWIN": null,
@@ -164,16 +174,6 @@
       "Event_Index": 2.0,
       "EventScript_Index": 10.0,
       "Script_Code": "EventScript_2_10",
-      "KOR": "전투 실패\n",
-      "displayType": "TEXT",
-      "EventBreak": "Break",
-      "NEXTWIN": null,
-      "NEXTLOSE": null
-    },
-    {
-      "Event_Index": 2.0,
-      "EventScript_Index": 11.0,
-      "Script_Code": "EventScript_2_11",
       "KOR": "다음 이야기로\n",
       "displayType": "TEXT",
       "EventBreak": "Break",
@@ -216,7 +216,7 @@
       "Script_Code": "EventScript_3_4",
       "KOR": "조금 멀리 돌아가지만 이 허름한 다리를 지나는 것 보단 안전할것 같다\n",
       "displayType": "TEXT",
-      "EventBreak": "Break",
+      "EventBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -296,7 +296,7 @@
       "Script_Code": "EventScript_3_12",
       "KOR": "기분이 매우 나쁘지만 어떻게든 다리를 건넜다\n",
       "displayType": "TEXT",
-      "EventBreak": "Break",
+      "EventBreak": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },

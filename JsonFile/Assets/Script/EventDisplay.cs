@@ -491,11 +491,12 @@ public class EventDisplay : MonoBehaviour
         SkipButton.SetActive(true);
         //터치 감지 기능 추가
         SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            PickNewGroup();  // or onCompleteCallback?.Invoke(false); depending on context
-            SkipButton.SetActive(false);
-        });
+        //SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+        //{
+            
+        //});
+        PickNewGroup();  // or onCompleteCallback?.Invoke(false); depending on context
+        SkipButton.SetActive(false);
     }
     private float EvaluateFormula(string formula)
     {

@@ -17,7 +17,3 @@ public class Story_Master_Main
     public string Choice3_Text;
     public string Choice3_Next_Scene;
 }
-
-/*
- * 인스펙터 창에서 값을 변경을 하면 시니얼라이징에서 저장 하는 식으로
- */
