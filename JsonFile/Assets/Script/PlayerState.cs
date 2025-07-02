@@ -54,6 +54,7 @@ public class PlayerState : MonoBehaviour
     public TMP_Text StateSTRhtext = null;
     public TMP_Text StateAGItext = null;
     public TMP_Text StateCHAText = null;
+    //신성은 임시적으로 MAG값을 가져옴
     public TMP_Text StateDIVText = null;
     public TMP_Text StateINTText = null;
     public TMP_Text StateMAGtext = null;
@@ -64,6 +65,7 @@ public class PlayerState : MonoBehaviour
     public TMP_Text UIDIVText = null;
     public TMP_Text UIINTText = null;
     public TMP_Text UIMAGtext = null;
+    public TMP_Text UIHealthtext = null;
     //public TMP_Text levelTEXT = null;
     public List<GameObject> buttons;
     private int tempp;
@@ -217,6 +219,7 @@ public class PlayerState : MonoBehaviour
     public void AddMAG()
     {
         MAG++;
+        DIV = MAG;
         point--;
         updateState();
     }

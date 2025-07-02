@@ -40,3 +40,5 @@
 줄 간격 늘리는건 TEXT.Specing Options Line의 값 조절
 
 택스트 하나 끝나면 꼭 알트 엔터
+
+나중에 MAG , DIV 가 합쳐질 예정인데 유저한테 보이는건 MAG만 보이고 MAG값 만큼 자동으로 DIV로 값이 변경되게 만들 예정 그 후 빈 자리는 Health가 차지 할꺼임

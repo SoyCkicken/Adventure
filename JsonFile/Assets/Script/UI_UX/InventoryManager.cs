@@ -12,12 +12,14 @@ public class InventoryManager : MonoBehaviour
     public GameObject inventoryPanel;
     public Transform itemGridParent;
     public GameObject itemSlotPrefab;
+    [Header("아이템 정보창")]
     public GameObject itemDetailPanel;
     public TextMeshProUGUI itemNameText;
     public TextMeshProUGUI itemStatText;
     public TextMeshProUGUI itemOptionText;
     public TextMeshProUGUI itemDescText;
     public TextMeshProUGUI itemTypeText;
+    public Image item_Icon;
     public Button equipButton;
     public Button unequipButton;
     public Button useButton;
@@ -30,7 +32,8 @@ public class InventoryManager : MonoBehaviour
     public TMP_Text SoulTEXT;
     public GameObject pendingItemUIPrefab;
     public Transform pendingItemUIParent;
-    
+    public SpriteBank spriteBank;
+
     [Header("Data References")]
     public EquipmentSystem equipmentSystem;
     public JsonManager jsonManager;
@@ -184,6 +187,24 @@ public class InventoryManager : MonoBehaviour
             itemNameText.text = weapon?.Weapon_Name;
             itemDescText.text = weapon?.Description;
             itemTypeText.text = "무기";
+            if (!string.IsNullOrEmpty(item.Item_Name))
+            {
+                Debug.Log(item.Item_Name);
+                if (item_Icon == null)
+                {
+                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
+                    return;
+                }
+                Sprite s = spriteBank.Load(item.Item_Name);
+                if (s != null)
+                {
+                    item_Icon.sprite = s;
+                }
+            }
+            else
+            {
+                item_Icon.sprite = null;
+            }
         }
         else if (item.Item_Type == "Armor")
         {
@@ -191,6 +212,24 @@ public class InventoryManager : MonoBehaviour
             itemNameText.text = armor?.Armor_NAME;
             itemDescText.text = armor?.Description;
             itemTypeText.text = "방어구";
+            if (!string.IsNullOrEmpty(item.Item_Name))
+            {
+                Debug.Log(item.Item_Name);
+                if (item_Icon == null)
+                {
+                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
+                    return;
+                }
+                Sprite s = spriteBank.Load(item.Item_Name);
+                if (s != null)
+                {
+                    item_Icon.sprite = s;
+                }
+            }
+            else
+            {
+                item_Icon.sprite = null;
+            }
         }
         else if (item.Item_Type == "Consumable")
         {
@@ -198,6 +237,24 @@ public class InventoryManager : MonoBehaviour
             itemNameText.text = Consumptionitem?.Item_NAME;
             itemDescText.text = Consumptionitem?.Item_Description;
             itemTypeText.text = "소비 아이템";
+            if (!string.IsNullOrEmpty(item.Item_Name))
+            {
+                Debug.Log(item.Item_Name);
+                if (item_Icon == null)
+                {
+                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
+                    return;
+                }
+                Sprite s = spriteBank.Load(item.Item_Name);
+                if (s != null)
+                {
+                    item_Icon.sprite = s;
+                }
+            }
+            else
+            {
+                item_Icon.sprite = null;
+            }
         }
         else
         {
@@ -205,6 +262,24 @@ public class InventoryManager : MonoBehaviour
             itemNameText.text = Normalitem?.Item_NAME;
             itemDescText.text = Normalitem?.Item_Description;
             itemTypeText.text = "일반 아이템";
+            if (!string.IsNullOrEmpty(item.Item_Name))
+            {
+                Debug.Log(item.Item_Name);
+                if (item_Icon == null)
+                {
+                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
+                    return;
+                }
+                Sprite s = spriteBank.Load(item.Item_Name);
+                if (s != null)
+                {
+                    item_Icon.sprite = s;
+                }
+            }
+            else
+            {
+                item_Icon.sprite = null;
+            }
         }
 
         itemStatText.text = GetStatText(item);
