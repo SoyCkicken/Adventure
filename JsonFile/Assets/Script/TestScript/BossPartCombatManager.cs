@@ -22,6 +22,7 @@ public class BossPartCombatManager : MonoBehaviour
     public Button attackButton;
     private bool isPlayerTurn = true;
     private int currentIndex = 0;
+    private string selectedPartName = null;
     [Header("사운드 설정")]
     public AudioSource audioSource;
     public AudioClip hitSound;      // 플레이어 공격 성공
@@ -34,8 +35,8 @@ public class BossPartCombatManager : MonoBehaviour
     /// </summary>
     void Start()
     {
-        leftButton.onClick.AddListener(() => { OnClickLeft(); });
-        rightButton.onClick.AddListener(() => { OnClickRight(); });
+        //leftButton.onClick.AddListener(() => { OnClickLeft(); });
+        //rightButton.onClick.AddListener(() => { OnClickRight(); });
         attackButton.onClick.AddListener(() => { OnClickAttack(); });
         UpdateSliders();
         Log("플레이어의 턴입니다.");
@@ -56,9 +57,9 @@ public class BossPartCombatManager : MonoBehaviour
             return;
         }
 
-        string selectedPart = parts[currentIndex];
-        testPlayer.PerformAttack(testBoss, selectedPart);
-        Log($"플레이어가 {selectedPart} 부위를 공격했습니다.");
+        //string selectedPart = parts[currentIndex];
+        testPlayer.PerformAttack(testBoss, selectedPartName);
+        Log($"플레이어가 {selectedPartName} 부위를 공격했습니다.");
         //PlayHitSound();
         if (testBoss.IsDead)
         {
@@ -70,6 +71,12 @@ public class BossPartCombatManager : MonoBehaviour
         isPlayerTurn = false;
         UpdateSliders();
         Invoke(nameof(EnemyTurn), 1.5f);
+    }
+
+    public void SetSelectedPart(string partName)
+    {
+        selectedPartName = partName;
+        selectedPartText.text = $"선택된 부위: {partName}";
     }
 
     void EnemyTurn()
