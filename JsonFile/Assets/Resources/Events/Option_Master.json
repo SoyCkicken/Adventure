@@ -14,13 +14,13 @@
     },
     {
       "Option_ID": "Option_003",
-      "Option_Description": "공격 적중 시 화상 디버프",
+      "Option_Description": "공격 적중 시 최대 체력 비례 데미지 디버프",
       "Effect_ID": "Effect_003",
       "Option_Type": "OnHit"
     },
     {
       "Option_ID": "Option_004",
-      "Option_Description": "공격 적중 시 체력 회복 버프 적용",
+      "Option_Description": "최대 체력 비례 회복",
       "Effect_ID": "Effect_004",
       "Option_Type": "OnHit"
     },

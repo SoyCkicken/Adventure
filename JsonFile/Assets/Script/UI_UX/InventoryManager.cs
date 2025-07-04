@@ -47,9 +47,9 @@ public class InventoryManager : MonoBehaviour
     public ItemSlotUI armorEquipSlot;
     private List<ItemSlotUI> slotUIs = new();
     private List<ItemData> pendingItems = new();
-    private const int minSlotCount = 10;
+    private const int minSlotCount = 7;
     private int currnetSlotCount;
-    private const int maxSlotCount = 21;
+    private const int maxSlotCount = 14;
 
     private ItemData selectedItem;
 
@@ -57,7 +57,7 @@ public class InventoryManager : MonoBehaviour
     {
         // 테스트용 아이템 추가
         // 소모 아이템 같은 경우 아직 구조가 정해지지 않아서 이렇게 되어 있음
-        inventoryItems.Add(new ItemData { Item_ID = "Potion_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });
+        inventoryItems.Add(new ItemData { Item_ID = "Item_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });
         // 여기 부터는 실질 적으로 아이템의 정보가 DATA로 들어가 있음
         //inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
         //inventoryItems.Add(new ItemData { Item_ID = "Armor_001", Item_Type = "Armor", Icon = "sword_iron" });
@@ -234,9 +234,9 @@ public class InventoryManager : MonoBehaviour
         else if (item.Item_Type == "Consumable")
         {
             var Consumptionitem = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
-            itemNameText.text = Consumptionitem?.Item_NAME;
-            itemDescText.text = Consumptionitem?.Item_Description;
-            itemTypeText.text = "소비 아이템";
+            itemNameText.text = Consumptionitem.Item_NAME;
+            itemDescText.text = Consumptionitem.Item_Description;
+            itemTypeText.text = "소비";
             if (!string.IsNullOrEmpty(item.Item_Name))
             {
                 Debug.Log(item.Item_Name);
@@ -261,7 +261,7 @@ public class InventoryManager : MonoBehaviour
             var Normalitem = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
             itemNameText.text = Normalitem?.Item_NAME;
             itemDescText.text = Normalitem?.Item_Description;
-            itemTypeText.text = "일반 아이템";
+            itemTypeText.text = "일반";
             if (!string.IsNullOrEmpty(item.Item_Name))
             {
                 Debug.Log(item.Item_Name);
@@ -312,6 +312,7 @@ public class InventoryManager : MonoBehaviour
                 useButton.gameObject.SetActive(true);
                 removeButton.gameObject.SetActive(true);
                 var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+                //Debug.Log($"옵션 아이디 값 : {master.Item_Option1}");
                 selectedItem.Option_1_ID = master.Item_Option1;
                 selectedItem.Option_Value1 = master.Option1_Value;
                 selectedItem.Option_2_ID = master.Item_Option2;
@@ -341,8 +342,8 @@ public class InventoryManager : MonoBehaviour
         else if (item.Item_Type == "Consumable")
         {
             List<string> effects = new();
-            if (item.Heal_Value > 0) effects.Add($"체력 회복: {item.Heal_Value}");
-            if (item.Mental_Heal_Value > 0) effects.Add($"정신력 회복: {item.Mental_Heal_Value}");
+            //if (item.Heal_Value > 0) effects.Add($"체력 회복: {item.Heal_Value}");
+            //if (item.Mental_Heal_Value > 0) effects.Add($"정신력 회복: {item.Mental_Heal_Value}");
             return string.Join(", ", effects);
         }
         return "";
@@ -353,6 +354,8 @@ public class InventoryManager : MonoBehaviour
         List<string> options = new();
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
         var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+        var itemMasters = jsonManager.GetItemMasters("Item_Master");
+        var optionMasters = jsonManager.GetOptionMasters("Option_Master");
 
         string id1 = "", id2 = "";
         int val1 = 0, val2 = 0;
@@ -373,6 +376,14 @@ public class InventoryManager : MonoBehaviour
             id2 = armor?.Armor_Option2;
             val2 = armor?.Option2_Value ?? 0;
         }
+        else if (item.Item_Type == "Consumable")
+        {
+            var Consumable = itemMasters.FirstOrDefault(a => a.Item_ID == item.Item_ID);
+            id1 = Consumable?.Item_Option1;
+            val1 = Consumable?.Option1_Value ?? 0;
+            id2 = Consumable?.Item_Option2;
+            val2 = Consumable?.Option2_Value ?? 0;
+        }
         else
         {
             id1 = item.Option_1_ID;
@@ -383,14 +394,16 @@ public class InventoryManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(id1) && id1 != "null")
         {
-            string desc = OptionManager.GetOptionDescription(id1);
+           var option_1 = optionMasters.FirstOrDefault(a => a.Option_ID == id1);
+            string desc = option_1.Option_Description;
             if (!string.IsNullOrEmpty(desc))
                 options.Add($"{desc} +{val1}");
         }
 
         if (!string.IsNullOrEmpty(id2) && id2 != "null")
         {
-            string desc = OptionManager.GetOptionDescription(id2);
+            var option_2 = optionMasters.FirstOrDefault(a => a.Option_ID == id2);
+            string desc = option_2.Option_Description;
             if (!string.IsNullOrEmpty(desc))
                 options.Add($"{desc} +{val2}");
         }
@@ -526,7 +539,7 @@ public class InventoryManager : MonoBehaviour
     }
     int GetInventorySizeFromStrength(int strength)
     {
-        return Mathf.Clamp(10 + (strength / 3), minSlotCount, maxSlotCount);
+        return Mathf.Clamp(minSlotCount + (strength / 3), minSlotCount, maxSlotCount);
     }
     public void updateSoulText()
     {

@@ -2,10 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 using System.Linq;
-using static Unity.VisualScripting.FlowStateWidget;
-
+#if UNITY_EDITOR
 public class RemoteTester : MonoBehaviour
 {
     [Header("왼쪽 카테고리 버튼")]
@@ -143,3 +141,4 @@ public class RemoteTester : MonoBehaviour
         //inventoryManager.ClearAllItems();
     }
 }
+#endif

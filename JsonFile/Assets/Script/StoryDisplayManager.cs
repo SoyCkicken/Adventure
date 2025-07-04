@@ -34,6 +34,7 @@ public class StoryDisplayManager : MonoBehaviour
     private List<Main_Script_Master_Main> scriptEventsCache;
     public InventoryManager inventoryManager; // 아이템 지급을 위해 필요
     public event Action<string> OnBattleJoin;
+    private bool isStoryTransitioning = false;
     [Header("UI References")]
     public List<GameObject> Testblocks = new List<GameObject>();
 
@@ -44,6 +45,21 @@ public class StoryDisplayManager : MonoBehaviour
     /// 메인 스토리 연출 시작 (GameFlowManager에서 호출)
     /// </summary>
     /// 
+
+    private void Start()
+    {
+        var handler = SkipButton.GetComponent<SkipOrScrollHandler>();
+        if (handler != null)
+        {
+            handler.targetScrollRect = scrollRect; // Scroll View 연결
+            handler.OnTapSkip = () =>
+            {
+                Debug.Log("스킵 버튼 눌림");
+                OnSkip();
+                // 여기에 기존 스킵 처리 로직 넣어도 됨
+            };
+        }
+    }
 
     private void OnSkip()
     {
@@ -181,6 +197,8 @@ public class StoryDisplayManager : MonoBehaviour
     public void OnMainStoryComplete()
     {
         onCompleteCallback?.Invoke();
+        isStoryTransitioning = false;
+        Debug.Log($"isStoryTransitioning의 값 : {isStoryTransitioning} 이번에는 넘어가면 안된다!");
     }
 
     private void ClearContent()
@@ -369,6 +387,7 @@ public class StoryDisplayManager : MonoBehaviour
     }
     private string GetDisplayTextFromScript(string code, List<Main_Script_Master_Main> scriptEvents)
     {
+
         var match = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == code.Trim());
         Debug.Log(match);
         if (match != null)
@@ -424,15 +443,15 @@ public class StoryDisplayManager : MonoBehaviour
         .FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
         if (script != null && script.StoryBreak == "Break")
         {
+            if (isStoryTransitioning) return;
+            isStoryTransitioning = true;
+            Debug.Log($"isStoryTransitioning의 값 : {isStoryTransitioning}");
             Debug.Log("브레이크문 들어왔습니다");
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            //SkipButton.GetComponent<Button>().onClick.AddListener(() => {
-            //    OnMainStoryComplete();
-            //    SkipButton.SetActive(false);
-            //});
             OnMainStoryComplete();
+           
             SkipButton.SetActive(false);
 
             return;

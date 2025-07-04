@@ -1,252 +1,149 @@
+// PlayerState.cs (Refactored for clarity, structure, and readability)
+
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class PlayerState : MonoBehaviour
 {
-    // Start is called before the first frame update
-    //힘, 민첩, 신성, 매력, 체력, 정신력
-    //    스탯 이름   약어 설명  주요 기능
-    //힘(Strength)    STR 근접 전투력, 체력 계열   물리 대미지, 무기 착용 조건, 밀기/파괴
-    //민첩(Agility)    AGI 속도와 회피력 선공, 회피율, 도주, 은신
-    //신성(Divinity)   DIV 신적인 능력치 신계 능력, 신성 장비 사용, 특정 선택지
-    //매력(Charisma)   CHA 설득과 대인 영향력  대화/협상 성공률, NPC 반응, 특정 이벤트 해금
-    //체력(Health)    플레이어의 전투 체력 및 일반 체력과 연관있음
-    //정신력(Mentality) 플레이어의 일반 정신력
-    //공격력(Damage)           //전투시 얼마 정도의 데미지를 입히는지
-    //공격력 = 무기 공격력 + (스탯 가중치*스탯) 정도? 
-    //방어력(Ammor)            //전투시 얼마 정도의 데미지 감소를 시키는지
-    //방어력 = 방어구 방어력 +(스탯 가중치 * 스탯)  +if(방패 같이 추가 방어력을 올릴수 있는 수단 + (스탯 가중치 + 스탯))
-    //데미지 계산 공식
-    //타겟의 체력 =- 공격력 - 방어력 + 장비 옵션 데미지 
-    //공격 속도(AttackSpeed) 얼마 속도로 공격을 하는지
-    //회피(Dodge)        몇퍼센트 확률로 데미지를 회피하는지
-    //회피 장비들은 전부 더하는 식으로 계산할 예정
-    //예시) 방어구에서 15%만큼 올려주고 기본으로 15% 무기에서 10%가 추가 된다면 총 40%확률로 회피한다 이런식으로
-
-    [SerializeField]
-    public JsonManager jsonManager;
-    [SerializeField]
-    public int STR = 5;
-    [SerializeField]
-    public int AGI = 5;
-    [SerializeField]
-    public int DIV = 5;
-    [SerializeField]
-    public int INT = 5;
-    [SerializeField]
-    public int MAG = 5;
-    [SerializeField]
-    public int CHA = 5;
-    [SerializeField]
-    public int Health = 5;
-    public int CurrentHealth = 0;
-    public int HP = 0;
-    public int CurrentMental = 0;
-    public int MP = 0;
+    [Header("스탯 관련 변수")]
+    public int STR = 5, AGI = 5, DIV = 5, INT = 5, MAG = 5, CHA = 5;
+    public int Health = 5, CurrentHealth = 0, HP = 0;
+    public int CurrentMental = 0, MP = 0;
     public int Level = 1;
-    [Header("여기부터 능력치 UI관련되어 있는 옵션들입니다")]
+    public int Experience = 100000;
+
+    [Header("레벨업 및 임시 저장용")]
+    private int ExperienceRequired = 100;
+    private int point;
+    private int tempPoint, tempSTR, tempAGI, tempDIV, tempINT, tempMAG, tempCHA, tempHealth;
+
+    [Header("UI 요소 및 연결 객체")]
     public GameObject PlayerStateObject;
-    public int point;
-    [SerializeField]
-    public TMP_Text StateSTRhtext = null;
-    public TMP_Text StateAGItext = null;
-    public TMP_Text StateCHAText = null;
-    //신성은 임시적으로 MAG값을 가져옴
-    public TMP_Text StateDIVText = null;
-    public TMP_Text StateINTText = null;
-    public TMP_Text StateMAGtext = null;
-    public TMP_Text StateHealthText = null;
-    public TMP_Text UISSTRtext = null;
-    public TMP_Text UIDEXtext = null;
-    public TMP_Text UICHAText = null;
-    public TMP_Text UIDIVText = null;
-    public TMP_Text UIINTText = null;
-    public TMP_Text UIMAGtext = null;
-    public TMP_Text UIHealthtext = null;
-    //public TMP_Text levelTEXT = null;
-    public List<GameObject> buttons;
-    private int tempp;
-    private int temps;
-    private int tempd;
-    private int tempc;
-    private int tempi;
-    private int tempm;
-    private int temph;
-    private int tempDi;
+    public TMP_Text StateSTRText, StateAGIText, StateDIVText, StateINTText, StateMAGText, StateCHAText, StateHealthText , StatePointText;
+    public TMP_Text UISSTRText, UIDEXText, UIDIVText, UIINTText, UIMAGText, UICHAText, UIHealthText;
     public GameObject CloseButton;
     public InventoryManager InventoryManager;
-    private int Experience_required = 100;//필요 경험치
-    public int Experience = 100000;
+    public JsonManager jsonManager;
+    public List<GameObject> buttons;
+
     private void Awake()
     {
         PlayerStateObject.SetActive(false);
-
-        //시작할때 체력 제한을 두고
-        if (Health / 3 >= 3)
-        {
-            if (Health >= 15)
-            {
-                HP = 5;
-            }
-            HP = Health / 3;
-
-        }
-        else
-        {
-            HP = 3;
-        }
-        if (INT / 3 >= 3)
-        {
-            if (INT >= 15)
-            {
-                MP = 5;
-            }
-            MP = INT / 3;
-        }
-        else
-        {
-            MP = 3;
-        }
+        HP = CalculateStatHealth(Health);
+        MP = CalculateStatMental(INT);
         CurrentHealth = HP;
         CurrentMental = MP;
-        updateState();
+        UpdateStateUI();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (CurrentHealth >= HP)
-            CurrentHealth = HP;
-        if (CurrentMental >= MP)
-            CurrentMental = MP;
-        //최소 수치 보장
-    }
-    public void levelUp()
-    {
-        if (Experience > Experience_required)
+        CurrentHealth = Mathf.Min(CurrentHealth, HP);
+        CurrentMental = Mathf.Min(CurrentMental, MP);
+        if (point == 0)
         {
-            updateState();
-            Experience -= Experience_required;
-            Experience_required = Convert.ToInt32(Experience_required * 1.2f);
-            point += 3;
-            tempp = point;
-            PlayerStateObject.SetActive(true);
-            temps = STR;
-            tempd = AGI;
-            tempc = CHA;
-            tempi = INT;
-            tempm = MAG;
-            temph = Health;
-            tempDi = DIV;
+            CloseButton.SetActive(true);
         }
+        else
+        {
+            CloseButton.SetActive(false);
+        }
+    }
 
-    }
-    public void resetPlayerState()
+    public void LevelUp()
     {
-        point = tempp;
-        STR = temps;
-        AGI = tempd;
-        CHA = tempc;
-        INT = tempi;
-        MAG = tempm;
-        Health = temph;
-        tempDi = DIV;
-        updateState();
+        if (Experience < ExperienceRequired) return;
+
+        Experience -= ExperienceRequired;
+        ExperienceRequired = Mathf.CeilToInt(ExperienceRequired * 1.2f);
+        //레벨업 하면 UI 갱신
+        InventoryManager.updateSoulText();
+        point += 3;
+        tempPoint = point;
+        StatePointText.text = point.ToString();
+        SaveTempStats();
+        PlayerStateObject.SetActive(true);
+        UpdateStateUI();
     }
-    public void closePlayerState()
+
+    public void ResetPlayerState()
+    {
+        point = tempPoint;
+        StatePointText.text = point.ToString();
+        STR = tempSTR; AGI = tempAGI; DIV = tempDIV; INT = tempINT; MAG = tempMAG; CHA = tempCHA; Health = tempHealth;
+        UpdateStateUI();
+    }
+
+    public void ClosePlayerState()
     {
         PlayerStateObject.SetActive(false);
-        tempp = 0;
-    }
-    public void updateState()
-    {
-        StateSTRhtext.text = STR.ToString();
-        StateAGItext.text = AGI.ToString();
-        StateCHAText.text = CHA.ToString();
-        StateINTText.text = INT.ToString();
-        StateMAGtext.text = MAG.ToString();
-        StateHealthText.text = Health.ToString();
-        StateDIVText.text = DIV.ToString();
-
-        UISSTRtext.text = STR.ToString();
-        UIDEXtext.text = AGI.ToString();
-        UICHAText.text = CHA.ToString();
-        UIINTText.text = INT.ToString();
-        UIMAGtext.text = MAG.ToString() ;
-        UIDIVText.text = DIV.ToString() ;
         InventoryManager.updateDPS_MaxHealth();
         InventoryManager.UpdateInventoryByStrength();
+        tempPoint = 0;
     }
-    public void AddStrength()
-    {
-        STR++;
-        point--;
-        updateState();
-    }
-    public void AddDEX()
-    {
-        AGI++;
-        point--;
-        updateState();
-    }
-    public void AddCHR()
-    {
-        CHA++;
-        point--;
-        updateState();
-    }
+
+    public void AddStrength() => AddStat(ref STR);
+    public void AddDEX() => AddStat(ref AGI);
+    public void AddCHR() => AddStat(ref CHA);
+
     public void AddINT()
     {
-        INT++;
-        point--;
-        if (INT / 3 >= 3)
-        {
-            if (INT >= 15)
-            {
-                MP = 5;
-            }
-            MP = INT / 3;
-        }
-        else
-        {
-            MP = 3;
-        }
-        updateState();
+        AddStat(ref INT);
+        MP = CalculateStatMental(INT);
     }
+
     public void AddMAG()
     {
-        MAG++;
-        DIV = MAG;
-        point--;
-        updateState();
+        AddStat(ref MAG);
+        DIV = MAG; // 신성은 마법력 기반
     }
+
     public void AddHealth()
     {
-        Health++;
-        point--;
-        if (Health / 3 >= 3)
-        {
-            if (Health >= 15)
-            {
-                HP = 5;
-            }
-            HP = Health / 3;
-
-        }
-        else
-        {
-            HP = 3;
-        }
-        updateState();
+        AddStat(ref Health);
+        HP = CalculateStatHealth(Health);
     }
-    public void AddDivinity()
+
+    public void AddDivinity() => AddStat(ref DIV);
+
+    private void AddStat(ref int stat)
     {
-        DIV++;
+        if (point <= 0) return;
+        stat++;
         point--;
-        updateState();
+        StatePointText.text = point.ToString();
+        UpdateStateUI();
     }
 
+    private int CalculateStatHealth(int value)
+    {
+        if (value >= 15) return 5;
+        return Mathf.Max(value / 3, 3);
+    }
+
+    private int CalculateStatMental(int value)
+    {
+        if (value >= 15) return 5;
+        return Mathf.Max(value / 3, 3);
+    }
+
+    private void SaveTempStats()
+    {
+        tempSTR = STR; tempAGI = AGI; tempDIV = DIV;
+        tempINT = INT; tempMAG = MAG; tempCHA = CHA; tempHealth = Health;
+    }
+
+    private void UpdateStateUI()
+    {
+        StateSTRText.text = STR.ToString(); UISSTRText.text = STR.ToString();
+        StateAGIText.text = AGI.ToString(); UIDEXText.text = AGI.ToString();
+        //StateDIVText.text = DIV.ToString(); UIDIVText.text = DIV.ToString();
+        StateINTText.text = INT.ToString(); UIINTText.text = INT.ToString();
+        StateMAGText.text = MAG.ToString(); UIMAGText.text = MAG.ToString();
+        StateCHAText.text = CHA.ToString(); UICHAText.text = CHA.ToString();
+        StateHealthText.text = Health.ToString(); UIHealthText.text = Health.ToString();
+    }
 }
