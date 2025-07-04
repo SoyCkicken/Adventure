@@ -2,12 +2,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerState : MonoBehaviour
 {
+    public static PlayerState Instance { get; private set; }
+
     [Header("스탯 관련 변수")]
     public int STR = 5, AGI = 5, DIV = 5, MAG = 5, CHA = 5;
     public int Health = 5, CurrentHealth = 0, HP = 0;
@@ -33,6 +36,18 @@ public class PlayerState : MonoBehaviour
 
     private void Awake()
     {
+        if (transform.parent != null)
+            transform.SetParent(null);
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         PlayerStateObject.SetActive(false);
         HP = CalculateStatHealth(Health);
         MP = CalculateStatMental(INT);

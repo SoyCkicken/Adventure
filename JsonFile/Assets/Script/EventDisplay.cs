@@ -10,6 +10,8 @@ using UnityEngine.Playables;
 
 public class EventDisplay : MonoBehaviour
 {
+    public static EventDisplay Instance { get; private set; }
+
     [Header("Prefabs & References")]
     public Transform content;
     public GameObject ImagePrefab;
@@ -54,10 +56,21 @@ public class EventDisplay : MonoBehaviour
 
     private void Awake()
     {
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
-        if(spriteBank == null)
-            spriteBank = FindObjectOfType<SpriteBank>();
+        // 부모 오브젝트에서 분리 (DontDestroyOnLoad 위해)
+        if (transform.parent != null)
+            transform.SetParent(null);
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        jsonManager = JsonManager.Instance;
+        spriteBank = SpriteBank.Instance;
 
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {

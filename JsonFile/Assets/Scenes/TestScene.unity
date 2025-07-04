@@ -266,9 +266,8 @@ GameObject:
   m_Component:
   - component: {fileID: 25302958}
   - component: {fileID: 25302960}
-  - component: {fileID: 25302961}
   m_Layer: 0
-  m_Name: ScriptEventDisplayManager
+  m_Name: ScriptDisplayManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -333,35 +332,6 @@ MonoBehaviour:
   spriteBank: {fileID: 1169618366}
   inventoryManager: {fileID: 1416507560}
   Testblocks: []
---- !u!114 &25302961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 25302956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d94baab00f717404699feb396d7c19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  content: {fileID: 529089260}
-  ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
-  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
-  SkipButton: {fileID: 1641275629}
-  choiceButtonParent: {fileID: 465859462}
-  choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
-  fontSizeManager: {fileID: 914221062}
-  TouchCatcher: {fileID: 1787361090}
-  scrollRect: {fileID: 646720213}
-  playerState: {fileID: 2006169299}
-  count: 0
-  currCount: 0
-  currentGroup: 0
-  currentGroupIndex: 0
-  toBattle: 1
-  groupEvents: []
-  activeBlocks: []
 --- !u!1 &25882259
 GameObject:
   m_ObjectHideFlags: 0
@@ -6662,6 +6632,7 @@ Transform:
   - {fileID: 25302958}
   - {fileID: 2041071671}
   - {fileID: 1847108098}
+  - {fileID: 1039979279}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &601747176
@@ -10934,6 +10905,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1029867927}
   m_CullTransparentMesh: 1
+--- !u!1 &1039979278
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1039979279}
+  - component: {fileID: 1039979280}
+  m_Layer: 0
+  m_Name: EventDisplay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1039979279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1039979278}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 596016689}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1039979280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1039979278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d94baab00f717404699feb396d7c19f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  content: {fileID: 529089260}
+  ImagePrefab: {fileID: 8783375033317449862, guid: 19b5d78196fea7d4dbf31b251015924d, type: 3}
+  TextPrefab: {fileID: 5426579885355773780, guid: cbd214e43cd39e1408b23674dff3dc60, type: 3}
+  SkipButton: {fileID: 1641275629}
+  choiceButtonParent: {fileID: 465859462}
+  choiceButtonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
+  fontSizeManager: {fileID: 914221062}
+  TouchCatcher: {fileID: 1787361090}
+  scrollRect: {fileID: 646720213}
+  playerState: {fileID: 2006169299}
+  count: 0
+  currCount: 0
+  currentGroup: 0
+  currentGroupIndex: 0
+  toBattle: 1
+  groupEvents: []
+  activeBlocks: []
 --- !u!1001 &1057902612
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15902,6 +15934,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1472451145}
+  - component: {fileID: 1472451146}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -15924,6 +15957,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1472451146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1472451144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42072b1f29f4cb3479e2cfbafe1176e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1479674580
 GameObject:
   m_ObjectHideFlags: 0
@@ -19310,7 +19355,7 @@ MonoBehaviour:
   buttonPrefab: {fileID: 2835122277350046135, guid: 6e2fb6ee579612a45ab60eec171ffbe7, type: 3}
   rightPanelParent: {fileID: 2035566631}
   storyDisplayManager: {fileID: 25302960}
-  eventDisplay: {fileID: 25302961}
+  eventDisplay: {fileID: 0}
   gameFlowManager: {fileID: 1847108099}
   inventoryManager: {fileID: 1416507560}
   jsonManager: {fileID: 1190628254}
@@ -20877,7 +20922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainStoryManager: {fileID: 25302960}
-  randomEventManager: {fileID: 25302961}
+  randomEventManager: {fileID: 1039979280}
   battleManager: {fileID: 1010119034}
   monsterSpawner: {fileID: 1206244609}
   inventoryManager: {fileID: 1416507560}
@@ -22374,12 +22419,12 @@ MonoBehaviour:
   STR: 5
   AGI: 5
   DIV: 5
-  INT: 5
   MAG: 5
   CHA: 5
   Health: 5
   CurrentHealth: 0
   HP: 0
+  INT: 5
   CurrentMental: 0
   MP: 0
   Level: 1
@@ -24991,7 +25036,6 @@ SceneRoots:
   - {fileID: 880075639}
   - {fileID: 1422642118}
   - {fileID: 1010119033}
-  - {fileID: 596016689}
   - {fileID: 1279609154}
   - {fileID: 1376282828}
   - {fileID: 1225873731}
@@ -25002,3 +25046,4 @@ SceneRoots:
   - {fileID: 1483688934}
   - {fileID: 169547628}
   - {fileID: 1472451145}
+  - {fileID: 596016689}

@@ -12,6 +12,29 @@ using UnityEngine;
 /// </summary>
 public class JsonManager : MonoBehaviour
 {
+
+    public static JsonManager Instance { get; private set; }
+
+    void Awake()
+    {  // 부모 오브젝트에서 분리 (DontDestroyOnLoad 위해)
+        if (transform.parent != null)
+            transform.SetParent(null);
+
+        // 싱글톤 중복 방지
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+
+        LoadAllJsonFiles();
+    }
+
+
     // 파일명 → 파싱된 List<Story_Master> 저장
     //메인 스토리 관련해서 추가 된 딕셔너리
     private Dictionary<string, List<Story_Master_Main>> storyMasterDict = new Dictionary<string, List<Story_Master_Main>>();
@@ -40,10 +63,7 @@ public class JsonManager : MonoBehaviour
     private Dictionary<string, List<Gradient>> Gradient_Item_Dict = new Dictionary<string, List<Gradient>>();
 
     private Dictionary<string, List<MerchantItem>> merchantItemCache = new();
-    void Awake()
-    {
-        LoadAllJsonFiles();
-    }
+   
 
     private void LoadAllJsonFiles()
     {

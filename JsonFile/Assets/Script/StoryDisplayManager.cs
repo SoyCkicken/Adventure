@@ -10,6 +10,8 @@ using TMPro;
 
 public class StoryDisplayManager : MonoBehaviour
 {
+    public static StoryDisplayManager Instance { get; private set; }
+
     public GameObject ImagePrefab;
     public GameObject TextPrefab;
     public GameObject SkipButton;
@@ -44,7 +46,21 @@ public class StoryDisplayManager : MonoBehaviour
     /// <summary>
     /// 메인 스토리 연출 시작 (GameFlowManager에서 호출)
     /// </summary>
-    /// 
+
+    void Awake()
+    {
+        if (transform.parent != null)
+            transform.SetParent(null);
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
