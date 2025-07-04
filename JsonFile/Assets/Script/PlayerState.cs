@@ -9,9 +9,9 @@ using UnityEngine.UI;
 public class PlayerState : MonoBehaviour
 {
     [Header("스탯 관련 변수")]
-    public int STR = 5, AGI = 5, DIV = 5, INT = 5, MAG = 5, CHA = 5;
+    public int STR = 5, AGI = 5, DIV = 5, MAG = 5, CHA = 5;
     public int Health = 5, CurrentHealth = 0, HP = 0;
-    public int CurrentMental = 0, MP = 0;
+    public int INT = 5, CurrentMental = 0, MP = 0;
     public int Level = 1;
     public int Experience = 100000;
 
@@ -28,6 +28,8 @@ public class PlayerState : MonoBehaviour
     public InventoryManager InventoryManager;
     public JsonManager jsonManager;
     public List<GameObject> buttons;
+    public IntegerHPBarScaler integerHPBarScaler;
+    public IntegerHPBarScaler integerMPBarScaler;
 
     private void Awake()
     {
@@ -36,6 +38,8 @@ public class PlayerState : MonoBehaviour
         MP = CalculateStatMental(INT);
         CurrentHealth = HP;
         CurrentMental = MP;
+        integerHPBarScaler.SetMax(HP);
+        integerMPBarScaler.SetMax(MP);
         UpdateStateUI();
     }
 
@@ -43,6 +47,8 @@ public class PlayerState : MonoBehaviour
     {
         CurrentHealth = Mathf.Min(CurrentHealth, HP);
         CurrentMental = Mathf.Min(CurrentMental, MP);
+        integerHPBarScaler.SetCurrent(CurrentHealth);
+        integerMPBarScaler.SetCurrent(CurrentMental);
         if (point == 0)
         {
             CloseButton.SetActive(true);
@@ -82,6 +88,7 @@ public class PlayerState : MonoBehaviour
         PlayerStateObject.SetActive(false);
         InventoryManager.updateDPS_MaxHealth();
         InventoryManager.UpdateInventoryByStrength();
+        Debug.Log(MP);
         tempPoint = 0;
     }
 
@@ -145,5 +152,7 @@ public class PlayerState : MonoBehaviour
         StateMAGText.text = MAG.ToString(); UIMAGText.text = MAG.ToString();
         StateCHAText.text = CHA.ToString(); UICHAText.text = CHA.ToString();
         StateHealthText.text = Health.ToString(); UIHealthText.text = Health.ToString();
+        integerHPBarScaler.SetMax(HP);
+        integerMPBarScaler.SetMax(MP);
     }
 }
