@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MyGame;
 using UnityEngine.Timeline;
+using System;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -297,6 +298,14 @@ public class InventoryManager : MonoBehaviour
                 equipButton.gameObject.SetActive(!isWeaponEquipped);
                 unequipButton.gameObject.SetActive(isWeaponEquipped);
                 removeButton.gameObject.SetActive (!isWeaponEquipped);
+                var weapon_Master = weaponMasters.FirstOrDefault(i => i.Weapon_ID == selectedItem.Item_ID);
+                selectedItem.Option_1_ID = weapon_Master.Option_1_ID;
+                selectedItem.Option_Value1 = weapon_Master.Option_Value1;
+                selectedItem.Option_2_ID = weapon_Master.Option_2_ID;
+                selectedItem.Option_Value2 = weapon_Master.Option_Value1;
+                if(!string.IsNullOrEmpty(selectedItem.Option_1_ID))
+                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                if(!string.IsNullOrEmpty(selectedItem.Option_2_ID))
                 Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 break;
 
@@ -305,19 +314,30 @@ public class InventoryManager : MonoBehaviour
                 equipButton.gameObject.SetActive(!isArmorEquipped);
                 unequipButton.gameObject.SetActive(isArmorEquipped);
                 removeButton.gameObject.SetActive(!isArmorEquipped);
-                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                var armor_Master = armorMasters.FirstOrDefault(i => i.Armor_ID == selectedItem.Item_ID);
+                selectedItem.Option_1_ID = armor_Master.Armor_Option1;
+                selectedItem.Option_Value1 = armor_Master.Option1_Value;
+                selectedItem.Option_2_ID = armor_Master.Armor_Option2;
+                selectedItem.Option_Value2 = armor_Master.Option2_Value;
+                if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
+                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
+                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 break;
 
             case "Consumable":
                 useButton.gameObject.SetActive(true);
                 removeButton.gameObject.SetActive(true);
-                var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+                var item_Master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
                 //Debug.Log($"옵션 아이디 값 : {master.Item_Option1}");
-                selectedItem.Option_1_ID = master.Item_Option1;
-                selectedItem.Option_Value1 = master.Option1_Value;
-                selectedItem.Option_2_ID = master.Item_Option2;
-                selectedItem.Option_Value2 = master.Option2_Value;
-                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                selectedItem.Option_1_ID = item_Master.Item_Option1;
+                selectedItem.Option_Value1 = item_Master.Option1_Value;
+                selectedItem.Option_2_ID = item_Master.Item_Option2;
+                selectedItem.Option_Value2 = item_Master.Option2_Value;
+                if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
+                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
+                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 break;
             case "Item":
                 removeButton.gameObject.SetActive(true);
