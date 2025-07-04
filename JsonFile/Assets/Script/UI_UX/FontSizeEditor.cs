@@ -68,6 +68,7 @@ public class FontSizeManager : MonoBehaviour
         {
             registeredTexts.Add(text);
             text.fontSize = fontSize;
+            text.lineSpacing = TextLineSize;
         }
     }
 
@@ -116,7 +117,6 @@ public class FontSizeManager : MonoBehaviour
         {
             if (text != null)
                 text.fontSize = fontSize;
-            if (text != null)
                 text.lineSpacing = TextLineSize;
         }
 

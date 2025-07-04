@@ -176,7 +176,7 @@ public class OptionManager : MonoBehaviour
         { "Option_001", "추가 데미지" },
         { "Option_002", "크리티컬 확률 증가" },
         { "Option_003", "화상 피해" },
-        { "Option_004", "최대 체력 퍼센트 회복" },
+        { "Option_004", "최대 체력 " },
         { "Option_005", "공격속도 버프" },
         { "Option_006", "1회 실질 체력 회복" },
         { "Option_007", "1회 실질 정신력 회복" },
