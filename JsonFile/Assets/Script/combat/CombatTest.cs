@@ -19,8 +19,6 @@ public class CombatTest : MonoBehaviour
     /// <summary>
     /// GameFlowManager가 전투를 시작할 때 호출합니다.
     /// </summary>
-    
-    //이건 자동 전투 전용으로 쓸 예정임
     public void RunBattle(Action<bool> onComplete)
     {
         this.onComplete = onComplete;

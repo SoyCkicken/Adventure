@@ -10,8 +10,6 @@ using UnityEngine.Playables;
 
 public class EventDisplay : MonoBehaviour
 {
-    public static EventDisplay Instance { get; private set; }
-
     [Header("Prefabs & References")]
     public Transform content;
     public GameObject ImagePrefab;
@@ -56,21 +54,10 @@ public class EventDisplay : MonoBehaviour
 
     private void Awake()
     {
-        // 부모 오브젝트에서 분리 (DontDestroyOnLoad 위해)
-        if (transform.parent != null)
-            transform.SetParent(null);
-
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        jsonManager = JsonManager.Instance;
-        spriteBank = SpriteBank.Instance;
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+        if(spriteBank == null)
+            spriteBank = FindObjectOfType<SpriteBank>();
 
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {
@@ -534,7 +521,7 @@ public class EventDisplay : MonoBehaviour
         // 간단한 STR * 10 구조만 처리
         if (formula.Contains("STR"))
         {
-            int str = playerState.GetStat("Strength"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int str = playerState.STR; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("STR*", "");
 
@@ -552,7 +539,7 @@ public class EventDisplay : MonoBehaviour
         }
         else if (formula.Contains("DEX"))
         {
-            int DEX = playerState.GetStat("Agility"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int DEX = playerState.AGI; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("DEX*", "");
 
@@ -568,7 +555,7 @@ public class EventDisplay : MonoBehaviour
         }
         else if (formula.Contains("DIV"))
         {
-            int DIV = playerState.GetStat("Divine"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int DIV = playerState.DIV; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("DIV*", "");
 
@@ -585,7 +572,7 @@ public class EventDisplay : MonoBehaviour
 
         else if (formula.Contains("INT"))
         {
-            int INT = playerState.GetStat("Intelligence"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int INT = playerState.INT; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("INT*", "");
 
@@ -602,7 +589,7 @@ public class EventDisplay : MonoBehaviour
 
         else if (formula.Contains("MAG"))
         {
-            int MAG = playerState.GetStat("Magic"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int MAG = playerState.MAG; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("MAG*", "");
 
@@ -619,7 +606,7 @@ public class EventDisplay : MonoBehaviour
 
         else if (formula.Contains("CHA"))
         {
-            int CHA = playerState.GetStat("Charisma"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int CHA = playerState.CHA; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("CHA*", "");
 
@@ -636,7 +623,7 @@ public class EventDisplay : MonoBehaviour
 
         else if (formula.Contains("HEALTH"))
         {
-            int HEALTH = playerState.GetStat("Health"); // 임시 값 (플레이어 스탯에서 가져와야 함)
+            int HEALTH = playerState.Health; // 임시 값 (플레이어 스탯에서 가져와야 함)
             string sanitized = formula.Replace(" ", ""); // 공백 제거
             string factor = sanitized.Replace("HEALTH*", "");
 
