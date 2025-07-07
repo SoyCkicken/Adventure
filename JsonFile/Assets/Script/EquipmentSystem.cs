@@ -31,12 +31,12 @@ public class EquipmentSystem : MonoBehaviour
         // 무기 장착 처리
         if (weapon != null)
         {
-            int tempDamage = Convert.ToInt32(weapon.Weapon_DMG + (playerState.STR * weapon.STR_Scaling)
-                + (playerState.AGI * weapon.DEX_Scaling)
-                + (playerState.INT * weapon.INT_Scaling)
-                + (playerState.MAG * weapon.MAG_Scaling)
-                + (playerState.CHA * weapon.CHR_Scaling)
-                + (playerState.DIV * weapon.DIV_Scaling));
+            int tempDamage = Convert.ToInt32(weapon.Weapon_DMG + (playerState.GetStat("Strength") * weapon.STR_Scaling)
+                + (playerState.GetStat("Agility") * weapon.DEX_Scaling)
+                + (playerState.GetStat("Intelligence") * weapon.INT_Scaling)
+                + (playerState.GetStat("Magic") * weapon.MAG_Scaling)
+                + (playerState.GetStat("Charisma") * weapon.CHR_Scaling)
+                + (playerState.GetStat("Divine") * weapon.DIV_Scaling));
             player.damage = tempDamage;
             // 옵션 리스트에 추가
             if (!string.IsNullOrEmpty(weapon.Option_1_ID))

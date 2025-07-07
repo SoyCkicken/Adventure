@@ -62,7 +62,7 @@ public class InventoryManager : MonoBehaviour
         // 여기 부터는 실질 적으로 아이템의 정보가 DATA로 들어가 있음
         //inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
         //inventoryItems.Add(new ItemData { Item_ID = "Armor_001", Item_Type = "Armor", Icon = "sword_iron" });
-        int currnetSlotCount = GetInventorySizeFromStrength(playerState.STR);
+        int currnetSlotCount = GetInventorySizeFromStrength(playerState.GetStat("Strength"));
         // UI 버튼 연결
         equipButton.onClick.AddListener(OnClickEquip);
         unequipButton.onClick.AddListener(OnClickUnequip);
@@ -122,7 +122,7 @@ public class InventoryManager : MonoBehaviour
     // 힘에 따라 칸수 조절인데
     public void UpdateInventoryByStrength()
     {
-        int newCount = GetInventorySizeFromStrength(playerState.STR);
+        int newCount = GetInventorySizeFromStrength(playerState.GetStat("Strength"));
 
         if (newCount < currnetSlotCount)
         {
@@ -464,27 +464,6 @@ public class InventoryManager : MonoBehaviour
             Debug.Log("인벤토리가 가득 찼습니다. 장착 해제 실패");
             return;
         }
-
-        //if (selectedItem.Item_Type == "Weapon")
-        //{
-        //    var unequippedItem = weaponEquipSlot.CurrentItem; // 🔒 캐시
-        //    weaponEquipSlot.Clear();
-        //    AddItemToInventory(unequippedItem);               // ⬅ 이걸로 넣어야 안전
-        //    player.RemoveBuffByItem(unequippedItem.Item_ID);
-
-        //    player.RemoveBuffByItem(selectedItem.Item_ID);
-
-        //}
-        //else if (selectedItem.Item_Type == "Armor")
-        //{
-        //    var unequippedItem = armorEquipSlot.CurrentItem; // 🔒 캐시
-        //    armorEquipSlot.Clear();
-        //    AddItemToInventory(unequippedItem);               // ⬅ 이걸로 넣어야 안전
-        //    player.RemoveBuffByItem(unequippedItem.Item_ID);
-
-        //    player.RemoveBuffByItem(selectedItem.Item_ID);
-        //}
-
         if (selectedItem.Item_Type == "Weapon")
         {
             var old = weaponEquipSlot.CurrentItem;

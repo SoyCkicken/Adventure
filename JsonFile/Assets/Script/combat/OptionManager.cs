@@ -124,7 +124,7 @@ public class OneShot_HPHealing : IOptionEffect
         if (ctx.playerState != null)
         {
             ctx.playerState.CurrentHealth = Mathf.Min(
-                ctx.playerState.HP,
+                ctx.playerState.MaxHealthPoint,
                 ctx.playerState.CurrentHealth + ctx.Value
             );
             Debug.Log($"[PlayerState] 체력 회복: {ctx.Value}");
@@ -139,7 +139,7 @@ public class OneShot_MPHealing : IOptionEffect
         if (ctx.playerState != null)
         {
             ctx.playerState.CurrentMental = Mathf.Min(
-                ctx.playerState.MP,
+                ctx.playerState.MaxHealthMentalPoint,
                 ctx.playerState.CurrentMental + ctx.Value
             );
             Debug.Log($"[PlayerState] 정신력 회복: {ctx.Value}");
