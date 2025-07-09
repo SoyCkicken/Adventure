@@ -61,8 +61,8 @@ public class PlayerStatsUI : MonoBehaviour
         //DIVText.text = playerState.DIV.ToString(); DIVTextUI.text = playerState.DIV.ToString();
 
         POINTTEXT.text = playerState.Point.ToString();
-        integerHPBarScaler.SetMax(playerState.HP);
-        integerMPBarScaler.SetMax(playerState.MP);
+        integerHPBarScaler.SetHPMax(playerState.HP);
+        integerMPBarScaler.SetMPMax(playerState.MP);
     }
 
     public void ResetUI()
@@ -79,6 +79,7 @@ public class PlayerStatsUI : MonoBehaviour
 
     public void OnClickLevelUp()
     {
+        ShowPanel();
         if (playerState.TryLevelUp())
         {
             UpdateUI();

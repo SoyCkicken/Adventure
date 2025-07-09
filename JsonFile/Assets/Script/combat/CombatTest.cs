@@ -10,6 +10,8 @@ public class CombatTest : MonoBehaviour
     public MonsterOptionManager monsterOptionManager;
     public Character player;
     public Character enemy;
+    public BattleUI battleUI;
+    
 
     // 전투 완료 콜백
     private Action<bool> onComplete;
@@ -81,7 +83,7 @@ public class CombatTest : MonoBehaviour
             if (battleOver) yield break;
 
             int dealt = attacker.Attack(target);
-
+           
             // 플레이어 온히트 옵션 적용
             if (isPlayer && attacker.OnHitOptions != null)
             {
@@ -116,9 +118,10 @@ public class CombatTest : MonoBehaviour
                     }
                 }
                 Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
+                
             }
-           
 
+            battleUI.UpdateUI();
 
             // 죽음 판정
             if (target.Health <= 0)

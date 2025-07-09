@@ -137,7 +137,7 @@ public class RemoteTester : MonoBehaviour
 
     void RemoveAllInventory()
     {
-        Debug.Log("[리모컨] 인벤토리에 있는 모든 아이템 삭제");
+        Debug.Log("[리모컨] 인벤토리에 있는 모든 아이템 삭제 실제로는 작동 안함");
         //inventoryManager.ClearAllItems();
     }
 }

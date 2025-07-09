@@ -21,6 +21,7 @@ public class PlayerState : MonoBehaviour
     private int ExperienceRequired = 100;
     public int Point { get; private set; }
 
+    [SerializeField] private PlayerStatsUI statsUI;
     private int tempPoint;
     private int tempSTR, tempAGI, tempDIV, tempINT, tempMAG, tempCHA, tempHealth;
 
@@ -47,7 +48,7 @@ public class PlayerState : MonoBehaviour
         if (Point <= 0) return;
         stat++;
         Point--;
-        SaveTempStats();
+        statsUI.UpdateUI();
     }
 
     public void AddSTR() => AddStat(ref STR);
@@ -58,6 +59,7 @@ public class PlayerState : MonoBehaviour
     {
         AddStat(ref INT);
         MP = CalculateMental(INT);
+        statsUI.UpdateUI();
     }
 
     public void AddMAG()
@@ -70,6 +72,9 @@ public class PlayerState : MonoBehaviour
     {
         AddStat(ref Health);
         HP = CalculateHealth(Health);
+        //Debug.Log($"HP = {HP}");
+        //Debug.Log($"Health = {Health}");
+        statsUI.UpdateUI();
     }
 
     public void ResetStats()
@@ -100,6 +105,12 @@ public class PlayerState : MonoBehaviour
         CurrentMental = MP;
     }
 
-    private int CalculateHealth(int value) => value >= 15 ? 5 : Mathf.Max(value / 3, 3);
-    private int CalculateMental(int value) => value >= 15 ? 5 : Mathf.Max(value / 3, 3);
+    private int CalculateHealth(int value)
+    {
+        return value >= 15 ? 5 : Mathf.Max(value / 3, 3);
+    }
+    private int CalculateMental(int value)
+    {
+        return value >= 15 ? 5 : Mathf.Max(value / 3, 3);
+    }
 }

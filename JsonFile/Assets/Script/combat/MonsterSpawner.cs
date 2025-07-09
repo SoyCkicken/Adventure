@@ -11,6 +11,7 @@ public class MonsterSpawner : MonoBehaviour
     public CombatTest combatTest;
     public GameObject enemy;
     public GameObject player;
+    public BattleUI battleUI;
 
     [Header("몬스터 프리팹")]
     public GameObject monsterPrefab;
@@ -69,6 +70,7 @@ public class MonsterSpawner : MonoBehaviour
         ch.MonPas_Effect2 = data.MonPas_Effect2;
         ch.MonPas_Value1 = data.Effect1_Stat;
         ch.MonPas_Value2 = data.Effect2_Stat;
+        battleUI.Enemy = ch;
 
         if (data.MonPas_Effect1 != null)
         {
@@ -96,6 +98,7 @@ public class MonsterSpawner : MonoBehaviour
         ApplyPassive(data.MonPas_Effect2, data.Effect2_Stat, data.Mon_ID, ch);
 
         Debug.Log($"[Spawn] {_currentMonster.name} 세팅 완료");
+        battleUI.SetingUI();//UI 갱신시켜줌
     }
 
     //여기서 패시브 등록을 해줌

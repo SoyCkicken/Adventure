@@ -151,6 +151,7 @@ public class OptionManager : MonoBehaviour
 {
     public JsonManager jsonManager;
     private static Dictionary<string, Option_Master> optionDict = new();
+    public BuffUI buffUI;
 
 
     public static void Initialize(JsonManager json)
@@ -281,7 +282,7 @@ public class OptionManager : MonoBehaviour
                 item_ID = item.Item_ID,
                 option_ID = item.Option_1_ID
             });
-        Debug.Log("옵션 처리 후");
+        Debug.Log("1번 옵션 적용 완료");
         if (!string.IsNullOrEmpty(item.Option_2_ID))
             OptionManager.ApplyOption(item.Option_2_ID, new OptionContext
             {
@@ -290,6 +291,8 @@ public class OptionManager : MonoBehaviour
                 item_ID = item.Item_ID,
                 option_ID = item.Option_2_ID
             });
+        Debug.Log("2번 옵션 적용 완료");
+        Debug.Log("옵션 처리 후");
     }
 
     public static string GetOptionDescription(string optionID)

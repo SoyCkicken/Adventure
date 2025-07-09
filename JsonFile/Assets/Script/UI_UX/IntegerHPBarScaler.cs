@@ -9,10 +9,12 @@ public class IntegerHPBarScaler : MonoBehaviour
 {
     [Header("슬라이더 연결")]
     public Slider slider;
+    public RectTransform BackGroundHPBar;
+    public RectTransform BackGroundHPBar2;
 
     [Header("기준 설정")]
     public int maxStatHP = 5;         // 최대 체력 수치 (예: 5)
-    public float baseWidth = 200f;    // 체력이 5일 때 바 길이
+    public float baseWidth = 160f;    // 체력이 5일 때 바 길이
 
     [Header("최소 길이 보정")]
     public float minWidth = 80f;
@@ -21,32 +23,55 @@ public class IntegerHPBarScaler : MonoBehaviour
 
     void Awake()
     {
-        barTransform = GetComponent<RectTransform>();
+        //barTransform = GetComponent<RectTransform>();
         if (slider == null)
             slider = GetComponent<Slider>();
 
         // 정수형 슬라이더로 설정
         slider.wholeNumbers = true;
-        Debug.Log($"RectTransform 대상: {barTransform.gameObject.name}");
+        //Debug.Log($"RectTransform 대상: {barTransform.gameObject.name}");
     }
 
     /// <summary>
     /// 체력 수치에 맞춰 체력바 길이 및 최대값 설정
     /// </summary>
-    public void SetMax(int maxHP)
+    public void SetHPMax(int maxHP)
     {
         float ratio = (float)maxHP / maxStatHP;
         float newWidth = baseWidth * ratio;
         newWidth = Mathf.Clamp(newWidth, minWidth, baseWidth);
 
-        Debug.Log($"[HPBar] maxHP: {maxHP}, 계산된 길이: {newWidth}");
+        Debug.Log($"[HPBar or MPBar] maxHP: {maxHP}, 계산된 길이: {newWidth}");
 
-        Vector2 size = barTransform.sizeDelta;
+        Vector2 size = BackGroundHPBar.sizeDelta;
         size.x = newWidth;
-        barTransform.sizeDelta = size;
+        BackGroundHPBar.sizeDelta = size;
+        Vector2 size2 = BackGroundHPBar2.sizeDelta;
+        size2.x = size.x +5;
+        BackGroundHPBar2.sizeDelta = size2;
+
 
         slider.maxValue = maxHP;
         slider.value = maxHP;
+    }
+    public void SetMPMax(int maxMP)
+    {
+        float ratio = (float)maxMP / maxStatHP;
+        float newWidth = baseWidth * ratio;
+        newWidth = Mathf.Clamp(newWidth, minWidth, baseWidth);
+
+        Debug.Log($"[MPBar] maxHP: {maxMP}, 계산된 길이: {newWidth}");
+
+        Vector2 size = BackGroundHPBar.sizeDelta;
+        size.x = newWidth;
+        BackGroundHPBar.sizeDelta = size;
+        Vector2 size2 = BackGroundHPBar2.sizeDelta;
+        size2.x = size.x + 5;
+        BackGroundHPBar2.sizeDelta = size2;
+
+
+        slider.maxValue = maxMP;
+        slider.value = maxMP;
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6894815111855523166
+--- !u!1 &4308687409621515135
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2199011831804642058}
-  - component: {fileID: 1620391399126659264}
+  - component: {fileID: 8725352552364020114}
+  - component: {fileID: 4096722335985489125}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: "Enemy\uC9D1\uC911\uC804\uD22C\uC6A9"
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2199011831804642058
+--- !u!4 &8725352552364020114
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6894815111855523166}
+  m_GameObject: {fileID: 4308687409621515135}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,13 +32,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1620391399126659264
+--- !u!114 &4096722335985489125
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6894815111855523166}
+  m_GameObject: {fileID: 4308687409621515135}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bd025e7acd703d3498f186734050314e, type: 3}
@@ -59,3 +59,4 @@ MonoBehaviour:
   MonPas_Effect2: 
   MonPas_Value2: 0
   OnHitOptions: []
+  OnEnemyHitOptions: []

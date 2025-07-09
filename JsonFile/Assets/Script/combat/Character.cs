@@ -42,6 +42,7 @@ namespace MyGame
         public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
         public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
         public Dictionary<string, BuffData> activeBuffs = new();
+        public BuffUI buffUI;
         //이 부분은 캐릭터 클래스의 하위에 있어야 되는 부분이라서 맨 아래로 안배고 맨 위에 넣음
         [System.Serializable]
         public struct EquippedOption
@@ -63,10 +64,6 @@ namespace MyGame
             int reduced = Mathf.Max(damage - armor, 0);
             Health -= reduced;
             Debug.Log($"{charaterName}이(가) 받는 데미지: {damage} → 방어구 {armor} 경감 → 실제 {reduced}. 현재 HP: {Health}");
-            if (Health <= 0)
-            {
-                //Destroy(this);
-            }
             return reduced;
         }
 
@@ -85,8 +82,8 @@ namespace MyGame
             else
             { Debug.Log(damage);
                 return target.TakeDamage(damage); }
+
             
-               
         }
         //원래 코드
         public void AddBuff(BuffData buff)
@@ -134,6 +131,7 @@ namespace MyGame
                 Debug.Log($"[공속 증가] {charaterName} → speed x{1f + multiplier} = {speed}");
                 Debug.Log($"공격 속도 버프 {buff.Value}%만큼 증가");
             }
+            buffUI.SetBuffs(activeBuffs.Values.ToList());
             StartBuffRoutine();
             // 필요 시 스탯 반영
         }
@@ -213,59 +211,8 @@ namespace MyGame
                 activeBuffs.Remove(key);
                 Debug.Log($"[Buff 제거] {key}");
             }
+            buffUI?.SetBuffs(activeBuffs.Values.ToList());
         }
-
-        //디 버프 , 버프 용 버프 업데이트 함수
-        //public void UpdateBuffs(float deltaTime)
-        //{
-        //    var expired = new List<string>();
-
-        //    foreach (var kv in activeBuffs)
-        //    {
-        //        var buff = kv.Value;
-        //        if (buff.Duration > 0)
-        //        {
-        //            buff.Elapsed += deltaTime;
-        //            if (buff.Elapsed >= buff.Duration)
-        //                expired.Add(kv.Key);
-        //            //Debug.Log("버프 업데이트됨");
-        //            //여기에 버프에 대해서 실질적으로 적용 시킴
-        //            if (buff.OptionID == "Option_003" && buff.IsDebuff)
-        //            {
-        //                float tickInterval = 1f; // 1초마다 피해
-        //                int ticks = (int)(buff.Elapsed / tickInterval) - (int)((buff.Elapsed - deltaTime) / tickInterval);
-        //                for (int i = 0; i < ticks; i++)
-        //                {
-        //                    int damage = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-        //                    buff.Target.Health -= damage;
-        //                    Debug.Log($"[화상 지속 피해] {buff.Target.charaterName} → {damage} 피해. 남은 HP: {buff.Target.Health}");
-        //                }
-        //            }
-        //            if (buff.OptionID == "Option_004" && buff.IsDebuff)
-        //            {
-        //                float tickInterval = 1f; // 1초마다 피해
-        //                int ticks = (int)(buff.Elapsed / tickInterval) - (int)((buff.Elapsed - deltaTime) / tickInterval);
-        //                for (int i = 0; i < ticks; i++)
-        //                {
-        //                    int healting = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-        //                    buff.Target.Health += healting;
-        //                    //최대 체력 제한
-        //                    if (buff.Target.MaxHealth <= buff.Target.Health)
-        //                    {
-        //                        buff.Target.Health = buff.Target.MaxHealth;
-        //                    }
-        //                    Debug.Log($"[회복 적용 중] {buff.Target.charaterName} → {healting} 회복. 남은 HP: {buff.Target.Health}");
-        //                }
-        //            }
-        //        }
-
-        //        foreach (var key in expired)
-        //        {
-        //            RemoveBuff(key);
-        //            Debug.Log($"[버프 만료] {key}");
-        //        }
-        //    }
-        //}
 
         //버프 제거용
         public void RemoveBuff(string buffID)
@@ -280,6 +227,7 @@ namespace MyGame
             }
 
             activeBuffs.Remove(buffID);
+            buffUI?.SetBuffs(activeBuffs.Values.ToList());
         }
 
         //일시적인 버프 모두 제거
