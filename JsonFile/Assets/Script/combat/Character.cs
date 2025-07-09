@@ -88,7 +88,7 @@ namespace MyGame
         //원래 코드
         public void AddBuff(BuffData buff)
         {
-
+            Debug.Log($"버프를 누가 사용중인가 {this.name}");
             if (activeBuffs.ContainsKey(buff.BuffID))
             {
                 Debug.Log($" {buff.Target}에게 버프 중복 적용 무시됨: {buff.BuffID}");
@@ -131,7 +131,8 @@ namespace MyGame
                 Debug.Log($"[공속 증가] {charaterName} → speed x{1f + multiplier} = {speed}");
                 Debug.Log($"공격 속도 버프 {buff.Value}%만큼 증가");
             }
-            buffUI.SetBuffs(activeBuffs.Values.ToList());
+            Debug.LogWarning($"누가 버프가 추가 되고 있는가? {this}");
+            buffUI.SetBuffs(activeBuffs.Values.ToList(),this);
             StartBuffRoutine();
             // 필요 시 스탯 반영
         }
@@ -211,7 +212,7 @@ namespace MyGame
                 activeBuffs.Remove(key);
                 Debug.Log($"[Buff 제거] {key}");
             }
-            buffUI?.SetBuffs(activeBuffs.Values.ToList());
+            buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
         }
 
         //버프 제거용
@@ -227,7 +228,7 @@ namespace MyGame
             }
 
             activeBuffs.Remove(buffID);
-            buffUI?.SetBuffs(activeBuffs.Values.ToList());
+            buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
         }
 
         //일시적인 버프 모두 제거

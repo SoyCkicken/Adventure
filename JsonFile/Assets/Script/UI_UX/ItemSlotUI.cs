@@ -54,6 +54,7 @@ public class ItemSlotUI : MonoBehaviour
     public void Clear()
     {
         data = null;
+        CurrentItem = null;
         icon.sprite = null;
         onClickCallback = null;
     }
