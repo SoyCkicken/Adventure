@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.TextCore.Text;
 using MyGame;
 using Character = MyGame.Character;
+using static UnityEngine.GraphicsBuffer;
 
 // 1) 옵션 효과 인터페이스
 public interface IOptionEffect
@@ -14,6 +15,7 @@ public interface IOptionEffect
     /// <param name="user">효과를 발동한 주체</param>
     /// <param name="target">효과를 받는 대상</param>
     /// <param name="value">옵션의 수치값</param>
+    
     void Apply(OptionContext ctx);
 }
 
@@ -54,7 +56,8 @@ public class CriticalBuff : IOptionEffect
             SourceItemID = ctx.item_ID,
             IsPassive = true
         };
-        ctx.User.AddBuff(buffKey);
+        ctx.User.AddBuff(buffKey); 
+       //ctx.User.buffUI?.SetBuffs(ctx.User.activeBuffs.Values.ToList(), ctx.User);
     }
 }
 
@@ -72,6 +75,7 @@ public class SpeedBuff : IOptionEffect
             IsPassive = true
         };
         ctx.User.AddBuff(buffKey);
+        //ctx.User.buffUI?.SetBuffs(ctx.User.activeBuffs.Values.ToList(), ctx.User);
     }
 }
 
@@ -91,6 +95,7 @@ public class HealtingBuff : IOptionEffect
             SourceItemID = ctx.item_ID
         };
         ctx.User.AddBuff(buff);
+        //ctx.User.buffUI?.SetBuffs(ctx.User.activeBuffs.Values.ToList(), ctx.User);
         Debug.Log($"{ctx.User}에게 버프 적용 : {ctx.option_ID}");
     }
 }
@@ -114,6 +119,7 @@ public class BurnDebuffEffect : IOptionEffect
 
         ctx.Target.AddBuff(debuff);
         Debug.Log($"{ctx.Target}에게 버프 적용 : {ctx.option_ID}");
+        //ctx.Target.buffUI?.SetBuffs(ctx.Target.activeBuffs.Values.ToList(), ctx.Target);
     }
 }
 public class OneShot_HPHealing : IOptionEffect
@@ -149,9 +155,9 @@ public class OneShot_MPHealing : IOptionEffect
 // 4) OptionManager
 public class OptionManager : MonoBehaviour
 {
+    public BuffUI buffUI;
     public JsonManager jsonManager;
     private static Dictionary<string, Option_Master> optionDict = new();
-    public BuffUI buffUI;
 
 
     public static void Initialize(JsonManager json)

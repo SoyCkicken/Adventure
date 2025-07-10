@@ -42,7 +42,9 @@ namespace MyGame
         public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
         public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
         public Dictionary<string, BuffData> activeBuffs = new();
+        public BattleUI battleUI;
         public BuffUI buffUI;
+        private Coroutine uiRefreshRoutine;
         //이 부분은 캐릭터 클래스의 하위에 있어야 되는 부분이라서 맨 아래로 안배고 맨 위에 넣음
         [System.Serializable]
         public struct EquippedOption
@@ -132,7 +134,9 @@ namespace MyGame
                 Debug.Log($"공격 속도 버프 {buff.Value}%만큼 증가");
             }
             Debug.LogWarning($"누가 버프가 추가 되고 있는가? {this}");
-            buffUI.SetBuffs(activeBuffs.Values.ToList(),this);
+
+            if (uiRefreshRoutine != null) StopCoroutine(uiRefreshRoutine);
+            uiRefreshRoutine = StartCoroutine(DelayUIRefresh());
             StartBuffRoutine();
             // 필요 시 스탯 반영
         }
@@ -148,7 +152,7 @@ namespace MyGame
                 foreach (var kv in activeBuffs)
                 {
                     var buff = kv.Value;
-                    buff.Elapsed += 1f;
+                    //buff.Elapsed += 1f;
 
                     // 매 1초마다 적용되는 효과
                     switch (buff.OptionID)
@@ -180,11 +184,17 @@ namespace MyGame
                     yield break;
                 }
 
+                battleUI.UpdateUI();
                 yield return wait;
             }
         }
-
-
+        //프레임 대기
+        private IEnumerator DelayUIRefresh()
+        {
+            yield return null; // 1 프레임 대기 (모든 버프 적용 후)
+            buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
+            uiRefreshRoutine = null;
+        }
 
         //장착 해제 시 버프 해제
         public void RemoveBuffByItem(string itemID)

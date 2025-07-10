@@ -72,6 +72,7 @@ public class MonsterSpawner : MonoBehaviour
         ch.MonPas_Value1 = data.Effect1_Stat;
         ch.MonPas_Value2 = data.Effect2_Stat;
         battleUI.Enemy = ch;
+        ch.battleUI = battleUI;
         ch.buffUI = buffUI; 
 
         if (data.MonPas_Effect1 != null)

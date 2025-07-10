@@ -1,11 +1,13 @@
 using MyGame;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class BuffUI : MonoBehaviour
 {
-    public Transform buffParent;
+    //public Transform buffParent;
     public GameObject buffIconPrefab;
 
     private List<BuffIconUI> activeIcons = new();
@@ -17,22 +19,22 @@ public class BuffUI : MonoBehaviour
     /// </summary>
     public void SetBuffs(List<BuffData> buffs,Character character)
     {
-        Clear();
+        //Clear();
         Transform targetParnent = null; ;
 
+        Debug.Log($"버프 적용 중인 대상 {character.charaterName}");
         if (character.charaterName == "Player")
             targetParnent = playerBuffParent;
         else
         {
             targetParnent = enemyBuffParent;
-
         }
-            
+
 
 
         foreach (var buff in buffs)
-        {
-            var icon = Instantiate(buffIconPrefab, buffParent).GetComponent<BuffIconUI>();
+        { 
+            var icon = Instantiate(buffIconPrefab, targetParnent).GetComponent<BuffIconUI>();
             icon.Set(buff);
             activeIcons.Add(icon);
         }
@@ -45,11 +47,12 @@ public class BuffUI : MonoBehaviour
     {
         foreach (var icon in activeIcons)
         {
-            icon.UpdateUI();
+            //icon.UpdateUI();
+            
         }
     }
 
-    private void Clear()
+    public void Clear()
     {
         foreach (var icon in activeIcons)
             Destroy(icon.gameObject);

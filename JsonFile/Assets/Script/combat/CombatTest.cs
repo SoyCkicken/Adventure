@@ -11,7 +11,7 @@ public class CombatTest : MonoBehaviour
     public Character player;
     public Character enemy;
     public BattleUI battleUI;
-    
+    public BuffUI buffUI;
 
     // 전투 완료 콜백
     private Action<bool> onComplete;
@@ -24,7 +24,8 @@ public class CombatTest : MonoBehaviour
     public void RunBattle(Action<bool> onComplete)
     {
         this.onComplete = onComplete;
-
+        if(buffUI == null)
+        buffUI = FindObjectOfType<BuffUI>();
         // 옵션 매니저 참조 확보
         if (optionManager == null)
             optionManager = FindObjectOfType<OptionManager>();
@@ -131,6 +132,8 @@ public class CombatTest : MonoBehaviour
                 Debug.Log(battleOver = (player.Health > 0));
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
+                
+                buffUI.Clear();
                 yield break;
             }
             else if(attacker.Health<=0)
@@ -138,6 +141,7 @@ public class CombatTest : MonoBehaviour
                 battleOver = false;
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
+                buffUI.Clear();
                 yield break;
             }
         }

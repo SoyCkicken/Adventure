@@ -36,6 +36,7 @@ public class BattleUI : MonoBehaviour
     public void UpdateUI()
     {
         //공격시 실행 예정
+        //테스트 해보다가 디버프로 데미지 주는 버프일때도 갱신을 하게 만들어야 해서 어택 루프랑 버프 효과 적용할때 호출하게 해놨음
         monsterHPSlider.value = Enemy.Health;
         playerHpSlider.value = player.Health;
     }
