@@ -1,4 +1,5 @@
-﻿using Spine;
+﻿using MyGame;
+using Spine;
 using Spine.Unity;
 using System.Collections.Generic;
 using TMPro;
@@ -35,6 +36,24 @@ public class BossPartCombatManager : MonoBehaviour
     /// </summary>
     void Start()
     {
+        testPlayer.AddBuff(new FocusBuffData
+        {
+            OptionID = "Option_003",
+            Value = 10,
+            Duration = 3,
+            Elapsed = 0f
+        });
+
+        testBoss.AddBuff("오른쪽 팔", new FocusBuffData
+        {
+            OptionID = "Option_003",
+            Value = 10,
+            Duration = 3,
+            Elapsed = 0f,
+            DamageRatio = 0.5f,
+            Target = testBoss
+        });
+
         //leftButton.onClick.AddListener(() => { OnClickLeft(); });
         //rightButton.onClick.AddListener(() => { OnClickRight(); });
         attackButton.onClick.AddListener(() => { OnClickAttack(); });
@@ -71,6 +90,7 @@ public class BossPartCombatManager : MonoBehaviour
         isPlayerTurn = false;
         UpdateSliders();
         Invoke(nameof(EnemyTurn), 1.5f);
+        testPlayer.TickDebuffs();
     }
 
     public void SetSelectedPart(string partName)
@@ -102,6 +122,7 @@ public class BossPartCombatManager : MonoBehaviour
 
         isPlayerTurn = true;
         Log("플레이어의 턴입니다.");
+        testBoss.OnEnemyTurnEnd();
     }
 
     void UpdateSelectedPartUI()

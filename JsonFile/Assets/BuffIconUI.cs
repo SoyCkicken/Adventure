@@ -25,11 +25,13 @@ public class BuffIconUI : MonoBehaviour
     {
         buff = data;
         iconImage.sprite = spriteBank.Load(buff.OptionID); // 아이콘 등록
-        timerSlider.fillAmount = data.Duration;
+        //timerSlider.fillAmount = data.Duration;
         //stackText.text = buff.Stack > 1 ? $"x{buff.Stack}" : "";
         //durationText.text = buff.Duration > 0 ? $"{Mathf.CeilToInt(buff.Duration - buff.Elapsed)}s" : "";
-        timerSlider.fillAmount = 1f; // ✅ 처음엔 항상 가득 차 있음
+        timerSlider.fillAmount = 1f; // 처음엔 항상 가득 차 있음
     }
+    //이거 사용안할꺼임
+    /*
     public void UpdateUI()
     {
         if (buff == null || buff.Duration <= 0f) return;
@@ -39,6 +41,7 @@ public class BuffIconUI : MonoBehaviour
         timerSlider.fillAmount = ratio;
         Debug.Log($"[BuffUI] {buff.OptionID} → 남은시간 {remaining:F1}s, 비율: {ratio:F2}");
     }
+    */
     private void Update()
     {
         if (buff == null || buff.Duration <= 0f) return;

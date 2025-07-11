@@ -3133,7 +3133,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &194562122
 Transform:
   m_ObjectHideFlags: 0
@@ -4551,7 +4551,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9878503
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8957,7 +8957,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 61.322628
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -8984,7 +8984,7 @@ Transform:
   m_GameObject: {fileID: 880075636}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 940, y: 542, z: -892}
+  m_LocalPosition: {x: 958.6, y: 527, z: -892}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13242,7 +13242,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1252451439
 Transform:
   m_ObjectHideFlags: 0
@@ -16742,6 +16742,8 @@ MonoBehaviour:
   monsterOptionManager: {fileID: 2041071673}
   player: {fileID: 2006169296}
   enemy: {fileID: 0}
+  playerState: {fileID: 2006169299}
+  inventoryManager: {fileID: 1416507560}
   battleUI: {fileID: 1334330994}
   buffUI: {fileID: 0}
 --- !u!4 &1515041321
@@ -22607,6 +22609,7 @@ MonoBehaviour:
   speed: 0.2
   armor: 5
   CitChance: 10
+  GetEXP: 0
   weapon_Name: 
   armor_Name: 
   MonPas_Effect1: 
@@ -23247,7 +23250,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.0788295}
+  m_AnchoredPosition: {x: 0, y: 0.000019073486}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632
@@ -23541,7 +23544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38d749461727191419c0d4965d1dd9b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buffUI: {fileID: 0}
+  buffUI: {fileID: 249269732}
   jsonManager: {fileID: 1190628254}
 --- !u!114 &2041071673
 MonoBehaviour:

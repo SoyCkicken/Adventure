@@ -29,6 +29,7 @@ namespace MyGame
         public float speed;
         public int armor;
         public int CitChance = 10; //일반적인 크리티컬 확률
+        public int GetEXP;
       
         public string weapon_Name;
         public string armor_Name;
@@ -288,6 +289,16 @@ namespace MyGame
         public bool IsDebuff;           // 🔥 디버프 여부
         public Character Target;        // 🔥 디버프일 경우 대상 (적 캐릭터)
         public Character User;          // 자기 자신
+
+        //집중 전투용 버프 
+        public FocusPartData FocusData = null;
+
+        [System.Serializable]
+        public class FocusPartData
+        {
+            public string PartName;      // "Head", "Arm", "Leg" 등
+            public float DamageRatio;    // 0.25f, 0.5f 등
+        }
     }
 
     

@@ -29,9 +29,6 @@ public class BuffUI : MonoBehaviour
         {
             targetParnent = enemyBuffParent;
         }
-
-
-
         foreach (var buff in buffs)
         { 
             var icon = Instantiate(buffIconPrefab, targetParnent).GetComponent<BuffIconUI>();

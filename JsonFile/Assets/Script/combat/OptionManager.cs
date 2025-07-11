@@ -189,45 +189,6 @@ public class OptionManager : MonoBehaviour
         { "Option_007", "1회 실질 정신력 회복" },
         { "null", "" } // 방어 처리
     };
-
-    //public static void ApplyOption(string optionID, OptionContext ctx)
-    //{
-    //    var opt = GetOption(optionID); // 이미 캐싱된 optionDict에서 가져오는 방식으로 수정
-
-    //    if (opt == null)
-    //    {
-    //        Debug.LogWarning($"[OptionManager] {optionID} 옵션 정보 없음");
-    //        return;
-    //    }
-
-    //    if (!effects.TryGetValue(opt.Effect_ID, out var effect))
-    //    {
-    //        Debug.LogError($"[OptionManager] Effect_ID {opt.Effect_ID} → 미등록 효과");
-    //        return;
-    //    }
-
-    //    switch (opt.Option_Type)
-    //    {
-    //        case "OnEquip":
-    //        case "Passive":
-    //            effect.Apply(ctx);
-    //            Debug.Log($"{ctx.item_ID}장착시 , 패시브 아이템 적용 됨");
-    //            break;
-
-    //        case "OnHit":
-    //            ctx.User.OnHitOptions.Add(new Character.EquippedOption
-    //            {
-    //                OptionID = optionID,
-    //                Value = ctx.Value,
-    //                item_ID = ctx.item_ID
-    //            });
-    //            Debug.Log($"[OptionManager] OnHit 옵션 {optionID} 등록 완료");
-    //            break;
-    //        default:
-    //            Debug.LogWarning($"[OptionManager] 미지원 Option_Type: {opt.Option_Type}");
-    //            break;
-    //    }
-    //}
     public static void ApplyOption(string optionID, OptionContext ctx)
 {
     var opt = GetOption(optionID);

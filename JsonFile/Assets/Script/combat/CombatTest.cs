@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using MyGame;
+using UnityEngine.Playables;
 
 public class CombatTest : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class CombatTest : MonoBehaviour
     public MonsterOptionManager monsterOptionManager;
     public Character player;
     public Character enemy;
+    public PlayerState playerState;
+    public InventoryManager inventoryManager;
     public BattleUI battleUI;
     public BuffUI buffUI;
 
@@ -64,6 +67,10 @@ public class CombatTest : MonoBehaviour
         {
             //Destroy(enemy.gameObject);
             Debug.Log("플레이어가 승리하였습니다");
+            playerState.Experience += enemy.GetEXP;
+            playerState.statsUI.UpdateUI();
+            inventoryManager.updateSoulText();
+
             battleOver = true;
         }
         else

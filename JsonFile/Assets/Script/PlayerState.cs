@@ -21,7 +21,7 @@ public class PlayerState : MonoBehaviour
     private int ExperienceRequired = 100;
     public int Point { get; private set; }
 
-    [SerializeField] private PlayerStatsUI statsUI;
+    [SerializeField] public PlayerStatsUI statsUI;
     private int tempPoint;
     private int tempSTR, tempAGI, tempDIV, tempINT, tempMAG, tempCHA, tempHealth;
 
