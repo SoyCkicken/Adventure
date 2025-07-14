@@ -119,8 +119,13 @@ public class StoryDisplayManager : MonoBehaviour
         SkipButton.SetActive(false);
     }
 
-    void DisplayCurrentStory()
+    public void DisplayCurrentStory()
     {
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
+        {
+            OnSkip();
+        };
         // 기존 DisplayCurrentStory 내부 로직 그대로 유지
         var matchingScript = scriptEventsCache.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
         //Debug.Log(matchingScript.KOR);
@@ -751,7 +756,9 @@ public class StoryDisplayManager : MonoBehaviour
         Debug.Log($"[로드 완료] 현재 스토리: {currentStory.Scene_Code}");
 
         ClearContent();
-        // ⛔ DisplayCurrentStory() 호출 안함!
+        TouchCatcher.SetActive(true);
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
     }
     void gameOver()
     {

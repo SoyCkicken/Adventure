@@ -8,6 +8,7 @@ using TMPro;
 using static UnityEngine.GraphicsBuffer;
 using UnityEngine.Playables;
 using static SaveManager;
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 
 public class EventDisplay : MonoBehaviour
 {
@@ -165,8 +166,9 @@ public class EventDisplay : MonoBehaviour
     /// <summary>
     /// 현재 이벤트 노드 표시
     /// </summary>
-    private void DisplayCurrentEvent()
+    public void DisplayCurrentEvent()
     {
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         Debug.Log("이벤트 출력 시작");
         SkipButton.SetActive(true);
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
@@ -705,6 +707,7 @@ public class EventDisplay : MonoBehaviour
     {
         if (data.savedEventGroups == null || data.savedEventGroups.Count == 0) return;
 
+        Debug.Log("이벤트 쪽 로드 시작 합니다");
         eventGroups = new List<int>(data.savedEventGroups);
         currentGroup = data.savedCurrentEventGroup;
         currentGroupIndex = data.savedCurrentEvetnGroupIndex;

@@ -208,13 +208,15 @@ public class GameFlowManager : MonoBehaviour
                     //그래서 각자 자기꺼 남아있는거 전부 삭제 때리고 넘어가게 했음
                     randomEventManager.ClearContent();
                     mainStoryManager.LoadMainStory(data);
-                    //mainStoryManager.StartMainStory(() => { }); // ✅ 여기
+                    mainStoryManager.DisplayCurrentStory(); // ✅ 여기
+                    Debug.Log("메인스토리 불러옴");
                     break;
 
                 case FlowState.RandomEvent:
                     mainStoryManager.ClearContent();
                     randomEventManager.LoadEventData(data);
-                    randomEventManager.StartEventSequence((bool _) => { });   // ✅ 요걸 직접 추가
+                    randomEventManager.DisplayCurrentEvent();   // ✅ 요걸 직접 추가
+                    Debug.Log("이벤트 불러옴");
                     break;
 
                 case FlowState.Battle:

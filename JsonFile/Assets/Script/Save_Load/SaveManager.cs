@@ -113,7 +113,7 @@ public class SaveManager : MonoBehaviour
         // 각 시스템에 데이터 전달해서 복구
         player.LoadPlayer(data);
         inventory.LoadInventoryData(data);
-        eventDisplay.LoadEventData(data);
+        //eventDisplay.LoadEventData(data);
         //mainStory.LoadMainStory(data);
         gameFlowManager.LoadFlow(data);
 
