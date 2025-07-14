@@ -202,7 +202,7 @@ public class StoryDisplayManager : MonoBehaviour
         Debug.Log($"isStoryTransitioning의 값 : {isStoryTransitioning} 이번에는 넘어가면 안된다!");
     }
 
-    private void ClearContent()
+    public void ClearContent()
     {
         foreach (var go in Testblocks)
             Destroy(go);
@@ -749,8 +749,9 @@ public class StoryDisplayManager : MonoBehaviour
         currentStory = storyList[currentIndex];
 
         Debug.Log($"[로드 완료] 현재 스토리: {currentStory.Scene_Code}");
+
         ClearContent();
-        DisplayCurrentStory();
+        // ⛔ DisplayCurrentStory() 호출 안함!
     }
     void gameOver()
     {

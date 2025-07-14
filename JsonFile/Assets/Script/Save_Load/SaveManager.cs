@@ -114,7 +114,7 @@ public class SaveManager : MonoBehaviour
         player.LoadPlayer(data);
         inventory.LoadInventoryData(data);
         eventDisplay.LoadEventData(data);
-        mainStory.LoadMainStory(data);
+        //mainStory.LoadMainStory(data);
         gameFlowManager.LoadFlow(data);
 
         Debug.Log("전체 불러오기 완료");

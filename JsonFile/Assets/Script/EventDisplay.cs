@@ -225,7 +225,7 @@ public class EventDisplay : MonoBehaviour
         else
             StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear));
     }
-    private void ClearContent()
+    public void ClearContent()
     {
         foreach (var go in activeBlocks)
             Destroy(go);
@@ -703,47 +703,34 @@ public class EventDisplay : MonoBehaviour
     }
     public void LoadEventData(SaveManager.SaveData data)
     {
-        // 기본 안전 체크
-        if (data.savedEventGroups == null || data.savedEventGroups.Count == 0)
-        {
-            Debug.LogWarning("[EventDisplay] 저장된 이벤트 그룹이 없습니다.");
-            return;
-        }
+        if (data.savedEventGroups == null || data.savedEventGroups.Count == 0) return;
 
-        // 내부 값 초기화
         eventGroups = new List<int>(data.savedEventGroups);
         currentGroup = data.savedCurrentEventGroup;
         currentGroupIndex = data.savedCurrentEvetnGroupIndex;
 
-        Debug.Log($"[EventDisplay] 이벤트 복구 → 그룹 {currentGroup}, 인덱스 {currentGroupIndex}");
+        jsonManager ??= FindObjectOfType<JsonManager>();
+        spriteBank ??= FindObjectOfType<SpriteBank>();
 
-        // JSON/스크립트 초기화
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
-        if (spriteBank == null)
-            spriteBank = FindObjectOfType<SpriteBank>();
-
-        eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event");
-        eventList = eventList.OrderBy(e => e.RandomEvent_Index)
-                             .ThenBy(e => e.Script_Index)
-                             .ToList();
+        eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event")
+            .OrderBy(e => e.RandomEvent_Index)
+            .ThenBy(e => e.Script_Index)
+            .ToList();
 
         scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
 
-        // 현재 그룹 재구성
         groupEvents = eventList
             .Where(e => e.RandomEvent_Index == currentGroup)
             .OrderBy(e => e.Script_Index)
             .ToList();
 
-        // UI 초기화
+        currentEvent = groupEvents[currentGroupIndex];
+
         ClearContent();
         TouchCatcher.SetActive(true);
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
 
-        // 현재 이벤트 설정 후 표시
-        currentEvent = groupEvents[currentGroupIndex];
-        DisplayCurrentEvent();
+        // ⛔ DisplayCurrentEvent() 호출 안함!
     }
 }
