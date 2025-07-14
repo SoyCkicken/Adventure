@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using static UnityEngine.GraphicsBuffer;
 using UnityEngine.Playables;
+using static SaveManager;
 
 public class EventDisplay : MonoBehaviour
 {
@@ -37,7 +38,7 @@ public class EventDisplay : MonoBehaviour
     private string winScriptCode;
     private string loseScriptCode;
 
-    private List<int> eventGroups;
+    public List<int> eventGroups;
     public List<RandomEvents_Master_Event> groupEvents;
     public List<GameObject> activeBlocks = new List<GameObject>();
     public event Action<string> OnBattleJoin;
@@ -692,5 +693,57 @@ public class EventDisplay : MonoBehaviour
         DisplayCurrentEvent();
 
     }
+    public void SaveEventData(ref SaveManager.SaveData data)
+    {
+        data.savedEventGroups = new List<int>(eventGroups); // 남은 이벤트 그룹 복사
+        data.savedCurrentEventGroup = currentGroup;
+        data.savedCurrentEvetnGroupIndex = currentGroupIndex;
 
+        Debug.Log("[EventDisplay] 이벤트 데이터 저장 완료");
+    }
+    public void LoadEventData(SaveManager.SaveData data)
+    {
+        // 기본 안전 체크
+        if (data.savedEventGroups == null || data.savedEventGroups.Count == 0)
+        {
+            Debug.LogWarning("[EventDisplay] 저장된 이벤트 그룹이 없습니다.");
+            return;
+        }
+
+        // 내부 값 초기화
+        eventGroups = new List<int>(data.savedEventGroups);
+        currentGroup = data.savedCurrentEventGroup;
+        currentGroupIndex = data.savedCurrentEvetnGroupIndex;
+
+        Debug.Log($"[EventDisplay] 이벤트 복구 → 그룹 {currentGroup}, 인덱스 {currentGroupIndex}");
+
+        // JSON/스크립트 초기화
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+        if (spriteBank == null)
+            spriteBank = FindObjectOfType<SpriteBank>();
+
+        eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event");
+        eventList = eventList.OrderBy(e => e.RandomEvent_Index)
+                             .ThenBy(e => e.Script_Index)
+                             .ToList();
+
+        scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
+
+        // 현재 그룹 재구성
+        groupEvents = eventList
+            .Where(e => e.RandomEvent_Index == currentGroup)
+            .OrderBy(e => e.Script_Index)
+            .ToList();
+
+        // UI 초기화
+        ClearContent();
+        TouchCatcher.SetActive(true);
+        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
+
+        // 현재 이벤트 설정 후 표시
+        currentEvent = groupEvents[currentGroupIndex];
+        DisplayCurrentEvent();
+    }
 }

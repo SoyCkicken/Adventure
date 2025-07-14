@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static SaveManager;
 
 
 
@@ -723,6 +724,32 @@ public class StoryDisplayManager : MonoBehaviour
         ClearContent();
 
         // 첫 시퀀스 표시
+        DisplayCurrentStory();
+    }
+
+    public void SaveMainStory(ref SaveData data)
+    {
+        data.MainstoryEventIndex = currentStoryIndex;
+        data.MainstoryCurrentIndex = currentIndex;
+        data.MainstorySceneCode = currentStory.Scene_Code;
+    }
+
+    public void LoadMainStory(SaveData data)
+    {
+        currentStoryIndex = data.MainstoryEventIndex;
+
+        storyList = jsonManager.GetStoryMainMasters("Story_Master_Main")
+            .Where(s => s.Event_Index == currentStoryIndex)
+            .OrderBy(e => e.Script_Index)
+            .ToList();
+
+        scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
+
+        currentIndex = Mathf.Clamp(data.MainstoryCurrentIndex, 0, storyList.Count - 1);
+        currentStory = storyList[currentIndex];
+
+        Debug.Log($"[로드 완료] 현재 스토리: {currentStory.Scene_Code}");
+        ClearContent();
         DisplayCurrentStory();
     }
     void gameOver()

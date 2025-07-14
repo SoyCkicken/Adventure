@@ -360,6 +360,7 @@ MonoBehaviour:
   currentGroup: 0
   currentGroupIndex: 0
   toBattle: 1
+  eventGroups: 
   groupEvents: []
   activeBlocks: []
 --- !u!1 &25882259
@@ -4551,7 +4552,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99977225
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11807,6 +11808,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerState: {fileID: 2006169299}
+  inventoryManager: {fileID: 1416507560}
+  displayManager: {fileID: 25302960}
+  eventDisplay: {fileID: 25302961}
+  gameFlowManager: {fileID: 1847108099}
 --- !u!1 &1098235063
 GameObject:
   m_ObjectHideFlags: 0
@@ -21317,6 +21322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c00507165a3cb459e295d99543dd66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerState: {fileID: 0}
   mainStoryManager: {fileID: 25302960}
   randomEventManager: {fileID: 25302961}
   battleManager: {fileID: 1010119034}
@@ -23405,7 +23411,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00017158022}
+  m_AnchoredPosition: {x: 0, y: 0.00005340576}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632

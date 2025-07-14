@@ -120,33 +120,24 @@ public class PlayerState : MonoBehaviour
         return value >= 15 ? 5 : Mathf.Max(value / 3, 3);
     }
 
-    public void SavePlayer()
+    public void SavePlayer(ref SaveManager.SaveData data)
     {
-        SaveManager.SaveData data = new SaveManager.SaveData
-        {
-            //playerName = PlayerName,      //플레이어 이름을 쓸지 안쓸지 몰라서 일단 주석처리
-            STR = STR,
-            INT = INT,
-            AGI = AGI,
-            MAG = MAG,
-            CHA = CHA,
-            Health = Health,
-            HP = HP,
-            MP = MP,
-            Experience = Experience,
-            ExperienceRequired = ExperienceRequired,
-            Level = Level,
-        };
-        inventoryManager.SaveInventory(data); // ✅ 인벤토리 저장 포함
-        SaveManager.SaveGame(data);
+        data.STR = STR;
+        data.INT = INT;
+        data.AGI = AGI;
+        data.MAG = MAG;
+        data.CHA = CHA;
+        data.Health = Health;
+        data.HP = HP;
+        data.MP = MP;
+        data.Experience = Experience;
+        data.ExperienceRequired = ExperienceRequired;
+        data.Level = Level;
     }
 
-    public void LoadPlayer()
+    // ✅ 불러오기 함수 - 넘겨받은 data에서 값만 꺼내 사용
+    public void LoadPlayer(SaveManager.SaveData data)
     {
-        if (!SaveManager.HasSave()) return;
-
-        SaveManager.SaveData data = SaveManager.LoadGame();
-        //PlayerName = data.playerName;
         STR = data.STR;
         INT = data.INT;
         AGI = data.AGI;
@@ -158,7 +149,7 @@ public class PlayerState : MonoBehaviour
         Level = data.Level;
         Experience = data.Experience;
         ExperienceRequired = data.ExperienceRequired;
-        inventoryManager.LoadInventory(data); // ✅ 인벤토리 불러오기 포함
+
         statsUI.UpdateUI();
         equipmentSystem.Init();
     }

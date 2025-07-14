@@ -684,7 +684,7 @@ public class InventoryManager : MonoBehaviour
         //LoadInventory();
         //Debug.Log("아이템이 삭제되었습니다.");
     }
-    public void SaveInventory(SaveManager.SaveData data)
+    public void SaveInventoryData(ref SaveManager.SaveData data)
     {
         data.inventoryItems = inventoryItems.Select(item => item.Clone()).ToList();
 
@@ -699,7 +699,7 @@ public class InventoryManager : MonoBehaviour
             data.equippedArmorData = null;
     }
 
-    public void LoadInventory(SaveManager.SaveData data)
+    public void LoadInventoryData(SaveManager.SaveData data)
     {
         inventoryItems.Clear();
         inventoryItems.AddRange(data.inventoryItems.Select(item => item.Clone()));
@@ -715,10 +715,10 @@ public class InventoryManager : MonoBehaviour
             armorEquipSlot.Setup(data.equippedArmorData.Clone(), ShowItemDetail);
             player.armor_Name = data.equippedArmorData.Item_ID;
         }
-        equipmentSystem.Init(); // 장비 능력 반영
-        updateDPS_MaxHealth();  // UI 갱신
 
-        LoadInventory(); // UI 갱신
+        equipmentSystem.Init();      // 능력치 반영
+        updateDPS_MaxHealth();       // DPS, 체력 갱신
+        LoadInventory();        // 인벤토리 UI 갱신 
     }
 }
 
