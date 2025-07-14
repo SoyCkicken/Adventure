@@ -192,6 +192,7 @@ public class GameFlowManager : MonoBehaviour
         {
             Debug.LogWarning("[GameFlowManager] 저장된 흐름 상태가 없습니다. 기본값으로 설정됩니다.");
             currentState = FlowState.MainStory;
+            //mainStoryManager.StartMainStory(); // 직접 실행
             return;
         }
 
@@ -199,11 +200,28 @@ public class GameFlowManager : MonoBehaviour
         {
             currentState = parsedState;
             Debug.Log($"[GameFlowManager] 상태 복원 완료: {parsedState}");
+
+            switch (currentState)
+            {
+                case FlowState.MainStory:
+                    mainStoryManager.LoadMainStory(data);
+                    mainStoryManager.StartMainStory(() => { });
+                    break;
+
+                case FlowState.RandomEvent:
+                    randomEventManager.LoadEventData(data);
+                    break;
+
+                case FlowState.Battle:
+                    // TODO: 전투 흐름 복원 처리 필요 (현재는 생략 가능)
+                    break;
+            }
         }
         else
         {
             Debug.LogWarning($"[GameFlowManager] 알 수 없는 흐름 상태: {data.flowState}. 기본값으로 설정됩니다.");
             currentState = FlowState.MainStory;
+            mainStoryManager.StartMainStory(() => { });
         }
     }
     private void Update()
