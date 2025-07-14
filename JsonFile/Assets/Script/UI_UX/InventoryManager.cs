@@ -6,6 +6,7 @@ using System.Linq;
 using MyGame;
 using UnityEngine.Timeline;
 using System;
+using static UnityEditor.Progress;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -682,6 +683,42 @@ public class InventoryManager : MonoBehaviour
         //itemDetailPanel.SetActive(false);
         //LoadInventory();
         //Debug.Log("아이템이 삭제되었습니다.");
+    }
+    public void SaveInventory(SaveManager.SaveData data)
+    {
+        data.inventoryItems = inventoryItems.Select(item => item.Clone()).ToList();
+
+        if (weaponEquipSlot.CurrentItem != null && !string.IsNullOrEmpty(weaponEquipSlot.CurrentItem.Item_ID))
+            data.equippedWeaponData = weaponEquipSlot.CurrentItem.Clone();
+        else
+            data.equippedWeaponData = null;
+
+        if (armorEquipSlot.CurrentItem != null && !string.IsNullOrEmpty(armorEquipSlot.CurrentItem.Item_ID))
+            data.equippedArmorData = armorEquipSlot.CurrentItem.Clone();
+        else
+            data.equippedArmorData = null;
+    }
+
+    public void LoadInventory(SaveManager.SaveData data)
+    {
+        inventoryItems.Clear();
+        inventoryItems.AddRange(data.inventoryItems.Select(item => item.Clone()));
+
+        if (data.equippedWeaponData != null && !string.IsNullOrEmpty(data.equippedWeaponData.Item_ID))
+        {
+            weaponEquipSlot.Setup(data.equippedWeaponData.Clone(), ShowItemDetail);
+            player.weapon_Name = data.equippedWeaponData.Item_ID;
+        }
+
+        if (data.equippedArmorData != null && !string.IsNullOrEmpty(data.equippedArmorData.Item_ID))
+        {
+            armorEquipSlot.Setup(data.equippedArmorData.Clone(), ShowItemDetail);
+            player.armor_Name = data.equippedArmorData.Item_ID;
+        }
+        equipmentSystem.Init(); // 장비 능력 반영
+        updateDPS_MaxHealth();  // UI 갱신
+
+        LoadInventory(); // UI 갱신
     }
 }
 

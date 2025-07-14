@@ -1,4 +1,4 @@
-// PlayerState.cs (Refactored for clarity, structure, and readability)
+ï»¿// PlayerState.cs (Refactored for clarity, structure, and readability)
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class PlayerState : MonoBehaviour
 {
-    [Header("ÇÃ·¹ÀÌ¾î ´É·ÂÄ¡")]
+    [Header("í”Œë ˆì´ì–´ ëŠ¥ë ¥ì¹˜")]
     public int STR = 5, AGI = 5, DIV = 5, MAG = 5, CHA = 5;
     public int Health = 5, INT = 5;
     public int HP { get; private set; }
@@ -22,6 +22,8 @@ public class PlayerState : MonoBehaviour
     public int Point { get; private set; }
 
     [SerializeField] public PlayerStatsUI statsUI;
+    [SerializeField] private InventoryManager inventoryManager;
+    [SerializeField] private EquipmentSystem equipmentSystem;
     private int tempPoint;
     private int tempSTR, tempAGI, tempDIV, tempINT, tempMAG, tempCHA, tempHealth;
 
@@ -65,7 +67,7 @@ public class PlayerState : MonoBehaviour
     public void AddMAG()
     {
         AddStat(ref MAG);
-        DIV = MAG; // ¸¶¹ı·ÂÀÌ ½Å¼º·Âµµ °áÁ¤
+        DIV = MAG; // ë§ˆë²•ë ¥ì´ ì‹ ì„±ë ¥ë„ ê²°ì •
     }
 
     public void AddHealth()
@@ -88,6 +90,10 @@ public class PlayerState : MonoBehaviour
     {
         tempPoint = 0;
         SaveTempStats();
+        inventoryManager.updateDPS_MaxHealth();
+        inventoryManager.UpdateInventoryByStrength();
+        equipmentSystem.Init();
+
     }
 
 
@@ -118,7 +124,7 @@ public class PlayerState : MonoBehaviour
     {
         SaveManager.SaveData data = new SaveManager.SaveData
         {
-            //playerName = PlayerName,      //ÇÃ·¹ÀÌ¾î ÀÌ¸§À» ¾µÁö ¾È¾µÁö ¸ô¶ó¼­ ÀÏ´Ü ÁÖ¼®Ã³¸®
+            //playerName = PlayerName,      //í”Œë ˆì´ì–´ ì´ë¦„ì„ ì“¸ì§€ ì•ˆì“¸ì§€ ëª°ë¼ì„œ ì¼ë‹¨ ì£¼ì„ì²˜ë¦¬
             STR = STR,
             INT = INT,
             AGI = AGI,
@@ -131,7 +137,7 @@ public class PlayerState : MonoBehaviour
             ExperienceRequired = ExperienceRequired,
             Level = Level,
         };
-
+        inventoryManager.SaveInventory(data); // âœ… ì¸ë²¤í† ë¦¬ ì €ì¥ í¬í•¨
         SaveManager.SaveGame(data);
     }
 
@@ -152,6 +158,8 @@ public class PlayerState : MonoBehaviour
         Level = data.Level;
         Experience = data.Experience;
         ExperienceRequired = data.ExperienceRequired;
+        inventoryManager.LoadInventory(data); // âœ… ì¸ë²¤í† ë¦¬ ë¶ˆëŸ¬ì˜¤ê¸° í¬í•¨
         statsUI.UpdateUI();
+        equipmentSystem.Init();
     }
 }

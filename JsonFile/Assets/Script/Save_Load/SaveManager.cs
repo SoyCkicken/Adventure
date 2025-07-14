@@ -87,5 +87,10 @@ public class SaveManager : MonoBehaviour
         public int STR, INT, AGI, MAG, CHA,Health; //힘 지능 민첩 마력 카리스마
         public int HP, MP; //스토리 진행 체력 , 정신력
         public int Level, Experience , ExperienceRequired; //레벨 , 돈 , 레벨업에 필요한 돈
+
+        public ItemData equippedWeaponData;
+        public ItemData equippedArmorData;
+
+        public List<ItemData> inventoryItems = new(); // 인벤토리 전체 직렬화 저장
     }
 }
