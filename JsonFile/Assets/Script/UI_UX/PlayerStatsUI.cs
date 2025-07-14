@@ -63,6 +63,10 @@ public class PlayerStatsUI : MonoBehaviour
         POINTTEXT.text = playerState.Point.ToString();
         integerHPBarScaler.SetHPMax(playerState.HP);
         integerMPBarScaler.SetMPMax(playerState.MP);
+        //갱신 한번 더 해주고
+        InventoryManager.updateDPS_MaxHealth();
+        InventoryManager.UpdateInventoryByStrength();
+        InventoryManager.updateSoulText();
     }
 
     public void ResetUI()
@@ -85,6 +89,7 @@ public class PlayerStatsUI : MonoBehaviour
             UpdateUI();
             InventoryManager.updateDPS_MaxHealth();
             InventoryManager.UpdateInventoryByStrength();
+            InventoryManager.updateSoulText();
         }
     }
 }

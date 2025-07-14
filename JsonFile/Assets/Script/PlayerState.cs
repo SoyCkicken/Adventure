@@ -113,4 +113,45 @@ public class PlayerState : MonoBehaviour
     {
         return value >= 15 ? 5 : Mathf.Max(value / 3, 3);
     }
+
+    public void SavePlayer()
+    {
+        SaveManager.SaveData data = new SaveManager.SaveData
+        {
+            //playerName = PlayerName,      //플레이어 이름을 쓸지 안쓸지 몰라서 일단 주석처리
+            STR = STR,
+            INT = INT,
+            AGI = AGI,
+            MAG = MAG,
+            CHA = CHA,
+            Health = Health,
+            HP = HP,
+            MP = MP,
+            Experience = Experience,
+            ExperienceRequired = ExperienceRequired,
+            Level = Level,
+        };
+
+        SaveManager.SaveGame(data);
+    }
+
+    public void LoadPlayer()
+    {
+        if (!SaveManager.HasSave()) return;
+
+        SaveManager.SaveData data = SaveManager.LoadGame();
+        //PlayerName = data.playerName;
+        STR = data.STR;
+        INT = data.INT;
+        AGI = data.AGI;
+        MAG = data.MAG;
+        CHA = data.CHA;
+        Health = data.Health;
+        HP = data.HP;
+        MP = data.MP;
+        Level = data.Level;
+        Experience = data.Experience;
+        ExperienceRequired = data.ExperienceRequired;
+        statsUI.UpdateUI();
+    }
 }
