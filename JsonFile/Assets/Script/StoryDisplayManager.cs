@@ -750,7 +750,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
 
-        currentIndex = Mathf.Clamp(data.MainstoryCurrentIndex, 0, storyList.Count - 1);
+        currentIndex = Mathf.Clamp(data.MainstoryCurrentIndex, 0, storyList.Count);
         currentStory = storyList[currentIndex];
 
         Debug.Log($"[로드 완료] 현재 스토리: {currentStory.Scene_Code}");

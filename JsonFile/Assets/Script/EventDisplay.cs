@@ -130,7 +130,7 @@ public class EventDisplay : MonoBehaviour
         if (eventGroups == null || eventGroups.Count == 0)
         {
             // 남은 그룹 없음 -> 메인 스토리 복귀ㄴ
-            onCompleteCallback?.Invoke(false);
+            onCompleteCallback?.Invoke(false); //<== 여기 콜백 함수가 정상적으로 안들어 가는거 같음
             Debug.Log("랜덤값이 없어서 취소 됩니다");
             return;
         }
@@ -735,5 +735,9 @@ public class EventDisplay : MonoBehaviour
         SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
 
         // ⛔ DisplayCurrentEvent() 호출 안함!
+    }
+    public void SetOnCompleteCallback(Action<bool> callback)
+    {
+        onCompleteCallback = callback;
     }
 }

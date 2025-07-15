@@ -206,15 +206,22 @@ public class GameFlowManager : MonoBehaviour
                 case FlowState.MainStory:
                     //진행중에 넘어가면 자기꺼만 초기화를 때려서 안되는 문제가 있었음
                     //그래서 각자 자기꺼 남아있는거 전부 삭제 때리고 넘어가게 했음
+                    mainStoryManager.StopMainStory();
+                    randomEventManager.StopRandomEvent();
                     randomEventManager.ClearContent();
                     mainStoryManager.LoadMainStory(data);
+                    randomEventManager.LoadEventData(data);
                     mainStoryManager.DisplayCurrentStory(); // ✅ 여기
                     Debug.Log("메인스토리 불러옴");
                     break;
 
                 case FlowState.RandomEvent:
+                    mainStoryManager.StopMainStory();
+                    randomEventManager.StopRandomEvent();
                     mainStoryManager.ClearContent();
                     randomEventManager.LoadEventData(data);
+                    mainStoryManager.LoadMainStory(data);
+                    randomEventManager.SetOnCompleteCallback(OnRandomEventComplete);
                     randomEventManager.DisplayCurrentEvent();   // ✅ 요걸 직접 추가
                     Debug.Log("이벤트 불러옴");
                     break;
