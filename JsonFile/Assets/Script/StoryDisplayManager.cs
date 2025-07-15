@@ -410,13 +410,12 @@ public class StoryDisplayManager : MonoBehaviour
         }
     }
 
-    Story_Master_Main FindStoryBySceneCode(string sceneCode)
-    {
-        return storyList.FirstOrDefault(s => s.Scene_Code.Trim() == sceneCode.Trim());
-    }
+    //Story_Master_Main FindStoryBySceneCode(string sceneCode)
+    //{
+    //    return storyList.FirstOrDefault(s => s.Scene_Code.Trim() == sceneCode.Trim());
+    //}
     private string GetDisplayTextFromScript(string code, List<Main_Script_Master_Main> scriptEvents)
     {
-
         var match = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == code.Trim());
         Debug.Log(match);
         if (match != null)
@@ -449,7 +448,6 @@ public class StoryDisplayManager : MonoBehaviour
             // 다중 분기는 SetupChoices() 에서 버튼 클릭으로 처리됐을 것
             return;
         }
-
         if (!string.IsNullOrEmpty(currentStory.Next_Scene))
         {
             Debug.Log($"[NEXTSCENE] 현재 씬 {currentStory.Scene_Code} → {currentStory.Next_Scene}");
