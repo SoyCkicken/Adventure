@@ -71,10 +71,7 @@ public class StoryDisplayManager : MonoBehaviour
     {
         currentStoryIndex++;
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
-        {
-            OnSkip();
-        };
+        RegisterTouchCatcher();
 
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
@@ -113,7 +110,7 @@ public class StoryDisplayManager : MonoBehaviour
     {
         StopAllCoroutines();
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView = null;
+        ClearTouchCatcher();
         // currentIndex는 마지막 진행 지점을 자동 보존합니다.
         ClearContent();
         SkipButton.SetActive(false);
@@ -122,10 +119,7 @@ public class StoryDisplayManager : MonoBehaviour
     public void DisplayCurrentStory()
     {
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
-        {
-            OnSkip();
-        };
+        RegisterTouchCatcher();
         // 기존 DisplayCurrentStory 내부 로직 그대로 유지
         var matchingScript = scriptEventsCache.FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
         //Debug.Log(matchingScript.KOR);
@@ -209,11 +203,40 @@ public class StoryDisplayManager : MonoBehaviour
 
     public void ClearContent()
     {
+        ClearDisplayBlocks();       // 텍스트 / 이미지 블록 제거
+        ClearChoiceButtons();       // 선택지 버튼 제거
+        ClearTouchCatcher();        // 터치 패널 이벤트 초기화
+    }
+    private void ClearDisplayBlocks()
+    {
         foreach (var go in Testblocks)
             Destroy(go);
         Testblocks.Clear();
+    }
+
+    private void ClearChoiceButtons()
+    {
         foreach (Transform t in choiceButtonParent)
             Destroy(t.gameObject);
+    }
+
+    private void ClearTouchCatcher()
+    {
+        if (TouchCatcher != null)
+        {
+            var catcher = TouchCatcher.GetComponent<TouchCatcher>();
+            if (catcher != null)
+                catcher.onTapOutsideScrollView = null;
+        }
+    }
+
+    private void RegisterTouchCatcher()
+    {
+        if (TouchCatcher != null)
+        {
+            var catcher = TouchCatcher.GetComponent<TouchCatcher>();
+            catcher.onTapOutsideScrollView = () => { OnSkip(); };
+        }
     }
 
     // 이미지 블록 생성
@@ -692,10 +715,7 @@ public class StoryDisplayManager : MonoBehaviour
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
 
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
-        {
-            OnSkip();
-        };
+        RegisterTouchCatcher();
         storyList.Clear();
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
 

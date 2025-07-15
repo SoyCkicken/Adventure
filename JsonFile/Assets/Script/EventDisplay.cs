@@ -229,11 +229,24 @@ public class EventDisplay : MonoBehaviour
     }
     public void ClearContent()
     {
+        ClearDisplayBlocks();       // 텍스트 / 이미지 블록 제거
+        ClearChoiceButtons();       // 선택지 버튼 제거
+        ClearTouchCatcher();        // 터치 패널 이벤트 초기화
+    }
+    private void ClearDisplayBlocks()
+    {
         foreach (var go in activeBlocks)
             Destroy(go);
         activeBlocks.Clear();
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView = null;
-        ClearChoiceButtons();
+    }
+    private void ClearTouchCatcher()
+    {
+        if (TouchCatcher != null)
+        {
+            var catcher = TouchCatcher.GetComponent<TouchCatcher>();
+            if (catcher != null)
+                catcher.onTapOutsideScrollView = null;
+        }
     }
 
     private void ClearChoiceButtons()

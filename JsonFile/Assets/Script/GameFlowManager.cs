@@ -208,7 +208,6 @@ public class GameFlowManager : MonoBehaviour
                     //그래서 각자 자기꺼 남아있는거 전부 삭제 때리고 넘어가게 했음
                     mainStoryManager.StopMainStory();
                     randomEventManager.StopRandomEvent();
-                    randomEventManager.ClearContent();
                     mainStoryManager.LoadMainStory(data);
                     randomEventManager.LoadEventData(data);
                     mainStoryManager.DisplayCurrentStory(); // ✅ 여기
@@ -218,7 +217,6 @@ public class GameFlowManager : MonoBehaviour
                 case FlowState.RandomEvent:
                     mainStoryManager.StopMainStory();
                     randomEventManager.StopRandomEvent();
-                    mainStoryManager.ClearContent();
                     randomEventManager.LoadEventData(data);
                     mainStoryManager.LoadMainStory(data);
                     randomEventManager.SetOnCompleteCallback(OnRandomEventComplete);
