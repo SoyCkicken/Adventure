@@ -14,9 +14,7 @@ public class BuffUI : MonoBehaviour
     public Transform playerBuffParent;
     public Transform enemyBuffParent;
 
-    /// <summary>
-    /// 버프 리스트를 UI로 표시
-    /// </summary>
+    //버프 리스트를 UI로 표시
     public void SetBuffs(List<BuffData> buffs,Character character)
     {
         //Clear();
@@ -37,9 +35,7 @@ public class BuffUI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 시간 갱신용
-    /// </summary>
+    // 시간 갱신용
     public void UpdateBuffTimers()
     {
         foreach (var icon in activeIcons)

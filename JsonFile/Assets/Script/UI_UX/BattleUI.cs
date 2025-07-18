@@ -16,8 +16,6 @@ public class BattleUI : MonoBehaviour
     public Slider playerHpSlider;
     public TMP_Text enemyNameText;
 
-
-    // Start is called before the first frame update
     void Start()
     {
        

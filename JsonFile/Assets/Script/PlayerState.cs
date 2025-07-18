@@ -135,7 +135,7 @@ public class PlayerState : MonoBehaviour
         data.Level = Level;
     }
 
-    // ✅ 불러오기 함수 - 넘겨받은 data에서 값만 꺼내 사용
+    // 불러오기 - 넘겨받은 data에서 값만 꺼내 사용
     public void LoadPlayer(SaveManager.SaveData data)
     {
         STR = data.STR;

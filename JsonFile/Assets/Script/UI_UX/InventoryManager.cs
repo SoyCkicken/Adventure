@@ -440,7 +440,7 @@ public class InventoryManager : MonoBehaviour
     //        if (weaponEquipSlot.CurrentItem != null)
     //            AddItemToInventory(weaponEquipSlot.CurrentItem.Clone());
 
-    //        inventoryItems.Remove(selectedItem); // ✅ 먼저 제거
+    //        inventoryItems.Remove(selectedItem); // 먼저 제거
     //        weaponEquipSlot.Setup(selectedItem.Clone(), ShowItemDetail);
     //        player.weapon_Name = selectedItem.Item_ID;
     //    }
@@ -449,7 +449,7 @@ public class InventoryManager : MonoBehaviour
     //        if (armorEquipSlot.CurrentItem != null)
     //            AddItemToInventory(armorEquipSlot.CurrentItem.Clone());
 
-    //        inventoryItems.Remove(selectedItem); // ✅ 먼저 제거
+    //        inventoryItems.Remove(selectedItem); // 먼저 제거
     //        armorEquipSlot.Setup(selectedItem.Clone(), ShowItemDetail);
     //        player.armor_Name = selectedItem.Item_ID;
     //    }

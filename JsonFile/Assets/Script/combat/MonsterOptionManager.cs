@@ -18,7 +18,7 @@ public class MonsterOptionManager : MonoBehaviour
         // 몬스터용 옵션만 등록
         effects["MonEffect_001"] = new MonsterCorrosionEffect();
         //effects["MonEffect_002"] = new PoisonCloudEffect();
-        // …필요한 만큼
+        //여기 계속 추가 하는 식으로 하면 됨
     }
 
 

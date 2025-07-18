@@ -31,9 +31,7 @@ public class BossPartCombatManager : MonoBehaviour
     public AudioClip DodgeSound;    // 누구든 간에 회피 성공시 재생
 
 
-    /// <summary>
-    /// 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
-    /// </summary>
+    // 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
     void Start()
     {
         testPlayer.AddBuff(new FocusBuffData
@@ -117,7 +115,6 @@ public class BossPartCombatManager : MonoBehaviour
         {
             Log("플레이어가 사망했습니다...");
             return;
-            // Optionally, add game over logic here
         }
 
         isPlayerTurn = true;
