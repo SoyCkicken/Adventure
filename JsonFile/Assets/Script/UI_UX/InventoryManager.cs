@@ -6,7 +6,7 @@ using System.Linq;
 using MyGame;
 using UnityEngine.Timeline;
 using System;
-using static UnityEditor.Progress;
+
 
 public class InventoryManager : MonoBehaviour
 {
