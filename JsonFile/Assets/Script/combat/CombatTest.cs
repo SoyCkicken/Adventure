@@ -70,7 +70,7 @@ public class CombatTest : MonoBehaviour
         float rand = Random.value; // 0.0 ~ 1.0
        
         bool playerGoesFirst = rand <= playerChance;
-        Debug.Log($"{rand}나온 값 {playerChance} 플레이어 선공권의 값 = {playerGoesFirst}누가 선공인가?");
+        //Debug.Log($"{rand}나온 값 {playerChance} 플레이어 선공권의 값 = {playerGoesFirst}누가 선공인가?");
 
         // 선공권: 한 번만 공격
         if (playerGoesFirst)
@@ -81,7 +81,7 @@ public class CombatTest : MonoBehaviour
         {
             yield return StartCoroutine(AttackOnce(enemy, player, isPlayer: false, isEnemy: true));
         }
-        Debug.LogWarning("");
+        //Debug.LogWarning("");
 
         // 두 캐릭터의 공격루프를 동시에 돌리고,
         // 둘 다 끝날 때까지 대기했다가 onComplete 호출

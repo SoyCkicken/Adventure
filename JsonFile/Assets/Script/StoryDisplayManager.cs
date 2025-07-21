@@ -167,7 +167,8 @@ public class StoryDisplayManager : MonoBehaviour
                     Debug.Log(matchingScript.KOR);
                     winScriptCode = matchingScript.NEXTWIN?.Trim();
                     loseScriptCode = matchingScript.NEXTLOSE?.Trim();
-                    OnBattleJoin?.Invoke(matchingScript.KOR);
+                    //OnBattleJoin?.Invoke(matchingScript.KOR);
+                    BattleState();
                     break;
                 case "MERCHANT":
                     string merchantKey = matchingScript.KOR.Trim();  // KOR이 실제 키값임
@@ -184,6 +185,28 @@ public class StoryDisplayManager : MonoBehaviour
 
 
     }
+
+    private void BattleState()
+    {
+        //일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
+        for (int i = 0; i < 2; i++)
+        {
+            var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
+            var btn = testbutton.GetComponent<Button>();
+            var txt = testbutton.GetComponentInChildren<TMP_Text>();
+            if (i == 0)
+            {
+                txt.text = "자동 전투 입니다";
+            }
+            else
+            {
+                txt.text = "집중 전투 입니다";
+            }
+            
+        }
+      
+    }
+
     private void HandleTextDisplayWithChoice(string text, GameObject lastBlock, bool isClear)
     {
         if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
