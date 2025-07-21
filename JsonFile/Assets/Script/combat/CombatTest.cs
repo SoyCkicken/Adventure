@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MyGame;
 using UnityEngine.Playables;
+using Random = UnityEngine.Random;
 
 public class CombatTest : MonoBehaviour
 {
@@ -65,6 +66,23 @@ public class CombatTest : MonoBehaviour
 
     private IEnumerator ProcessBattle()
     {
+        float playerChance = (float)player.speed / (player.speed + enemy.speed);
+        float rand = Random.value; // 0.0 ~ 1.0
+       
+        bool playerGoesFirst = rand <= playerChance;
+        Debug.Log($"{rand}나온 값 {playerChance} 플레이어 선공권의 값 = {playerGoesFirst}누가 선공인가?");
+
+        // 선공권: 한 번만 공격
+        if (playerGoesFirst)
+        {
+            yield return StartCoroutine(AttackOnce(player, enemy, isPlayer: true, isEnemy: false));
+        }
+        else
+        {
+            yield return StartCoroutine(AttackOnce(enemy, player, isPlayer: false, isEnemy: true));
+        }
+        Debug.LogWarning("");
+
         // 두 캐릭터의 공격루프를 동시에 돌리고,
         // 둘 다 끝날 때까지 대기했다가 onComplete 호출
         var playerLoop = StartCoroutine(AttackLoop(player, enemy, true,false));
@@ -92,6 +110,58 @@ public class CombatTest : MonoBehaviour
         onComplete?.Invoke(battleOver);
     }
 
+    private IEnumerator AttackOnce(Character attacker, Character target, bool isPlayer, bool isEnemy)
+    {
+        yield return new WaitForSeconds(0.1f); // 약간의 텀
+        if (attacker == enemy)
+        { Debug.Log("적의 선공권"); }
+        else if (attacker == player)
+        {
+            Debug.Log("플레이어의 선공권");
+        }
+           
+        int dealt = attacker.Attack(target);
+        if (attacker == enemy)
+        {
+            var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
+            gameObject.transform.localScale = new Vector3(50, 50, 0);
+            Destroy(gameObject, 1.18f);
+        }
+        if (attacker == player)
+        {
+            enemyanima.Play("MS_Jombie_Hit");
+        }
+
+        if (isPlayer && attacker.OnHitOptions != null)
+        {
+            foreach (var opt in attacker.OnHitOptions)
+            {
+                var ctx = new OptionContext { User = attacker, Target = target, option_ID = opt.OptionID, Value = opt.Value };
+                OptionManager.ApplyOnHitOnly(opt.OptionID, ctx);
+            }
+        }
+        if (isEnemy && attacker.OnEnemyHitOptions != null)
+        {
+            foreach (var opt in attacker.OnEnemyHitOptions)
+            {
+                var ctx = new OptionContext { User = attacker, Target = target, option_ID = opt.OptionID, Value = opt.Value };
+                if (opt.OptionID != "")
+                    monsterOptionManager.ApplyOption(opt.OptionID, ctx);
+            }
+        }
+
+        battleUI.UpdateUI();
+
+        // 사망 판정
+        if (target.Health <= 0 || attacker.Health <= 0)
+        {
+            battleOver = true;
+            player.RemoveTemporaryBuffs();
+            enemy.RemoveTemporaryBuffs();
+            buffUI.Clear();
+        }
+    }
+
     private IEnumerator AttackLoop(Character attacker, Character target, bool isPlayer ,bool isEnemy)
     {
         while (!battleOver)
@@ -102,9 +172,13 @@ public class CombatTest : MonoBehaviour
             int dealt = attacker.Attack(target);
             if (attacker == enemy)
             {
-                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity,ImageGameObject.transform.parent);
+                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
                 gameObject.transform.localScale = new Vector3(50, 50, 0);
                 Destroy(gameObject, 1f);
+            }
+            if (attacker == player)
+            {
+                enemyanima.Play("MS_Jombie_Hit"); 
             }
             // 플레이어 온히트 옵션 적용
             if (isPlayer && attacker.OnHitOptions != null)
