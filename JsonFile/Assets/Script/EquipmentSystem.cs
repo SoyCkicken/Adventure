@@ -91,7 +91,7 @@ public class EquipmentSystem : MonoBehaviour
         //player.armor_Name = null;
         player.MaxHealth = 50;
         player.damage = 10;
-        player.armor = 10;
+        player.armor = 5;
         player.speed = 1.5f;
         player.CitChance = 10;
     }

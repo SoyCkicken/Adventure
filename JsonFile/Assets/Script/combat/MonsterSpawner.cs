@@ -15,9 +15,11 @@ public class MonsterSpawner : MonoBehaviour
     public BuffUI buffUI;
 
     [Header("몬스터 프리팹")]
+    public GameObject canves;
     public GameObject monsterPrefab;
     // 생성된 몬스터 인스턴스를 저장할 필드
     private GameObject _currentMonster;
+    public GameObject canvusImage;
 
     // 외부에서 접근할 수 있도록 프로퍼티
     public GameObject CurrentMonster => _currentMonster;
@@ -30,6 +32,7 @@ public class MonsterSpawner : MonoBehaviour
         if (monsterOptionManager == null) monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
         if (combatTest == null) combatTest = FindObjectOfType<CombatTest>();
         if (player == null) player = GameObject.FindWithTag("Player");
+        canves.SetActive(false);
         //SpawnMonsterByID("monster_001"); //임시로 적이름을 넣고 생성을 시키고
     }
 
@@ -38,6 +41,7 @@ public class MonsterSpawner : MonoBehaviour
     /// </summary>
     public void SpawnMonsterByID(string monsterID)
     {
+        canves.SetActive(true);
         // (1) 기존 몬스터가 있으면 제거하거나 재활용
         if (_currentMonster != null)
         {
@@ -54,7 +58,10 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         // (3) 인스턴스 생성 후 필드에 저장
-        _currentMonster = Instantiate(monsterPrefab, transform.position, Quaternion.identity);
+        Vector3 vector3 = new Vector3(10, -50, 0);
+        
+        _currentMonster = Instantiate(monsterPrefab, canvusImage.transform.position, Quaternion.identity,canvusImage.transform);
+        _currentMonster.transform.localScale = new Vector3(100, 100, 0);
         _currentMonster.name = data.Mon_Name;
         if (enemy == null) enemy = GameObject.FindWithTag("Enemy");
 

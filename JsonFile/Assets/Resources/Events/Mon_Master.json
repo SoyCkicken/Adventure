@@ -6,7 +6,7 @@
       "Mon_HP": 100.0,
       "Mon_ATK": 10.0,
       "Mon_Def": 5.0,
-      "Mon_Speed": 1.5,
+      "Mon_Speed": 1.0,
       "MonPas_Effect1": "MonEffect_000",
       "Effect1_Stat": 0.0,
       "MonPas_Effect2": "--",

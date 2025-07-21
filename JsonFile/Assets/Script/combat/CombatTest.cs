@@ -7,6 +7,8 @@ using UnityEngine.Playables;
 
 public class CombatTest : MonoBehaviour
 {
+    public GameObject NormalBattle;
+
     public OptionManager optionManager;
     public MonsterOptionManager monsterOptionManager;
     public Character player;
@@ -15,12 +17,19 @@ public class CombatTest : MonoBehaviour
     public InventoryManager inventoryManager;
     public BattleUI battleUI;
     public BuffUI buffUI;
+    public Animator enemyanima;
+    public GameObject EnemyAttackImage;
+    public GameObject ImageGameObject;
 
     // 전투 완료 콜백
     private Action<bool> onComplete;
     // 전투 종료시 넘길 변수
     private bool battleOver;
 
+    private void Awake()
+    {
+        NormalBattle.SetActive(false);
+    }
     /// <summary>
     /// GameFlowManager가 전투를 시작할 때 호출합니다.
     /// </summary>
@@ -32,7 +41,7 @@ public class CombatTest : MonoBehaviour
         // 옵션 매니저 참조 확보
         if (optionManager == null)
             optionManager = FindObjectOfType<OptionManager>();
-
+        enemyanima = enemy.GetComponent<Animator>();
         // 전투 상태 초기화
         battleOver = false;
         Debug.Log("전투로 넘어 갔습니다!");
@@ -91,7 +100,12 @@ public class CombatTest : MonoBehaviour
             if (battleOver) yield break;
 
             int dealt = attacker.Attack(target);
-           
+            if (attacker == enemy)
+            {
+                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity,ImageGameObject.transform.parent);
+                gameObject.transform.localScale = new Vector3(50, 50, 0);
+                Destroy(gameObject, 1f);
+            }
             // 플레이어 온히트 옵션 적용
             if (isPlayer && attacker.OnHitOptions != null)
             {
