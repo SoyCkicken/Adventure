@@ -18,7 +18,9 @@ public class GameFlowManager : MonoBehaviour
     public InventoryManager inventoryManager;
 
     private string pendingMonsterID;
-    
+    public int CurrentChapterIndex = 1;
+
+
 
     void Start()
     {

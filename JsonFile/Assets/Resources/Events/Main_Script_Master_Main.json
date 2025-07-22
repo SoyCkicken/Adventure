@@ -8,6 +8,7 @@
       "KOR": "C1E1_town",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": "null",
       "NEXTLOSE": "null"
     },
@@ -19,6 +20,7 @@
       "KOR": "평온한 마을인 라노스마을\r\n해가 높이 떠올랐고, 바람은 따뜻했다.\r\n나는 그 조용한 일상 속에서 오늘도 변함없이 숨을 죽이며 살아가고 있었다.\r\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -30,6 +32,7 @@
       "KOR": "마을 사람들이 특별히 따돌리진 않았다\r\n하지만 당신을 향한 시선에는 어딘가 설명하기 어려운 거리감이 배어 있었다.\r\n나는 그게 더 편했다.\r\n누구와도 엮이지 않으면, 누군가를 잃는 일도 없을 테니까..\r\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -41,6 +44,7 @@
       "KOR": "C1E1_house",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -52,6 +56,7 @@
       "KOR": "그날 아침도 평범했다,\r\n언제나처럼 우물가에서 물을 길었고, 남은 식사를 정리했다.\r\n모두가 자신만의 하루를 살고 있던 평범한 날이였다.\r\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -63,6 +68,7 @@
       "KOR": "하지만 나는 이상한 기척을 순간 느꼈다…\r\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -74,6 +80,7 @@
       "KOR": "\"뭐지….?\"\r\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -85,6 +92,7 @@
       "KOR": "멀리서 보이는 흙먼지와 짐승 같은 울음소리, 갑작스러운 비명,\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -96,6 +104,7 @@
       "KOR": "마을 입구 쪽이였다.\n사람들이 하나 둘 당황한 표정으로 그쪽을 바라보고 있었다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -107,6 +116,7 @@
       "KOR": "그리고 그 잠깐의 고요함은 오래가지 않았다.\n사람들이 비명을 지르며 도망치기 시작했다.\n창백한 얼굴이 달려오는 아이, 허둥지둥 짐을 챙기는 노인.\n그들의 뒤를 따라, 망토를 뒤집어쓴 이들과 기괴한 형체들이 나타났다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -118,6 +128,7 @@
       "KOR": "거칠게 짖는 괴수들,\n날이 빠진 무기를 들고도 거침없이 웃는 산적들.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -129,6 +140,7 @@
       "KOR": "그것은 단순한 약탈이 아니었다.\n말살에 가까웠다…\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -140,6 +152,7 @@
       "KOR": "나는 그 광경을 멍하니 바라보고만 있었다.\n마치… 이 모든 장면을 어디선가 본 것처럼.\n기억도, 감정도, 이 상황을 처음 겪는 사람의 것과는 달랐다.\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -151,6 +164,7 @@
       "KOR": "C1E1_danger",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -162,6 +176,7 @@
       "KOR": "그리고 얼마 지나지 않아 마을은 그 기능을 완전히 잃었다.\n모두가 흩어졌고, 쓰러졌고, 불타고 있었다.\n그리고 남겨진 자는, 또다시 그 혼자였다.\n소년은 무너진 담벼락 옆에 주저앉아 숨을 내쉬었다.\n손에는 작은 흠집만 남았고, 주변은 적막뿐이였다.\n\"또…. 나만..\"\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -173,6 +188,7 @@
       "KOR": "\"이번에도 살아남았네… 왜… 도대체 왜…\"\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -184,6 +200,7 @@
       "KOR": "C1E1_meeting_wisp",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -195,6 +212,7 @@
       "KOR": "그때였다. 시야 가장자리에, 느릿하게 퍼지는 빛이 있었다.\n\"….저게…. 뭐지…?\"\n불에 탄 공기 속에서, 그 빛은 아무 말도 없이 다가왔다.\n낯설고 설명할 수 없지만, 이상하게 시선을 뗄 수 없었다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -206,6 +224,7 @@
       "KOR": "\"사람은 아니고\"\n빛은 멈추었고 천천히 아주 낮고 부드러운 목소리로 말했다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -217,6 +236,7 @@
       "KOR": "\"지금은 알 수 없겠지.\"\n\"왜 네가 살아남았는지, 왜 이런 일이 반복되는지\"\n\"하지만… 그 모든 일엔 이유가 있어.\"\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -228,6 +248,7 @@
       "KOR": "나는 눈동자가 흔들렸다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -239,6 +260,7 @@
       "KOR": "\"지금 멈추면, 이건 또 하나의 반복으로 끝나겠지\n하지만 네가 걸어간다면 끝은 달라질 수도 있어.\"\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -250,6 +272,7 @@
       "KOR": "나는 아무 말 없이 그 빛을 바라보았다.\n나는 천천히 일어났고\n푸른 위습은 앞서 나아가듯 떠올랐다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -261,6 +284,7 @@
       "KOR": "나는 그 뒤를 따랐다. \n그리고 그렇게, 이야기는 움직이기 시작했다.\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -272,6 +296,7 @@
       "KOR": "다음 스토리로 넘어감",
       "displayType": "TEXT",
       "StoryBreak": "Break",
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -283,6 +308,7 @@
       "KOR": "불타던 마을은 잿더미가 되어 있었다.\n붉게 달아올랐던 불길도 꺼졌고\n연기만이 바람을 따라 흘러가고 있었다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -294,6 +320,7 @@
       "KOR": "무너진 가게 앞\n진흙투성이가 된 거리 한복판에서 목소리가 들렸다.\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -305,6 +332,7 @@
       "KOR": "C1E2_child_under_the_rubble",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -316,6 +344,7 @@
       "KOR": "\"생존자다…!\"\n아직 누군가 살아 있었다.\n나는 조심스레 다가갔고 \n그곳에는 벽돌 더미에 깔린 어린 소년이 있었다.\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -327,6 +356,7 @@
       "KOR": "C1E2_extension",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -338,6 +368,7 @@
       "KOR": "나는 소년이랑 눈이 마주쳤고 \n나는 손을 소년에게 뻗었다.\n하지만 아이는 눈을 크게 뜨고 움찔거렸다.\n본능적으로 나를 두려워하는 눈빛이였다…\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -349,6 +380,7 @@
       "KOR": "벽돌을 옆으로 치운다.",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -360,6 +392,7 @@
       "KOR": "C1E2_rescue",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -371,6 +404,7 @@
       "KOR": "나는 손을 거두고 \n\"…괜찮아.\"\n라고 작은 목소리로 중얼거렸다…\n나는 재빠르게 그를 살릴려고 벽돌을 치웠다..\n\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -382,6 +416,7 @@
       "KOR": "C1E2_finally",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -393,6 +428,7 @@
       "KOR": "하지만 그 소년은 숨이 점점 거칠어 지다가 \n결국 숨이 끊어져 버렸다.",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -404,6 +440,7 @@
       "KOR": "C1E2_sighting",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -415,6 +452,7 @@
       "KOR": "나는 천천히 일어났다\n\"나는… 또 살아남았고..\"\n\"넌… 결국 이렇게 떠나는 구나….\"\n\"왜…. 왜 매번 이렇게 되는거지….\"\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -426,6 +464,7 @@
       "KOR": "손바닥에는 진흙과 피가 묻어 있었지만. \n그 손은 어디에도 닦지 않았다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -437,6 +476,7 @@
       "KOR": "무시하고 옆으로 지나간다",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -448,6 +488,7 @@
       "KOR": "\"어차피 죽을 목숨이였어…\"\n",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -459,6 +500,7 @@
       "KOR": "C1E2_journey",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -470,6 +512,7 @@
       "KOR": "고개를 들어 폐허 너머를 바라봤다.\n이제 이 마을엔 더 머물 이유도.. 머물 자리도 없었다.\n",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -481,6 +524,7 @@
       "KOR": "나는 천천히 걸음을 옮겼고\n푸른 위습은 그 옆을 따라왔다.\n두 존재는 그렇게, 죽음이 남긴 마을을 등지고 나아가고 있었다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -492,6 +536,7 @@
       "KOR": "다음 스토리로 넘어감",
       "displayType": "TEXT",
       "StoryBreak": "Break",
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -503,6 +548,7 @@
       "KOR": "C1E3_monster",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -514,6 +560,7 @@
       "KOR": "갑자기 나뭇잎 사이로 괴물이 튀어나왔다\n더 이상 인간이라고 부르기 어려운 형체였다..",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -525,6 +572,7 @@
       "KOR": "나는 본능적으로 뒤로 물러섰다.\n\"…젠장…\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -536,6 +584,7 @@
       "KOR": "무기…\n손에 쥘 만한 무엇이든\n나는 주변을 둘러보다가 땅에 떨어진 무기를 발견했다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -547,6 +596,7 @@
       "KOR": "검",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -558,6 +608,7 @@
       "KOR": "활",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -569,6 +620,7 @@
       "KOR": "지팡이",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -580,6 +632,7 @@
       "KOR": "나는 본능적으로 몸을 틀면서\n땅에 떨어진 무기를 주웠다.\n괴물과 싸움을 시작했다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -591,6 +644,7 @@
       "KOR": "monster_001",
       "displayType": "BATTLE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -602,6 +656,7 @@
       "KOR": "C1E3_monster_died",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -613,6 +668,7 @@
       "KOR": "괴물은 쓰러졌고 나는 한동안 그 자리에 서서\n괴물의 시체를 바라보았다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -624,6 +680,7 @@
       "KOR": "위습은 조용히 빛을 뿜어냈고\n나는 말했다.\n\"….지금까지는 그저 흘러갔지만,\n이젠 내가 움직여야겠네..\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -635,6 +692,7 @@
       "KOR": "지금까지의 삶은 버티는 것이었다.\n하지만 이제는 다르다.\n무언가를 향해 걸어가야 한다는 걸, 그는 알았다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -646,6 +704,7 @@
       "KOR": "처음으로, 그가 앞으로 나아갔다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -657,6 +716,7 @@
       "KOR": "다음 스토리로 넘어감",
       "displayType": "TEXT",
       "StoryBreak": "Break",
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -668,6 +728,7 @@
       "KOR": "C1E4_go_out",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -679,6 +740,7 @@
       "KOR": "나는 위습에게 말을 걸었다.\n\"이젠 말 좀 해줄레?\"\n위습은 천천히 말을 해왔다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -690,6 +752,7 @@
       "KOR": "\"네가 머문 곳은 언제나 무너졌다..\n그건 우연이 아니었어.\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -701,6 +764,7 @@
       "KOR": "나는 표정이 굳어졌다.\n\"그러니까… 그 모든게 나 때문이라고 말하고 싶은거야?\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -712,6 +776,7 @@
       "KOR": "\"아니 너는 단지, 감추어진 진실의 중심에 있었을 뿐이야.\"",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -723,6 +788,7 @@
       "KOR": "\"무슨 진실?\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -734,6 +800,7 @@
       "KOR": "\"이 세계는 오래전부터 틀어져 있었어.\n누군가는 그 틀을 지키기 위해.\n누군가는 그 틀을 부수기 위해 움직여왔지.\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -745,6 +812,7 @@
       "KOR": "나는 위습을 노려보았다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -756,6 +824,7 @@
       "KOR": "\"그래서 난 뭐지? 그 틀을 부수는 도구라도 된다는 거냐?\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -767,6 +836,7 @@
       "KOR": "\"…..그건 너 자신이 선택해야 해.\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -778,6 +848,7 @@
       "KOR": "위습은 천천히 앞으로 떠올랐고 바람은 고요했다.\n\"하지만 기억해. 무너진 자리에는 반드시 무언가 숨겨져있어.\n그건, 너만이 찾을 수 있는 것들이야 \n그리고 그 조각들은…\n한 방향으로 향하고 있어.\"",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -789,6 +860,7 @@
       "KOR": "나는 한참을 멈춰 서서 생각했다.\n내가 걸어온 모든 폐허, 그 속에서 반복되어온 '끝'\n\n이번에도… 결국 혼자 남았다.",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -800,6 +872,7 @@
       "KOR": "\"…이젠 더 이상, 우연이라고는 생각 안 해.\"",
       "displayType": "CLAER",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -811,6 +884,7 @@
       "KOR": "C1E4_travel",
       "displayType": "IMAGE",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -822,6 +896,7 @@
       "KOR": "나는 마지막으로 뒤를 돌아보았고\n그리고 아주 천천히, 그리고 확실하게 걸음을 옮겼고\n위습은 그 앞길을 비춰주듯이 내 앞을 비춰줬다.\n소리 없이 묵묵히",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -833,6 +908,7 @@
       "KOR": "다음 스토리로 넘어감",
       "displayType": "TEXT",
       "StoryBreak": "Break",
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -844,6 +920,7 @@
       "KOR": "상인을 만났다",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -855,6 +932,7 @@
       "KOR": "거래를 한다",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -866,6 +944,7 @@
       "KOR": "그냥 간다",
       "displayType": "TEXT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -877,6 +956,7 @@
       "KOR": "General",
       "displayType": "MERCHANT",
       "StoryBreak": null,
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
@@ -888,6 +968,151 @@
       "KOR": "다음 스토리로 넘어감",
       "displayType": "TEXT",
       "StoryBreak": "Break",
+      "ChapterBreack": "Break",
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 1.0,
+      "Script_Code": "MainScript_2_1_1",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_1",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 2.0,
+      "Script_Code": "MainScript_2_1_2",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_2",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 3.0,
+      "Script_Code": "MainScript_2_1_3",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_3",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 4.0,
+      "Script_Code": "MainScript_2_1_4",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_4",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 5.0,
+      "Script_Code": "MainScript_2_1_5",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_5",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 6.0,
+      "Script_Code": "MainScript_2_1_6",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_6",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 7.0,
+      "Script_Code": "MainScript_2_1_7",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_7",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 8.0,
+      "Script_Code": "MainScript_2_1_8",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_8",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 9.0,
+      "Script_Code": "MainScript_2_1_9",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_9",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 10.0,
+      "Script_Code": "MainScript_2_1_10",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_10",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 11.0,
+      "Script_Code": "MainScript_2_1_11",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_11",
+      "displayType": "TEXT",
+      "StoryBreak": null,
+      "ChapterBreack": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Chapter_Index": 2.0,
+      "Event_Index": 1.0,
+      "Script_Index": 12.0,
+      "Script_Code": "MainScript_2_1_12",
+      "KOR": "2챕터 메인스토리 진행 테스트 1_12",
+      "displayType": "TEXT",
+      "StoryBreak": "Break",
+      "ChapterBreack": null,
       "NEXTWIN": null,
       "NEXTLOSE": null
     }

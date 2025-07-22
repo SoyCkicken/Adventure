@@ -94,9 +94,11 @@ public class EventDisplay : MonoBehaviour
         }
 
         // 이벤트 정렬
-        eventList = eventList.OrderBy(e => e.RandomEvent_Index)
-                             .ThenBy(e => e.Script_Index)
-                             .ToList();
+        eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event")
+      .Where(e => e.Chapter_Index.Contains(playerState.CurrentChapterIndex))
+      .OrderBy(e => e.RandomEvent_Index)
+      .ThenBy(e => e.Script_Index)
+      .ToList();
 
         // 스크립트 캐시
         scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");

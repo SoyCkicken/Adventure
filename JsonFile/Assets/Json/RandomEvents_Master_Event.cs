@@ -6,7 +6,7 @@ public class RandomEvents_Master_Event
     public int RandomEvent_Index;
     public int Script_Index;
     public string Random_Event_ID;
-    public int Chapter_Index;
+    public List<int> Chapter_Index;
     public string Event_Text;
     public string Choice1_Text;
     public string Choice2_Text;

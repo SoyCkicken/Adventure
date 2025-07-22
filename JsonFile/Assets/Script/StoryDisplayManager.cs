@@ -78,6 +78,7 @@ public class StoryDisplayManager : MonoBehaviour
         onCompleteCallback = onComplete;
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
+        Debug.Log(storyList);
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 파일을 불러오는 데 실패했습니다.");
@@ -85,10 +86,10 @@ public class StoryDisplayManager : MonoBehaviour
             return;
         }
 
-        storyList = storyList
-          .Where(s => s.Event_Index == currentStoryIndex)
-          .OrderBy(e => e.Script_Index)
-          .ToList();
+        storyList = jsonManager.GetStoryMainMasters("Story_Master_Main")
+                .Where(s => s.Chapter_Index == playerState.CurrentChapterIndex && s.Event_Index == currentStoryIndex)
+                .OrderBy(e => e.Script_Index)
+                .ToList();
         currentIndex = 0;
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
         if (storyList.Count == 0)
@@ -500,6 +501,16 @@ public class StoryDisplayManager : MonoBehaviour
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
+            var nextChapter = jsonManager.GetStoryMainMasters("Story_Master_Main")
+            .Where(s => s.Chapter_Index == playerState.CurrentChapterIndex + 1)
+            .ToList();
+            if (script.ChapterBreack =="Break")
+            {
+                playerState.CurrentChapterIndex++; // 챕터 증가
+                currentStoryIndex = 0;              // Event_Index 초기화
+                //StartMainStory(onCompleteCallback); // 다음 챕터 로드
+                Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거암)");
+            }
             OnMainStoryComplete();
            
             SkipButton.SetActive(false);

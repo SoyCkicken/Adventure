@@ -513,16 +513,43 @@ public class ExcelAutoGenerator : EditorWindow
     {
         string name = column.ColumnName.ToLower();
         string[] forceString = { "name", "desc", "text", "title" };
-        foreach (var key in forceString) if (name.Contains(key)) return "string";
+        foreach (var key in forceString)
+            if (name.Contains(key)) return "string";
 
         foreach (DataRow row in table.Rows)
         {
             string val = row[column]?.ToString();
             if (string.IsNullOrWhiteSpace(val)) continue;
-            if (val.TrimStart().StartsWith("[")) return "List<EffectTrigger>";
+
+            // 배열 타입 체크
+            if (val.TrimStart().StartsWith("["))
+            {
+                try
+                {
+                    var jarray = JArray.Parse(val);
+                    if (jarray.Count == 0)
+                        return "List<string>"; // 비어있으면 기본 문자열 리스트
+
+                    var first = jarray.First;
+
+                    // 숫자 배열인지 확인
+                    if (first.Type == JTokenType.Integer)
+                        return "List<int>";
+                    if (first.Type == JTokenType.String)
+                        return "List<string>";
+                    if (first.Type == JTokenType.Object)
+                        return "List<EffectTrigger>"; // 구조체인 경우
+
+                    return "List<string>"; // 기본
+                }
+                catch
+                {
+                    return "string"; // 파싱 실패 시
+                }
+            }
         }
 
-        return InferSimpleType(table, column);
+        return InferSimpleType(table, column); // 기존 숫자, bool 체크 유지
     }
 
     private static string InferSimpleType(DataTable table, DataColumn column)
@@ -544,5 +571,3 @@ public class ExcelAutoGenerator : EditorWindow
 
     private static string SanitizeVariableName(string name) => System.Text.RegularExpressions.Regex.Replace(name.Replace(" ", "_").Replace("-", "_"), @"[^a-zA-Z0-9_]", "");
 }
-
-
