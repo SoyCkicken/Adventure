@@ -26,7 +26,7 @@ public class RemoteTester : MonoBehaviour
     public JsonManager jsonManager;
 
     // 가상 시나리오 / 적 ID 리스트
-    private List<string> mainStories = new List<string> { "MainScene_1", "MainScene_2", "MainScene_3", "MainScene_4" ,"MainScene_5"};
+    private List<string> mainStories = new List<string> { "MainScene_1_1", "MainScene_1_2", "MainScene_1_3", "MainScene_1_4" ,"MainScene_1_5","MainScene_2_1"};
     private List<string> randomStories = new List<string> { "EventScene_1", "EventScene_2", "EventScene_3", "EventScene_4" };
     private List<string> enemyIDs = new List<string> { "monster_001", "monster_002", "monster_003" };
     private List<string> WeaponID = new List<string>();
@@ -76,17 +76,22 @@ public class RemoteTester : MonoBehaviour
     // 각 항목 클릭 시 동작
     void OnMainStorySelected(string groupID)
     {
-        if (int.TryParse(groupID.Replace("MainScene_", ""), out int id))
-        {
-            Debug.Log($"[리모컨] 랜덤 이벤트 수동 실행: 그룹 ID = {id}");
-            //일단 정지 시키고 실행
-            storyDisplayManager.StopMainStory();
-            eventDisplay.StopRandomEvent();
-            storyDisplayManager.storyList.Clear();
-            eventDisplay.groupEvents.Clear();
-            FindObjectOfType<StoryDisplayManager>().LoadMainStory(id);
-        }
+        string[] parts = groupID.Replace("MainScene_", "").Split('_');
 
+        if (parts.Length == 2 &&
+            int.TryParse(parts[0], out int chapter) &&
+            int.TryParse(parts[1], out int eventIndex))
+        {
+            {
+                Debug.Log($"[리모컨] 랜덤 이벤트 수동 실행: 그룹 ID = {chapter} , {eventIndex}");
+                //일단 정지 시키고 실행
+                storyDisplayManager.StopMainStory();
+                eventDisplay.StopRandomEvent();
+                storyDisplayManager.storyList.Clear();
+                eventDisplay.groupEvents.Clear();
+                FindObjectOfType<StoryDisplayManager>().LoadMainStory(chapter, eventIndex);
+            }
+        }
     }
 
     void OnRandomStorySelected(string groupID)

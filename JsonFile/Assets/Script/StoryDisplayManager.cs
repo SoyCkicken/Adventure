@@ -733,7 +733,7 @@ public class StoryDisplayManager : MonoBehaviour
         NextScene(); // 또는 DisplayNextEvent 등
     }
     //리모컨에서 사용중인거
-    public void LoadMainStory(int id)
+    public void LoadMainStory(int chapter, int eventIndex)
     {
         var flowManager = FindObjectOfType<GameFlowManager>();
         if (flowManager != null && !flowManager.CanEnterFlow())
@@ -752,22 +752,24 @@ public class StoryDisplayManager : MonoBehaviour
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
 
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
+
         if (storyList == null || storyList.Count == 0)
         {
             Debug.LogError("Story_Master 파일을 불러오는 데 실패했습니다.");
             onCompleteCallback?.Invoke();
-            flowManager?.SetState(GameFlowManager.FlowState.None); // 실패 시 상태 복구
+            flowManager?.SetState(GameFlowManager.FlowState.None);
             return;
         }
+
         Debug.Log($"[MainStory] currentIndex: {currentIndex}, listCount: {storyList.Count}");
         storyList = storyList
-            .Where(s => s.Event_Index == id)
-            .OrderBy(e => e.Script_Index)
-            .ToList();
+          .Where(s => s.Chapter_Index == chapter && s.Event_Index == eventIndex)
+          .OrderBy(s => s.Script_Index)
+          .ToList();
 
         if (storyList.Count == 0)
         {
-            Debug.LogError($"Event_Index {id}에 해당하는 스토리가 없습니다.");
+            Debug.LogError($"Event_Index {chapter} , {eventIndex}에 해당하는 스토리가 없습니다.");
             onCompleteCallback?.Invoke();
             flowManager?.SetState(GameFlowManager.FlowState.None); // 실패 시 상태 복구
             return;
