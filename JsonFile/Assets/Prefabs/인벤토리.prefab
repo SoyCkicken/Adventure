@@ -2079,6 +2079,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6091933745264682440}
     m_Modifications:
+    - target: {fileID: 768030671822941823, guid: adc3438719e4f684bbde3568697cc598, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 14fa89b73d699dd4587be293cb8f2744, type: 3}
     - target: {fileID: 8161757294945700583, guid: adc3438719e4f684bbde3568697cc598, type: 3}
       propertyPath: m_Name
       value: "\uC2A4\uD0EF \uCD9C\uB825\uC6A9 \uD504\uB9AC\uD339 (\uCCB4\uB825)"
@@ -2545,6 +2549,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1733460647759048850}
     m_Modifications:
+    - target: {fileID: 768030671822941823, guid: adc3438719e4f684bbde3568697cc598, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2439875ceecbf3d49879cc41d2041687, type: 3}
     - target: {fileID: 1107065959010328840, guid: adc3438719e4f684bbde3568697cc598, type: 3}
       propertyPath: m_SizeDelta.x
       value: 88.3806
