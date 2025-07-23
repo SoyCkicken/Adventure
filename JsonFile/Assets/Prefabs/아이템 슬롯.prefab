@@ -180,3 +180,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 9196526654327993213}
   button: {fileID: 5472191508797185705}
+  spriteBank: {fileID: 0}
