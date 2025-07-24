@@ -91,7 +91,7 @@ public class PlayerState : MonoBehaviour
     {
         tempPoint = 0;
         SaveTempStats();
-        inventoryManager.updateDPS_MaxHealth();
+        inventoryManager.UpdateDPS_MaxHealth();
         inventoryManager.UpdateInventoryByStrength();
         equipmentSystem.Init();
 

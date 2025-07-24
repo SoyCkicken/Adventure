@@ -63,7 +63,7 @@ public class PlayerStatsUI : MonoBehaviour
         integerHPBarScaler.SetHPMax(playerState.HP);
         integerMPBarScaler.SetMPMax(playerState.MP);
         //갱신 한번 더 해주고
-        InventoryManager.updateDPS_MaxHealth();
+        InventoryManager.UpdateDPS_MaxHealth();
         InventoryManager.UpdateInventoryByStrength();
         InventoryManager.updateSoulText();
     }
@@ -86,7 +86,7 @@ public class PlayerStatsUI : MonoBehaviour
         if (playerState.TryLevelUp())
         {
             UpdateUI();
-            InventoryManager.updateDPS_MaxHealth();
+            InventoryManager.UpdateDPS_MaxHealth();
             InventoryManager.UpdateInventoryByStrength();
             InventoryManager.updateSoulText();
         }

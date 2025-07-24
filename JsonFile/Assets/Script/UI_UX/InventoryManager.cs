@@ -76,6 +76,7 @@ public class InventoryManager : MonoBehaviour
             OffInventoryButton.gameObject.SetActive(true);
             OnInventoryButton.gameObject.SetActive(false);
             inventoryPanel.SetActive(true);
+            UpdateDPS_MaxHealth();
         });
         OffInventoryButton.onClick.AddListener(() =>
         {
@@ -95,7 +96,7 @@ public class InventoryManager : MonoBehaviour
         //}
         UpdateInventoryByStrength();
         LoadInventory();
-        updateDPS_MaxHealth();
+        UpdateDPS_MaxHealth();
     }
 
     public void LoadInventory()
@@ -291,7 +292,7 @@ public class InventoryManager : MonoBehaviour
         unequipButton.gameObject.SetActive(false);
         useButton.gameObject.SetActive(false);
         removeButton.gameObject.SetActive(false);
-
+        
         switch (item.Item_Type)
         {
             case "Weapon":
@@ -508,7 +509,7 @@ public class InventoryManager : MonoBehaviour
         selectedItem = null; // ⭐ 꼭 초기화!
         equipmentSystem.Init();
         LoadInventory();
-        updateDPS_MaxHealth(); 
+        UpdateDPS_MaxHealth(); 
         itemDetailPanel.SetActive(false); // 패널 닫기
         selectedItem = null;              // 선택 정보 제거
     }
@@ -610,7 +611,7 @@ public class InventoryManager : MonoBehaviour
 
         equipmentSystem.Init();
         LoadInventory();
-        updateDPS_MaxHealth();
+        UpdateDPS_MaxHealth();
         itemDetailPanel.SetActive(false);
     }
 
@@ -648,8 +649,9 @@ public class InventoryManager : MonoBehaviour
         itemDetailPanel.SetActive(false);
         LoadInventory();
     }
-    public void updateDPS_MaxHealth()
+    public void UpdateDPS_MaxHealth()
     {
+        Debug.Log($"player.damage = {player.damage}");
         DPSText.text = (player.damage * player.speed).ToString("0.0");
         HPText.text = player.MaxHealth.ToString();
         //Debug.Log($"플레이어의 공격력 : {player.damage}\n플레이어의 속도 : {player.speed}\n플레이어의 체력 : {player.MaxHealth}");
@@ -717,7 +719,7 @@ public class InventoryManager : MonoBehaviour
         }
 
         equipmentSystem.Init();      // 능력치 반영
-        updateDPS_MaxHealth();       // DPS, 체력 갱신
+        UpdateDPS_MaxHealth();       // DPS, 체력 갱신
         LoadInventory();        // 인벤토리 UI 갱신 
     }
 }
