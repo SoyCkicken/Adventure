@@ -169,7 +169,7 @@ public class StoryDisplayManager : MonoBehaviour
                     winScriptCode = matchingScript.NEXTWIN?.Trim();
                     loseScriptCode = matchingScript.NEXTLOSE?.Trim();
                     //OnBattleJoin?.Invoke(matchingScript.KOR);
-                    BattleState();
+                    BattleState(matchingScript.KOR);
                     break;
                 case "MERCHANT":
                     string merchantKey = matchingScript.KOR.Trim();  // KOR이 실제 키값임
@@ -187,7 +187,7 @@ public class StoryDisplayManager : MonoBehaviour
 
     }
 
-    private void BattleState()
+    private void BattleState(string enemyID)
     {
         //일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
         for (int i = 0; i < 2; i++)
@@ -198,6 +198,7 @@ public class StoryDisplayManager : MonoBehaviour
             if (i == 0)
             {
                 txt.text = "자동 전투 입니다";
+                btn.onClick.AddListener(() => { OnBattleJoin?.Invoke(enemyID); });
             }
             else
             {

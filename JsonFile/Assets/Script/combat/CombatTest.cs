@@ -21,6 +21,7 @@ public class CombatTest : MonoBehaviour
     public Animator enemyanima;
     public GameObject EnemyAttackImage;
     public GameObject ImageGameObject;
+    public GameObject PopupObject;
 
     // 전투 완료 콜백
     private Action<bool> onComplete;
@@ -227,8 +228,9 @@ public class CombatTest : MonoBehaviour
                 Debug.Log(battleOver = (player.Health > 0));
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
-                
                 buffUI.Clear();
+                NormalBattle.SetActive(false);
+                //PopupObject.GetComponent<ConfirmPopup>().messageText.text= "전투에서 승리했습니다";
                 yield break;
             }
             else if(attacker.Health<=0)
@@ -237,6 +239,8 @@ public class CombatTest : MonoBehaviour
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
+                NormalBattle.SetActive(false);
+                //PopupObject.GetComponent<ConfirmPopup>().messageText.text = "전투에서 승리했습니다";
                 yield break;
             }
         }
