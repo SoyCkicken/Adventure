@@ -27,7 +27,7 @@ public class PlayerState : MonoBehaviour
     private int tempPoint;
     private int tempSTR, tempAGI, tempDIV, tempINT, tempMAG, tempCHA, tempHealth;
 
-    public int CurrentChapterIndex = 1;
+    public int CurrentChapterIndex = 0;
     private void Awake()
     {
         RecalculateHPMP();

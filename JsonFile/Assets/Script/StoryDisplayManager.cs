@@ -506,12 +506,8 @@ public class StoryDisplayManager : MonoBehaviour
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            var nextChapter = jsonManager.GetStoryMainMasters("Story_Master_Main")
-            .Where(s => s.Chapter_Index == playerState.CurrentChapterIndex + 1)
-            .ToList();
             if (script.ChapterBreack == "Break")
             {
-                playerState.CurrentChapterIndex++; // 챕터 증가
                 currentStoryIndex = 0;              // Event_Index 초기화
                 onCompleteCallback?.Invoke();
                 Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거임)");
@@ -521,7 +517,7 @@ public class StoryDisplayManager : MonoBehaviour
                 Debug.Log("여기 넘어 갔으면 아직 스토리 남았다는 거임");
                 OnMainStoryComplete();
             }
-            SkipButton.SetActive(false);
+            //SkipButton.SetActive(false);
 
             return;
         }

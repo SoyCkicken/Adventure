@@ -3573,7 +3573,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9993164
+  m_Size: 0.999818
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18388,7 +18388,7 @@ MonoBehaviour:
   statsUI: {fileID: 1497404942}
   inventoryManager: {fileID: 1416507560}
   equipmentSystem: {fileID: 2006169298}
-  CurrentChapterIndex: 1
+  CurrentChapterIndex: 0
 --- !u!1 &2006255947
 GameObject:
   m_ObjectHideFlags: 0
@@ -18800,7 +18800,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00020713208}
+  m_AnchoredPosition: {x: 0, y: -0.000013064823}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632

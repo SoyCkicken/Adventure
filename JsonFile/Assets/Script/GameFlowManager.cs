@@ -18,7 +18,7 @@ public class GameFlowManager : MonoBehaviour
     public InventoryManager inventoryManager;
 
     private string pendingMonsterID;
-    public int CurrentChapterIndex = 1;
+    //public int CurrentChapterIndex = 1;
 
 
 
@@ -26,7 +26,7 @@ public class GameFlowManager : MonoBehaviour
     {
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-
+        playerState.CurrentChapterIndex++; // 챕터 증가
         EnterState(FlowState.MainStory); // 최초 진입
     }
 
@@ -60,10 +60,12 @@ public class GameFlowManager : MonoBehaviour
             case FlowState.MainStory:
                 Debug.Log("▶ 메인 스토리에 진입합니다.");
                 mainStoryManager.StartMainStory(OnMainStoryComplete);
+                
                 break;
             case FlowState.RandomEvent:
                 Debug.Log("▶ 랜덤 이벤트에 진입합니다.");
                 randomEventManager.StartEventSequence(OnRandomEventComplete);
+                playerState.CurrentChapterIndex++; // 챕터 증가
                 break;
             case FlowState.Battle:
                 Debug.Log("▶ 전투에 진입합니다.");

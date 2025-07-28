@@ -65,7 +65,7 @@ public class EventDisplay : MonoBehaviour
         {
             OnSkip();
         };
-        count = rng.Next(1,2);
+        //count = rng.Next(1,2);
     }
 
     private void OnSkip()
@@ -92,14 +92,14 @@ public class EventDisplay : MonoBehaviour
             onCompleteCallback?.Invoke(false);
             return;
         }
-
+        Debug.Log("이벤트 세팅 부분");
         // 이벤트 정렬
         eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event")
       .Where(e => e.Chapter_Index.Contains(playerState.CurrentChapterIndex))
       .OrderBy(e => e.RandomEvent_Index)
       .ThenBy(e => e.Script_Index)
       .ToList();
-
+        
         // 스크립트 캐시
         scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
 
@@ -108,7 +108,7 @@ public class EventDisplay : MonoBehaviour
             .Select(e => e.RandomEvent_Index)
             .Distinct()
             .ToList();
-
+        Debug.Log(eventGroups.Count);
         // 초기화
         ClearContent();
         //터치 패널 초기화
