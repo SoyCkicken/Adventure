@@ -3,15 +3,16 @@ using TMPro;
 using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Playables;
 
 public class FontSizeManager : MonoBehaviour
 {
-    public int fontSize = 24;
-    public int minFontSize = 16;
-    public int maxFontSize = 48;
-    public int TextLineSize = 0;
-    public int TextminLineSize = 0;
-    public int TextMaxLineSize = 12;
+    public int fontSize;
+    public int minFontSize;
+    public int maxFontSize;
+    public int TextLineSize;
+    public int TextminLineSize;
+    public int TextMaxLineSize;
     public Button upFontSizebutton;
     public Button downFontSizebutton;
     public Button upLineSizebutton;
@@ -25,6 +26,9 @@ public class FontSizeManager : MonoBehaviour
     public TMP_Text tMP2;
     //일부 추가를 해줘야 하는 애들이 있음
     public List<TMP_Text> registeredTexts = new List<TMP_Text>();
+
+    //세이브 로드 용
+
 
     private void Start()
     {
@@ -60,6 +64,8 @@ public class FontSizeManager : MonoBehaviour
         {
             resetTextSetting();
         });
+
+
     }
 
     public void Register(TMP_Text text)

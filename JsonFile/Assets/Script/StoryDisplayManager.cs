@@ -156,7 +156,10 @@ public class StoryDisplayManager : MonoBehaviour
                     {
                         NextScene();
                     }
-                    HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock, false);
+                    else
+                    {
+                        HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock, false);
+                    }
                     break;
                 case "CLAER":
                     Debug.Log("클리어 후 텍스트 생성에 들어왔습니다");
@@ -221,8 +224,9 @@ public class StoryDisplayManager : MonoBehaviour
     // 필요 시 마지막 노드까지 모두 진행 후 onCompleteCallback 호출
     public void OnMainStoryComplete()
     {
-        onCompleteCallback?.Invoke();
+        
         isStoryTransitioning = false;
+        StartMainStory(onCompleteCallback); // 다음 챕터 로드
         Debug.Log($"isStoryTransitioning의 값 : {isStoryTransitioning} 이번에는 넘어가면 안된다!");
     }
 
@@ -505,15 +509,18 @@ public class StoryDisplayManager : MonoBehaviour
             var nextChapter = jsonManager.GetStoryMainMasters("Story_Master_Main")
             .Where(s => s.Chapter_Index == playerState.CurrentChapterIndex + 1)
             .ToList();
-            if (script.ChapterBreack =="Break")
+            if (script.ChapterBreack == "Break")
             {
                 playerState.CurrentChapterIndex++; // 챕터 증가
                 currentStoryIndex = 0;              // Event_Index 초기화
-                //StartMainStory(onCompleteCallback); // 다음 챕터 로드
-                Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거암)");
+                onCompleteCallback?.Invoke();
+                Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거임)");
             }
-            OnMainStoryComplete();
-           
+            else
+            {
+                Debug.Log("여기 넘어 갔으면 아직 스토리 남았다는 거임");
+                OnMainStoryComplete();
+            }
             SkipButton.SetActive(false);
 
             return;

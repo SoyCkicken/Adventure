@@ -1,8 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.UI;
+using static SaveManager;
 
 public class SaveManager : MonoBehaviour
 {
@@ -11,22 +16,25 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private StoryDisplayManager displayManager;
     [SerializeField] private EventDisplay eventDisplay;
     [SerializeField] private GameFlowManager gameFlowManager;
+    public Button SaveButton;
+    public Button LoadButton;
+    public TMP_Text SaveDataTimeText;
+    private void Start()
+    {
+        SaveButton.onClick.AddListener(() =>
+        {
+            SaveGame();
+        });
+        LoadButton.onClick.AddListener(() =>
+        {
+            LoadGame();
+        });
+        LoadSaveTimeOnly();
+    }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-
-            SaveAll(playerState, inventoryManager, eventDisplay, displayManager, gameFlowManager);
-            Debug.Log("▶ 플레이어 스탯 저장됨");
-        }
-
-        if (Input.GetKeyDown(KeyCode.F9))
-        {
-            LoadAll(playerState, inventoryManager, eventDisplay, displayManager, gameFlowManager);
-
-            Debug.Log("▶ 플레이어 스탯 불러오기 완료");
-        }
+        
         if (Input.GetKeyDown(KeyCode.F7))
         {
             DeleteSave();
@@ -81,43 +89,73 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public static void SaveAll(PlayerState player, InventoryManager inventory, EventDisplay eventDisplay, StoryDisplayManager mainStory , GameFlowManager gameFlowManager)
+
+    public void SaveGame()
     {
         SaveData data = new SaveData();
-
-        // 각 시스템에 SaveData 전달해서 값 채우기
-        player.SavePlayer(ref data);
-        inventory.SaveInventoryData(ref data);
-        eventDisplay.SaveEventData(ref data);
-        mainStory.SaveMainStory(ref data);
+        playerState.SavePlayer(ref data);
         gameFlowManager.SaveFlow(ref data);
+        displayManager.SaveMainStory(ref data);
+        eventDisplay.SaveEventData(ref data);
+        inventoryManager.SaveInventoryData(ref data); // 인벤토리 저장
 
-        // 최종 저장
         string json = JsonUtility.ToJson(data, true);
-        PlayerPrefs.SetString("SaveFile", json);
-        Debug.Log("전체 저장 완료");
+        data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        File.WriteAllText(Application.persistentDataPath + "/save.json", json);
+        Debug.Log("저장 완료");
     }
-
-    public static void LoadAll(PlayerState player, InventoryManager inventory, EventDisplay eventDisplay, StoryDisplayManager mainStory, GameFlowManager gameFlowManager)
+    public void LoadGame()
     {
-        if (!PlayerPrefs.HasKey("SaveFile"))
+        string path = Application.persistentDataPath + "/save.json";
+        if (!File.Exists(path))
         {
-            Debug.LogWarning("저장 파일 없음");
+            Debug.LogWarning("세이브 파일이 없습니다.");
             return;
         }
 
-        string json = PlayerPrefs.GetString("SaveFile");
+        string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        // 각 시스템에 데이터 전달해서 복구
-        player.LoadPlayer(data);
-        inventory.LoadInventoryData(data);
-        //eventDisplay.LoadEventData(data);
-        //mainStory.LoadMainStory(data);
+        playerState.LoadPlayer(data);
+        inventoryManager.LoadInventoryData(data); // 인벤토리 로드
         gameFlowManager.LoadFlow(data);
-
-        Debug.Log("전체 불러오기 완료");
     }
+    public void LoadSaveTimeOnly()
+    {
+        if (!File.Exists(SavePath))
+        {
+            Debug.Log("세이브 파일 없음");
+            if (SaveDataTimeText != null) SaveDataTimeText.text = "저장 기록 없음";
+            return;
+        }
+
+        string json = File.ReadAllText(SavePath);
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+        if (SaveDataTimeText != null)
+            SaveDataTimeText.text = $"최근 저장 시간 : {data.saveTime}";
+    }
+
+    //public static void LoadAll(PlayerState player, InventoryManager inventory, EventDisplay eventDisplay, StoryDisplayManager mainStory, GameFlowManager gameFlowManager)
+    //{
+    //    if (!PlayerPrefs.HasKey("SaveFile"))
+    //    {
+    //        Debug.LogWarning("저장 파일 없음");
+    //        return;
+    //    }
+
+    //    string json = PlayerPrefs.GetString("SaveFile");
+    //    SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+    //    // 각 시스템에 데이터 전달해서 복구
+    //    player.LoadPlayer(data);
+    //    inventory.LoadInventoryData(data);
+    //    //eventDisplay.LoadEventData(data);
+    //    //mainStory.LoadMainStory(data);
+    //    gameFlowManager.LoadFlow(data);
+
+    //    Debug.Log("전체 불러오기 완료");
+    //}
 
     /// <summary>
     /// 저장용 데이터 구조
@@ -142,7 +180,7 @@ public class SaveManager : MonoBehaviour
         public int savedCurrentEvetnGroupIndex;
 
         public string flowState; // 예: "Main", "Event", "Battle" 등
-
+        public string saveTime;
         public List<ItemData> inventoryItems = new(); // 인벤토리 전체 직렬화 저장
     }
 }
