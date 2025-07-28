@@ -943,8 +943,8 @@
       "Script_Code": "MainScript_1_5_3",
       "KOR": "그냥 간다",
       "displayType": "TEXT",
-      "StoryBreak": null,
-      "ChapterBreack": null,
+      "StoryBreak": "Break",
+      "ChapterBreack": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
     },
