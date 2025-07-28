@@ -792,6 +792,7 @@ public class StoryDisplayManager : MonoBehaviour
 
     public void SaveMainStory(ref SaveData data)
     {
+        data.PlayerCurrentChapterIndex = playerState.CurrentChapterIndex;
         data.MainstoryEventIndex = currentStoryIndex;
         data.MainstoryCurrentIndex = currentIndex;
         data.MainstorySceneCode = currentStory.Scene_Code;
@@ -802,9 +803,10 @@ public class StoryDisplayManager : MonoBehaviour
         currentStoryIndex = data.MainstoryEventIndex;
 
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main")
-            .Where(s => s.Event_Index == currentStoryIndex)
-            .OrderBy(e => e.Script_Index)
-            .ToList();
+       .Where(s => s.Chapter_Index == playerState.CurrentChapterIndex && // 🔥 챕터 조건 추가
+                   s.Event_Index == currentStoryIndex)
+       .OrderBy(e => e.Script_Index)
+       .ToList();
 
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
 

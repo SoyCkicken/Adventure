@@ -98,11 +98,12 @@ public class SaveManager : MonoBehaviour
         displayManager.SaveMainStory(ref data);
         eventDisplay.SaveEventData(ref data);
         inventoryManager.SaveInventoryData(ref data); // 인벤토리 저장
-
-        string json = JsonUtility.ToJson(data, true);
         data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        string json = JsonUtility.ToJson(data, true);
+        
         File.WriteAllText(Application.persistentDataPath + "/save.json", json);
         Debug.Log("저장 완료");
+        LoadSaveTimeOnly();
     }
     public void LoadGame()
     {
@@ -170,7 +171,7 @@ public class SaveManager : MonoBehaviour
 
         public ItemData equippedWeaponData;
         public ItemData equippedArmorData;
-
+        public int PlayerCurrentChapterIndex;
         public int MainstoryEventIndex;           // 필터 기준용: Event_Index
         public int MainstoryCurrentIndex;         // 현재 인덱스
         public string MainstorySceneCode;         // 혹시 중복 방지를 위해 Scene_Code도 함께
