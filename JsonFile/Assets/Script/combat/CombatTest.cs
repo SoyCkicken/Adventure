@@ -32,6 +32,10 @@ public class CombatTest : MonoBehaviour
     {
         NormalBattle.SetActive(false);
     }
+    private void Start()
+    {
+        playerState = PlayerState.Instance;
+    }
     /// <summary>
     /// GameFlowManager가 전투를 시작할 때 호출합니다.
     /// </summary>

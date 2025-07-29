@@ -75,6 +75,7 @@ public class EventDisplay : MonoBehaviour
     }
     public void Start()
     {
+        playerState = PlayerState.Instance;
     }
     /// <summary>
     /// 랜덤 이벤트 연출 시작

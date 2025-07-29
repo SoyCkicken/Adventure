@@ -24,6 +24,7 @@ public class GameFlowManager : MonoBehaviour
 
     void Start()
     {
+        playerState = PlayerState.Instance;
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
         playerState.CurrentChapterIndex++; // 챕터 증가

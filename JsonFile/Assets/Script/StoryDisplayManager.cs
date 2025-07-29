@@ -49,6 +49,8 @@ public class StoryDisplayManager : MonoBehaviour
 
     private void Start()
     {
+        playerState = PlayerState.Instance;
+
         var handler = SkipButton.GetComponent<SkipOrScrollHandler>();
         if (handler != null)
         {

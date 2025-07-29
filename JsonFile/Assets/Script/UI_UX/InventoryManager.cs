@@ -57,6 +57,8 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
+        playerState = PlayerState.Instance;
+
         // 테스트용 아이템 추가
         // 소모 아이템 같은 경우 아직 구조가 정해지지 않아서 이렇게 되어 있음
         inventoryItems.Add(new ItemData { Item_ID = "Item_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });

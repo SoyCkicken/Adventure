@@ -22,7 +22,7 @@ namespace MyGame
 
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
         public string charaterName;
-        public PlayerState playerState;
+        [SerializeField] PlayerState playerState;
         public int MaxHealth = 50;
         public int Health;
         public int damage;
@@ -47,6 +47,11 @@ namespace MyGame
         public BuffUI buffUI;
         private Coroutine uiRefreshRoutine;
         //이 부분은 캐릭터 클래스의 하위에 있어야 되는 부분이라서 맨 아래로 안배고 맨 위에 넣음
+
+        private void Start()
+        {
+            playerState = PlayerState.Instance;
+        }
         [System.Serializable]
         public struct EquippedOption
         {

@@ -7,6 +7,8 @@ using UnityEngine.Playables;
 
 public class FontSizeManager : MonoBehaviour
 {
+    //싱글톤으로 바꿀 예정
+    //이유 게임 로비 화면은 다른 씬인데 그때 수정이 가능하게 
     public int fontSize;
     public int minFontSize;
     public int maxFontSize;

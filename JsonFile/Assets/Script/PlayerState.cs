@@ -1,108 +1,71 @@
-﻿// PlayerState.cs (Refactored for clarity, structure, and readability)
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerState : MonoBehaviour
 {
+
+
+
     [Header("플레이어 능력치")]
     public int STR = 5, AGI = 5, DIV = 5, MAG = 5, CHA = 5;
     public int Health = 5, INT = 5;
-    public int HP { get; private set; }
-    public int MP { get; private set; }
+    public int HP { get;  set; }
+    public int MP { get;  set; }
     public int CurrentHealth = 0, CurrentMental = 0;
 
     public int Level = 1;
     public int Experience = 100000;
-    private int ExperienceRequired = 100;
-    public int Point { get; private set; }
+    public int ExperienceRequired = 100;
 
     [SerializeField] public PlayerStatsUI statsUI;
-    [SerializeField] private InventoryManager inventoryManager;
-    [SerializeField] private EquipmentSystem equipmentSystem;
-    private int tempPoint;
-    private int tempSTR, tempAGI, tempDIV, tempINT, tempMAG, tempCHA, tempHealth;
+    [SerializeField] public InventoryManager inventoryManager;
+    [SerializeField] public EquipmentSystem equipmentSystem;
+
+    public static PlayerState Instance { get; private set; }
 
     public int CurrentChapterIndex = 0;
     private void Awake()
     {
-        RecalculateHPMP();
-        SaveTempStats();
-    }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-    public bool TryLevelUp()
-    {
-        if (Experience < ExperienceRequired) return false;
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
 
-        Experience -= ExperienceRequired;
-        ExperienceRequired = Mathf.CeilToInt(ExperienceRequired * 1.2f);
-        Point += 3;
-        tempPoint = Point;
-        SaveTempStats();
-        return true;
-    }
-
-    public void AddStat(ref int stat)
-    {
-        if (Point <= 0) return;
-        stat++;
-        Point--;
-        statsUI.UpdateUI();
-    }
-
-    public void AddSTR() => AddStat(ref STR);
-    public void AddAGI() => AddStat(ref AGI);
-    public void AddCHA() => AddStat(ref CHA);
-
-    public void AddINT()
-    {
-        AddStat(ref INT);
-        MP = CalculateMental(INT);
-        statsUI.UpdateUI();
-    }
-
-    public void AddMAG()
-    {
-        AddStat(ref MAG);
-        DIV = MAG; // 마법력이 신성력도 결정
-    }
-
-    public void AddHealth()
-    {
-        AddStat(ref Health);
-        HP = CalculateHealth(Health);
-        //Debug.Log($"HP = {HP}");
-        //Debug.Log($"Health = {Health}");
-        statsUI.UpdateUI();
-    }
-
-    public void ResetStats()
-    {
-        Point = tempPoint;
-        STR = tempSTR; AGI = tempAGI; DIV = tempDIV;
-        INT = tempINT; MAG = tempMAG; CHA = tempCHA; Health = tempHealth;
         RecalculateHPMP();
     }
-    public void ApplyStats()
-    {
-        tempPoint = 0;
-        SaveTempStats();
-        inventoryManager.UpdateDPS_MaxHealth();
-        inventoryManager.UpdateInventoryByStrength();
-        equipmentSystem.Init();
 
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (statsUI == null)
+            statsUI = FindObjectOfType<PlayerStatsUI>();
+        if (inventoryManager == null)
+            inventoryManager = FindObjectOfType<InventoryManager>();
+        if (equipmentSystem == null)
+            equipmentSystem = FindObjectOfType<EquipmentSystem>();
     }
 
 
-    private void SaveTempStats()
-    {
-        tempSTR = STR; tempAGI = AGI; tempDIV = DIV;
-        tempINT = INT; tempMAG = MAG; tempCHA = CHA; tempHealth = Health;
-    }
+
 
     public void RecalculateHPMP()
     {
@@ -112,11 +75,11 @@ public class PlayerState : MonoBehaviour
         CurrentMental = MP;
     }
 
-    private int CalculateHealth(int value)
+    public int CalculateHealth(int value)
     {
         return value >= 15 ? 5 : Mathf.Max(value / 3, 3);
     }
-    private int CalculateMental(int value)
+    public int CalculateMental(int value)
     {
         return value >= 15 ? 5 : Mathf.Max(value / 3, 3);
     }

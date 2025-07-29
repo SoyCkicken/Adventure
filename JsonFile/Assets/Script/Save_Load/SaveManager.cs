@@ -21,6 +21,8 @@ public class SaveManager : MonoBehaviour
     public TMP_Text SaveDataTimeText;
     private void Start()
     {
+        playerState = PlayerState.Instance;
+
         SaveButton.onClick.AddListener(() =>
         {
             SaveGame();
