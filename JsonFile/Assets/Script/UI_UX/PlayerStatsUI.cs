@@ -25,6 +25,8 @@ public class PlayerStatsUI : MonoBehaviour
     public InventoryManager InventoryManager;
     public IntegerHPBarScaler integerHPBarScaler;
     public IntegerHPBarScaler integerMPBarScaler;
+
+
     private void Start()
     {
         playerState = PlayerState.Instance;

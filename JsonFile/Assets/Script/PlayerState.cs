@@ -65,6 +65,31 @@ public class PlayerState : MonoBehaviour
     }
 
 
+    public void GenerateRandomStats()
+    {
+        // 최소 스탯 4를 보장하고, 추가 포인트 18점을 랜덤 분배
+        int[] stats = new int[6]; // STR, AGI, DIV, MAG, CHA, Health
+        for (int i = 0; i < stats.Length; i++) stats[i] = 4;
+
+        int remaining = 18;
+
+        while (remaining > 0)
+        {
+            int index = UnityEngine.Random.Range(0, stats.Length);
+            stats[index]++;
+            remaining--;
+        }
+
+        STR = stats[0];
+        AGI = stats[1];
+        DIV = stats[2];
+        MAG = stats[3];
+        CHA = stats[4];
+        Health = UnityEngine.Random.Range(4, 8);// 체력도 따로 랜덤
+        INT = UnityEngine.Random.Range(4, 8); // 지능은 따로 랜덤 (원하면 분배 포함 가능)
+        
+        RecalculateHPMP();
+    }
 
 
     public void RecalculateHPMP()
@@ -113,8 +138,9 @@ public class PlayerState : MonoBehaviour
         Level = data.Level;
         Experience = data.Experience;
         ExperienceRequired = data.ExperienceRequired;
-
+        if(statsUI!=null)
         statsUI.UpdateUI();
-        equipmentSystem.Init();
+        if (equipmentSystem != null)
+            equipmentSystem.Init();
     }
 }

@@ -3,12 +3,15 @@ using TMPro;
 using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
+using System.IO;
+using static SaveManager;
 using UnityEngine.Playables;
 
 public class FontSizeManager : MonoBehaviour
 {
     //싱글톤으로 바꿀 예정
     //이유 게임 로비 화면은 다른 씬인데 그때 수정이 가능하게 
+    SaveManager saveManager;
     public int fontSize;
     public int minFontSize;
     public int maxFontSize;
@@ -26,16 +29,24 @@ public class FontSizeManager : MonoBehaviour
     public Button resetButton;
     public TMP_Text tMP;
     public TMP_Text tMP2;
+    public TMP_Text SaveDataTimeText;
+    public Button SaveButton;
+    public Button LoadButton;
     //일부 추가를 해줘야 하는 애들이 있음
     public List<TMP_Text> registeredTexts = new List<TMP_Text>();
 
     //세이브 로드 용
 
+    private void Awake()
+    {
+        saveManager = SaveManager.Instance;
+    }
 
     private void Start()
     {
+        
         //여기서 덮어씌우고
-       fontSize = Convert.ToInt32(tMP.text);
+        fontSize = Convert.ToInt32(tMP.text);
         TextLineSize = Convert.ToInt32(tMP2.text);
 
         upFontSizebutton.onClick.AddListener(() =>
@@ -66,8 +77,10 @@ public class FontSizeManager : MonoBehaviour
         {
             resetTextSetting();
         });
+        SaveButton.onClick.AddListener(() => { saveManager.SaveGame(); });
+        LoadButton.onClick.AddListener(() => { saveManager.LoadGame(); });
 
-
+        LoadSaveTimeOnly();
     }
 
     public void Register(TMP_Text text)
@@ -136,5 +149,20 @@ public class FontSizeManager : MonoBehaviour
             // 스크롤 포지션 유지 or 맨 아래로 보낼 때:
             scrollRect.verticalNormalizedPosition = 0f;
         }
+    }
+    public void LoadSaveTimeOnly()
+    {
+        if (!File.Exists(SavePath))
+        {
+            Debug.Log("세이브 파일 없음");
+            if (SaveDataTimeText != null) SaveDataTimeText.text = "저장 기록 없음";
+            return;
+        }
+
+        string json = File.ReadAllText(SavePath);
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+        if (SaveDataTimeText != null)
+            SaveDataTimeText.text = $"최근 저장 시간 : {data.saveTime}";
     }
 }

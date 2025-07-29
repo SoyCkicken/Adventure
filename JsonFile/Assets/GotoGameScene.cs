@@ -7,10 +7,14 @@ using UnityEngine.UI;
 public class GotoGameScene : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Button button;
+    public Button Startbutton;
+    public Button Loadbutton;
     void Start()
     {
-        button.onClick.AddListener(() => {
+        Startbutton.onClick.AddListener(() => {
+            SceneManager.LoadSceneAsync("TestScene");
+        });
+        Loadbutton.onClick.AddListener(() => {
             SceneManager.LoadSceneAsync("TestScene");
         });
     }

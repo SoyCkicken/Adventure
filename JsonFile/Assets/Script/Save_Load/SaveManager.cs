@@ -6,6 +6,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static SaveManager;
 
@@ -16,22 +17,45 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private StoryDisplayManager displayManager;
     [SerializeField] private EventDisplay eventDisplay;
     [SerializeField] private GameFlowManager gameFlowManager;
+    [SerializeField] private FontSizeManager fontSizeManager;
     public Button SaveButton;
     public Button LoadButton;
-    public TMP_Text SaveDataTimeText;
+    public static SaveManager Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (playerState == null) playerState = PlayerState.Instance;
+        if (inventoryManager == null) inventoryManager = FindObjectOfType<InventoryManager>();
+        if (displayManager == null) displayManager = FindObjectOfType<StoryDisplayManager>();
+        if (eventDisplay == null) eventDisplay = FindObjectOfType<EventDisplay>();
+        if (gameFlowManager == null) gameFlowManager = FindObjectOfType<GameFlowManager>();
+        if (fontSizeManager == null) fontSizeManager = FindObjectOfType<FontSizeManager>();
+        // 버튼 이벤트 등록
+        if (SaveButton != null) SaveButton.onClick.AddListener(SaveGame);
+        if (LoadButton != null) LoadButton.onClick.AddListener(LoadGame);
+    }
+
     private void Start()
     {
-        playerState = PlayerState.Instance;
-
-        SaveButton.onClick.AddListener(() =>
-        {
-            SaveGame();
-        });
-        LoadButton.onClick.AddListener(() =>
-        {
-            LoadGame();
-        });
-        LoadSaveTimeOnly();
     }
 
     private void Update()
@@ -45,34 +69,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    private static string SavePath => Application.persistentDataPath + "/save.json";
-
-    /// <summary>
-    /// SaveData 파일로 저장
-    /// </summary>
-    //public static void SaveGame(SaveData data)
-    //{
-    //    string json = JsonUtility.ToJson(data, true);
-    //    File.WriteAllText(SavePath, json);
-    //    Debug.Log($"[SaveManager] 저장 완료: {SavePath}");
-    //}
-
-    ///// <summary>
-    ///// SaveData 불러오기
-    ///// </summary>
-    //public static SaveData LoadGame()
-    //{
-    //    if (!File.Exists(SavePath))
-    //    {
-    //        Debug.LogWarning("[SaveManager] 저장 파일 없음");
-    //        return null;
-    //    }
-
-    //    string json = File.ReadAllText(SavePath);
-    //    SaveData data = JsonUtility.FromJson<SaveData>(json);
-    //    Debug.Log("[SaveManager] 불러오기 완료");
-    //    return data;
-    //}
+    public static string SavePath => Application.persistentDataPath + "/save.json";
 
     /// <summary>
     /// 저장 존재 여부 확인
@@ -105,7 +102,11 @@ public class SaveManager : MonoBehaviour
         
         File.WriteAllText(Application.persistentDataPath + "/save.json", json);
         Debug.Log("저장 완료");
-        LoadSaveTimeOnly();
+        if (fontSizeManager != null)
+        {
+            Debug.Log("세이브 버튼 눌림");
+            fontSizeManager.LoadSaveTimeOnly();
+        }
     }
     public void LoadGame()
     {
@@ -119,47 +120,13 @@ public class SaveManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
+        if(playerState!=null)
         playerState.LoadPlayer(data);
-        inventoryManager.LoadInventoryData(data); // 인벤토리 로드
-        gameFlowManager.LoadFlow(data);
+        if (inventoryManager != null)
+            inventoryManager.LoadInventoryData(data); // 인벤토리 로드
+        if (gameFlowManager != null)
+            gameFlowManager.LoadFlow(data);
     }
-    public void LoadSaveTimeOnly()
-    {
-        if (!File.Exists(SavePath))
-        {
-            Debug.Log("세이브 파일 없음");
-            if (SaveDataTimeText != null) SaveDataTimeText.text = "저장 기록 없음";
-            return;
-        }
-
-        string json = File.ReadAllText(SavePath);
-        SaveData data = JsonUtility.FromJson<SaveData>(json);
-
-        if (SaveDataTimeText != null)
-            SaveDataTimeText.text = $"최근 저장 시간 : {data.saveTime}";
-    }
-
-    //public static void LoadAll(PlayerState player, InventoryManager inventory, EventDisplay eventDisplay, StoryDisplayManager mainStory, GameFlowManager gameFlowManager)
-    //{
-    //    if (!PlayerPrefs.HasKey("SaveFile"))
-    //    {
-    //        Debug.LogWarning("저장 파일 없음");
-    //        return;
-    //    }
-
-    //    string json = PlayerPrefs.GetString("SaveFile");
-    //    SaveData data = JsonUtility.FromJson<SaveData>(json);
-
-    //    // 각 시스템에 데이터 전달해서 복구
-    //    player.LoadPlayer(data);
-    //    inventory.LoadInventoryData(data);
-    //    //eventDisplay.LoadEventData(data);
-    //    //mainStory.LoadMainStory(data);
-    //    gameFlowManager.LoadFlow(data);
-
-    //    Debug.Log("전체 불러오기 완료");
-    //}
-
     /// <summary>
     /// 저장용 데이터 구조
     /// </summary>
