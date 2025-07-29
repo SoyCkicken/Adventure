@@ -234,7 +234,7 @@ public class CombatTest : MonoBehaviour
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
-                //PopupObject.GetComponent<ConfirmPopup>().messageText.text= "전투에서 승리했습니다";
+                PopupObject.GetComponent<ConfirmPopup>().messageText.text= "전투에서 승리했습니다";
                 yield break;
             }
             else if(attacker.Health<=0)
@@ -244,7 +244,7 @@ public class CombatTest : MonoBehaviour
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
-                //PopupObject.GetComponent<ConfirmPopup>().messageText.text = "전투에서 승리했습니다";
+                PopupObject.GetComponent<ConfirmPopup>().messageText.text = "전투에서 승리했습니다";
                 yield break;
             }
         }

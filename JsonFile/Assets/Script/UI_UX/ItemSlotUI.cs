@@ -35,20 +35,15 @@ public class ItemSlotUI : MonoBehaviour
         onClickCallback = onClick;
         if (spriteBank == null)
             spriteBank = FindObjectOfType<SpriteBank>();
-
-        //이미지 지금 없음!
-
-        
-
-        if (!string.IsNullOrWhiteSpace(item.Item_Name))
+        if (!string.IsNullOrEmpty(data.Item_Name))
         {
-            Debug.Log(item.Item_Name);
+            Debug.Log(data.Item_Name);
             if (icon == null)
             {
                 Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
                 return;
             }
-            Sprite s = spriteBank.Load(item.Item_Name);
+            Sprite s = spriteBank.Load(data.Item_Name);
             if (s != null)
             {
                 icon.sprite = s;
@@ -56,7 +51,10 @@ public class ItemSlotUI : MonoBehaviour
         }
         else
         {
-           
+            Debug.Log("이미지가 없어서 여기 들어와졌습니다");
+            Sprite t = spriteBank.Load("UI_InventorySlot 1");
+            Debug.Log(t);
+            icon.sprite = t;
         }
         
         //Debug.Log("아이템 슬롯의 SetUp가 호출 되었습니다");
@@ -66,6 +64,7 @@ public class ItemSlotUI : MonoBehaviour
     {
         data = null;
         CurrentItem = null;
+        //icon.sprite = spriteBank.Load("UI_InventorySlot 1");
         icon.sprite = null;
         onClickCallback = null;
     }

@@ -104,10 +104,19 @@ public class InventoryManager : MonoBehaviour
     public void LoadInventory()
     {
         foreach (var slot in slotUIs)
+        {
             slot.Clear();
+            slot.icon.sprite = spriteBank.Load("UI_InventorySlot 1");
+        }
+           
+        
 
         for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
+        {
             slotUIs[i].Setup(inventoryItems[i], ShowItemDetail);
+
+        }
+            
     }
 
     public void AddItemToInventory(ItemData newItem)
@@ -208,7 +217,8 @@ public class InventoryManager : MonoBehaviour
             }
             else
             {
-                item_Icon.sprite = null;
+                Sprite s = spriteBank.Load("UI_InventorySlot 1");
+                item_Icon.sprite = s;
             }
         }
         else if (item.Item_Type == "Armor")
@@ -233,7 +243,8 @@ public class InventoryManager : MonoBehaviour
             }
             else
             {
-                item_Icon.sprite = null;
+                Sprite s = spriteBank.Load("UI_InventorySlot 1");
+                item_Icon.sprite = s;
             }
         }
         else if (item.Item_Type == "Consumable")
@@ -258,7 +269,8 @@ public class InventoryManager : MonoBehaviour
             }
             else
             {
-                item_Icon.sprite = null;
+                Sprite s = spriteBank.Load("UI_InventorySlot 1");
+                item_Icon.sprite = s;
             }
         }
         else
@@ -283,7 +295,8 @@ public class InventoryManager : MonoBehaviour
             }
             else
             {
-                item_Icon.sprite = null;
+                Sprite s = spriteBank.Load("UI_InventorySlot 1");
+                item_Icon.sprite = s;
             }
         }
 
