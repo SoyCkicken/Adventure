@@ -3577,7 +3577,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999803
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5204,6 +5204,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1670462156}
     m_Modifications:
+    - target: {fileID: 1113283276190855491, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
+      propertyPath: slotType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1748744451924418848, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: m_Name
       value: "\uC544\uC774\uD15C \uC2AC\uB86F(\uC67C\uC190)"
@@ -11543,6 +11547,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1670462156}
     m_Modifications:
+    - target: {fileID: 1113283276190855491, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
+      propertyPath: spriteBank
+      value: 
+      objectReference: {fileID: 1169618366}
     - target: {fileID: 1748744451924418848, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: m_Name
       value: "\uC544\uC774\uD15C \uC2AC\uB86F (\uC7A5\uC2E0\uAD6C1)"
@@ -15551,6 +15559,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -40
       objectReference: {fileID: 0}
+    - target: {fileID: 2113366185699628847, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
+      propertyPath: slotType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2120082892941001166, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
@@ -15879,6 +15891,10 @@ PrefabInstance:
       propertyPath: m_Spacing.x
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 7106385704637898221, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
+      propertyPath: slotType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7366233082409214957, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
       propertyPath: m_SizeDelta.x
       value: 189.912
@@ -15890,6 +15906,10 @@ PrefabInstance:
     - target: {fileID: 7366233082409214957, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8478326225646243214, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
+      propertyPath: m_Name
+      value: "\uC544\uC774\uD15C \uC2AC\uB86F(\uBC29\uC5B4\uAD6C)"
       objectReference: {fileID: 0}
     - target: {fileID: 8539505454366762352, guid: 82679bfafb3becd49beca1fa42fe9d39, type: 3}
       propertyPath: m_AnchorMax.y
@@ -17042,6 +17062,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1670462156}
     m_Modifications:
+    - target: {fileID: 1113283276190855491, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
+      propertyPath: spriteBank
+      value: 
+      objectReference: {fileID: 1169618366}
     - target: {fileID: 1748744451924418848, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: m_Name
       value: "\uC544\uC774\uD15C \uC2AC\uB86F (\uC7A5\uC2E0\uAD6C2)"
@@ -19531,7 +19555,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000066548986}
+  m_AnchoredPosition: {x: 0, y: 0.000014386547}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632

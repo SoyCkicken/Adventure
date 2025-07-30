@@ -6,6 +6,8 @@ using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class ItemSlotUI : MonoBehaviour
 {
+    public enum SlotType { Normal, RWeapon, LWeapon, Armor }
+    public SlotType slotType;
     public Image icon;
     public Button button;
     private ItemData data;
@@ -16,16 +18,11 @@ public class ItemSlotUI : MonoBehaviour
     {
         button = this.GetComponent<Button>();
         button.onClick.AddListener(OnClick);
+    }
+    private void Start()
+    {
         if (spriteBank == null)
             spriteBank = FindObjectOfType<SpriteBank>();
-
-        if (icon.sprite == null)
-        {
-            Debug.Log("이미지가 없어서 여기 들어와졌습니다");
-            Sprite t = spriteBank.Load("UI_InventorySlot 1");
-            Debug.Log(t);
-            icon.sprite = t;
-        }
     }
 
     public void Setup(ItemData item, System.Action<ItemData> onClick)
@@ -53,7 +50,6 @@ public class ItemSlotUI : MonoBehaviour
         {
             Debug.Log("이미지가 없어서 여기 들어와졌습니다");
             Sprite t = spriteBank.Load("UI_InventorySlot 1");
-            Debug.Log(t);
             icon.sprite = t;
         }
         
@@ -67,6 +63,18 @@ public class ItemSlotUI : MonoBehaviour
         //icon.sprite = spriteBank.Load("UI_InventorySlot 1");
         icon.sprite = null;
         onClickCallback = null;
+        switch (slotType)
+        {
+            case SlotType.RWeapon:
+                icon.sprite = spriteBank.Load("UI_EquipmentSlot_RightHand");
+                break;
+            case SlotType.LWeapon:
+                icon.sprite = spriteBank.Load("UI_EquipmentSlot_LeftHand");
+                break;
+            case SlotType.Armor:
+                icon.sprite = spriteBank.Load("UI_EquipmentSlot_Armor 1");
+                break;
+        }
     }
 
     public void OnClick()

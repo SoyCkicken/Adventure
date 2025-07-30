@@ -110,6 +110,7 @@ public class InventoryManager : MonoBehaviour
         }
            
         
+        
 
         for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
         {
@@ -128,7 +129,7 @@ public class InventoryManager : MonoBehaviour
         }
         Debug.Log($"아이템 추가 완료 : {newItem}");
 
-        inventoryItems.Add(newItem);
+        inventoryItems.Add(newItem.Clone());
         LoadInventory();
     }
 
@@ -311,7 +312,7 @@ public class InventoryManager : MonoBehaviour
         switch (item.Item_Type)
         {
             case "Weapon":
-                bool isWeaponEquipped = (item.Item_ID == player.weapon_Name);
+                bool isWeaponEquipped = (weaponEquipSlot.CurrentItem == item);
                 equipButton.gameObject.SetActive(!isWeaponEquipped);
                 unequipButton.gameObject.SetActive(isWeaponEquipped);
                 removeButton.gameObject.SetActive (!isWeaponEquipped);
@@ -327,7 +328,7 @@ public class InventoryManager : MonoBehaviour
                 break;
 
             case "Armor":
-                bool isArmorEquipped = (item.Item_ID == player.armor_Name);
+                bool isArmorEquipped = (armorEquipSlot.CurrentItem == item);
                 equipButton.gameObject.SetActive(!isArmorEquipped);
                 unequipButton.gameObject.SetActive(isArmorEquipped);
                 removeButton.gameObject.SetActive(!isArmorEquipped);
