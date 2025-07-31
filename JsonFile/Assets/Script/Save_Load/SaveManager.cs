@@ -52,6 +52,15 @@ public class SaveManager : MonoBehaviour
         // 버튼 이벤트 등록
         if (SaveButton != null) SaveButton.onClick.AddListener(SaveGame);
         if (LoadButton != null) LoadButton.onClick.AddListener(LoadGame);
+
+        if (scene.name == "TestScene" && SaveManager.pendingLoadData != null)
+        {
+            var data = SaveManager.pendingLoadData;
+            playerState.LoadPlayer(data);
+            inventoryManager.LoadInventoryData(data);
+            gameFlowManager.LoadFlow(data);
+            SaveManager.pendingLoadData = null; // 한 번 쓰고 초기화
+        }
     }
 
     private void Start()
@@ -70,7 +79,7 @@ public class SaveManager : MonoBehaviour
     }
 
     public static string SavePath => Application.persistentDataPath + "/save.json";
-
+    public static SaveData pendingLoadData; // 임시 저장
     /// <summary>
     /// 저장 존재 여부 확인
     /// </summary>
@@ -118,14 +127,15 @@ public class SaveManager : MonoBehaviour
         }
 
         string json = File.ReadAllText(path);
-        SaveData data = JsonUtility.FromJson<SaveData>(json);
+        pendingLoadData = JsonUtility.FromJson<SaveData>(json);
 
-        if(playerState!=null)
-        playerState.LoadPlayer(data);
-        if (inventoryManager != null)
-            inventoryManager.LoadInventoryData(data); // 인벤토리 로드
-        if (gameFlowManager != null)
-            gameFlowManager.LoadFlow(data);
+
+        //if (playerState!=null)
+        //playerState.LoadPlayer(data);
+        //if (inventoryManager != null)
+        //    inventoryManager.LoadInventoryData(data); // 인벤토리 로드
+        //if (gameFlowManager != null)
+        //    gameFlowManager.LoadFlow(data);
     }
     /// <summary>
     /// 저장용 데이터 구조

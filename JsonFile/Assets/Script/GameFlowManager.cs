@@ -27,8 +27,11 @@ public class GameFlowManager : MonoBehaviour
         playerState = PlayerState.Instance;
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-        playerState.CurrentChapterIndex++; // 챕터 증가
-        EnterState(FlowState.MainStory); // 최초 진입
+        if (playerState.CurrentChapterIndex == 0)
+        {
+            playerState.CurrentChapterIndex++; // 챕터 증가
+            EnterState(FlowState.MainStory); // 최초 진입
+        }
     }
 
     public void EnterState(FlowState next)
@@ -215,7 +218,7 @@ public class GameFlowManager : MonoBehaviour
                     randomEventManager.StopRandomEvent();
                     mainStoryManager.LoadMainStory(data);
                     randomEventManager.LoadEventData(data);
-                    mainStoryManager.DisplayCurrentStory(); // ✅ 여기
+                    //mainStoryManager.DisplayCurrentStory(); // ✅ 여기
                     Debug.Log("메인스토리 불러옴");
                     break;
 

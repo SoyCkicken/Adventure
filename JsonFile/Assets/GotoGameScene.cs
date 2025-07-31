@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GotoGameScene : MonoBehaviour
 {
     // Start is called before the first frame update
+    [SerializeField] SaveManager saveManager;
     public Button Startbutton;
     public Button Loadbutton;
     void Start()
@@ -15,7 +16,9 @@ public class GotoGameScene : MonoBehaviour
             SceneManager.LoadSceneAsync("TestScene");
         });
         Loadbutton.onClick.AddListener(() => {
+            saveManager.LoadGame();
             SceneManager.LoadSceneAsync("TestScene");
+            
         });
     }
 

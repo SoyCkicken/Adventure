@@ -14,7 +14,7 @@ public class StoryDisplayManager : MonoBehaviour
     public GameObject ImagePrefab;
     public GameObject TextPrefab;
     public GameObject SkipButton;
-    public GameObject TouchCatcher;
+    public GameObject touchCatcher;
     public GameObject choiceButtonPrefab;
     public ScrollRect scrollRect;         // 에디터에서 연결
     public Transform content;
@@ -100,7 +100,7 @@ public class StoryDisplayManager : MonoBehaviour
             gameOver();
         }
         currentStory = storyList[currentIndex];
-        TouchCatcher.SetActive(true);
+        touchCatcher.SetActive(true);
         ClearContent();
         // 첫 시퀀스 표시
         DisplayCurrentStory();
@@ -263,9 +263,9 @@ public class StoryDisplayManager : MonoBehaviour
 
     private void ClearTouchCatcher()
     {
-        if (TouchCatcher != null)
+        if (touchCatcher != null)
         {
-            var catcher = TouchCatcher.GetComponent<TouchCatcher>();
+            var catcher = touchCatcher.GetComponent<TouchCatcher>();
             if (catcher != null)
                 catcher.onTapOutsideScrollView = null;
         }
@@ -273,9 +273,9 @@ public class StoryDisplayManager : MonoBehaviour
 
     private void RegisterTouchCatcher()
     {
-        if (TouchCatcher != null)
+        if (touchCatcher != null)
         {
-            var catcher = TouchCatcher.GetComponent<TouchCatcher>();
+            var catcher = touchCatcher.GetComponent<TouchCatcher>();
             catcher.onTapOutsideScrollView = () => { OnSkip(); };
         }
     }
@@ -794,7 +794,7 @@ public class StoryDisplayManager : MonoBehaviour
         currentIndex = 0;
         currentStory = storyList[currentIndex];
 
-        TouchCatcher.SetActive(true);
+        touchCatcher.SetActive(true);
         isTyping = false;
         ClearContent();
 
@@ -810,27 +810,27 @@ public class StoryDisplayManager : MonoBehaviour
         data.MainstorySceneCode = currentStory.Scene_Code;
     }
 
+    // ✅ 스토리 로드 이게 세이브 로드에서 사용중인거
     public void LoadMainStory(SaveData data)
     {
+        playerState.CurrentChapterIndex = data.PlayerCurrentChapterIndex;
         currentStoryIndex = data.MainstoryEventIndex;
 
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main")
-       .Where(s => s.Chapter_Index == playerState.CurrentChapterIndex && // 🔥 챕터 조건 추가
-                   s.Event_Index == currentStoryIndex)
-       .OrderBy(e => e.Script_Index)
-       .ToList();
+            .Where(s => s.Chapter_Index == data.PlayerCurrentChapterIndex)
+            .OrderBy(s => s.Script_Index)
+            .ToList();
 
         scriptEventsCache = jsonManager.GetStoryMainScriptMasters("Main_Script_Master_Main");
 
-        currentIndex = Mathf.Clamp(data.MainstoryCurrentIndex, 0, storyList.Count);
+        // 🔥 Scene_Code로 정확한 위치 찾기
+        int index = storyList.FindIndex(s => s.Scene_Code.Trim() == data.MainstorySceneCode.Trim());
+        currentIndex = index >= 0 ? index : 0;
+
         currentStory = storyList[currentIndex];
-
-        Debug.Log($"[로드 완료] 현재 스토리: {currentStory.Scene_Code}");
-
+        touchCatcher.SetActive(true);
         ClearContent();
-        TouchCatcher.SetActive(true);
-        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
+        DisplayCurrentStory();
     }
     void gameOver()
     {

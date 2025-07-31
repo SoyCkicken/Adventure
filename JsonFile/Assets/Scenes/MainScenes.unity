@@ -300,6 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65392f938eb00474a9879d9b8b80e57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveManager: {fileID: 1947755917}
   Startbutton: {fileID: 1609662291}
   Loadbutton: {fileID: 2060242954}
 --- !u!1 &780181800
