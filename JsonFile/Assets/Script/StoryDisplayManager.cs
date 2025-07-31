@@ -217,9 +217,19 @@ public class StoryDisplayManager : MonoBehaviour
     private void HandleTextDisplayWithChoice(string text, GameObject lastBlock, bool isClear)
     {
         if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
+        {
             CreateTextBlock(text, isClear);
+        }
+        else if (!string.IsNullOrEmpty(currentStory.Next_Scene))
+        {
+            //여기면 선택지였을테니까 
+            NextScene();
+        }
         else
+        {
             StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear));
+        }
+           
     }
 
 

@@ -74,6 +74,9 @@ public class ItemSlotUI : MonoBehaviour
             case SlotType.Armor:
                 icon.sprite = spriteBank.Load("UI_EquipmentSlot_Armor 1");
                 break;
+            //default:
+            //    icon.sprite = spriteBank.Load("UI_InventorySlot 1");
+            //    break;
         }
     }
 

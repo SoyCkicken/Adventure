@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
@@ -24,29 +24,31 @@ public class ConfirmPopup : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public static void Show(string message, Action onConfirm)
+    public static void Show(string message, Action onConfirm, bool showNoButton = true)
     {
         if (Instance == null)
         {
-            Debug.LogError("[ConfirmPopup] ÇÁ¸®ÆÕÀÌ ¾À¿¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("[ConfirmPopup] í”„ë¦¬íŒ¹ì´ ì”¬ì— ì¡´ìž¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             return;
         }
 
         Instance.gameObject.SetActive(true);
         Instance.messageText.text = message;
 
-        // ±âÁ¸ ¸®½º³Ê Á¦°Å
+        // ê¸°ì¡´ ë¦¬ìŠ¤ë„ˆ ì œê±°
         Instance.yesButton.onClick.RemoveAllListeners();
         Instance.noButton.onClick.RemoveAllListeners();
 
-        // ¿¹ ¹öÆ°
+        Instance.noButton.gameObject.SetActive(showNoButton); // âœ… ì—¬ê¸° ì¶”ê°€
+
+        // ì˜ˆ ë²„íŠ¼
         Instance.yesButton.onClick.AddListener(() =>
         {
             onConfirm?.Invoke();
             Instance.gameObject.SetActive(false);
         });
 
-        // ¾Æ´Ï¿À ¹öÆ°
+        // ì•„ë‹ˆì˜¤ ë²„íŠ¼
         Instance.noButton.onClick.AddListener(() =>
         {
             Instance.gameObject.SetActive(false);

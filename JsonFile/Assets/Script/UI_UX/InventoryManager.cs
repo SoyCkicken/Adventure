@@ -87,15 +87,6 @@ public class InventoryManager : MonoBehaviour
             OnInventoryButton.gameObject.SetActive(true);
         });
         OffItemDetailButton.onClick.AddListener(() => itemDetailPanel.SetActive(false));
-
-        // 슬롯 생성
-        //for (int i = 0; i < currnetSlotCount; i++)
-        //{
-        //    var slotGO = Instantiate(itemSlotPrefab, itemGridParent);
-        //    var slotUI = slotGO.GetComponent<ItemSlotUI>();
-        //    slotUI.Clear();
-        //    slotUIs.Add(slotUI);
-        //}
         UpdateInventoryByStrength();
         LoadInventory();
         UpdateDPS_MaxHealth();
@@ -108,31 +99,11 @@ public class InventoryManager : MonoBehaviour
             slot.Clear();
             slot.icon.sprite = spriteBank.Load("UI_InventorySlot 1");
         }
-           
-        
-        
-
         for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
         {
             slotUIs[i].Setup(inventoryItems[i], ShowItemDetail);
-
         }
-            
     }
-
-    public void AddItemToInventory(ItemData newItem)
-    {
-        if (inventoryItems.Count >= maxSlotCount)
-        {
-            Debug.LogWarning("인벤토리가 가득 찼습니다.");
-            return;
-        }
-        Debug.Log($"아이템 추가 완료 : {newItem}");
-
-        inventoryItems.Add(newItem.Clone());
-        LoadInventory();
-    }
-
     // 힘에 따라 칸수 조절인데
     public void UpdateInventoryByStrength()
     {
@@ -152,11 +123,24 @@ public class InventoryManager : MonoBehaviour
                 slotUIs.Add(slotUI);
             }
         }
-
         currnetSlotCount = newCount;
         LoadInventory();
         TryRecoverPendingItems();
     }
+
+    public void AddItemToInventory(ItemData newItem)
+    {
+        if (inventoryItems.Count >= maxSlotCount)
+        {
+            Debug.LogWarning("인벤토리가 가득 찼습니다.");
+            return;
+        }
+        Debug.Log($"아이템 추가 완료 : {newItem}");
+
+        inventoryItems.Add(newItem.Clone());
+        LoadInventory();
+    }
+
 
     public void HandleInventoryShrink(int newCount)
     {
