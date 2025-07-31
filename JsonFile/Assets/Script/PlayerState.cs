@@ -138,7 +138,6 @@ public class PlayerState : MonoBehaviour
         Level = data.Level;
         Experience = data.Experience;
         ExperienceRequired = data.ExperienceRequired;
-        CurrentChapterIndex = data.PlayerCurrentChapterIndex;
         if(statsUI!=null)
         statsUI.UpdateUI();
         if (equipmentSystem != null)

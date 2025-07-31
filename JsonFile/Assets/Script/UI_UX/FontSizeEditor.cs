@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using System.IO;
 using static SaveManager;
 using UnityEngine.Playables;
-using UnityEngine.SceneManagement;
 
 public class FontSizeManager : MonoBehaviour
 {
@@ -79,7 +78,7 @@ public class FontSizeManager : MonoBehaviour
             resetTextSetting();
         });
         SaveButton.onClick.AddListener(() => { saveManager.SaveGame(); });
-        LoadButton.onClick.AddListener(() => { SceneManager.LoadSceneAsync("MainScenes"); }); //<--씬 로드를 시켜서 메인씬을 로드 시키고 거기서 불러오기 시킴
+        LoadButton.onClick.AddListener(() => { saveManager.LoadGame(); });
 
         LoadSaveTimeOnly();
     }

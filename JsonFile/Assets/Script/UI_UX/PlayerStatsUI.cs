@@ -25,7 +25,6 @@ public class PlayerStatsUI : MonoBehaviour
     public InventoryManager InventoryManager;
     public IntegerHPBarScaler integerHPBarScaler;
     public IntegerHPBarScaler integerMPBarScaler;
-    
 
 
     private void Start()
@@ -76,10 +75,7 @@ public class PlayerStatsUI : MonoBehaviour
 
     public bool TryLevelUp()
     {
-        if (playerState.Experience < playerState.ExperienceRequired)
-        {
-            ConfirmPopup.Show("재화가 부족하여 레벨업이 실패했습니다.", () => { }, false);
-        }
+        if (playerState.Experience < playerState.ExperienceRequired) return false;
 
         playerState.Experience -= playerState.ExperienceRequired;
         playerState.ExperienceRequired = Mathf.CeilToInt(playerState.ExperienceRequired * 1.2f);
