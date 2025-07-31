@@ -1,9 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Linq;
 using MyGame;
 using UnityEngine.UI;
 using UnityEditor;
-using System;  // Character, OptionContext µîÀÌ ÀÖ´Â ³×ÀÓ½ºÆäÀÌ½º
+using System;
+using System.Collections.Generic;  // Character, OptionContext ë“±ì´ ìˆëŠ” ë„¤ì„ìŠ¤í˜ì´ìŠ¤
 
 public class EquipmentSystem : MonoBehaviour
 {
@@ -22,13 +23,13 @@ public class EquipmentSystem : MonoBehaviour
     public void Init()
     {
         ClearInit();
-        // ÀÚµ¿ ÂüÁ¶
+        // ìë™ ì°¸ì¡°
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
         var weapon = jsonManager.GetWeaponMasters("Weapon_Master")
                           .FirstOrDefault(w => w.Weapon_ID == player.weapon_Name);
-        Debug.Log($"¹«±â = {weapon != null}");
-        // ¹«±â ÀåÂø Ã³¸®
+        Debug.Log($"ë¬´ê¸° = {weapon != null}");
+        // ë¬´ê¸° ì¥ì°© ì²˜ë¦¬
         if (weapon != null)
         {
             int tempDamage = Convert.ToInt32(weapon.Weapon_DMG + (playerState.STR * weapon.STR_Scaling)
@@ -38,7 +39,7 @@ public class EquipmentSystem : MonoBehaviour
                 + (playerState.CHA * weapon.CHR_Scaling)
                 + (playerState.DIV * weapon.DIV_Scaling));
             player.damage = tempDamage;
-            // ¿É¼Ç ¸®½ºÆ®¿¡ Ãß°¡
+            // ì˜µì…˜ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
             if (!string.IsNullOrEmpty(weapon.Option_1_ID))
                 OptionManager.ApplyOption(weapon.Option_1_ID, new OptionContext
                 {
@@ -58,13 +59,13 @@ public class EquipmentSystem : MonoBehaviour
         }
             var armor = jsonManager.GetArmorMasters("Armor_Master")
                              .FirstOrDefault(w => w.Armor_ID == player.armor_Name);
-        Debug.Log($"¹æ¾î±¸ = {armor != null}");
-        // ¹æ¾î±¸ ÀåÂø Ã³¸®
+        Debug.Log($"ë°©ì–´êµ¬ = {armor != null}");
+        // ë°©ì–´êµ¬ ì¥ì°© ì²˜ë¦¬
         if (armor != null)
         {
             player.armor = armor.Armor_DEF;
             player.MaxHealth = armor.Armor_HP;
-            // ¿É¼Ç ¸®½ºÆ®¿¡ Ãß°¡
+            // ì˜µì…˜ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
             if (!string.IsNullOrEmpty(armor.Armor_Option1))
                 OptionManager.ApplyOption(armor.Armor_Option1, new OptionContext
                 {
@@ -83,9 +84,54 @@ public class EquipmentSystem : MonoBehaviour
                 });
         }
     }
+    public void EquipItem(
+    ItemData item,
+    List<ItemData> inventoryItems,
+    ItemSlotUI weaponSlot,
+    ItemSlotUI armorSlot,
+    Action<ItemData> onClick)
+    {
+        if (item.Item_Type == "Weapon")
+        {
+            if (weaponSlot.CurrentItem != null)
+                inventoryItems.Add(weaponSlot.CurrentItem.Clone());
+
+            weaponSlot.Setup(item, onClick);  // âœ… ì½œë°± ì „ë‹¬
+            inventoryItems.Remove(item);
+            player.weapon_Name = item.Item_ID;
+        }
+        else if (item.Item_Type == "Armor")
+        {
+            if (armorSlot.CurrentItem != null)
+                inventoryItems.Add(armorSlot.CurrentItem.Clone());
+
+            armorSlot.Setup(item, onClick);  // âœ… ì½œë°± ì „ë‹¬
+            inventoryItems.Remove(item);
+            player.armor_Name = item.Item_ID;
+        }
+
+        Init();
+    }
+
+    public void UnequipItem(ItemSlotUI slot, List<ItemData> inventoryItems)
+    {
+        if (slot.CurrentItem == null) return;
+
+        inventoryItems.Add(slot.CurrentItem.Clone());
+
+        if (slot.CurrentItem.Item_Type == "Weapon")
+            player.weapon_Name = null;
+        else if (slot.CurrentItem.Item_Type == "Armor")
+            player.armor_Name = null;
+
+        slot.Clear();
+        Init();
+    }
+
+
     void ClearInit()
     {
-        Debug.LogError("ÇÃ·¹ÀÌ¾î ´É·ÂÄ¡ ÃÊ±âÈ­");
+        Debug.LogError("í”Œë ˆì´ì–´ ëŠ¥ë ¥ì¹˜ ì´ˆê¸°í™”");
         player.OnHitOptions.Clear();
         //player.weapon_Name = null;
         //player.armor_Name = null;

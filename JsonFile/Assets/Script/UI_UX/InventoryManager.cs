@@ -432,150 +432,124 @@ public class InventoryManager : MonoBehaviour
 
         return string.Join("\n", options);
     }
-
     //public void OnClickEquip()
     //{
     //    if (selectedItem == null) return;
+
+    //    // 이미 장착된 같은 아이템이면 중복 방지
+    //    if ((selectedItem.Item_Type == "Weapon" && weaponEquipSlot.CurrentItem != null && weaponEquipSlot.CurrentItem.Item_ID == selectedItem.Item_ID) ||
+    //        (selectedItem.Item_Type == "Armor" && armorEquipSlot.CurrentItem != null && armorEquipSlot.CurrentItem.Item_ID == selectedItem.Item_ID))
+    //    {
+    //        Debug.LogWarning("이미 장착 중인 아이템입니다. 중복 장착 방지됨.");
+    //        return;
+    //    }
+
+    //    // 기존 장착 아이템 복사 후 인벤토리에 추가
     //    if (selectedItem.Item_Type == "Weapon")
     //    {
     //        if (weaponEquipSlot.CurrentItem != null)
-    //            AddItemToInventory(weaponEquipSlot.CurrentItem.Clone());
-
-    //        inventoryItems.Remove(selectedItem); // 먼저 제거
-    //        weaponEquipSlot.Setup(selectedItem.Clone(), ShowItemDetail);
+    //        {
+    //            var existing = weaponEquipSlot.CurrentItem;
+    //            if (!inventoryItems.Any(i => i == existing))
+    //            {
+    //                AddItemToInventory(existing.Clone());
+    //            }
+    //        }
+    //        weaponEquipSlot.Setup(selectedItem, ShowItemDetail);
+    //        inventoryItems.Remove(selectedItem);
     //        player.weapon_Name = selectedItem.Item_ID;
     //    }
     //    else if (selectedItem.Item_Type == "Armor")
     //    {
     //        if (armorEquipSlot.CurrentItem != null)
-    //            AddItemToInventory(armorEquipSlot.CurrentItem.Clone());
-
-    //        inventoryItems.Remove(selectedItem); // 먼저 제거
-    //        armorEquipSlot.Setup(selectedItem.Clone(), ShowItemDetail);
+    //        {
+    //            var existing = armorEquipSlot.CurrentItem;
+    //            if (!inventoryItems.Any(i => i == existing))
+    //            {
+    //                AddItemToInventory(existing.Clone());
+    //            }
+    //        }
+    //        armorEquipSlot.Setup(selectedItem, ShowItemDetail);
+    //        inventoryItems.Remove(selectedItem);
     //        player.armor_Name = selectedItem.Item_ID;
     //    }
 
-
-    //    // 3) 스탯 등 초기화 & 재적용
+    //    selectedItem = null; // ⭐ 꼭 초기화!
     //    equipmentSystem.Init();
-    //    Debug.Log("인벤토리에서 초기화 됨");
-    //LoadInventory();
-    //updateDPS_MaxHealth();
-    //ShowItemDetail(selectedItem);
+    //    LoadInventory();
+    //    UpdateDPS_MaxHealth(); 
+    //    itemDetailPanel.SetActive(false); // 패널 닫기
+    //    selectedItem = null;              // 선택 정보 제거
     //}
 
     public void OnClickEquip()
     {
         if (selectedItem == null) return;
 
-        // 이미 장착된 같은 아이템이면 중복 방지
+        // 중복 체크
         if ((selectedItem.Item_Type == "Weapon" && weaponEquipSlot.CurrentItem != null && weaponEquipSlot.CurrentItem.Item_ID == selectedItem.Item_ID) ||
-            (selectedItem.Item_Type == "Armor" && armorEquipSlot.CurrentItem != null && armorEquipSlot.CurrentItem.Item_ID == selectedItem.Item_ID))
+          (selectedItem.Item_Type == "Armor" && armorEquipSlot.CurrentItem != null && armorEquipSlot.CurrentItem.Item_ID == selectedItem.Item_ID))
         {
-            Debug.LogWarning("이미 장착 중인 아이템입니다. 중복 장착 방지됨.");
+            Debug.LogWarning("이미 장착 중인 아이템입니다.");
             return;
         }
 
-        // 기존 장착 아이템 복사 후 인벤토리에 추가
-        if (selectedItem.Item_Type == "Weapon")
-        {
-            if (weaponEquipSlot.CurrentItem != null)
-            {
-                var existing = weaponEquipSlot.CurrentItem;
-                if (!inventoryItems.Any(i => i == existing))
-                {
-                    AddItemToInventory(existing.Clone());
-                }
-            }
-            weaponEquipSlot.Setup(selectedItem, ShowItemDetail);
-            inventoryItems.Remove(selectedItem);
-            player.weapon_Name = selectedItem.Item_ID;
-        }
-        else if (selectedItem.Item_Type == "Armor")
-        {
-            if (armorEquipSlot.CurrentItem != null)
-            {
-                var existing = armorEquipSlot.CurrentItem;
-                if (!inventoryItems.Any(i => i == existing))
-                {
-                    AddItemToInventory(existing.Clone());
-                }
-            }
-            armorEquipSlot.Setup(selectedItem, ShowItemDetail);
-            inventoryItems.Remove(selectedItem);
-            player.armor_Name = selectedItem.Item_ID;
-        }
+        equipmentSystem.EquipItem(selectedItem,inventoryItems,weaponEquipSlot,armorEquipSlot,ShowItemDetail); // 콜백도 전달
 
-        selectedItem = null; // ⭐ 꼭 초기화!
-        equipmentSystem.Init();
+        selectedItem = null;
         LoadInventory();
-        UpdateDPS_MaxHealth(); 
-        itemDetailPanel.SetActive(false); // 패널 닫기
-        selectedItem = null;              // 선택 정보 제거
+        UpdateDPS_MaxHealth();
+        itemDetailPanel.SetActive(false);
     }
 
     //public void OnClickUnequip()
     //{
     //    if (selectedItem == null) return;
 
-    //    // 현재 장비 슬롯에서 아이템을 가져옴
-    //    ItemData unequippingItem = null;
+    //    // 먼저 null로 설정 (중복 방지 핵심)
+    //    var unequipItem = selectedItem;
+    //    selectedItem = null;
 
-    //    if (selectedItem.Item_Type == "Weapon")
-    //    {
-    //        unequippingItem = weaponEquipSlot.CurrentItem;
-    //    }
-    //    else if (selectedItem.Item_Type == "Armor")
-    //    {
-    //        unequippingItem = armorEquipSlot.CurrentItem;
-    //    }
-
-    //    // 안전성 체크
-    //    if (unequippingItem == null)
-    //    {
-    //        Debug.LogWarning("해제할 장비가 존재하지 않습니다.");
-    //        return;
-    //    }
-
-    //    // 인벤토리가 가득 찼는지 확인
     //    if (inventoryItems.Count >= maxSlotCount)
     //    {
     //        Debug.Log("인벤토리가 가득 찼습니다. 장착 해제 실패");
     //        return;
     //    }
 
-    //    // 인벤토리에 복제 추가
-    //    var clone = unequippingItem.Clone();  // 클론으로 복사
-    //    AddItemToInventory(clone);
-
-    //    // 플레이어 장비 해제 처리
-    //    if (selectedItem.Item_Type == "Weapon")
+    //    if (unequipItem.Item_Type == "Weapon")
     //    {
+    //        var clone = weaponEquipSlot.CurrentItem?.Clone();
+    //        if (clone != null)
+    //        {
+    //            AddItemToInventory(clone);
+    //            player.RemoveBuffByItem(clone.Item_ID);
+    //            weaponEquipSlot.Clear();
+    //        }
     //        player.weapon_Name = null;
-    //        weaponEquipSlot.Clear();
     //    }
-    //    else if (selectedItem.Item_Type == "Armor")
+    //    else if (unequipItem.Item_Type == "Armor")
     //    {
+    //        var clone = armorEquipSlot.CurrentItem?.Clone();
+    //        if (clone != null)
+    //        {
+    //            AddItemToInventory(clone);
+    //            player.RemoveBuffByItem(clone.Item_ID);
+    //            armorEquipSlot.Clear();
+    //            Debug.Log($"현재 장착 중인 아이템 {armorEquipSlot.CurrentItem}");
+    //        }
     //        player.armor_Name = null;
-    //        armorEquipSlot.Clear();
     //    }
 
-    //    player.RemoveBuffByItem(unequippingItem.Item_ID);
     //    equipmentSystem.Init();
-
     //    LoadInventory();
-    //    updateDPS_MaxHealth();
+    //    UpdateDPS_MaxHealth();
     //    itemDetailPanel.SetActive(false);
-    //    selectedItem = null;
     //}
-
     public void OnClickUnequip()
     {
         if (selectedItem == null) return;
 
-        // 먼저 null로 설정 (중복 방지 핵심)
-        var unequipItem = selectedItem;
-        selectedItem = null;
+        ItemSlotUI targetSlot = selectedItem.Item_Type == "Weapon" ? weaponEquipSlot : armorEquipSlot;
 
         if (inventoryItems.Count >= maxSlotCount)
         {
@@ -583,58 +557,17 @@ public class InventoryManager : MonoBehaviour
             return;
         }
 
-        if (unequipItem.Item_Type == "Weapon")
-        {
-            var clone = weaponEquipSlot.CurrentItem?.Clone();
-            if (clone != null)
-            {
-                AddItemToInventory(clone);
-                player.RemoveBuffByItem(clone.Item_ID);
-                weaponEquipSlot.Clear();
-            }
-            player.weapon_Name = null;
-        }
-        else if (unequipItem.Item_Type == "Armor")
-        {
-            var clone = armorEquipSlot.CurrentItem?.Clone();
-            if (clone != null)
-            {
-                AddItemToInventory(clone);
-                player.RemoveBuffByItem(clone.Item_ID);
-                armorEquipSlot.Clear();
-                //armorEquipSlot.CurrentItem = null;
-                Debug.Log($"현재 장착 중인 아이템 {armorEquipSlot.CurrentItem}");
-                //Debug.Log($"현재 장착 중인 아이템의 코드 {armorEquipSlot.CurrentItem.Item_ID}");
-            }
-            player.armor_Name = null;
-        }
+        equipmentSystem.UnequipItem(targetSlot, inventoryItems);
 
-        equipmentSystem.Init();
         LoadInventory();
         UpdateDPS_MaxHealth();
         itemDetailPanel.SetActive(false);
     }
-
     public void OnClickUse()
     {
         if (selectedItem == null || selectedItem.Item_Type != "Consumable") return;
         var itemMasters = jsonManager.GetItemMasters("Item_Master");
         var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
-        //if (selectedItem.Heal_Value > 0)
-        //{
-        //    playerState.CurrentHealth = Mathf.Min(playerState.HP, playerState.CurrentHealth + selectedItem.Heal_Value);
-        //    Debug.Log("체력 회복 포션 사용 했습니다");
-        //}
-
-        //if (selectedItem.Mental_Heal_Value > 0)
-        //{
-        //    playerState.CurrentMental = Mathf.Min(playerState.MP, playerState.CurrentMental + selectedItem.Mental_Heal_Value);
-        //    Debug.Log("정신력 회복 포션 사용 했습니다");
-        //}
-        //else
-        //{
-        //    Debug.Log("무언가를 사용했습니다");
-        //}
         Debug.Log("아이템 사용을 시도 했습니다");
         OptionManager.UseItem(selectedItem, new OptionContext
         {
@@ -680,11 +613,6 @@ public class InventoryManager : MonoBehaviour
             itemDetailPanel.SetActive(false);
             LoadInventory();
         });
-        //inventoryItems.Remove(selectedItem);
-        //selectedItem = null;
-        //itemDetailPanel.SetActive(false);
-        //LoadInventory();
-        //Debug.Log("아이템이 삭제되었습니다.");
     }
     public void SaveInventoryData(ref SaveManager.SaveData data)
     {

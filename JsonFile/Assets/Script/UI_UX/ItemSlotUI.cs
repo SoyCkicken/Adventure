@@ -52,9 +52,6 @@ public class ItemSlotUI : MonoBehaviour
             Sprite t = spriteBank.Load("UI_InventorySlot 1");
             icon.sprite = t;
         }
-        
-        //Debug.Log("아이템 슬롯의 SetUp가 호출 되었습니다");
-        //Debug.Log($"아이템 슬롯의 Data 의 값입니다{data}");
     }
     public void Clear()
     {
