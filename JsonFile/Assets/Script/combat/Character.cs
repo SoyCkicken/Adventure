@@ -21,6 +21,7 @@ namespace MyGame
         }
 
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
+        public GameFlowManager gameFlowManager;
         public string charaterName;
         [SerializeField] PlayerState playerState;
         public int MaxHealth = 50;
@@ -112,7 +113,6 @@ namespace MyGame
             }
 
             activeBuffs[buff.BuffID] = buff;
-
             //여기는 버프에 대한 설명만 작성 해주면 됨
             if (buff.OptionID == "Option_002") // 치명타 확률 증가
             {
@@ -151,6 +151,12 @@ namespace MyGame
         {
             WaitForSeconds wait = new WaitForSeconds(1f);
 
+            if (gameFlowManager == null || gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
+            {
+                Debug.Log($"[버프 무시] 현재 상태가 Battle이 아님 → 버프 적용 안 함");
+
+                yield return wait;
+            }
             while (true)
             {
                 var expired = new List<string>();

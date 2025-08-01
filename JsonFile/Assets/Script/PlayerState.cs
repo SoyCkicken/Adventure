@@ -8,9 +8,6 @@ using UnityEngine.UI;
 
 public class PlayerState : MonoBehaviour
 {
-
-
-
     [Header("플레이어 능력치")]
     public int STR = 5, AGI = 5, DIV = 5, MAG = 5, CHA = 5;
     public int Health = 5, INT = 5;

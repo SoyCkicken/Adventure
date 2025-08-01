@@ -747,6 +747,7 @@ public class EventDisplay : MonoBehaviour
 
         ClearContent();
         TouchCatcher.SetActive(true);
+        SkipButton.SetActive(true);
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
 

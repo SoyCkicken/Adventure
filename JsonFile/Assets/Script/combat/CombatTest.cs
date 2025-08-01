@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using MyGame;
 using UnityEngine.Playables;
 using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 public class CombatTest : MonoBehaviour
 {
@@ -98,18 +99,49 @@ public class CombatTest : MonoBehaviour
         if (player.Health >= 1)
         {
             //Destroy(enemy.gameObject);
-            Debug.Log("플레이어가 승리하였습니다");
-            playerState.Experience += enemy.GetEXP;
-            playerState.statsUI.UpdateUI();
-            inventoryManager.updateSoulText();
-
+            //Debug.Log("플레이어가 승리하였습니다");
+            //playerState.Experience += enemy.GetEXP;
+            //playerState.statsUI.UpdateUI();
+            //inventoryManager.updateSoulText();
+            PopupObject.SetActive(true);
             battleOver = true;
+
+            ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {enemy.GetEXP}흭득", () =>
+            {
+                // ✅ 확인 버튼을 눌렀을 때만 실행
+                playerState.Experience += enemy.GetEXP;
+                playerState.statsUI.UpdateUI();
+                inventoryManager.updateSoulText(); 
+                
+
+                player.GetComponent<EquipmentSystem>().Init();
+
+                // 전투 결과 콜백 실행
+                onComplete?.Invoke(true);
+            }, false);
         }
         else
         {
             Debug.Log("플레이어가 패배하였습니다");
             battleOver = false;
-            
+            playerState.CurrentHealth--;
+            playerState.CurrentMental--;
+            PopupObject.SetActive(true);
+            if (playerState.CurrentHealth <= 0 || playerState.CurrentMental <= 0)
+            {
+                SceneManager.LoadScene("GameOverScene");
+            }
+            NormalBattle.SetActive(false);
+            PopupObject.SetActive(true);
+            ConfirmPopup.Show("전투에서 패배했습니다", () =>
+            {
+                // ✅ 확인 버튼을 눌렀을 때만 실행
+                player.GetComponent<EquipmentSystem>().Init();
+
+                // 전투 결과 콜백 실행
+                onComplete?.Invoke(true);
+            }, false);
+
         }
         player.GetComponent<EquipmentSystem>().Init();
         //onComplete?.Invoke(battleOver); <-- 아마 여기로 안 들어와질꺼임
@@ -270,20 +302,6 @@ public class CombatTest : MonoBehaviour
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
-                PopupObject.SetActive(true);
-                ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {enemy.GetEXP}흭득", () =>
-                {
-                    // ✅ 확인 버튼을 눌렀을 때만 실행
-                    playerState.Experience += enemy.GetEXP;
-                    playerState.statsUI.UpdateUI();
-                    inventoryManager.updateSoulText();
-
-                    player.GetComponent<EquipmentSystem>().Init();
-
-                    // 전투 결과 콜백 실행
-                    onComplete?.Invoke(true);
-                    PopupObject.SetActive(false);
-                },false);
                 yield break;
             }
             else if(attacker.Health<=0)
@@ -293,16 +311,6 @@ public class CombatTest : MonoBehaviour
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
-                PopupObject.SetActive(true);
-                ConfirmPopup.Show("전투에서 패배했습니다", () =>
-                {
-                    // ✅ 확인 버튼을 눌렀을 때만 실행
-                    player.GetComponent<EquipmentSystem>().Init();
-
-                    // 전투 결과 콜백 실행
-                    onComplete?.Invoke(true);
-                    PopupObject.SetActive(false);
-                },false);
                 yield break;
             }
         }

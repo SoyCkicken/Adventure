@@ -765,8 +765,8 @@
       "Script_Text": "MainScript_1_3_6",
       "Main_Effect": [
         {
-          "ID": "Effect_002",
-          "Code": "Weapon_003",
+          "ID": "Effect_003",
+          "Code": "Weapon_002",
           "Value": 1
         }
       ],
@@ -1391,7 +1391,7 @@
       "Next_Scene": null,
       "Script_Text": "MainScript_2_1_11",
       "Main_Effect": null,
-      "Choice1_Text": null,
+      "Choice1_Text": "MainScript_2_1_12",
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,
       "Choice2_Next_Scene": null,

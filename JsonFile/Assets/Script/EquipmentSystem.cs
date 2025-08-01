@@ -15,6 +15,7 @@ public class EquipmentSystem : MonoBehaviour
     private void Start()
     {
         OptionManager.Initialize(jsonManager);
+        playerState = PlayerState.Instance;
         //player.weapon_Name = null;
         //player.armor_Name = null;
         Init();
@@ -22,10 +23,13 @@ public class EquipmentSystem : MonoBehaviour
 
     public void Init()
     {
-        ClearInit();
-        // 자동 참조
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
+        if (playerState == null)
+            playerState = FindObjectOfType<PlayerState>();
+        ClearInit();
+        // 자동 참조
+        
         var weapon = jsonManager.GetWeaponMasters("Weapon_Master")
                           .FirstOrDefault(w => w.Weapon_ID == player.weapon_Name);
         Debug.Log($"무기 = {weapon != null}");
@@ -135,11 +139,44 @@ public class EquipmentSystem : MonoBehaviour
         player.OnHitOptions.Clear();
         //player.weapon_Name = null;
         //player.armor_Name = null;
-        player.MaxHealth = 50;
-        player.damage = 10;
-        player.armor = 5;
-        player.speed = 1.5f;
-        player.CitChance = 10;
+        //
+        if (playerState.Health >= 10)
+        {
+            player.MaxHealth = playerState.Health* 5;
+        }
+        else
+        {
+            player.MaxHealth = 50;
+        }
+            
+        if (playerState.STR >= 10)
+        {
+            player.damage = playerState.STR;
+        }
+        else
+        {
+            player.damage = 10;
+        }
+        player.armor = 3;
+
+        if (playerState.AGI >= 10)
+        {
+            player.speed = 0.15f * playerState.AGI;
+        }
+        else
+        {
+            player.speed = 1.5f;
+        }
+        if (playerState.INT >= 10)
+        {
+            int tempcri = playerState.INT - 10;
+            player.CitChance = Convert.ToInt32(10  + (2.5f * tempcri)); // <-- 11이상 부터 크리티컬 확률 증가
+        }
+        else
+        {
+            player.CitChance = 10;
+        }
+            
     }
 }
 

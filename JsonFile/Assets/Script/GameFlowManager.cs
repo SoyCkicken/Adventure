@@ -33,6 +33,11 @@ public class GameFlowManager : MonoBehaviour
             EnterState(FlowState.MainStory); // 최초 진입
         }
     }
+    //현재 스테이트 확인용 <--
+    public FlowState GetCurrentFlowState()
+    {
+        return currentState;
+    }
 
     public void EnterState(FlowState next)
     {

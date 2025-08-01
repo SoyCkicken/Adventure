@@ -6,9 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static SaveManager;
-
-
-
+using UnityEngine.SceneManagement;
 public class StoryDisplayManager : MonoBehaviour
 {
     public GameObject ImagePrefab;
@@ -132,7 +130,7 @@ public class StoryDisplayManager : MonoBehaviour
         if (currentStory.Main_Effect != null && currentStory.Main_Effect.Count > 0)
         {
             Debug.Log("이펙트 테스트에 들어오긴 했음");
-            ApplyEffects(currentStory.Main_Effect);
+            ApplyEffects(currentStory.Main_Effect,matchingScript.Script_Code);
 
         }
 
@@ -481,7 +479,7 @@ public class StoryDisplayManager : MonoBehaviour
         Debug.Log(choices.Count);
         if (choices.Count == 1)
         {
-            //OnChoiceSelected(choices[0]);
+            OnChoiceSelected(choices[0]);
             return;
         }
         else if (choices.Count > 1)
@@ -520,9 +518,11 @@ public class StoryDisplayManager : MonoBehaviour
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
             if (script.ChapterBreack == "Break")
             {
+                Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거임)");
+                ClearContent(); //이유는 모르겠지만 씬 넘어갈때 초기화를 해주고 있을텐데 안되고 넘어감..
                 currentStoryIndex = 0;              // Event_Index 초기화
                 onCompleteCallback?.Invoke();
-                Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거임)");
+                
             }
             else
             {
@@ -571,7 +571,7 @@ public class StoryDisplayManager : MonoBehaviour
     //선택지에 확률 적용
     //지금 같은 경우 확률이 버튼에 출력이 되고 있지는 않음
 
-    private void ApplyEffects(List<EffectTrigger> effects)
+    private void ApplyEffects(List<EffectTrigger> effects, string sceneCode)
     {
         foreach (var effect in effects)
         {
@@ -593,7 +593,19 @@ public class StoryDisplayManager : MonoBehaviour
                     Debug.Log($"{item.Item_Name} , {item.Item_ID} , {item.Item_Type}");
                     if (item != null)
                     {
-                        inventoryManager.AddItemToInventory(item); // 또는 AddItem(item)
+
+                        if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
+                        {
+                            inventoryManager.selectedItem = item;
+
+                            inventoryManager.OnClickEquip();
+
+                            Debug.Log($"[자동 장착] {sceneCode}에서 {item.Item_Name} 장착 완료");
+                        }
+                        else
+                        {
+                            inventoryManager.AddItemToInventory(item); //초반 아니면 그냥 인벤토리에 추가
+                        }
                     }
                     else
                     {
@@ -829,11 +841,14 @@ public class StoryDisplayManager : MonoBehaviour
 
         currentStory = storyList[currentIndex];
         touchCatcher.SetActive(true);
+        SkipButton.SetActive(true);
         ClearContent();
         DisplayCurrentStory();
     }
     void gameOver()
     {
         Debug.Log("게임 끝났습니다 선생님들 일어나세요");
+        // 게임 오버 처리 로직
+        SceneManager.LoadScene("GameEndingScene");
     }
 }

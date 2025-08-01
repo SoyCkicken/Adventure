@@ -53,7 +53,7 @@ public class InventoryManager : MonoBehaviour
     private int currnetSlotCount;
     private const int maxSlotCount = 14;
 
-    private ItemData selectedItem;
+    public ItemData selectedItem;
 
     private void Start()
     {
