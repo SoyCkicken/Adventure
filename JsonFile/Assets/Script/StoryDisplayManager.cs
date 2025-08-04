@@ -408,6 +408,7 @@ public class StoryDisplayManager : MonoBehaviour
                 {
                     // 성공/실패 분기
                     float rate = EvaluateFormula(rateData.Success_Formula);
+                    txt.text = $"{display} (성공률: {rate * 100:F1}%)"; // 버튼에 성공률 표시
                     bool ok = UnityEngine.Random.value < rate;
                     nextCode = ok
                         ? rateData.Success_Next_Script?.Trim()

@@ -77,22 +77,20 @@ namespace MyGame
         }
 
         // 기본 공격 메서드
-        public int Attack(Character target)
+        public (int damageDealt, bool isCrit) Attack(Character target)
         {
             Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
-            bool isCrit = UnityEngine.Random.Range(0, 100) < CitChance ? true : false;
-            Debug.Log($"{isCrit} , {CitChance} ");
-            
-            if (isCrit)
-            {
-                Debug.Log(damage * 2);
-                return target.TakeDamage(damage * 2); }
-            else
-            { Debug.Log(damage);
-                return target.TakeDamage(damage); }
 
-            
+            bool isCrit = UnityEngine.Random.Range(0, 100) < CitChance;
+            int finalDamage = isCrit ? damage * 2 : damage;
+
+            Debug.Log($"{isCrit} , {CitChance} ");
+            Debug.Log(finalDamage);
+
+            int dealtDamage = target.TakeDamage(finalDamage);
+
+            return (dealtDamage, isCrit);
         }
         //원래 코드
         public void AddBuff(BuffData buff)

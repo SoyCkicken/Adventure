@@ -156,8 +156,7 @@ public class CombatTest : MonoBehaviour
         {
             Debug.Log("플레이어의 선공권");
         }
-           
-        int dealt = attacker.Attack(target);
+        attacker.Attack(target); //이거 값에 넣지 않는 이유는 어차피 Attack에서 처리를 하고 있기 때문
         if (attacker == enemy)
         {
             var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
@@ -241,13 +240,15 @@ public class CombatTest : MonoBehaviour
         {
             yield return new WaitForSeconds(1f / attacker.speed);
             if (battleOver) yield break;
-
-            int dealt = attacker.Attack(target);
+            var (dealt, isCrit) = attacker.Attack(target);
             if (attacker == enemy)
             {
-                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
-                gameObject.transform.localScale = new Vector3(50, 50, 0);
-                Destroy(gameObject, 1f);
+                if (isCrit)
+                {
+                    var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
+                    gameObject.transform.localScale = new Vector3(75, 75, 0);
+                    Destroy(gameObject, 1f);
+                }
             }
             if (attacker == player)
             {

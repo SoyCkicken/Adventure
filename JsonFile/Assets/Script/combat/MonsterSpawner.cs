@@ -18,8 +18,15 @@ public class MonsterSpawner : MonoBehaviour
     public GameObject canves;
     public GameObject monsterPrefab;
     // 생성된 몬스터 인스턴스를 저장할 필드
-    private GameObject _currentMonster;
+    
     public GameObject canvusImage;
+
+    [Header("집중 전투 전용")]
+    public GameObject focusCombatPrefab; //집중 전투 적 오브젝트 <---이거 재활용은 안되고 필요할때마다 뽑아서 사용 해야 함
+                                         //그러면 리스트에 넣어서 파일 이름이 같은걸 찾아서 생성 하는 식으로 처리를 해야 할듯
+    public GameObject focusCombcanves;   //집중 전투 캔버스
+    public GameObject focusCombatImage; //집중 전투 캔버스 이미지 자식으로 생성 될 곳
+    private GameObject _currentMonster; //<-이거 공용 프리팹으로 사용할듯? 
 
     // 외부에서 접근할 수 있도록 프로퍼티
     public GameObject CurrentMonster => _currentMonster;
@@ -58,9 +65,10 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         // (3) 인스턴스 생성 후 필드에 저장
-        Vector3 vector3 = new Vector3(10, -50, 0);
+        Vector3 vector3 = new Vector3(10, -125, 0);
         
         _currentMonster = Instantiate(monsterPrefab, canvusImage.transform.position, Quaternion.identity,canvusImage.transform);
+        _currentMonster.transform.localPosition = vector3;
         _currentMonster.transform.localScale = new Vector3(100, 100, 0);
         _currentMonster.name = data.Mon_Name;
         if (enemy == null) enemy = GameObject.FindWithTag("Enemy");
@@ -130,4 +138,6 @@ public class MonsterSpawner : MonoBehaviour
         Debug.Log($"ApplyPassive = ctx.user의 값 : {ctx.User}\nApplyPassive = ctx.Target = {ctx.Target}");
         monsterOptionManager.ApplyMonsterOption(optionID, ctx);
     }
+
+    //집중 전투 용
 }

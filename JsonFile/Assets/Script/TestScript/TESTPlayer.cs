@@ -7,7 +7,6 @@ using UnityEngine;
 public class TESTPlayer : MonoBehaviour
 {
     public BossPartCombatManager BossPartCombatManager;
-    public string playerName;
     public int MaxHP = 500;
     public int CurrentHP;
     public int AttackPower = 30;
@@ -88,13 +87,13 @@ public class TESTPlayer : MonoBehaviour
 
         if (roll >= (hitChance - evade))
         {
-            BossPartCombatManager.Log($"[Player] {partName} 부위를 공격했지만 빗나갔습니다!\n");
+            Debug.Log($"[Player] {partName} 부위를 공격했지만 빗나갔습니다!\n");
             BossPartCombatManager.PlayDodgeSound();
             return;
         }
 
         target.DamagePart(partName, AttackPower);
-        BossPartCombatManager.Log($"[Player] {partName} 부위에 {AttackPower} 데미지 적중!\n");
+        Debug.Log($"[Player] {partName} 부위에 {AttackPower} 데미지 적중!\n");
         BossPartCombatManager.PlayHitSound();
     }
 

@@ -6,7 +6,7 @@ using static SaveManager;
 
 public class GameFlowManager : MonoBehaviour
 {
-    public enum FlowState { None, MainStory, RandomEvent, Battle }
+    public enum FlowState { None, MainStory, RandomEvent, Battle , FocusBattle }
     FlowState currentState = FlowState.None;
     FlowState prevState = FlowState.None;
 
@@ -24,14 +24,14 @@ public class GameFlowManager : MonoBehaviour
 
     void Start()
     {
-        playerState = PlayerState.Instance;
-        mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
-        randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-        if (playerState.CurrentChapterIndex == 0)
-        {
-            playerState.CurrentChapterIndex++; // 챕터 증가
-            EnterState(FlowState.MainStory); // 최초 진입
-        }
+        //playerState = PlayerState.Instance;
+        //mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
+        //randomEventManager.OnBattleJoin += HandleEventBattleJoin;
+        //if (playerState.CurrentChapterIndex == 0)
+        //{
+        //    playerState.CurrentChapterIndex++; // 챕터 증가
+        //    EnterState(FlowState.MainStory); // 최초 진입
+        //}
     }
     //현재 스테이트 확인용 <--
     public FlowState GetCurrentFlowState()
@@ -134,6 +134,35 @@ public class GameFlowManager : MonoBehaviour
 
         currentState = FlowState.Battle;
 
+        battleManager.StartBattle(playerWon =>
+        {
+            randomEventManager.WinBattle(playerWon);
+            currentState = FlowState.None;
+        });
+    }
+
+    //스토리 집중 전투 요청 처리
+    private void HandleStoryFocusBattleJoin(string monsterID)
+    {
+        Debug.Log("▶ 메인스토리 중 집중 전투 진입 요청");
+        mainStoryManager.StopMainStory();
+        pendingMonsterID = monsterID;
+        monsterSpawner.SpawnMonsterByID(pendingMonsterID);
+        currentState = FlowState.FocusBattle;
+        battleManager.StartBattle(playerWon =>
+        {
+            mainStoryManager.WinBattle(playerWon);
+            currentState = FlowState.None;
+        });
+    }
+    //스토리 집중 전투 요청 처리
+    private void HandleEventFocusBattleJoin(string monsterID)
+    {
+        Debug.Log("▶ 랜덤 이벤트 중 집중 전투 진입 요청");
+        randomEventManager.StopRandomEvent();
+        pendingMonsterID = monsterID;
+        monsterSpawner.SpawnMonsterByID(pendingMonsterID);
+        currentState = FlowState.FocusBattle;
         battleManager.StartBattle(playerWon =>
         {
             randomEventManager.WinBattle(playerWon);

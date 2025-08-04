@@ -5,7 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// Spine 슬롯 중 "Hitbox"라는 이름이 포함된 슬롯에서 BoundingBoxAttachment가 있으면
-/// PolygonCollider2D를 자동으로 생성해주는 스크립트.
+/// PolygonCollider2D를 자동으로 생성하고 EnemyHitbox를 붙여주는 스크립트.
 /// </summary>
 [RequireComponent(typeof(SkeletonRenderer))]
 public class AutoHitboxBinder : MonoBehaviour
@@ -14,8 +14,7 @@ public class AutoHitboxBinder : MonoBehaviour
 
     IEnumerator Start()
     {
-        // Spine 초기화 이후 실행 보장
-        yield return null;
+        yield return null; // Spine 초기화 보장
 
         skeletonRenderer = GetComponent<SkeletonRenderer>();
         var skeleton = skeletonRenderer.Skeleton;
@@ -24,38 +23,53 @@ public class AutoHitboxBinder : MonoBehaviour
         {
             string slotName = slot.Data.Name;
 
-            // 슬롯 이름에 "Hitbox"가 포함된 경우만 처리
+            // 슬롯 이름에 "Hitbox"가 포함되어 있어야 처리
             if (!slotName.Contains("Hitbox")) continue;
 
             var attachment = slot.Attachment as BoundingBoxAttachment;
             if (attachment == null)
             {
-                Debug.LogWarning($"[스킵] 슬롯 '{slotName}'에는 BoundingBoxAttachment가 없습니다.");
+                Debug.LogWarning($"[스킵] '{slotName}' → BoundingBoxAttachment 없음");
                 continue;
             }
 
-            Debug.Log($"[Hitbox 등록 시도] 슬롯 이름: {slotName}");
+            Debug.Log($"[Hitbox 등록 시도] 슬롯: {slotName}");
 
-            // 히트박스 GameObject 생성
+            // 히트박스 오브젝트 생성
             GameObject hitboxObj = new GameObject($"{slotName}_Collider");
             hitboxObj.transform.SetParent(this.transform, false);
 
-            // BoundingBoxFollower 컴포넌트 추가 및 설정
+            // BoundingBoxFollower 부착
             var follower = hitboxObj.AddComponent<BoundingBoxFollower>();
             follower.slotName = slotName;
-            //follower.followBoundingBox = true; // ⭐️ 꼭 설정
             follower.Initialize(true);
 
             var poly = hitboxObj.GetComponent<PolygonCollider2D>();
             if (poly != null)
             {
                 poly.isTrigger = true;
-                Debug.Log($"[성공] '{slotName}' → PolygonCollider2D 생성됨");
+
+                // 🔥 EnemyHitbox 자동 부착 + 논리 부위 이름 추출
+                var hitbox = hitboxObj.AddComponent<EnemyHitbox>();
+                hitbox.logicalPartName = ExtractLogicalPartName(slotName);
+
+                Debug.Log($"[등록 완료] {slotName} → PolygonCollider2D + EnemyHitbox({hitbox.logicalPartName})");
             }
             else
             {
-                Debug.LogWarning($"[실패] '{slotName}' → PolygonCollider2D 생성되지 않음");
+                Debug.LogWarning($"[실패] '{slotName}' → PolygonCollider2D 생성 실패");
             }
         }
+    }
+
+    /// <summary>
+    /// Spine 슬롯 이름에서 논리 부위명 추출. 예: "Arm_Hitbox" → "Arm"
+    /// </summary>
+    private string ExtractLogicalPartName(string slotName)
+    {
+        return slotName.Replace("_Hitbox", "")
+                       .Replace("Hitbox", "")
+                       .Replace("M_jombie_", "") // 필요 시 제거
+                       .Trim();
     }
 }
