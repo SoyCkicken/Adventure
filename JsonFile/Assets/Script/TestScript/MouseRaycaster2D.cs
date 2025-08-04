@@ -21,15 +21,18 @@ public class MouseRaycaster2D : MonoBehaviour
             {
                 Debug.Log($"[RayHit] {hit.collider.name} 맞춤");
                 var hb = hit.collider.GetComponent<EnemyHitbox>();
+                string partName = hb.logicalPartName;
+                Debug.Log($"[Raycast] {partName} 클릭됨");
+                manager.SetSelectedPart(partName); // 데미지는 상황에 따라 조절
                 // 3. 맞은 오브젝트가 CombatPart라면
-                if (hit.collider.TryGetComponent<BossPartCombatManager>(out BossPartCombatManager part))
-                {
-                    // 4. CombatPart의 부위 이름을 가져와서
-                    string partName = hb.logicalPartName;
-                    Debug.Log($"[Raycast] {partName} 클릭됨");
-                    manager.SetSelectedPart(partName); // 데미지는 상황에 따라 조절
-                    return; // 첫 번째 맞은 오브젝트만 처리하고 종료
-                }
+                //if (hit.collider.TryGetComponent<BossPartCombatManager>(out BossPartCombatManager part))
+                //{
+                //    // 4. CombatPart의 부위 이름을 가져와서
+                //    string partName = hb.logicalPartName    ;
+                //    Debug.Log($"[Raycast] {partName} 클릭됨");
+                //    manager.SetSelectedPart(partName); // 데미지는 상황에 따라 조절
+                //    return; // 첫 번째 맞은 오브젝트만 처리하고 종료
+                //}
             }
         }
     }
