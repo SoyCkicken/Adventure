@@ -160,7 +160,7 @@ public class CombatTest : MonoBehaviour
         if (attacker == enemy)
         {
             var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
-            gameObject.transform.localScale = new Vector3(50, 50, 0);
+            gameObject.transform.localScale = new Vector3(100, 100, 0);
             Destroy(gameObject, 1.18f);
         }
         if (attacker == player)
