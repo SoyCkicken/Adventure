@@ -240,15 +240,12 @@ public class CombatTest : MonoBehaviour
         {
             yield return new WaitForSeconds(1f / attacker.speed);
             if (battleOver) yield break;
-            var (dealt, isCrit) = attacker.Attack(target);
+            attacker.Attack(target);
             if (attacker == enemy)
             {
-                if (isCrit)
-                {
-                    var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
-                    gameObject.transform.localScale = new Vector3(75, 75, 0);
-                    Destroy(gameObject, 1f);
-                }
+                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
+                gameObject.transform.localScale = new Vector3(75, 75, 0);
+                Destroy(gameObject, 1f);
             }
             if (attacker == player)
             {

@@ -1,65 +1,36 @@
-﻿using UnityEngine;
+﻿using Unity.Burst.CompilerServices;
+using UnityEngine;
 
 public class MouseRaycaster2D : MonoBehaviour
 {
-    public Transform rayOriginTransform; // 마우스 좌표를 시각화할 오브젝트
-    public LayerMask targetLayer;        // EnemyHitbox가 포함된 Layer
+    public LayerMask targetLayer; // 레이캐스트 대상 레이어
     public BossPartCombatManager manager; // 부위 선택 처리용
-
+    public TESTBoss testboss; // TESTBoss 인스턴스
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)) // 마우스 클릭 or 터치
         {
-            // 1. 마우스 월드 위치 계산
-            Vector3 mouseScreenPos = Input.mousePosition;
-            mouseScreenPos.z = -10f; // Spine이 있는 거리 (카메라 기준 Z = -10 이면 Spine은 z = 0에 있음)
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-            mouseWorldPos.z = 0f;
+            // 1. 화면 기준 위치 → 월드 위치로 변환
+            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            if (rayOriginTransform != null)
-                rayOriginTransform.position = mouseWorldPos;
+            // 2. 해당 위치에 2D 레이캐스트 (점 기준이므로 방향벡터는 Vector2.zero)
+            RaycastHit2D[] hits = Physics2D.RaycastAll(worldPos, Vector2.up, 0.1f, targetLayer);
 
-            // 2. RaycastAll로 모든 충돌 결과 가져오기
-            RaycastHit2D[] hits = Physics2D.RaycastAll(mouseWorldPos, Vector2.zero, Mathf.Infinity);
-
-            bool hitTarget = false;
-
+           
             foreach (var hit in hits)
             {
-                if (hit.collider == null) continue;
-
-                GameObject hitObj = hit.collider.gameObject;
-
-                // 3. 해당 오브젝트가 원하는 LayerMask에 포함되어 있는지 검사
-                if (((1 << hitObj.layer) & targetLayer.value) != 0)
+                Debug.Log($"[RayHit] {hit.collider.name} 맞춤");
+                var hb = hit.collider.GetComponent<EnemyHitbox>();
+                // 3. 맞은 오브젝트가 CombatPart라면
+                if (hit.collider.TryGetComponent<BossPartCombatManager>(out BossPartCombatManager part))
                 {
-                    EnemyHitbox hitbox = hitObj.GetComponent<EnemyHitbox>();
-                    if (hitbox != null)
-                    {
-                        string partName = hitbox.logicalPartName;
-                        Debug.Log($"✅ 관통 후 타격 성공: {partName} ({hitObj.name})");
-                        manager.SetSelectedPart(partName); // 부위 선택 처리
-                        hitTarget = true;
-                        Debug.DrawRay(mouseWorldPos, Vector3.forward * 10f, Color.green, 1.0f);
-                        Debug.Log("🎯 클릭 좌표: " + mouseWorldPos);
-                        break; // 첫 타겟 오브젝트만 처리
-                    }
-                    else
-                    {
-                        Debug.Log($"⚠️ EnemyHitbox가 없음: {hitObj.name}");
-                    }
-                }
-                else
-                {
-                    Debug.Log($"⛔ 패스된 오브젝트: {hitObj.name} (Layer: {LayerMask.LayerToName(hitObj.layer)})");
+                    // 4. CombatPart의 부위 이름을 가져와서
+                    string partName = hb.logicalPartName;
+                    Debug.Log($"[Raycast] {partName} 클릭됨");
+                    manager.SetSelectedPart(partName); // 데미지는 상황에 따라 조절
+                    return; // 첫 번째 맞은 오브젝트만 처리하고 종료
                 }
             }
-
-            if (!hitTarget)
-                Debug.Log("❌ 유효한 부위에 타격 실패");
-
-            // 디버그용 Ray 표시
-            Debug.DrawRay(mouseWorldPos, Vector3.forward * 10f, Color.red, 1.5f);
         }
     }
 }

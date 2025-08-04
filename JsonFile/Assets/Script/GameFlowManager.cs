@@ -24,14 +24,14 @@ public class GameFlowManager : MonoBehaviour
 
     void Start()
     {
-        //playerState = PlayerState.Instance;
-        //mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
-        //randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-        //if (playerState.CurrentChapterIndex == 0)
-        //{
-        //    playerState.CurrentChapterIndex++; // 챕터 증가
-        //    EnterState(FlowState.MainStory); // 최초 진입
-        //}
+        playerState = PlayerState.Instance;
+        mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
+        randomEventManager.OnBattleJoin += HandleEventBattleJoin;
+        if (playerState.CurrentChapterIndex == 0)
+        {
+            playerState.CurrentChapterIndex++; // 챕터 증가
+            EnterState(FlowState.MainStory); // 최초 진입
+        }
     }
     //현재 스테이트 확인용 <--
     public FlowState GetCurrentFlowState()
