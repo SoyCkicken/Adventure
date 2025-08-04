@@ -91,6 +91,7 @@ public class BossPartCombatManager : MonoBehaviour
 
     public void SetSelectedPart(string partName)
     {
+        Debug.Log("부위 선택되었습니다");
         selectedPartName = partName;
         selectedPartText.text = $"선택된 부위: {partName}";
     }
@@ -99,7 +100,7 @@ public class BossPartCombatManager : MonoBehaviour
     {
         if (testBoss.IsDead) return;
 
-        if (testBoss.IsPartBroken("팔")) // 보스 내부에서 부위 확인하도록 구조 개선
+        if (testBoss.IsPartBroken("Arm")) // 보스 내부에서 부위 확인하도록 구조 개선
         {
             Debug.Log("보스의 팔이 파괴되어 공격할 수 없습니다.");
             isPlayerTurn = true;

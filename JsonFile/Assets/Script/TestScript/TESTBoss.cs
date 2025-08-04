@@ -19,19 +19,36 @@ public class TESTBoss : MonoBehaviour
         foreach (var hb in hitboxes)
         {
             string partName = hb.logicalPartName;
-            string slotName = "M_jombie_" + partName; // Spine 슬롯명 규칙 (필요 시 수정)
-                                                      // Update the initialization of PartInfo in the InitializePartsFromHitbox method to include all required parameters.
-            var part = new PartInfo(
-               partName, // 파츠이름
-               100,      // 체력
-               10,       // 회피율
-               slotName, // 슬롯이름
-               () =>     // 파괴 되었는지?
-               {
-                   skeletonAnimation.Skeleton.FindSlot(slotName).Attachment = null;
-                   Debug.Log($"[Boss] {partName} 파괴됨");
-               }
-            );
+            string slotName = "M_jombie_" + partName;
+            if (partName == "왼쪽 팔")
+            {
+                slotName = "M_jombie_LeftArm";
+            }
+            else if (partName == "오른쪽 팔")
+            {
+                slotName = "M_jombie_RightArm";
+            }
+            else if (partName == "왼쪽 다리")
+            {
+                slotName = "M_jombie_LeftLeg";
+            }
+            else if (partName == "오른쪽 다리")
+            {
+                slotName = "M_jombie_RightLeg";
+            }
+                // Spine 슬롯명 규칙 (필요 시 수정)
+                // Update the initialization of PartInfo in the InitializePartsFromHitbox method to include all required parameters.
+                var part = new PartInfo(
+                   partName, // 파츠이름
+                   100,      // 체력
+                   10,       // 회피율
+                   slotName, // 슬롯이름
+                   () =>     // 파괴 되었는지?
+                   {
+                       skeletonAnimation.Skeleton.FindSlot(slotName).Attachment = null;
+                       Debug.Log($"[Boss] {partName} 파괴됨");
+                   }
+                );
 
             parts[partName] = part;
             partList.Add(part);
@@ -50,8 +67,8 @@ public class TESTBoss : MonoBehaviour
     public int CurrentTotalHP;
     public int hitChance = 80;
 
-    private readonly string[] armGroupKeys = { "Arm" };
-    private readonly string[] legGroupKeys = { "Leg" };
+    [SerializeField] public readonly string[] armGroupKeys = { "Arm" };
+    [SerializeField] public readonly string[] legGroupKeys = { "Leg" };
 
     [Header("부위 정보")]
     public List<PartInfo> partList = new();
