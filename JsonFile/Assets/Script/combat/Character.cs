@@ -77,7 +77,7 @@ namespace MyGame
         }
 
         // 기본 공격 메서드
-        public void Attack(Character target)
+        public (int dealtDamage, bool isCrit) Attack(Character target)
         {
             Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
@@ -89,6 +89,7 @@ namespace MyGame
             Debug.Log(finalDamage);
 
             int dealtDamage = target.TakeDamage(finalDamage);
+            return (dealtDamage, isCrit);
         }
         //원래 코드
         public void AddBuff(BuffData buff)
@@ -241,7 +242,8 @@ namespace MyGame
 
             if (buff.IsPassive)
             {
-                Debug.Log($"[패시브 버프 유지됨] {buffID}");
+                Debug.Log($"[패시브 버프 유지됨] {buffID} , {armor_Name}");
+                //RemoveBuffByItem(armor_Name);
                 return;
             }
 

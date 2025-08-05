@@ -308,7 +308,7 @@ public class InventoryManager : MonoBehaviour
                 if(!string.IsNullOrEmpty(selectedItem.Option_1_ID))
                 Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 if(!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
                 break;
 
             case "Armor":
@@ -324,7 +324,7 @@ public class InventoryManager : MonoBehaviour
                 if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
                     Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                    Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
                 break;
 
             case "Consumable":
@@ -339,7 +339,7 @@ public class InventoryManager : MonoBehaviour
                 if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
                     Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
                 if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                    Debug.Log($"{selectedItem.Option_2_ID}  :  {selectedItem.Option_Value2}");
                 break;
             case "Item":
                 removeButton.gameObject.SetActive(true);

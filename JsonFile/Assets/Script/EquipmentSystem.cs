@@ -127,7 +127,8 @@ public class EquipmentSystem : MonoBehaviour
             player.weapon_Name = null;
         else if (slot.CurrentItem.Item_Type == "Armor")
             player.armor_Name = null;
-
+        if (!string.IsNullOrEmpty(slot.CurrentItem.Option_1_ID))
+            player.RemoveBuffByItem(slot.CurrentItem.Item_ID);
         slot.Clear();
         Init();
     }

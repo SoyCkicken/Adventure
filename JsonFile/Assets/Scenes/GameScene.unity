@@ -1719,7 +1719,6 @@ GameObject:
   m_Component:
   - component: {fileID: 163893747}
   - component: {fileID: 163893749}
-  - component: {fileID: 163893748}
   - component: {fileID: 163893750}
   m_Layer: 0
   m_Name: "\uC9D1\uC911 \uC804\uD22C\uC6A9"
@@ -1743,50 +1742,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1010119033}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &163893748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 163893746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2eab5873bccc5f43a544d32f0286449, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BossPartCombatManager: {fileID: 163893750}
-  skeletonAnimation: {fileID: 0}
-  bossName: 
-  attackPower: 50
-  MaxTotalHP: 1000
-  CurrentTotalHP: 1000
-  hitChance: 80
-  partList:
-  - partName: "\uC67C\uCABD \uD314"
-    SlotName: M_jombie_LeftArm
-    MaxHP: 100
-    CurrentHP: 100
-    EvadeRate: 10
-    ActiveDebuffs: []
-  - partName: "\uC624\uB978\uCABD \uD314"
-    SlotName: M_jombie_RightArm
-    MaxHP: 100
-    CurrentHP: 100
-    EvadeRate: 10
-    ActiveDebuffs: []
-  - partName: "\uBA38\uB9AC"
-    SlotName: M_jombie_Head
-    MaxHP: 100
-    CurrentHP: 100
-    EvadeRate: 50
-    ActiveDebuffs: []
-  - partName: "\uBAB8\uD1B5"
-    SlotName: M_jombie_Body
-    MaxHP: 1000
-    CurrentHP: 1000
-    EvadeRate: 10
-    ActiveDebuffs: []
 --- !u!114 &163893749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1982,7 +1937,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &169547625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3774,7 +3729,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999958
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5515,7 +5470,7 @@ RectTransform:
   m_Father: {fileID: 214844020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 1.124527}
   m_SizeDelta: {x: 0, y: -17.7509}
   m_Pivot: {x: 0, y: 0.5}
@@ -10299,7 +10254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatTest: {fileID: 1515041320}
-  testBoss: {fileID: 163893748}
+  testBoss: {fileID: 0}
 --- !u!1 &1018794061
 GameObject:
   m_ObjectHideFlags: 0
@@ -11977,7 +11932,7 @@ MonoBehaviour:
   enemy: {fileID: 0}
   player: {fileID: 163893746}
   bossPartCombatManager: {fileID: 163893750}
-  TESTBoss: {fileID: 163893748}
+  TESTBoss: {fileID: 0}
 --- !u!114 &1224261889 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1512233413251116345, guid: a9ad5f6729fc6e84cb8feadb31d94915, type: 3}
@@ -16843,7 +16798,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   manager: {fileID: 163893750}
-  testboss: {fileID: 163893748}
 --- !u!1001 &1634365829
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20033,7 +19987,7 @@ MonoBehaviour:
   monsterSpawner: {fileID: 1206244609}
   inventoryManager: {fileID: 1416507560}
   focusMonsterSpawner: {fileID: 1206244610}
-  testBoss: {fileID: 163893748}
+  testBoss: {fileID: 0}
   bossPartCombatManager: {fileID: 163893750}
 --- !u!1 &1847514786
 GameObject:
@@ -20295,7 +20249,7 @@ RectTransform:
   m_Father: {fileID: 538834029}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 1.1245232}
   m_SizeDelta: {x: 0, y: -17.7509}
   m_Pivot: {x: 0, y: 0.5}
@@ -20543,7 +20497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1895895121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21908,7 +21862,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000028073928}
+  m_AnchoredPosition: {x: 0, y: 0.00005952574}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632

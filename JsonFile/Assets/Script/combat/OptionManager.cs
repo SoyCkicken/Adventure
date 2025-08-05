@@ -261,7 +261,16 @@ public class OptionManager : MonoBehaviour
         Debug.Log("2번 옵션 적용 완료");
         Debug.Log("옵션 처리 후");
     }
+    public static void RemovePassive(string optionID, Character target)
+    {
+        // target.OnHitOptions 에서 해당 OptionID 제거
+        target.OnHitOptions.RemoveAll(opt => opt.OptionID == optionID);
 
+        // 버프 목록에서 제거가 필요하다면 여기도 추가
+        // 예: target.BuffList.RemoveAll(...)
+
+        Debug.Log($"[패시브 제거됨] {optionID}");
+    }
     public static string GetOptionDescription(string optionID)
     {
         if (string.IsNullOrEmpty(optionID) || optionID == "null")

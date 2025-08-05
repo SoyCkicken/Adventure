@@ -6,6 +6,7 @@ using MyGame;
 using UnityEngine.Playables;
 using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
+using Spine;
 
 public class CombatTest : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class CombatTest : MonoBehaviour
     public InventoryManager inventoryManager;
     public BattleUI battleUI;
     public BuffUI buffUI;
-    public Animator enemyanima;
+    public Animator Enemy_Animator;
     public GameObject EnemyAttackImage;
     public GameObject ImageGameObject;
     public GameObject PopupObject;
@@ -48,7 +49,7 @@ public class CombatTest : MonoBehaviour
         // 옵션 매니저 참조 확보
         if (optionManager == null)
             optionManager = FindObjectOfType<OptionManager>();
-        enemyanima = enemy.GetComponent<Animator>();
+        Enemy_Animator = enemy.GetComponent<Animator>();
         // 전투 상태 초기화
         battleOver = false;
         Debug.Log("전투로 넘어 갔습니다!");
@@ -91,18 +92,14 @@ public class CombatTest : MonoBehaviour
 
         // 두 캐릭터의 공격루프를 동시에 돌리고,
         // 둘 다 끝날 때까지 대기했다가 onComplete 호출
-        var playerLoop = StartCoroutine(AttackLoop(player, enemy, true,false));
-        var enemyLoop = StartCoroutine(AttackLoop(enemy, player, false,true));
-
-        yield return playerLoop;
-        yield return enemyLoop;
+        var playerLoop = StartCoroutine(AttackLoop(player, enemy, true, false));
+        var enemyLoop = StartCoroutine(AttackLoop(enemy, player, false, true));
+        // <--여기 애니메이션 같은걸 넣어서 시간을 벌어야 할것 같음
+        //yield return playerLoop;
+        //yield return enemyLoop;
+        yield return new WaitUntil(() => battleOver);
         if (player.Health >= 1)
         {
-            //Destroy(enemy.gameObject);
-            //Debug.Log("플레이어가 승리하였습니다");
-            //playerState.Experience += enemy.GetEXP;
-            //playerState.statsUI.UpdateUI();
-            //inventoryManager.updateSoulText();
             PopupObject.SetActive(true);
             battleOver = true;
 
@@ -112,7 +109,6 @@ public class CombatTest : MonoBehaviour
                 playerState.Experience += enemy.GetEXP;
                 playerState.statsUI.UpdateUI();
                 inventoryManager.updateSoulText(); 
-                
 
                 player.GetComponent<EquipmentSystem>().Init();
 
@@ -165,7 +161,12 @@ public class CombatTest : MonoBehaviour
         }
         if (attacker == player)
         {
-            enemyanima.Play("MS_Jombie_Hit");
+            var (damage, isCrit) = attacker.Attack(target);
+
+            if (isCrit)
+            {
+                Enemy_Animator.SetTrigger("isHit");
+            }
         }
 
         if (isPlayer && attacker.OnHitOptions != null)
@@ -249,7 +250,13 @@ public class CombatTest : MonoBehaviour
             }
             if (attacker == player)
             {
-                enemyanima.Play("MS_Jombie_Hit"); 
+                var (damage, isCrit) = attacker.Attack(target);
+
+                if (isCrit)
+                {
+                    Debug.Log("크리티컬 공격입니다");
+                    Enemy_Animator.SetTrigger("isHit");
+                }
             }
             // 플레이어 온히트 옵션 적용
             if (isPlayer && attacker.OnHitOptions != null)
@@ -294,23 +301,21 @@ public class CombatTest : MonoBehaviour
             if (target.Health <= 0)
             {
                 // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
-
-                Debug.Log(battleOver = (player.Health > 0));
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
-                StopAllCoroutines();
+                battleOver = true;
                 yield break;
             }
             else if(attacker.Health<=0)
             {
-                battleOver = false;
+                
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
-                StopAllCoroutines();
+                battleOver = true;
                 yield break;
             }
         }
