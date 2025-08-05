@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using MyGame;
 using System;
+using System.Collections.Generic;
 
 public class MonsterSpawner : MonoBehaviour
 {
@@ -20,14 +21,7 @@ public class MonsterSpawner : MonoBehaviour
     // 생성된 몬스터 인스턴스를 저장할 필드
     
     public GameObject canvusImage;
-
-    [Header("집중 전투 전용")]
-    public GameObject focusCombatPrefab; //집중 전투 적 오브젝트 <---이거 재활용은 안되고 필요할때마다 뽑아서 사용 해야 함
-                                         //그러면 리스트에 넣어서 파일 이름이 같은걸 찾아서 생성 하는 식으로 처리를 해야 할듯
-    public GameObject focusCombcanves;   //집중 전투 캔버스
-    public GameObject focusCombatImage; //집중 전투 캔버스 이미지 자식으로 생성 될 곳
     private GameObject _currentMonster; //<-이거 공용 프리팹으로 사용할듯? 
-
     // 외부에서 접근할 수 있도록 프로퍼티
     public GameObject CurrentMonster => _currentMonster;
 
@@ -141,3 +135,4 @@ public class MonsterSpawner : MonoBehaviour
 
     //집중 전투 용
 }
+ 

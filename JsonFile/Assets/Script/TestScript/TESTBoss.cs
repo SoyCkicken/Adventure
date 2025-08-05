@@ -1,11 +1,13 @@
 ﻿using MyGame;
 using Spine;
 using Spine.Unity;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TESTBoss : MonoBehaviour
 {
@@ -22,27 +24,42 @@ public class TESTBoss : MonoBehaviour
             string slotName = "M_jombie_" + partName;
             if (partName == "왼쪽 팔")
             {
-                slotName = "M_jombie_LeftArm";
+                slotName = "M_jombie_" + "LeftArm";
             }
             else if (partName == "오른쪽 팔")
             {
-                slotName = "M_jombie_RightArm";
+                slotName = "M_jombie_" + "RightArm";
             }
             else if (partName == "왼쪽 다리")
             {
-                slotName = "M_jombie_LeftLeg";
+                slotName = "M_jombie_" + "LeftLeg";
             }
             else if (partName == "오른쪽 다리")
             {
                 slotName = "M_jombie_RightLeg";
+                slotName = "M_jombie_" + "RightLeg";
+            }
+            else if (partName == "몸통")
+            {
+                slotName = "M_jombie_Body";
+                slotName = "M_jombie_" + "Body";
+            }
+            else if (partName == "머리")
+            {
+                slotName = "M_jombie_Head";
+                slotName = "M_jombie_" + "Head";
+            }
+            else if (partName == "꼬리")
+            {
+                slotName = "M_jombie_Tail";
+                slotName = "M_jombie_" + "Tail";
             }
                 // Spine 슬롯명 규칙 (필요 시 수정)
                 // Update the initialization of PartInfo in the InitializePartsFromHitbox method to include all required parameters.
                 var part = new PartInfo(
                    partName, // 파츠이름
-                   100,      // 체력
-                   10,       // 회피율
                    slotName, // 슬롯이름
+                     100,      // 최대 HP (임시값, 필요 시 조정)
                    () =>     // 파괴 되었는지?
                    {
                        skeletonAnimation.Skeleton.FindSlot(slotName).Attachment = null;
@@ -63,16 +80,16 @@ public class TESTBoss : MonoBehaviour
     public SkeletonAnimation skeletonAnimation;
     public string bossName;
     public int attackPower = 50;
-    public int MaxTotalHP;
-    public int CurrentTotalHP;
+    [SerializeField] public int MaxTotalHP;
+    [SerializeField] public int CurrentTotalHP;
     public int hitChance = 80;
 
-    [SerializeField] public readonly string[] armGroupKeys = { "Arm" };
-    [SerializeField] public readonly string[] legGroupKeys = { "Leg" };
+    [SerializeField] public readonly string[] armGroupKeys = { "팔" };
+    [SerializeField] public readonly string[] legGroupKeys = { "다리" };
 
     [Header("부위 정보")]
     public List<PartInfo> partList = new();
-    private Dictionary<string, PartInfo> parts = new();
+    public Dictionary<string, PartInfo> parts = new();
 
     public bool IsDead => CurrentTotalHP <= 0;
     private bool isAttackDisabled = false;
@@ -85,20 +102,103 @@ public class TESTBoss : MonoBehaviour
         foreach (var part in partList)
         {
             part.CurrentHP = part.MaxHP;
+            
             part.OnBreak = () =>
             {
                 Debug.Log($"[Boss] {part.partName} 부위가 파괴되었습니다!\n");
+
+                // 1. Spine 슬롯 비활성화 (이미 잘 처리됨)
                 skeleton.FindSlot(part.SlotName).Attachment = null;
+
+                // 2. EnemyHitbox 오브젝트 비활성화 처리
+                var hitbox = GetComponentsInChildren<EnemyHitbox>(true)
+                             .FirstOrDefault(hb => hb.logicalPartName == part.partName);
+                if (hitbox != null)
+                {
+                    hitbox.gameObject.SetActive(false); // 또는 hitbox.enabled = false;
+                    Debug.Log($"[Boss] {part.partName}의 콜라이더 오브젝트 비활성화됨");
+                }
+
+                // 3. 팔/다리 체크
                 CheckArmCondition();
                 CheckLegCondition();
             };
 
+            // 예외 처리: 머리 파괴 → 즉사
             if (part.partName.Contains("머리"))
             {
                 part.OnBreak = () =>
                 {
                     Debug.Log("[Boss] 머리 부위가 파괴되었습니다. 즉사 처리됨!\n");
+
                     skeleton.FindSlot(part.SlotName).Attachment = null;
+
+                    var hitbox = GetComponentsInChildren<EnemyHitbox>(true)
+                                 .FirstOrDefault(hb => hb.logicalPartName == part.partName);
+                    if (hitbox != null)
+                    {
+                        hitbox.gameObject.SetActive(false);
+                        Debug.Log($"[Boss] {part.partName}의 콜라이더 오브젝트 비활성화됨");
+                    }
+
+                    Kill();
+                    PlayDeathAnimation();
+                };
+            }
+
+            parts[part.partName] = part;
+            Debug.Log(part.SlotName);
+        }
+
+        //OnEnemyTurnEnd();
+    }
+    public void RunFocusBattle(Action<bool> onComplete)
+    {
+        Init();
+    }
+    public void Init()
+    {
+        // 총 체력 설정
+        // 부위 초기화
+        foreach (var part in partList)
+        {
+            part.CurrentHP = part.MaxHP;
+            part.ActiveDebuffs.Clear();
+            MaxTotalHP = Mathf.Max(MaxTotalHP, part.MaxHP);
+            CurrentTotalHP = MaxTotalHP;
+            // OnBreak 이벤트 설정
+            part.OnBreak = () =>
+            {
+                Debug.Log($"[Boss] {part.partName} 부위가 파괴되었습니다!");
+
+                // Spine 슬롯 제거
+                skeletonAnimation.Skeleton.FindSlot(part.SlotName).Attachment = null;
+
+                // 콜라이더 비활성화
+                var hitbox = GetComponentsInChildren<EnemyHitbox>(true)
+                             .FirstOrDefault(hb => hb.logicalPartName == part.partName);
+                if (hitbox != null)
+                    hitbox.gameObject.SetActive(false);
+
+                // 패널티 조건 검사
+                CheckArmCondition();
+                CheckLegCondition();
+            };
+
+            // 특수: 머리 파괴 → 즉사
+            if (part.partName.Contains("머리"))
+            {
+                part.OnBreak = () =>
+                {
+                    Debug.Log("[Boss] 머리 부위 파괴 → 즉사 처리");
+
+                    skeletonAnimation.Skeleton.FindSlot(part.SlotName).Attachment = null;
+
+                    var hitbox = GetComponentsInChildren<EnemyHitbox>(true)
+                                 .FirstOrDefault(hb => hb.logicalPartName == part.partName);
+                    if (hitbox != null)
+                        hitbox.gameObject.SetActive(false);
+
                     Kill();
                     PlayDeathAnimation();
                 };
@@ -107,7 +207,7 @@ public class TESTBoss : MonoBehaviour
             parts[part.partName] = part;
         }
 
-        //OnEnemyTurnEnd();
+        Debug.Log($"[Boss Init] {partList.Count}개 부위 초기화 완료");
     }
 
     public void OnEnemyTurnEnd()
@@ -144,8 +244,12 @@ public class TESTBoss : MonoBehaviour
     private void CheckArmCondition()
     {
         var armParts = GetPartNamesContaining(armGroupKeys);
+        if (armParts == null || armParts.Count == 0)
+        {
+            Debug.Log("[Boss] 팔 부위가 없어 패널티를 적용하지 않습니다.");
+            return;
+        }
         bool allArmsBroken = armParts.All(partName => IsPartBroken(partName));
-
         if (allArmsBroken)
         {
             isAttackDisabled = true;
@@ -156,6 +260,11 @@ public class TESTBoss : MonoBehaviour
     private void CheckLegCondition()
     {
         var legParts = GetPartNamesContaining(legGroupKeys);
+        if (legParts == null || legParts.Count == 0)
+        {
+            Debug.Log("[Boss] 다리 부위가 없어 패널티를 적용하지 않습니다.");
+            return;
+        }
         bool allLegsBroken = legParts.All(partName => IsPartBroken(partName));
 
         if (allLegsBroken && parts.ContainsKey("머리"))
@@ -217,7 +326,7 @@ public class TESTBoss : MonoBehaviour
 
     public float GetTotalHPPercent()
     {
-        return CurrentTotalHP / (float)MaxTotalHP;
+        return MaxTotalHP-((float)MaxTotalHP - CurrentTotalHP);
     }
 
     public bool CanAttackPart(string name)
@@ -285,17 +394,17 @@ public class TESTBoss : MonoBehaviour
 
         public List<FocusBuffData> ActiveDebuffs = new();
         public System.Action OnBreak;
+        public Action<bool> isComplete;
 
         public bool IsBroken => CurrentHP <= 0;
 
-        public PartInfo(string name, int hp, int evadeRate, string slotName, System.Action onBreak = null)
+        public PartInfo(string name, string slotName,int hp,System.Action onBreak = null)
         {
             partName = name;
-            MaxHP = hp;
-            CurrentHP = hp;
-            EvadeRate = evadeRate;
             SlotName = slotName;
             OnBreak = onBreak;
+            MaxHP = hp;
+            CurrentHP = hp;
         }
 
         public void Damage(int amount)

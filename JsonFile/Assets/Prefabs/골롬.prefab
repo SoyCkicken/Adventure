@@ -333,6 +333,187 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   logicalPartName: "\uC624\uB978\uCABD \uD314"
+--- !u!1 &2758488136022319464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7544447719167176958}
+  - component: {fileID: 1237182124047392762}
+  - component: {fileID: 3465218760861337638}
+  - component: {fileID: 3827165365874031305}
+  - component: {fileID: 502207290714731487}
+  m_Layer: 6
+  m_Name: Body_HitBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7544447719167176958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758488136022319464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0.6205321, w: 0.78418106}
+  m_LocalPosition: {x: 6.510949, y: -9.233616, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 580115239431105836}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1237182124047392762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758488136022319464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0317ee9ba6e1b1e49a030268e026d372, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2476160696488979679}
+  slotName: M_jombie_body2
+  isTrigger: 1
+  usedByEffector: 0
+  usedByComposite: 0
+  clearStateOnDisable: 1
+--- !u!114 &3465218760861337638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758488136022319464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1fd8daaed7b64148a34acb96ba14ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonRenderer: {fileID: 2476160696488979679}
+  boneName: M_jombie_body
+  followXYPosition: 1
+  followZPosition: 1
+  followBoneRotation: 1
+  followSkeletonFlip: 1
+  followLocalScale: 0
+  followParentWorldScale: 0
+  maintainedAxisOrientation: 1
+  initializeOnAwake: 1
+--- !u!60 &3827165365874031305
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758488136022319464}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 1.6718, y: -0.9134002}
+      - {x: 2.162555, y: 0.17464806}
+      - {x: 2.1812537, y: 0.8467825}
+      - {x: 2.8249593, y: 1.2039878}
+      - {x: 2.95274, y: 1.6835179}
+      - {x: 2.392968, y: 2.2197747}
+      - {x: 2.5324843, y: 2.6722133}
+      - {x: 2.2822542, y: 3.0355515}
+      - {x: 1.5701004, y: 3.2572043}
+      - {x: 1.1288238, y: 3.3324335}
+      - {x: 0.55189556, y: 3.8440268}
+      - {x: -0.030665064, y: 3.5918295}
+      - {x: -0.67101115, y: 4.202978}
+      - {x: -0.62690896, y: 3.582866}
+      - {x: -0.65903157, y: 3.26891}
+      - {x: -0.8934818, y: 2.8740654}
+      - {x: -0.9832452, y: 2.3611276}
+      - {x: -0.60806894, y: 1.9660747}
+      - {x: -0.6638484, y: 1.8377951}
+      - {x: -3.0168355, y: 1.9835817}
+      - {x: -3.441772, y: 1.8082681}
+      - {x: -3.9663384, y: 1.5155654}
+      - {x: -4.156442, y: 1.1473861}
+      - {x: -3.859561, y: 0.20294078}
+      - {x: -2.8897903, y: -0.06829372}
+      - {x: -1.6252182, y: 0.06294877}
+      - {x: -1.4097329, y: 0.006252667}
+      - {x: -1.4421334, y: -0.10089494}
+      - {x: -2.8452446, y: -0.7889205}
+      - {x: -3.3787277, y: -1.2453912}
+      - {x: -3.4210742, y: -1.8204774}
+      - {x: -3.087551, y: -2.278871}
+      - {x: -2.8580985, y: -2.4325888}
+      - {x: -1.9534745, y: -2.2971022}
+      - {x: -0.91378075, y: -1.7441773}
+      - {x: -0.8849398, y: -1.7934583}
+      - {x: -1.1204607, y: -2.1387699}
+      - {x: -2.1221368, y: -2.744522}
+      - {x: -2.2627053, y: -3.1489816}
+      - {x: -2.6356874, y: -3.4005058}
+      - {x: -2.451993, y: -3.6892385}
+      - {x: -1.9078805, y: -3.8752167}
+      - {x: -1.4453322, y: -3.7390106}
+      - {x: -0.9469457, y: -3.5469415}
+      - {x: -0.22168612, y: -3.0088599}
+      - {x: 0.29805118, y: -2.8079395}
+      - {x: 0.6680998, y: -2.4716997}
+      - {x: 0.95369977, y: -1.7952}
+  m_UseDelaunayMesh: 0
+--- !u!114 &502207290714731487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758488136022319464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e923457edef89d9418847bc38b61ba3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logicalPartName: "\uBAB8\uD1B5"
 --- !u!1 &5052695314357578690
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,8 +527,9 @@ GameObject:
   - component: {fileID: 2476160696488979679}
   - component: {fileID: 2888727863683223011}
   - component: {fileID: 1975972571241806990}
+  - component: {fileID: 4837786275360770570}
   m_Layer: 0
-  m_Name: New SkeletonAnimation
+  m_Name: "\uACE8\uB86C"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -361,7 +543,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5052695314357578690}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 789.4221, y: 828.0723, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 1
@@ -369,6 +551,7 @@ Transform:
   - {fileID: 2239665251542061043}
   - {fileID: 6254950211230719483}
   - {fileID: 7164454455850714407}
+  - {fileID: 7544447719167176958}
   - {fileID: 5816127120874482632}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -412,7 +595,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2476160696488979679
 MonoBehaviour:
@@ -477,6 +660,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4b663e6a71341a45baa61028c1d847e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4837786275360770570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5052695314357578690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2eab5873bccc5f43a544d32f0286449, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BossPartCombatManager: {fileID: 0}
+  skeletonAnimation: {fileID: 2476160696488979679}
+  bossName: 
+  attackPower: 50
+  MaxTotalHP: 1000
+  CurrentTotalHP: 1000
+  hitChance: 80
+  partList:
+  - partName: "\uC67C\uCABD \uD314"
+    SlotName: M_jombie_LeftArm
+    MaxHP: 100
+    CurrentHP: 100
+    EvadeRate: 10
+    ActiveDebuffs: []
+  - partName: "\uC624\uB978\uCABD \uD314"
+    SlotName: M_jombie_RightArm
+    MaxHP: 100
+    CurrentHP: 100
+    EvadeRate: 10
+    ActiveDebuffs: []
+  - partName: "\uBA38\uB9AC"
+    SlotName: M_jombie_Head
+    MaxHP: 100
+    CurrentHP: 100
+    EvadeRate: 50
+    ActiveDebuffs: []
+  - partName: "\uBAB8\uD1B5"
+    SlotName: M_jombie_Body
+    MaxHP: 1000
+    CurrentHP: 1000
+    EvadeRate: 0
+    ActiveDebuffs: []
 --- !u!1 &5057187051724255009
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,7 +861,7 @@ Transform:
   m_GameObject: {fileID: 6592216166921706388}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.7805395, w: 0.62510645}
-  m_LocalPosition: {x: 7.001506, y: -7.701863, z: -0.34}
+  m_LocalPosition: {x: 7.001506, y: -7.701863, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

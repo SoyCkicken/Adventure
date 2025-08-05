@@ -9,9 +9,10 @@ using UnityEngine.UI;
 public class BossPartCombatManager : MonoBehaviour
 {
     public Slider totalHPSlider;
+    public Slider playerHPSlider;
     public SkeletonAnimation BossSkeleton;
-    public TESTBoss testBoss;
-    public TESTPlayer testPlayer;
+    public TESTBoss TESTBoss;
+    public TESTPlayer TESTPlayer;
     [Header("여기는 임시 버튼 선택입니다")]
     public TMP_Text selectedPartText;
     public Button leftButton;
@@ -30,9 +31,9 @@ public class BossPartCombatManager : MonoBehaviour
     // 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
     void Start()
     {
-        totalHPSlider.maxValue = testBoss.MaxTotalHP;
-        totalHPSlider.value = testBoss.CurrentTotalHP;
-        testPlayer.AddBuff(new FocusBuffData
+        
+
+        TESTPlayer.AddBuff(new FocusBuffData
         {
             OptionID = "Option_003",
             Value = 10,
@@ -40,23 +41,55 @@ public class BossPartCombatManager : MonoBehaviour
             Elapsed = 0f
         });
 
-        testBoss.AddBuff("오른팔", new FocusBuffData
+        TESTBoss.AddBuff("오른팔", new FocusBuffData
         {
             OptionID = "Option_003",
             Value = 10,
             Duration = 3,
             Elapsed = 0f,
             DamageRatio = 0.5f,
-            Target = testBoss
+            Target = TESTBoss
         });
 
+        
+        UpdateSliders();
+        Debug.Log("플레이어의 턴입니다.");
+        
+    }
+    public void Initialize()
+    {
+        if (TESTBoss == null)
+        {
+            Debug.LogError("[BossPartCombatManager] TESTBoss가 연결되지 않았습니다.");
+            return;
+        }
+
+        // 선택 부위 초기화
+        selectedPartName = null;
+        if (audioSource == null)
+        {
+            audioSource = BossSkeleton.GetComponentInChildren<AudioSource>();
+        }
         leftButton.onClick.AddListener(() => { OnClickLeft(); });
         rightButton.onClick.AddListener(() => { OnClickRight(); });
         attackButton.onClick.AddListener(() => { OnClickAttack(); });
-        UpdateSliders();
-        Debug.Log("플레이어의 턴입니다.");
+        // 선택 UI 초기화 (필요 시 버튼 / 인디케이터 초기화 등)
+        ClearSelectionHighlights();
+
+        // 부위 선택 가능 목록 설정
+        var parts = TESTBoss.GetAttackableParts();
+
+        Debug.Log("[BossPartCombatManager] 집중 전투 매니저 초기화 완료");
     }
 
+    private void ClearSelectionHighlights()
+    {
+        // 선택 UI 하이라이트 초기화하는 로직이 있다면 여기에 작성
+        totalHPSlider.maxValue = TESTBoss.MaxTotalHP;
+        totalHPSlider.value = int.MaxValue;
+        playerHPSlider.maxValue = TESTPlayer.MaxHP;
+        playerHPSlider.value = int.MaxValue;
+    }
     public void OnClickAttack()
     {
         if (!isPlayerTurn)
@@ -65,7 +98,7 @@ public class BossPartCombatManager : MonoBehaviour
             return;
         }
 
-        var parts = testBoss.GetAttackableParts();
+        var parts = TESTBoss.GetAttackableParts();
         if (parts.Count == 0)
         {
             Debug.Log("공격 가능한 부위가 없습니다.");
@@ -73,10 +106,10 @@ public class BossPartCombatManager : MonoBehaviour
         }
 
         //string selectedPart = parts[currentIndex];
-        testPlayer.PerformAttack(testBoss, selectedPartName);
+        TESTPlayer.PerformAttack(TESTBoss, selectedPartName);
         Debug.Log($"플레이어가 {selectedPartName} 부위를 공격했습니다.");
         //PlayHitSound();
-        if (testBoss.IsDead)
+        if (TESTBoss.IsDead)
         {
             Debug.Log("보스를 처치했습니다!");
             return;
@@ -86,7 +119,7 @@ public class BossPartCombatManager : MonoBehaviour
         isPlayerTurn = false;
         UpdateSliders();
         Invoke(nameof(EnemyTurn), 1.5f);
-        testPlayer.TickDebuffs();
+        TESTPlayer.TickDebuffs();
     }
 
     public void SetSelectedPart(string partName)
@@ -98,32 +131,33 @@ public class BossPartCombatManager : MonoBehaviour
 
     void EnemyTurn()
     {
-        if (testBoss.IsDead) return;
+        if (TESTBoss.IsDead) return;
 
-        if (testBoss.IsPartBroken("Arm")) // 보스 내부에서 부위 확인하도록 구조 개선
+        if (TESTBoss.IsPartBroken("팔")) // 보스 내부에서 부위 확인하도록 구조 개선
         {
             Debug.Log("보스의 팔이 파괴되어 공격할 수 없습니다.");
             isPlayerTurn = true;
             Debug.Log("플레이어의 턴입니다.");
             return;
         }
-        testBoss.PerformAttack(testPlayer);
-        Debug.Log($"보스가 플레이어를 공격했습니다. ({testBoss.attackPower} 데미지)");
+        TESTBoss.PerformAttack(TESTPlayer);
+        Debug.Log($"보스가 플레이어를 공격했습니다. ({TESTBoss.attackPower} 데미지)");
 
-        if (testPlayer.IsDead)
+        if (TESTPlayer.IsDead)
         {
             Debug.Log("플레이어가 사망했습니다...");
             return;
         }
 
         isPlayerTurn = true;
+        UpdatePlayerSliders();
         Debug.Log("플레이어의 턴입니다.");
-        testBoss.OnEnemyTurnEnd();
+        TESTBoss.OnEnemyTurnEnd();
     }
 
     void UpdateSelectedPartUI()
     {
-        var parts = testBoss.GetAttackableParts();
+        var parts = TESTBoss.GetAttackableParts();
 
         if (parts.Count == 0)
         {
@@ -140,7 +174,7 @@ public class BossPartCombatManager : MonoBehaviour
 
     public void OnClickLeft()
     {
-        var parts = testBoss.GetAttackableParts();
+        var parts = TESTBoss.GetAttackableParts();
         if (parts.Count == 0) return;
 
         currentIndex = (currentIndex - 1 + parts.Count) % parts.Count;
@@ -149,7 +183,7 @@ public class BossPartCombatManager : MonoBehaviour
 
     public void OnClickRight()
     {
-        var parts = testBoss.GetAttackableParts();
+        var parts = TESTBoss.GetAttackableParts();
         if (parts.Count == 0) return;
 
         currentIndex = (currentIndex + 1) % parts.Count;
@@ -158,7 +192,12 @@ public class BossPartCombatManager : MonoBehaviour
 
     void UpdateSliders()
     {
-        totalHPSlider.value = testBoss.GetTotalHPPercent();
+        totalHPSlider.value = TESTBoss.GetTotalHPPercent();
+    }
+    void UpdatePlayerSliders()
+    {
+        playerHPSlider.value = TESTPlayer.CurrentHP;
+        playerHPSlider.maxValue = TESTPlayer.MaxHP;
     }
 
     public void PlayHitSound()

@@ -13,7 +13,7 @@ public class TESTSPINE : MonoBehaviour
         SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
         foreach (var slot in skeletonAnim.skeleton.Slots)
         {
-            Debug.Log($"Slot: {slot.Data.Name}");
+            //Debug.Log($"Slot: {slot.Data.Name}");
         }
     }
 }

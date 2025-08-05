@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Palmmedia.ReportGenerator.Core.Reporting.Builders;
+using System;
 
 using UnityEngine;
 using UnityEngine.Playables;
@@ -16,7 +17,10 @@ public class GameFlowManager : MonoBehaviour
     public BattleManager battleManager;
     public MonsterSpawner monsterSpawner;
     public InventoryManager inventoryManager;
-
+    [Header("집중 전투 전용")]
+    [SerializeField] public FocusMonsterSpawner focusMonsterSpawner; // 집중 전투용 몬스터 스포너
+    [SerializeField] public TESTBoss testBoss; // 집중 전투용 TESTBoss
+    [SerializeField] public BossPartCombatManager bossPartCombatManager; // 일반 전투용 CombatTest
     private string pendingMonsterID;
     //public int CurrentChapterIndex = 1;
 
@@ -27,6 +31,7 @@ public class GameFlowManager : MonoBehaviour
         playerState = PlayerState.Instance;
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
+        mainStoryManager.OnFocusBattleJoin += HandleStoryFocusBattleJoin;
         if (playerState.CurrentChapterIndex == 0)
         {
             playerState.CurrentChapterIndex++; // 챕터 증가
@@ -147,13 +152,8 @@ public class GameFlowManager : MonoBehaviour
         Debug.Log("▶ 메인스토리 중 집중 전투 진입 요청");
         mainStoryManager.StopMainStory();
         pendingMonsterID = monsterID;
-        monsterSpawner.SpawnMonsterByID(pendingMonsterID);
+       focusMonsterSpawner.SpawnFocusBossByID(monsterID);
         currentState = FlowState.FocusBattle;
-        battleManager.StartBattle(playerWon =>
-        {
-            mainStoryManager.WinBattle(playerWon);
-            currentState = FlowState.None;
-        });
     }
     //스토리 집중 전투 요청 처리
     private void HandleEventFocusBattleJoin(string monsterID)

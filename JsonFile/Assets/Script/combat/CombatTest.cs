@@ -300,6 +300,7 @@ public class CombatTest : MonoBehaviour
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
+                StopAllCoroutines();
                 yield break;
             }
             else if(attacker.Health<=0)
@@ -309,6 +310,7 @@ public class CombatTest : MonoBehaviour
                 player.RemoveTemporaryBuffs();
                 buffUI.Clear();
                 NormalBattle.SetActive(false);
+                StopAllCoroutines();
                 yield break;
             }
         }

@@ -33,6 +33,7 @@ public class StoryDisplayManager : MonoBehaviour
     private List<Main_Script_Master_Main> scriptEventsCache;
     public InventoryManager inventoryManager; // 아이템 지급을 위해 필요
     public event Action<string> OnBattleJoin;
+    public event Action<string> OnFocusBattleJoin; // 집중 전투 이벤트
     private bool isStoryTransitioning = false;
     [Header("UI References")]
     public List<GameObject> Testblocks = new List<GameObject>();
@@ -205,6 +206,7 @@ public class StoryDisplayManager : MonoBehaviour
             }
             else
             {
+                btn.onClick.AddListener(() => { OnFocusBattleJoin?.Invoke(enemyID); });
                 txt.text = "집중 전투 입니다";
             }
             
@@ -399,6 +401,7 @@ public class StoryDisplayManager : MonoBehaviour
             var btn = go.GetComponent<Button>();
             var txt = go.GetComponentInChildren<TMP_Text>();
             txt.text = display;
+            
 
             btn.onClick.AddListener(() =>
             {
