@@ -83,6 +83,7 @@ public class TESTBoss : MonoBehaviour
     [SerializeField] public int MaxTotalHP;
     [SerializeField] public int CurrentTotalHP;
     public int hitChance = 80;
+    public int GetEXP;
 
     [SerializeField] public readonly string[] armGroupKeys = { "팔" };
     [SerializeField] public readonly string[] legGroupKeys = { "다리" };

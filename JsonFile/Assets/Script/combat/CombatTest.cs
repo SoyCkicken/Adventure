@@ -74,12 +74,9 @@ public class CombatTest : MonoBehaviour
     private IEnumerator ProcessBattle()
     {
         float playerChance = (float)player.speed / (player.speed + enemy.speed);
-        float rand = Random.value; // 0.0 ~ 1.0
-       
+        float rand = Random.value;
         bool playerGoesFirst = rand <= playerChance;
-        //Debug.Log($"{rand}나온 값 {playerChance} 플레이어 선공권의 값 = {playerGoesFirst}누가 선공인가?");
 
-        // 선공권: 한 번만 공격
         if (playerGoesFirst)
         {
             yield return StartCoroutine(AttackOnce(player, enemy, isPlayer: true, isEnemy: false));
@@ -88,151 +85,100 @@ public class CombatTest : MonoBehaviour
         {
             yield return StartCoroutine(AttackOnce(enemy, player, isPlayer: false, isEnemy: true));
         }
-        //Debug.LogWarning("");
 
-        // 두 캐릭터의 공격루프를 동시에 돌리고,
-        // 둘 다 끝날 때까지 대기했다가 onComplete 호출
+        // ✅ 선공권 공격 이후 즉사 체크
+        if (player.Health <= 0 || enemy.Health <= 0)
+        {
+            Debug.Log("[선공권] 공격 한방에 전투 종료");
+
+            battleOver = true;
+            yield return new WaitUntil(() => battleOver);
+
+            if (player.Health >= 1)
+            {
+                HandleBattleWin(enemy.GetEXP, enemy);
+            }
+            else
+            {
+                HandleBattleLose();
+            }
+
+            player.GetComponent<EquipmentSystem>().Init();
+            yield break; // 루프 스킵
+        }
+
+        // 일반 턴 전투 루프
         var playerLoop = StartCoroutine(AttackLoop(player, enemy, true, false));
         var enemyLoop = StartCoroutine(AttackLoop(enemy, player, false, true));
-        // <--여기 애니메이션 같은걸 넣어서 시간을 벌어야 할것 같음
-        //yield return playerLoop;
-        //yield return enemyLoop;
+
         yield return new WaitUntil(() => battleOver);
+
         if (player.Health >= 1)
         {
-            PopupObject.SetActive(true);
-            battleOver = true;
-
-            ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {enemy.GetEXP}흭득", () =>
-            {
-                // ✅ 확인 버튼을 눌렀을 때만 실행
-                playerState.Experience += enemy.GetEXP;
-                playerState.statsUI.UpdateUI();
-                inventoryManager.updateSoulText(); 
-
-                player.GetComponent<EquipmentSystem>().Init();
-
-                // 전투 결과 콜백 실행
-                onComplete?.Invoke(true);
-            }, false);
+            HandleBattleWin(enemy.GetEXP, enemy);
         }
         else
         {
-            Debug.Log("플레이어가 패배하였습니다");
-            battleOver = false;
-            playerState.CurrentHealth--;
-            playerState.CurrentMental--;
-            PopupObject.SetActive(true);
-            if (playerState.CurrentHealth <= 0 || playerState.CurrentMental <= 0)
-            {
-                SceneManager.LoadScene("GameOverScene");
-            }
-            NormalBattle.SetActive(false);
-            PopupObject.SetActive(true);
-            ConfirmPopup.Show("전투에서 패배했습니다", () =>
-            {
-                // ✅ 확인 버튼을 눌렀을 때만 실행
-                player.GetComponent<EquipmentSystem>().Init();
-
-                // 전투 결과 콜백 실행
-                onComplete?.Invoke(true);
-            }, false);
-
+            HandleBattleLose();
         }
+
         player.GetComponent<EquipmentSystem>().Init();
-        //onComplete?.Invoke(battleOver); <-- 아마 여기로 안 들어와질꺼임
+    }
+
+    private void HandleBattleWin(int exp, Character enemy)
+    {
+        PopupObject.SetActive(true);
+        battleOver = true;
+        enemy.RemoveTemporaryBuffs();
+        player.RemoveTemporaryBuffs();
+        buffUI.ClearAll();
+
+        ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {exp}흭득", () =>
+        {
+            playerState.Experience += exp;
+            playerState.statsUI.UpdateUI();
+            inventoryManager.updateSoulText();
+            player.GetComponent<EquipmentSystem>().Init();
+            onComplete?.Invoke(true);
+        }, false);
+    }
+
+    private void HandleBattleLose()
+    {
+        battleOver = false;
+        playerState.CurrentHealth--;
+        playerState.CurrentMental--;
+        enemy.RemoveTemporaryBuffs();
+        player.RemoveTemporaryBuffs();
+        buffUI.ClearAll();
+        PopupObject.SetActive(true);
+        if (playerState.CurrentHealth <= 0 || playerState.CurrentMental <= 0)
+        {
+            SceneManager.LoadScene("GameOverScene");
+            return;
+        }
+
+        NormalBattle.SetActive(false);
+
+        ConfirmPopup.Show("전투에서 패배했습니다", () =>
+        {
+            player.GetComponent<EquipmentSystem>().Init();
+            onComplete?.Invoke(false);
+        }, false);
     }
 
     private IEnumerator AttackOnce(Character attacker, Character target, bool isPlayer, bool isEnemy)
     {
         yield return new WaitForSeconds(0.1f); // 약간의 텀
-        if (attacker == enemy)
-        { Debug.Log("적의 선공권"); }
-        else if (attacker == player)
-        {
-            Debug.Log("플레이어의 선공권");
-        }
-        attacker.Attack(target); //이거 값에 넣지 않는 이유는 어차피 Attack에서 처리를 하고 있기 때문
-        if (attacker == enemy)
-        {
-            var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
-            gameObject.transform.localScale = new Vector3(100, 100, 0);
-            Destroy(gameObject, 1.18f);
-        }
-        if (attacker == player)
-        {
-            var (damage, isCrit) = attacker.Attack(target);
-
-            if (isCrit)
-            {
-                Enemy_Animator.SetTrigger("isHit");
-            }
-        }
-
-        if (isPlayer && attacker.OnHitOptions != null)
-        {
-            foreach (var opt in attacker.OnHitOptions)
-            {
-                var ctx = new OptionContext { User = attacker, Target = target, option_ID = opt.OptionID, Value = opt.Value };
-                OptionManager.ApplyOnHitOnly(opt.OptionID, ctx);
-            }
-        }
-        if (isEnemy && attacker.OnEnemyHitOptions != null)
-        {
-            foreach (var opt in attacker.OnEnemyHitOptions)
-            {
-                var ctx = new OptionContext { User = attacker, Target = target, option_ID = opt.OptionID, Value = opt.Value };
-                if (opt.OptionID != "")
-                    monsterOptionManager.ApplyOption(opt.OptionID, ctx);
-            }
-        }
+        attacker.Attack(target);
+        PlayAttackEffect(attacker);
+        // 플레이어 온히트 옵션 적용
+        ApplyOnHitOptions(attacker, target, isPlayer, isEnemy);
 
         battleUI.UpdateUI();
 
-        if (target.Health <= 0)
-        {
-            // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
-
-            Debug.Log(battleOver = (player.Health > 0));
-            enemy.RemoveTemporaryBuffs();
-            player.RemoveTemporaryBuffs();
-            buffUI.ClearAll();
-            NormalBattle.SetActive(false);
-            PopupObject.SetActive(true);
-            ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {enemy.GetEXP}흭득", () =>
-            {
-                // ✅ 확인 버튼을 눌렀을 때만 실행
-                playerState.Experience += enemy.GetEXP;
-                playerState.statsUI.UpdateUI();
-                inventoryManager.updateSoulText();
-
-                player.GetComponent<EquipmentSystem>().Init();
-
-                // 전투 결과 콜백 실행
-                onComplete?.Invoke(true);
-                PopupObject.SetActive(false);
-            }, false);
-            yield break;
-        }
-        else if (attacker.Health <= 0)
-        {
-            battleOver = false;
-            enemy.RemoveTemporaryBuffs();
-            player.RemoveTemporaryBuffs();
-            buffUI.ClearAll();
-            NormalBattle.SetActive(false);
-            PopupObject.SetActive(true);
-            ConfirmPopup.Show("전투에서 패배했습니다", () =>
-            {
-                // ✅ 확인 버튼을 눌렀을 때만 실행
-                player.GetComponent<EquipmentSystem>().Init();
-
-                // 전투 결과 콜백 실행
-                onComplete?.Invoke(true);
-                PopupObject.SetActive(false);
-            }, false);
-            yield break;
-        }
+        // 죽음 판정
+        CheckDeath(attacker, target);
     }
 
     private IEnumerator AttackLoop(Character attacker, Character target, bool isPlayer ,bool isEnemy)
@@ -242,82 +188,84 @@ public class CombatTest : MonoBehaviour
             yield return new WaitForSeconds(1f / attacker.speed);
             if (battleOver) yield break;
             attacker.Attack(target);
-            if (attacker == enemy)
-            {
-                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
-                gameObject.transform.localScale = new Vector3(100, 100, 0);
-                Destroy(gameObject, 1f);
-            }
-            if (attacker == player)
-            {
-                var (damage, isCrit) = attacker.Attack(target);
-
-                if (isCrit)
-                {
-                    Debug.Log("크리티컬 공격입니다");
-                    Enemy_Animator.SetTrigger("isHit");
-                }
-            }
+            PlayAttackEffect(attacker);
             // 플레이어 온히트 옵션 적용
-            if (isPlayer && attacker.OnHitOptions != null)
-            {
-                foreach (var opt in attacker.OnHitOptions)
-                {
-                    var ctx = new OptionContext
-                    {
-                        User = attacker,
-                        Target = target,
-                        option_ID = opt.OptionID,
-                        Value = opt.Value
-                    };
-                    OptionManager.ApplyOnHitOnly(opt.OptionID, ctx);
-                }
-            }
-            if (isEnemy && attacker.OnEnemyHitOptions != null)
-            {
-                foreach (var opt in attacker.OnEnemyHitOptions)
-                {
-                    Debug.Log(attacker.OnEnemyHitOptions.Count);
-                    var ctx = new OptionContext
-                    {
-                        User = attacker,
-                        Target = target,
-                        option_ID = opt.OptionID,
-                        Value = opt.Value
-                    };
-                    //Debug.Log(ctx);
-                    if (opt.OptionID != "")
-                    {
-                        monsterOptionManager.ApplyOption(opt.OptionID, ctx);
-                    }
-                }
-                Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
-                
-            }
+            ApplyOnHitOptions(attacker, target, isPlayer, isEnemy);
 
             battleUI.UpdateUI();
 
             // 죽음 판정
-            if (target.Health <= 0)
+            CheckDeath(attacker, target);
+        }
+    }
+    private void PlayAttackEffect(Character attacker)
+    {
+        if (attacker == enemy)
+        {
+            var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
+            gameObject.transform.localScale = new Vector3(100, 100, 0);
+            Destroy(gameObject, 1f);
+        }
+
+        if (attacker == player)
+        {
+            var (damage, isCrit) = attacker.Attack(enemy);
+            if (isCrit)
             {
-                // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
-                enemy.RemoveTemporaryBuffs();
-                player.RemoveTemporaryBuffs();
-                buffUI.ClearAll();
-                NormalBattle.SetActive(false);
-                battleOver = true;
-                yield break;
-            }
-            else if(attacker.Health<=0)
-            {
-                
-                enemy.RemoveTemporaryBuffs();
-                player.RemoveTemporaryBuffs();
-                buffUI.ClearAll();
-                NormalBattle.SetActive(false);
-                battleOver = true;
-                yield break;
+                Debug.Log("크리티컬 공격입니다");
+                Enemy_Animator.SetTrigger("isHit");
             }
         }
+    }
+
+    private void ApplyOnHitOptions(Character attacker, Character target, bool isPlayer, bool isEnemy)
+    {
+        if (isPlayer && attacker.OnHitOptions != null)
+        {
+            foreach (var opt in attacker.OnHitOptions)
+            {
+                var ctx = new OptionContext
+                {
+                    User = attacker,
+                    Target = target,
+                    option_ID = opt.OptionID,
+                    Value = opt.Value
+                };
+                OptionManager.ApplyOnHitOnly(opt.OptionID, ctx);
+            }
+        }
+
+        if (isEnemy && attacker.OnEnemyHitOptions != null)
+        {
+            foreach (var opt in attacker.OnEnemyHitOptions)
+            {
+                var ctx = new OptionContext
+                {
+                    User = attacker,
+                    Target = target,
+                    option_ID = opt.OptionID,
+                    Value = opt.Value
+                };
+
+                if (!string.IsNullOrEmpty(opt.OptionID))
+                {
+                    monsterOptionManager.ApplyOption(opt.OptionID, ctx);
+                }
+            }
+            Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
+        }
+    }
+    private bool CheckDeath(Character attacker, Character target)
+    {
+        if (target.Health <= 0 || attacker.Health <= 0)
+        {
+            enemy.RemoveTemporaryBuffs();
+            player.RemoveTemporaryBuffs();
+            buffUI.ClearAll();
+            NormalBattle.SetActive(false);
+            battleOver = true;
+            return true;
+        }
+        return false;
     }
 }

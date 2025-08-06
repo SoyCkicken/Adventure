@@ -32,7 +32,7 @@ public class EquipmentSystem : MonoBehaviour
         
         var weapon = jsonManager.GetWeaponMasters("Weapon_Master")
                           .FirstOrDefault(w => w.Weapon_ID == player.weapon_Name);
-        Debug.Log($"무기 = {weapon != null}");
+        Debug.Log($"무기 = {player.weapon_Name != ""}");
         // 무기 장착 처리
         if (weapon != null)
         {
@@ -63,7 +63,7 @@ public class EquipmentSystem : MonoBehaviour
         }
             var armor = jsonManager.GetArmorMasters("Armor_Master")
                              .FirstOrDefault(w => w.Armor_ID == player.armor_Name);
-        Debug.Log($"방어구 = {armor != null}");
+        Debug.Log($"방어구 = {player.armor_Name != ""}");
         // 방어구 장착 처리
         if (armor != null)
         {
@@ -136,8 +136,9 @@ public class EquipmentSystem : MonoBehaviour
     {
         Debug.LogError("플레이어 능력치 초기화");
         player.OnHitOptions.Clear();
+        Debug.Log($"Player의 장비 장착 여부 무기 : {player.weapon_Name} , 갑옷 : {player.armor_Name} ");
 
-        if (player.armor_Name != null && player.weapon_Name != null)
+        if (player.armor_Name != "" || player.weapon_Name != "")
         {
             if (playerState.Health >= 10)
             {

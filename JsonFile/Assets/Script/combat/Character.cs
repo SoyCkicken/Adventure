@@ -52,7 +52,7 @@ namespace MyGame
 
         [Header("집중전투 전용")]
         public BossPartCombatManager BossPartCombatManager;
-        public int MaxHP = 500;
+        public int MaxHP;
         public int CurrentHP;
         public int AttackPower = 30;
         public int hitChance = 80; // 명중률 (0~100)
@@ -403,7 +403,13 @@ namespace MyGame
             CurrentHP = Mathf.Max(CurrentHP, 0);
             Debug.Log($"[Player] 피해: -{amount} ({source}), 현재 체력: {CurrentHP}");
         }
+        public void FocusBattleStateReset()
+        {
+            MaxHP = MaxHealth * 5; // 집중 전투용 HP 설정
+            CurrentHP = MaxHP; // 초기화
+            AttackPower = damage * 5; // 집중 전투용 공격력 설정
 
+        }
     }
     //클래스들은 밑으로 뺐음
     public class OptionContext

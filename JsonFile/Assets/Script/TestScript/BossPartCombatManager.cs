@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class BossPartCombatManager : MonoBehaviour
@@ -14,9 +15,11 @@ public class BossPartCombatManager : MonoBehaviour
     public Slider playerHPSlider;
     public SkeletonAnimation BossSkeleton;
     public TESTBoss TESTBoss;
+    public InventoryManager inventoryManager; // 인벤토리 매니저, 플레이어의 소울 획득 등 관리
     //public TESTPlayer TESTPlayer;
     [Header("플레이어 캐릭터 연동")]
     public Character playerCharacter;  // 실제 Player 오브젝트에 붙은 Character 컴포넌트
+    public PlayerState playerState;
     [Header("여기는 임시 버튼 선택입니다")]
     public TMP_Text selectedPartText;
     public Button leftButton;
@@ -26,6 +29,7 @@ public class BossPartCombatManager : MonoBehaviour
     private int currentIndex = 0;
     private string selectedPartName = null;
     public GameObject combatCanvas; // 전투 UI 캔버스    
+    public GameObject popupObject;
     [Header("사운드 설정")]
     public AudioSource audioSource;
     public AudioClip hitSound;      // 플레이어 공격 성공
@@ -38,25 +42,23 @@ public class BossPartCombatManager : MonoBehaviour
     // 여기서 적과 플레이어에 대해서 정보를 넣고 있는데 이 부분 수정해서 Boss에서 Player에서 정보 넣는 식으로 할 예정
     void Start()
     {
+        //playerCharacter.AddFocusBuff(new FocusBuffData
+        //{
+        //    OptionID = "Option_003",
+        //    Value = 10,
+        //    Duration = 3,
+        //    Elapsed = 0f
+        //});
 
-
-        playerCharacter.AddFocusBuff(new FocusBuffData
-        {
-            OptionID = "Option_003",
-            Value = 10,
-            Duration = 3,
-            Elapsed = 0f
-        });
-
-        TESTBoss.AddBuff("오른팔", new FocusBuffData
-        {
-            OptionID = "Option_003",
-            Value = 10,
-            Duration = 3,
-            Elapsed = 0f,
-            DamageRatio = 0.5f,
-            Target = TESTBoss
-        });
+        //TESTBoss.AddBuff("오른팔", new FocusBuffData
+        //{
+        //    OptionID = "Option_003",
+        //    Value = 10,
+        //    Duration = 3,
+        //    Elapsed = 0f,
+        //    DamageRatio = 0.5f,
+        //    Target = TESTBoss
+        //});
 
         
         UpdateSliders();
@@ -124,10 +126,23 @@ public class BossPartCombatManager : MonoBehaviour
 
         // 전투 UI 비활성화
         combatCanvas.SetActive(false);
+        //ConfirmPopup.Show(
+        //                playerState.Experience += TESTBoss.GetEXP;
+        //playerState.statsUI.UpdateUI();
+        //inventoryManager.updateSoulText();
+        //playerCharacter.GetComponent<EquipmentSystem>().Init();
+        //onCombatEndCallback?.Invoke(true);}
+        //    )
 
-        // 콜백 호출
-        onCombatEndCallback?.Invoke(playerVictory);
-        onCombatEndCallback = null;
+    ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {TESTBoss.GetEXP}흭득", () =>
+        {
+            playerState.Experience += TESTBoss.GetEXP;
+            playerState.statsUI.UpdateUI();
+            inventoryManager.updateSoulText();
+            playerCharacter.GetComponent<EquipmentSystem>().Init();
+            onCombatEndCallback?.Invoke(true);
+        }, false);
+ 
     }
 
     public void OnClickAttack()
@@ -266,7 +281,11 @@ public class BossPartCombatManager : MonoBehaviour
 
     void UpdateSliders()
     {
-        totalHPSlider.value = TESTBoss.GetTotalHPPercent();
+        if (TESTBoss != null)
+        {
+            totalHPSlider.value = TESTBoss.GetTotalHPPercent();
+        }
+        
     }
     void UpdatePlayerSliders()
     {

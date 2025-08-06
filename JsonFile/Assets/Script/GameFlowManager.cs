@@ -32,6 +32,7 @@ public class GameFlowManager : MonoBehaviour
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
         mainStoryManager.OnFocusBattleJoin += HandleStoryFocusBattleJoin;
+        randomEventManager.OnFocusBattleJoin += HandleEventFocusBattleJoin;
         if (playerState.CurrentChapterIndex == 0)
         {
             playerState.CurrentChapterIndex++; // 챕터 증가

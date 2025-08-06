@@ -8,6 +8,7 @@ using TMPro;
 using static UnityEngine.GraphicsBuffer;
 using UnityEngine.Playables;
 using static SaveManager;
+using System.Text;
 
 
 public class EventDisplay : MonoBehaviour
@@ -42,7 +43,9 @@ public class EventDisplay : MonoBehaviour
     public List<int> eventGroups;
     public List<RandomEvents_Master_Event> groupEvents;
     public List<GameObject> activeBlocks = new List<GameObject>();
+    //전투 관련 액션
     public event Action<string> OnBattleJoin;
+    public event Action<string> OnFocusBattleJoin; // 집중 전투 이벤트
     // 이벤트 데이터들
     private List<RandomEvents_Master_Event> eventList;
     private RandomEvents_Master_Event currentEvent;
@@ -135,6 +138,7 @@ public class EventDisplay : MonoBehaviour
             // 남은 그룹 없음 -> 메인 스토리 복귀ㄴ
             onCompleteCallback?.Invoke(false); //<== 여기 콜백 함수가 정상적으로 안들어 가는거 같음
             Debug.Log("랜덤값이 없어서 취소 됩니다");
+            var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
             return;
         }
         // 랜덤으로 그룹 번호 선택 후 제거
@@ -171,9 +175,12 @@ public class EventDisplay : MonoBehaviour
     /// </summary>
     public void DisplayCurrentEvent()
     {
+        //이것도 상관 없었음
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         Debug.Log("이벤트 출력 시작");
+        //유력 용의자
         SkipButton.SetActive(true);
+        //이건 상관 없음
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {
             OnSkip();
@@ -203,6 +210,7 @@ public class EventDisplay : MonoBehaviour
             case "TEXT":
                 Debug.Log("텍스트 출력");
                 HandleTextDisplayWithChoice(script.KOR, lastBlock,false);
+                var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
                 break;
 
             case "IMAGE":
@@ -215,10 +223,11 @@ public class EventDisplay : MonoBehaviour
             case "BATTLE":
                 Debug.Log("전투 시작");
                 winScriptCode = script.NEXTWIN?.Trim();
-                Debug.Log($"전투 승리시 들어갈 코드{winScriptCode}");
                 loseScriptCode = script.NEXTLOSE?.Trim();
+                Debug.Log($"전투 승리시 들어갈 코드{winScriptCode}");
                 Debug.Log($"전투 패배시 들어갈 코드{loseScriptCode}");
-                OnBattleJoin?.Invoke(script.KOR);
+                SkipButton.SetActive(false);
+                BattleState(script.KOR);
                 break;
         }
     }
@@ -232,7 +241,7 @@ public class EventDisplay : MonoBehaviour
     }
     public void ClearContent()
     {
-         ClearDisplayBlocks();       // 텍스트 / 이미지 블록 제거
+     ClearDisplayBlocks();       // 텍스트 / 이미지 블록 제거
     ClearChoiceButtons();       // 선택지 버튼 제거
     ClearTouchCatcher();        // 터치 패널 이벤트 초기화
     }
@@ -252,6 +261,27 @@ public class EventDisplay : MonoBehaviour
         }
     }
 
+    public void BattleState(string enemyID)
+    {
+        //일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
+        for (int i = 0; i < 2; i++)
+        {
+            var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
+            var btn = testbutton.GetComponent<Button>();
+            var txt = testbutton.GetComponentInChildren<TMP_Text>();
+            if (i == 0)
+            {
+                txt.text = "자동 전투 입니다";
+                btn.onClick.AddListener(() => { OnBattleJoin?.Invoke(enemyID); });
+            }
+            else
+            {
+                txt.text = "집중 전투 입니다";
+                btn.onClick.AddListener(() => { OnFocusBattleJoin?.Invoke(enemyID); });
+            }
+        }
+
+    }
     private void ClearChoiceButtons()
     {
         foreach (Transform t in choiceButtonParent)
@@ -453,6 +483,7 @@ public class EventDisplay : MonoBehaviour
         foreach (var ch in choices)
         {
             var btn = Instantiate(choiceButtonPrefab, choiceButtonParent).GetComponent<Button>();
+            Debug.Log($"[DEBUG] SetupChoices에서 생성된 버튼 부모: {btn.transform.parent.name}");
             btn.GetComponentInChildren<TMP_Text>().text = ch.text;
 
             var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
