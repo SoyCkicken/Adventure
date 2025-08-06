@@ -122,13 +122,11 @@ public class EquipmentSystem : MonoBehaviour
         if (slot.CurrentItem == null) return;
 
         inventoryItems.Add(slot.CurrentItem.Clone());
-
+        player.RemoveBuffByItem(slot.CurrentItem.Item_ID);
         if (slot.CurrentItem.Item_Type == "Weapon")
             player.weapon_Name = null;
         else if (slot.CurrentItem.Item_Type == "Armor")
             player.armor_Name = null;
-        if (!string.IsNullOrEmpty(slot.CurrentItem.Option_1_ID))
-            player.RemoveBuffByItem(slot.CurrentItem.Item_ID);
         slot.Clear();
         Init();
     }
@@ -138,45 +136,47 @@ public class EquipmentSystem : MonoBehaviour
     {
         Debug.LogError("플레이어 능력치 초기화");
         player.OnHitOptions.Clear();
-        //player.weapon_Name = null;
-        //player.armor_Name = null;
-        //
-        if (playerState.Health >= 10)
-        {
-            player.MaxHealth = playerState.Health* 5;
-        }
-        else
-        {
-            player.MaxHealth = 50;
-        }
-            
-        if (playerState.STR >= 10)
-        {
-            player.damage = playerState.STR;
-        }
-        else
-        {
-            player.damage = 10;
-        }
-        player.armor = 3;
 
-        if (playerState.AGI >= 10)
+        if (player.armor != null && player.weapon_Name != null)
         {
-            player.speed = 0.15f * playerState.AGI;
+            if (playerState.Health >= 10)
+            {
+                player.MaxHealth = playerState.Health * 5;
+            }
+            else
+            {
+                player.MaxHealth = 50;
+            }
+
+            if (playerState.STR >= 10)
+            {
+                player.damage = playerState.STR;
+            }
+            else
+            {
+                player.damage = 10;
+            }
+            player.armor = 3;
+
+            if (playerState.AGI >= 10)
+            {
+                player.speed = 0.15f * playerState.AGI;
+            }
+            else
+            {
+                player.speed = 1.5f;
+            }
+            if (playerState.INT >= 10)
+            {
+                int tempcri = playerState.INT - 10;
+                player.CitChance = Convert.ToInt32(10 + (2.5f * tempcri)); // <-- 11이상 부터 크리티컬 확률 증가
+            }
+            else
+            {
+                player.CitChance = 10;
+            }
         }
-        else
-        {
-            player.speed = 1.5f;
-        }
-        if (playerState.INT >= 10)
-        {
-            int tempcri = playerState.INT - 10;
-            player.CitChance = Convert.ToInt32(10  + (2.5f * tempcri)); // <-- 11이상 부터 크리티컬 확률 증가
-        }
-        else
-        {
-            player.CitChance = 10;
-        }
+       
             
     }
 }

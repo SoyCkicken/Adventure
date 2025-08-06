@@ -196,7 +196,7 @@ public class CombatTest : MonoBehaviour
             Debug.Log(battleOver = (player.Health > 0));
             enemy.RemoveTemporaryBuffs();
             player.RemoveTemporaryBuffs();
-            buffUI.Clear();
+            buffUI.ClearAll();
             NormalBattle.SetActive(false);
             PopupObject.SetActive(true);
             ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {enemy.GetEXP}흭득", () =>
@@ -219,7 +219,7 @@ public class CombatTest : MonoBehaviour
             battleOver = false;
             enemy.RemoveTemporaryBuffs();
             player.RemoveTemporaryBuffs();
-            buffUI.Clear();
+            buffUI.ClearAll();
             NormalBattle.SetActive(false);
             PopupObject.SetActive(true);
             ConfirmPopup.Show("전투에서 패배했습니다", () =>
@@ -303,7 +303,7 @@ public class CombatTest : MonoBehaviour
                 // attacker가 살아 있으면 attacker 승리 == 플레이어가 패배 한것
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
-                buffUI.Clear();
+                buffUI.ClearAll();
                 NormalBattle.SetActive(false);
                 battleOver = true;
                 yield break;
@@ -313,7 +313,7 @@ public class CombatTest : MonoBehaviour
                 
                 enemy.RemoveTemporaryBuffs();
                 player.RemoveTemporaryBuffs();
-                buffUI.Clear();
+                buffUI.ClearAll();
                 NormalBattle.SetActive(false);
                 battleOver = true;
                 yield break;

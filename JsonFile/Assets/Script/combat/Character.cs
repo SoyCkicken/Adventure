@@ -61,6 +61,13 @@ namespace MyGame
             public string item_ID;
         }
 
+        private bool IsStillEquipped(BuffData buff)
+        {
+            if (!buff.IsPassive) return false;
+
+            return buff.SourceItemID == armor_Name || buff.SourceItemID == weapon_Name;
+        }
+
         [System.Serializable]
         public struct MonsterOption
         {
@@ -95,20 +102,19 @@ namespace MyGame
         public void AddBuff(BuffData buff)
         {
             Debug.Log($"버프를 누가 사용중인가 {this.name}");
-            if (activeBuffs.ContainsKey(buff.BuffID))
-            {
-                Debug.Log($" {buff.Target}에게 버프 중복 적용 무시됨: {buff.BuffID}");
-                if (activeBuffs.TryGetValue(buff.BuffID, out var existing))
-                {
-                    // 중복일 경우: 시간만 초기화
-                    existing.Elapsed = 0f;
-                    existing.Duration = buff.Duration;
-                    Debug.Log($"[Buff 갱신] {buff.BuffID} → 지속 시간 초기화");
-                    return;
-                }
-                return;
-            }
-
+            //if (activeBuffs.ContainsKey(buff.BuffID))
+            //{
+            //    Debug.Log($" {buff.Target}에게 버프 중복 적용 무시됨: {buff.BuffID}");
+            //    if (activeBuffs.TryGetValue(buff.BuffID, out var existing))
+            //    {
+            //        // 중복일 경우: 시간만 초기화
+            //        existing.Elapsed = 0f;
+            //        existing.Duration = buff.Duration;
+            //        Debug.Log($"[Buff 갱신] {buff.BuffID} → 지속 시간 초기화");
+            //        return;
+            //    }
+            //    return;
+            //}
             activeBuffs[buff.BuffID] = buff;
             //여기는 버프에 대한 설명만 작성 해주면 됨
             if (buff.OptionID == "Option_002") // 치명타 확률 증가
@@ -144,6 +150,68 @@ namespace MyGame
             // 필요 시 스탯 반영
         }
 
+        //private IEnumerator BuffTickRoutine()
+        //{
+        //    WaitForSeconds wait = new WaitForSeconds(1f);
+
+        //    if (gameFlowManager == null || gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
+        //    {
+        //        Debug.Log($"[버프 무시] 현재 상태가 Battle이 아님 → 버프 적용 안 함");
+
+        //        yield return wait;
+        //    }
+
+        //    while (true)
+        //    {
+        //        var expired = new List<string>();
+
+        //        foreach (var kv in activeBuffs)
+        //        {
+        //            var buff = kv.Value;
+        //            //buff.Elapsed += 1f;
+        //            if (buff.IsPassive)
+        //            {
+        //                // 장착 확인 (장비 이름이 SourceItemID와 같다면 장착 중)
+        //                if (buff.SourceItemID == armor_Name || buff.SourceItemID == weapon_Name)
+        //                {
+        //                    buff.Elapsed = 0f; // 무한 갱신
+        //                    continue; // 시간 증가 생략
+        //                }
+        //            }
+        //            // 매 1초마다 적용되는 효과
+        //            switch (buff.OptionID)
+        //            {
+        //                case "Option_003": // 화상
+        //                    int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+        //                    buff.Target.Health -= dmg;
+        //                    Debug.Log($"[화상 Tick] {buff.Target.charaterName} → {dmg} 피해");
+        //                    break;
+
+        //                case "Option_004": // 회복
+        //                    int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+        //                    buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
+        //                    Debug.Log($"[회복 Tick] {buff.Target.charaterName} → {heal} 회복");
+        //                    break;
+        //            }
+
+        //            if (buff.Elapsed >= buff.Duration)
+        //                expired.Add(kv.Key);
+        //        }
+
+        //        foreach (var key in expired)
+        //            RemoveBuff(key);
+
+        //        // 만료되면 루프 종료
+        //        if (activeBuffs.Count == 0)
+        //        {
+        //            buffCoroutine = null;
+        //            yield break;
+        //        }
+
+        //        battleUI.UpdateUI();
+        //        yield return wait;
+        //    }
+        //}
         private IEnumerator BuffTickRoutine()
         {
             WaitForSeconds wait = new WaitForSeconds(1f);
@@ -151,9 +219,9 @@ namespace MyGame
             if (gameFlowManager == null || gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
             {
                 Debug.Log($"[버프 무시] 현재 상태가 Battle이 아님 → 버프 적용 안 함");
-
                 yield return wait;
             }
+
             while (true)
             {
                 var expired = new List<string>();
@@ -161,9 +229,17 @@ namespace MyGame
                 foreach (var kv in activeBuffs)
                 {
                     var buff = kv.Value;
-                    //buff.Elapsed += 1f;
 
-                    // 매 1초마다 적용되는 효과
+                    // ✅ 장착 중인 패시브는 시간 초기화 (무한 유지)
+                    if (IsStillEquipped(buff))
+                    {
+                        buff.Elapsed = 0f;
+                        continue;
+                    }
+
+                    buff.Elapsed += 1f;
+
+                    // Tick 효과
                     switch (buff.OptionID)
                     {
                         case "Option_003": // 화상
@@ -186,7 +262,6 @@ namespace MyGame
                 foreach (var key in expired)
                     RemoveBuff(key);
 
-                // 만료되면 루프 종료
                 if (activeBuffs.Count == 0)
                 {
                     buffCoroutine = null;
@@ -197,6 +272,8 @@ namespace MyGame
                 yield return wait;
             }
         }
+
+
         //프레임 대기
         private IEnumerator DelayUIRefresh()
         {
@@ -208,33 +285,73 @@ namespace MyGame
         //장착 해제 시 버프 해제
         public void RemoveBuffByItem(string itemID)
         {
-            var toRemove = activeBuffs
+            // itemID가 일치하는 버프만 먼저 찾음
+            var matchingBuffs = activeBuffs
                 .Where(kv => kv.Value.SourceItemID == itemID)
-                .Select(kv => kv.Key)
-                .ToList();
+                .ToList(); // 딕셔너리 순회 중 수정 방지
 
-            foreach (var key in toRemove)
+            foreach (var kv in matchingBuffs)
             {
-                var buff = activeBuffs[key];
+                var buff = kv.Value;
 
-                // 스탯 롤백 처리
-                //이건 버프로 능력치 올라갔던거 초기화 해주는부분인데 올라가는 부분이 없으면 빼고 작업하면됨
+                // 스탯 복원 처리
                 if (buff.OptionID == "Option_002")
                     CitChance -= buff.Value;
+
                 if (buff.OptionID == "Option_005")
                 {
                     float multiplier = buff.Value / 100f;
-                    speed /= (1f + multiplier);  // 원래 속도로 복원
+                    speed /= (1f + multiplier);
                     Debug.Log($"[공속 복원] {charaterName} → speed 복구 = {speed}");
                 }
 
-                activeBuffs.Remove(key);
-                Debug.Log($"[Buff 제거] {key}");
+                activeBuffs.Remove(kv.Key);
+                Debug.Log($"[장비 해제] 버프 제거됨: {kv.Key}");
+                buffUI.ClearBuffByID(buff.BuffID); // UI에서 해당 버프 아이콘 제거
             }
+
             buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
         }
 
         //버프 제거용
+        //public void RemoveBuff(string buffID)
+        //{
+        //    if (!activeBuffs.TryGetValue(buffID, out var buff))
+        //    {
+        //        Debug.LogWarning($"[RemoveBuff] 존재하지 않는 버프: {buffID}");
+        //        return;
+        //    }
+
+        //    // 패시브 버프는 제거하지 않음
+        //    if (buff.IsPassive)
+        //    {
+        //        Debug.Log($"[패시브 유지] {buffID} 은(는) 패시브로 유지됨");
+        //        return;
+        //    }
+
+        //    // 스탯 복원
+        //    switch (buff.OptionID)
+        //    {
+        //        case "Option_002": // 치명타 확률
+        //            CitChance -= buff.Value;
+        //            Debug.Log($"[RemoveBuff] 치명타 확률 -{buff.Value} → {CitChance}");
+        //            break;
+
+        //        case "Option_005": // 공속 증가 → 원래 속도로 복원
+        //            float multiplier = buff.Value / 100f;
+        //            speed /= (1f + multiplier);
+        //            Debug.Log($"[RemoveBuff] 공속 복구 → speed = {speed}");
+        //            break;
+
+        //            // 필요 시 다른 OptionID도 추가 가능
+        //    }
+
+        //    activeBuffs.Remove(buffID);
+        //    Debug.Log($"[RemoveBuff] 버프 제거 완료: {buffID}");
+
+        //    // UI 갱신
+        //    buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
+        //}
         public void RemoveBuff(string buffID)
         {
             if (!activeBuffs.TryGetValue(buffID, out var buff))
@@ -243,12 +360,13 @@ namespace MyGame
             if (buff.IsPassive)
             {
                 Debug.Log($"[패시브 버프 유지됨] {buffID} , {armor_Name}");
-                //RemoveBuffByItem(armor_Name);
                 return;
             }
 
             activeBuffs.Remove(buffID);
-            buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
+
+            // UI에서 제거
+            buffUI?.ClearBuffByID(buffID);
         }
 
         //일시적인 버프 모두 제거
