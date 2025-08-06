@@ -1776,11 +1776,12 @@ MonoBehaviour:
   playerHPSlider: {fileID: 1651114564}
   BossSkeleton: {fileID: 0}
   TESTBoss: {fileID: 0}
-  TESTPlayer: {fileID: 163893749}
+  playerCharacter: {fileID: 2006169296}
   selectedPartText: {fileID: 1283343309}
   leftButton: {fileID: 1273424284}
   rightButton: {fileID: 750321847}
   attackButton: {fileID: 555678100}
+  combatCanvas: {fileID: 1895895120}
   audioSource: {fileID: 0}
   hitSound: {fileID: 8300000, guid: 2375dadc4293d3f4380b59887ce8416b, type: 3}
   damageSound: {fileID: 8300000, guid: d64e91cef03af304fa237225b23c5707, type: 3}
@@ -3731,7 +3732,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.98356825
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10256,7 +10257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatTest: {fileID: 1515041320}
-  testBoss: {fileID: 0}
+  bossPartCombatManager: {fileID: 163893750}
 --- !u!1 &1018794061
 GameObject:
   m_ObjectHideFlags: 0
@@ -11932,7 +11933,7 @@ MonoBehaviour:
   focusCombcanves: {fileID: 1895895120}
   focusCombatImage: {fileID: 346191472}
   enemy: {fileID: 0}
-  player: {fileID: 163893746}
+  player: {fileID: 2006169295}
   bossPartCombatManager: {fileID: 163893750}
   TESTBoss: {fileID: 0}
 --- !u!114 &1224261889 stripped
@@ -21423,6 +21424,12 @@ MonoBehaviour:
   OnEnemyHitOptions: []
   battleUI: {fileID: 1334330994}
   buffUI: {fileID: 249269732}
+  BossPartCombatManager: {fileID: 163893750}
+  MaxHP: 500
+  CurrentHP: 0
+  AttackPower: 200
+  hitChance: 110
+  ActiveDebuffs: []
 --- !u!4 &2006169297
 Transform:
   m_ObjectHideFlags: 0
@@ -21864,7 +21871,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00001335144}
+  m_AnchoredPosition: {x: 0, y: 0.0029874477}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632

@@ -4,7 +4,7 @@ using UnityEngine;
 public class BattleManager : MonoBehaviour
 {
     [SerializeField] private CombatTest combatTest;
-    [SerializeField] private TESTBoss testBoss; // 집중 전투용 TESTBoss
+    [SerializeField] private BossPartCombatManager bossPartCombatManager; // 집중 전투용 TESTBoss
 
     public void StartBattle(Action<bool> onComplete)
     {
@@ -12,10 +12,14 @@ public class BattleManager : MonoBehaviour
     }
     public void FocusBattleStart(Action<bool> onComplete)
     {
-        testBoss.RunFocusBattle(onComplete);
+        bossPartCombatManager.RunFocusBattle(onComplete);
     }
     public void StopBattle()
     {
         combatTest.StopBattle();
     }
+    public void StopFocusBattle()
+    {
+        bossPartCombatManager.StopFocusBattle();
+    }   
 }

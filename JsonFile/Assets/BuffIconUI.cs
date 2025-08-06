@@ -69,8 +69,6 @@ public class BuffIconUI : MonoBehaviour
     {
         if (spriteBank == null)
             spriteBank = FindObjectOfType<SpriteBank>();
-
-        // 이름으로 찾는 방식은 너무 취약하므로 차라리 태그나 계층 구조로 안전하게 찾는 걸 추천
         if (BattleImage == null)
         {
             BattleImage = GameObject.Find("자동전투화면Canvas(대략적으로 배치를 해 놓은것)");
@@ -96,7 +94,7 @@ public class BuffIconUI : MonoBehaviour
 
         BattleImage?.SetActive(true);
         buff = data;
-        buffData = data; // 👈 외부에서 참조 가능하게 복사
+        buffData = data; 
         iconImage.sprite = spriteBank.Load(buff.OptionID);
         timerSlider.fillAmount = 1f;
         BattleImage.SetActive(false);

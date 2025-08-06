@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace MyGame
 {
@@ -47,6 +49,17 @@ namespace MyGame
         public BattleUI battleUI;
         public BuffUI buffUI;
         private Coroutine uiRefreshRoutine;
+
+        [Header("집중전투 전용")]
+        public BossPartCombatManager BossPartCombatManager;
+        public int MaxHP = 500;
+        public int CurrentHP;
+        public int AttackPower = 30;
+        public int hitChance = 80; // 명중률 (0~100)
+
+        public bool IsDead => CurrentHP <= 0;
+
+        public List<FocusBuffData> ActiveDebuffs = new();
         //이 부분은 캐릭터 클래스의 하위에 있어야 되는 부분이라서 맨 아래로 안배고 맨 위에 넣음
 
         private void Start()
@@ -102,19 +115,6 @@ namespace MyGame
         public void AddBuff(BuffData buff)
         {
             Debug.Log($"버프를 누가 사용중인가 {this.name}");
-            //if (activeBuffs.ContainsKey(buff.BuffID))
-            //{
-            //    Debug.Log($" {buff.Target}에게 버프 중복 적용 무시됨: {buff.BuffID}");
-            //    if (activeBuffs.TryGetValue(buff.BuffID, out var existing))
-            //    {
-            //        // 중복일 경우: 시간만 초기화
-            //        existing.Elapsed = 0f;
-            //        existing.Duration = buff.Duration;
-            //        Debug.Log($"[Buff 갱신] {buff.BuffID} → 지속 시간 초기화");
-            //        return;
-            //    }
-            //    return;
-            //}
             activeBuffs[buff.BuffID] = buff;
             //여기는 버프에 대한 설명만 작성 해주면 됨
             if (buff.OptionID == "Option_002") // 치명타 확률 증가
@@ -149,69 +149,6 @@ namespace MyGame
             StartBuffRoutine();
             // 필요 시 스탯 반영
         }
-
-        //private IEnumerator BuffTickRoutine()
-        //{
-        //    WaitForSeconds wait = new WaitForSeconds(1f);
-
-        //    if (gameFlowManager == null || gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
-        //    {
-        //        Debug.Log($"[버프 무시] 현재 상태가 Battle이 아님 → 버프 적용 안 함");
-
-        //        yield return wait;
-        //    }
-
-        //    while (true)
-        //    {
-        //        var expired = new List<string>();
-
-        //        foreach (var kv in activeBuffs)
-        //        {
-        //            var buff = kv.Value;
-        //            //buff.Elapsed += 1f;
-        //            if (buff.IsPassive)
-        //            {
-        //                // 장착 확인 (장비 이름이 SourceItemID와 같다면 장착 중)
-        //                if (buff.SourceItemID == armor_Name || buff.SourceItemID == weapon_Name)
-        //                {
-        //                    buff.Elapsed = 0f; // 무한 갱신
-        //                    continue; // 시간 증가 생략
-        //                }
-        //            }
-        //            // 매 1초마다 적용되는 효과
-        //            switch (buff.OptionID)
-        //            {
-        //                case "Option_003": // 화상
-        //                    int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-        //                    buff.Target.Health -= dmg;
-        //                    Debug.Log($"[화상 Tick] {buff.Target.charaterName} → {dmg} 피해");
-        //                    break;
-
-        //                case "Option_004": // 회복
-        //                    int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-        //                    buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
-        //                    Debug.Log($"[회복 Tick] {buff.Target.charaterName} → {heal} 회복");
-        //                    break;
-        //            }
-
-        //            if (buff.Elapsed >= buff.Duration)
-        //                expired.Add(kv.Key);
-        //        }
-
-        //        foreach (var key in expired)
-        //            RemoveBuff(key);
-
-        //        // 만료되면 루프 종료
-        //        if (activeBuffs.Count == 0)
-        //        {
-        //            buffCoroutine = null;
-        //            yield break;
-        //        }
-
-        //        battleUI.UpdateUI();
-        //        yield return wait;
-        //    }
-        //}
         private IEnumerator BuffTickRoutine()
         {
             WaitForSeconds wait = new WaitForSeconds(1f);
@@ -383,6 +320,90 @@ namespace MyGame
                 Debug.Log($"[전투 종료] 일시적 버프 제거됨: {key}");
             }
         }
+
+        public void TickDebuffs()
+        {
+            List<FocusBuffData> expired = new();
+
+            foreach (var buff in ActiveDebuffs)
+            {
+                buff.Elapsed += 1f;
+
+                ApplyFocusBuffEffect(buff);
+
+                if (buff.Elapsed >= buff.Duration)
+                {
+                    expired.Add(buff);
+                    Debug.Log($"[버프 만료] {buff.OptionID}");
+                }
+            }
+
+            foreach (var b in expired)
+                ActiveDebuffs.Remove(b);
+        }
+
+
+        // 디버프 효과 적용 처리
+        private void ApplyFocusBuffEffect(FocusBuffData buff)
+        {
+            if (buff.OptionID == "Option_003") // 화상
+            {
+                int damage = Mathf.FloorToInt(MaxHP * (buff.Value / 100f));
+                TakeDamage(damage, "화상");
+                Debug.Log($"🔥 [플레이어 화상 피해] {damage} 데미지");
+            }
+
+            // 다른 디버프 효과도 여기에 추가
+        }
+
+        // 디버프 추가 또는 갱신
+        public void AddFocusBuff(FocusBuffData newBuff)
+        {
+            var existing = ActiveDebuffs.FirstOrDefault(b => b.OptionID == newBuff.OptionID);
+            if (existing != null)
+            {
+                existing.Elapsed = 0f;
+                existing.Duration = newBuff.Duration;
+                Debug.Log($"[버프 갱신] {newBuff.OptionID} → 지속 {newBuff.Duration}턴");
+            }
+            else
+            {
+                ActiveDebuffs.Add(newBuff);
+                Debug.Log($"[버프 적용] {newBuff.OptionID} → 지속 {newBuff.Duration}턴");
+            }
+        }
+
+        // 보스의 특정 부위를 공격
+        public void PerformAttack(TESTBoss target, string partName)
+        {
+            if (target == null || target.IsDead) return;
+            if (!target.CanAttackPart(partName)) return;
+
+            int evade = target.GetEvadeRate(partName);
+            int roll = Random.Range(0, 100);
+
+            Debug.Log($"[Player] 명중 굴림: {roll} vs 명중 필요치: {hitChance - evade}");
+
+            if (roll >= (hitChance - evade))
+            {
+                Debug.Log($"[Player] {partName} 부위를 공격했지만 빗나갔습니다!\n");
+                BossPartCombatManager.PlayDodgeSound();
+                return;
+            }
+
+            target.DamagePart(partName, AttackPower);
+            Debug.Log($"[Player] {partName} 부위에 {AttackPower} 데미지 적중!\n");
+            BossPartCombatManager.PlayHitSound();
+        }
+
+        // 보스에게 공격 당했을 때 체력 감소 처리
+        public void TakeDamage(int amount, string source = "직접 피해")
+        {
+            CurrentHP -= amount;
+            CurrentHP = Mathf.Max(CurrentHP, 0);
+            Debug.Log($"[Player] 피해: -{amount} ({source}), 현재 체력: {CurrentHP}");
+        }
+
     }
     //클래스들은 밑으로 뺐음
     public class OptionContext

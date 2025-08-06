@@ -137,7 +137,7 @@ public class EquipmentSystem : MonoBehaviour
         Debug.LogError("플레이어 능력치 초기화");
         player.OnHitOptions.Clear();
 
-        if (player.armor != null && player.weapon_Name != null)
+        if (player.armor_Name != null && player.weapon_Name != null)
         {
             if (playerState.Health >= 10)
             {

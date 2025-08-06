@@ -95,7 +95,7 @@ public class FocusMonsterSpawner : MonoBehaviour
 
         bossPartCombatManager.BossSkeleton = skeletonAnim;
         bossPartCombatManager.TESTBoss = TESTBoss;
-        bossPartCombatManager.TESTPlayer = player.GetComponent<TESTPlayer>(); // 필요하면
+        bossPartCombatManager.playerCharacter = player.GetComponent<Character>(); // 필요하면
 
         // ----------------------- 초기화 -----------------------
 

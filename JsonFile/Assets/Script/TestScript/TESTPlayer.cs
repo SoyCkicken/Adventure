@@ -30,7 +30,7 @@ public class TESTPlayer : MonoBehaviour
         {
             buff.Elapsed += 1f;
 
-            ApplyBuffEffect(buff);
+            ApplyFocusBuffEffect(buff);
 
             if (buff.Elapsed >= buff.Duration)
             {
@@ -45,7 +45,7 @@ public class TESTPlayer : MonoBehaviour
 
 
     // 디버프 효과 적용 처리
-    private void ApplyBuffEffect(FocusBuffData buff)
+    private void ApplyFocusBuffEffect(FocusBuffData buff)
     {
         if (buff.OptionID == "Option_003") // 화상
         {
@@ -58,7 +58,7 @@ public class TESTPlayer : MonoBehaviour
     }
 
     // 디버프 추가 또는 갱신
-    public void AddBuff(FocusBuffData newBuff)
+    public void AddFocusBuff(FocusBuffData newBuff)
     {
         var existing = ActiveDebuffs.FirstOrDefault(b => b.OptionID == newBuff.OptionID);
         if (existing != null)

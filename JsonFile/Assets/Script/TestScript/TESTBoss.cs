@@ -89,7 +89,7 @@ public class TESTBoss : MonoBehaviour
 
     [Header("부위 정보")]
     public List<PartInfo> partList = new();
-    public Dictionary<string, PartInfo> parts = new();
+    private Dictionary<string, PartInfo> parts = new();
 
     public bool IsDead => CurrentTotalHP <= 0;
     private bool isAttackDisabled = false;
@@ -152,10 +152,7 @@ public class TESTBoss : MonoBehaviour
 
         //OnEnemyTurnEnd();
     }
-    public void RunFocusBattle(Action<bool> onComplete)
-    {
-        Init();
-    }
+    
     public void Init()
     {
         // 총 체력 설정
@@ -359,7 +356,7 @@ public class TESTBoss : MonoBehaviour
         }
     }
 
-    public void PerformAttack(TESTPlayer target)
+    public void PerformAttack(Character target)
     {
         if (isAttackDisabled)
         {

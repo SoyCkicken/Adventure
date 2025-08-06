@@ -97,6 +97,7 @@ public class StoryDisplayManager : MonoBehaviour
         {
             Debug.LogWarning("스토리 다 썼음!!!!!!!!!!!!!!!!");
             gameOver();
+            return; // 🔴 이게 없으면 다음 코드 실행될 수도 있음
         }
         currentStory = storyList[currentIndex];
         touchCatcher.SetActive(true);
@@ -134,6 +135,10 @@ public class StoryDisplayManager : MonoBehaviour
             ApplyEffects(currentStory.Main_Effect,matchingScript.Script_Code);
 
         }
+        //if (matchingScript.StoryBreak == "Break" && matchingScript.ChapterBreack == "Break")
+        //{
+        //    NextScene();
+        //}
 
         if (matchingScript == null)
         {
@@ -508,23 +513,28 @@ public class StoryDisplayManager : MonoBehaviour
                 Debug.LogWarning($"[NEXTSCENE] {currentStory.Next_Scene} 씬을 찾지 못했습니다.");
             }
         }
+        string Clean(string input) =>
+    input?.Trim().Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
         var script = scriptEventsCache
-        .FirstOrDefault(sm => sm.Script_Code.Trim() == currentStory.Script_Text.Trim());
-        if (script != null && script.StoryBreak == "Break")
+     .FirstOrDefault(sm => Clean(sm.Script_Code) == Clean(currentStory.Script_Text));
+        Debug.Log($"현재 스크립트 텍스트: [{currentStory.Script_Text}]");
+        Debug.Log($"현재 Script의 값 : {script.Script_Code} , 내용 : {script.KOR}");
+        if (script.StoryBreak?.Trim() == "Break")
         {
-            if (isStoryTransitioning) return;
-            isStoryTransitioning = true;
             Debug.Log($"isStoryTransitioning의 값 : {isStoryTransitioning}");
             Debug.Log("브레이크문 들어왔습니다");
+            if (isStoryTransitioning) return;
+            isStoryTransitioning = true;
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.SetActive(true);
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            if (script.ChapterBreack == "Break")
+            if (script.ChapterBreack?.Trim() == "Break")
             {
                 Debug.Log("일단 다음 스토리가 없을 경우 이쪽으로 넘어갔음(모든 스토리 진행했다 판단하는거임)");
                 ClearContent(); //이유는 모르겠지만 씬 넘어갈때 초기화를 해주고 있을텐데 안되고 넘어감..
                 currentStoryIndex = 0;              // Event_Index 초기화
+                isStoryTransitioning = false; //<--이거 있어야 할듯..
                 onCompleteCallback?.Invoke();
                 
             }
@@ -809,6 +819,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         currentIndex = 0;
         currentStory = storyList[currentIndex];
+        playerState.CurrentChapterIndex = chapter;
 
         touchCatcher.SetActive(true);
         isTyping = false;
@@ -851,8 +862,8 @@ public class StoryDisplayManager : MonoBehaviour
     }
     void gameOver()
     {
-        Debug.Log("게임 끝났습니다 선생님들 일어나세요");
+        Debug.LogError("게임 끝났습니다 선생님들 일어나세요");
         // 게임 오버 처리 로직
-        SceneManager.LoadScene("GameEndingScene");
+        SceneManager.LoadSceneAsync("GameEndingScene");
     }
 }
