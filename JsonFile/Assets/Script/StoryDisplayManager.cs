@@ -384,40 +384,76 @@ public class StoryDisplayManager : MonoBehaviour
     //    StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
     //    Testblocks.Add(go);
     //}
+    //private List<(string part, bool isWave)> ParseWaveTags(string text)
+    //{
+    //    var result = new List<(string, bool)>();
+    //    int index = 0;
+
+    //    while (index < text.Length)
+    //    {
+    //        int start = text.IndexOf("<웨이브>", index);
+    //        if (start == -1)
+    //        {
+    //            // 남은 부분은 일반 텍스트
+    //            result.Add((text.Substring(index), false));
+    //            break;
+    //        }
+
+    //        // 웨이브 시작 전 일반 텍스트
+    //        if (start > index)
+    //            result.Add((text.Substring(index, start - index), false));
+
+    //        int end = text.IndexOf("</웨이브>", start);
+    //        if (end == -1)
+    //        {
+    //            // 닫는 태그 없음 → 남은 부분 전부 웨이브 처리
+    //            result.Add((text.Substring(start + 5), true));
+    //            break;
+    //        }
+
+    //        string waveContent = text.Substring(start + 5, end - (start + 5));
+    //        result.Add((waveContent, true));
+    //        index = end + 9; // 닫는 태그 이후로 이동
+    //    }
+
+    //    return result;
+    //}
+
     private List<(string part, bool isWave)> ParseWaveTags(string text)
     {
         var result = new List<(string, bool)>();
         int index = 0;
 
+        const string startTag = "<웨이브>";
+        const string endTag = "</웨이브>";
+
         while (index < text.Length)
         {
-            int start = text.IndexOf("<웨이브>", index);
+            int start = text.IndexOf(startTag, index, StringComparison.Ordinal);
             if (start == -1)
             {
-                // 남은 부분은 일반 텍스트
                 result.Add((text.Substring(index), false));
                 break;
             }
 
-            // 웨이브 시작 전 일반 텍스트
             if (start > index)
                 result.Add((text.Substring(index, start - index), false));
 
-            int end = text.IndexOf("</웨이브>", start);
+            int end = text.IndexOf(endTag, start + startTag.Length, StringComparison.Ordinal);
             if (end == -1)
             {
-                // 닫는 태그 없음 → 남은 부분 전부 웨이브 처리
-                result.Add((text.Substring(start + 7), true));
+                result.Add((text.Substring(start + startTag.Length), true));
                 break;
             }
 
-            string waveContent = text.Substring(start + 7, end - (start + 7));
+            string waveContent = text.Substring(start + startTag.Length, end - (start + startTag.Length));
             result.Add((waveContent, true));
-            index = end + 9; // 닫는 태그 이후로 이동
+            index = end + endTag.Length;
         }
 
         return result;
     }
+
 
     private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
