@@ -14,10 +14,8 @@ public class EquipmentSystem : MonoBehaviour
 
     private void Start()
     {
-        jsonManager = JsonManager.Instance; // 수정
-        playerState = PlayerState.Instance;
         OptionManager.Initialize(jsonManager);
-        
+        playerState = PlayerState.Instance;
         //player.weapon_Name = null;
         //player.armor_Name = null;
         Init();

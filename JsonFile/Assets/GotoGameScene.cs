@@ -13,11 +13,11 @@ public class GotoGameScene : MonoBehaviour
     void Start()
     {
         Startbutton.onClick.AddListener(() => {
-            SceneManager.LoadSceneAsync("GameScene");
+            SceneManager.LoadSceneAsync("TestScene");
         });
         Loadbutton.onClick.AddListener(() => {
             saveManager.LoadGame();
-            SceneManager.LoadSceneAsync("GameScene");
+            SceneManager.LoadSceneAsync("TestScene");
             
         });
     }

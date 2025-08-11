@@ -54,14 +54,10 @@ public class InventoryManager : MonoBehaviour
     private const int maxSlotCount = 14;
 
     public ItemData selectedItem;
-    public void Awake()
-    {
-        jsonManager = JsonManager.Instance; // 수정
-        playerState = PlayerState.Instance;
-    }
+
     private void Start()
     {
-        
+        playerState = PlayerState.Instance;
 
         // 테스트용 아이템 추가
         // 소모 아이템 같은 경우 아직 구조가 정해지지 않아서 이렇게 되어 있음

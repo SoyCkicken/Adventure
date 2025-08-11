@@ -36,7 +36,6 @@ public class RemoteTester : MonoBehaviour
 
     private void Start()
     {
-        jsonManager = JsonManager.Instance; // ¼öÁ¤
         var allWeapons = jsonManager.GetWeaponMasters("Weapon_Master").ToList();
         foreach (var weapon in allWeapons)
         {

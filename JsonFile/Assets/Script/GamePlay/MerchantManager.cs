@@ -46,7 +46,6 @@ public class MerchantManager : MonoBehaviour
     void Start()
     {
         playerState = PlayerState.Instance;
-        jsonManager = JsonManager.Instance; // 수정
         //패널 닫기
         MerchantItem_ClearButton.onClick.AddListener(() => { MerchantDetailPanel.gameObject.SetActive(false); });
         MerchantItem_CloseButton.onClick.AddListener(() => {

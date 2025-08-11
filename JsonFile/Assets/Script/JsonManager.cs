@@ -12,22 +12,6 @@ using UnityEngine;
 /// </summary>
 public class JsonManager : MonoBehaviour
 {
-    public static JsonManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        // 싱글톤 인스턴스 설정
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject); // 씬 변경 시 유지
-
-        LoadAllJsonFiles();
-    }
-
     // 파일명 → 파싱된 List<Story_Master> 저장
     //메인 스토리 관련해서 추가 된 딕셔너리
     private Dictionary<string, List<Story_Master_Main>> storyMasterDict = new Dictionary<string, List<Story_Master_Main>>();
@@ -56,7 +40,10 @@ public class JsonManager : MonoBehaviour
     private Dictionary<string, List<Gradient>> Gradient_Item_Dict = new Dictionary<string, List<Gradient>>();
 
     private Dictionary<string, List<MerchantItem>> merchantItemCache = new();
-    private Dictionary<string, List<Patch_Notes>> patchNotesDict = new();
+    void Awake()
+    {
+        LoadAllJsonFiles();
+    }
 
     private void LoadAllJsonFiles()
     {
@@ -425,21 +412,6 @@ public class JsonManager : MonoBehaviour
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }
-                //패치 노트
-                else if (fileName.Contains("Patch_Notes"))
-                {
-                    var jObj = Newtonsoft.Json.Linq.JObject.Parse(jsonContent);
-                    string arrayStr = jObj["Patch_Notes"].ToString();
-                    string wrappedJson = WrapJsonArray(arrayStr);
-
-                    Wrapper<Patch_Notes> wrapper = JsonUtility.FromJson<Wrapper<Patch_Notes>>(wrappedJson);
-                    if (wrapper != null && wrapper.items != null)
-                    {
-                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
-                        patchNotesDict[cleanFileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (패치노트 {wrapper.items.Count}개)");
-                    }
-                }
 
                 else
                 {
@@ -686,16 +658,6 @@ public class JsonManager : MonoBehaviour
 
     // 전체 로드된 Story_Master 파일명 리스트
     public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);
-
-    //패치 노트 관련
-    public List<Patch_Notes> GetPatchNotes(string fileKey)
-    {
-        if (patchNotesDict.TryGetValue(fileKey, out var list))
-            return list;
-        Debug.LogWarning($"[JsonManager] {fileKey} Patch_Notes 데이터가 없습니다.");
-        return new List<Patch_Notes>();
-    }
-
     public ItemData GetItemDataFromCode(string code)
     {
         if (string.IsNullOrEmpty(code)) return null;
@@ -743,7 +705,6 @@ public class JsonManager : MonoBehaviour
         // 기타 타입 확장 가능
         return null;
     }
-
 }
 
 /// <summary>

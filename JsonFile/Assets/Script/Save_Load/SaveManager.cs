@@ -18,13 +18,9 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private EventDisplay eventDisplay;
     [SerializeField] private GameFlowManager gameFlowManager;
     [SerializeField] private FontSizeManager fontSizeManager;
-    [SerializeField] public Toggle showPatchNoteToggle; // 패치 노트 표시 여부 토글
     public Button SaveButton;
     public Button LoadButton;
     public static SaveManager Instance { get; private set; }
-    private string currentGameVersion;
-
-
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -34,17 +30,6 @@ public class SaveManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        // 여기서 초기화
-        currentGameVersion = Application.version;
-        //토글 초기화
-        //SaveManager는 게임 시작 시 한 번만 생성지만 씬이 변경이 되면서 또 호출이 될수도 있으니 예외처리
-        if (showPatchNoteToggle != null)
-        {
-            var data = WriteLoadFile();
-            if (data != null)
-                showPatchNoteToggle.isOn = data.showPatchNoteToggle;
-        }
-        
     }
 
     private void OnEnable()
@@ -68,12 +53,7 @@ public class SaveManager : MonoBehaviour
         if (SaveButton != null) SaveButton.onClick.AddListener(SaveGame);
         if (LoadButton != null) LoadButton.onClick.AddListener(LoadGame);
 
-        if (scene.name == "MainScene") // 메인 화면에서만 체크
-        {
-            CheckPatchNoteDisplay();
-        }
-
-        if (scene.name == "GameScene" && SaveManager.pendingLoadData != null)
+        if (scene.name == "TestScene" && SaveManager.pendingLoadData != null)
         {
             var data = SaveManager.pendingLoadData;
             playerState.LoadPlayer(data);
@@ -81,53 +61,10 @@ public class SaveManager : MonoBehaviour
             gameFlowManager.LoadFlow(data);
             SaveManager.pendingLoadData = null; // 한 번 쓰고 초기화
         }
-
-        
     }
 
     private void Start()
     {
-    }
-
-    public void OnPatchNoteToggleChanged(bool value)
-    {
-        SaveData data = WriteLoadFile();
-        if (data == null) data = new SaveData();
-        data.showPatchNoteToggle = value;
-        WriteSaveFile(data);
-    }
-
-
-    // 패치노트 표시 여부 체크
-    private void CheckPatchNoteDisplay()
-    {
-        SaveData data = WriteLoadFile();
-        if (data == null)
-        {
-            ShowPatchNote();
-            return;
-        }
-
-        if (data.lastSeenVersion != currentGameVersion)
-        {
-            // 버전이 다르면 무조건 표시
-            ShowPatchNote(forceShow: true);
-        }
-        else if (data.showPatchNoteToggle)
-        {
-            // 버전이 같고 토글이 켜져있으면 표시
-            ShowPatchNote();
-        }
-    }
-    private void ShowPatchNote(bool forceShow = false)
-    {
-        Debug.Log("[SaveManager] 패치노트 표시");
-
-        var patchNoteUI = FindObjectOfType<PatchNoteViewer>(true); // 비활성화 상태까지 검색
-        if (patchNoteUI != null)
-        {
-            patchNoteUI.Open(forceShow);
-        }
     }
 
     private void Update()
@@ -170,11 +107,8 @@ public class SaveManager : MonoBehaviour
         eventDisplay.SaveEventData(ref data);
         inventoryManager.SaveInventoryData(ref data); // 인벤토리 저장
         data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        // 현재 게임 버전 기록 (이 부분 추가)
-        data.lastSeenVersion = currentGameVersion;
         string json = JsonUtility.ToJson(data, true);
-       
-
+        
         File.WriteAllText(Application.persistentDataPath + "/save.json", json);
         Debug.Log("저장 완료");
         if (fontSizeManager != null)
@@ -194,51 +128,39 @@ public class SaveManager : MonoBehaviour
 
         string json = File.ReadAllText(path);
         pendingLoadData = JsonUtility.FromJson<SaveData>(json);
+
+
+        //if (playerState!=null)
+        //playerState.LoadPlayer(data);
+        //if (inventoryManager != null)
+        //    inventoryManager.LoadInventoryData(data); // 인벤토리 로드
+        //if (gameFlowManager != null)
+        //    gameFlowManager.LoadFlow(data);
     }
     /// <summary>
     /// 저장용 데이터 구조
     /// </summary>
-   [System.Serializable]
+    [System.Serializable]
     public class SaveData
     {
         public string playerName;
-        public int STR, INT, AGI, MAG, CHA, Health;
-        public int HP, MP;
-        public int Level, Experience, ExperienceRequired;
+        public int STR, INT, AGI, MAG, CHA,Health; //힘 지능 민첩 마력 카리스마
+        public int HP, MP; //스토리 진행 체력 , 정신력
+        public int Level, Experience , ExperienceRequired; //레벨 , 돈 , 레벨업에 필요한 돈
+
         public ItemData equippedWeaponData;
         public ItemData equippedArmorData;
         public int PlayerCurrentChapterIndex;
-        public int MainstoryEventIndex;
-        public int MainstoryCurrentIndex;
-        public string MainstorySceneCode;
+        public int MainstoryEventIndex;           // 필터 기준용: Event_Index
+        public int MainstoryCurrentIndex;         // 현재 인덱스
+        public string MainstorySceneCode;         // 혹시 중복 방지를 위해 Scene_Code도 함께
 
-        public List<int> savedEventGroups = new();
+        public List<int> savedEventGroups = new(); // 남은 랜덤 이벤트 그룹
         public int savedCurrentEventGroup;
         public int savedCurrentEvetnGroupIndex;
 
-        public string flowState;
+        public string flowState; // 예: "Main", "Event", "Battle" 등
         public string saveTime;
-
-        // 패치노트 관련
-        public string lastSeenVersion;      // 마지막으로 본 게임 버전
-        public bool showPatchNoteToggle = true; // 같은 버전에서도 표시할지 여부
-
-        public List<ItemData> inventoryItems = new();
-    }
-
-    // 저장 파일 로드 (유틸)
-    public SaveData WriteLoadFile()
-    {
-        if (!File.Exists(SavePath))
-            return null;
-        string json = File.ReadAllText(SavePath);
-        return JsonUtility.FromJson<SaveData>(json);
-    }
-
-    // 저장 파일 저장 (유틸)
-    public void WriteSaveFile(SaveData data)
-    {
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
+        public List<ItemData> inventoryItems = new(); // 인벤토리 전체 직렬화 저장
     }
 }
