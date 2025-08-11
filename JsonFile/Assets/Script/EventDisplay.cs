@@ -210,7 +210,7 @@ public class EventDisplay : MonoBehaviour
             case "TEXT":
                 Debug.Log("텍스트 출력");
                 HandleTextDisplayWithChoice(script.KOR, lastBlock,false);
-                var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
+                //var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
                 break;
 
             case "IMAGE":
@@ -397,7 +397,6 @@ public class EventDisplay : MonoBehaviour
             tmp.text += fullText[i];
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
-            scrollRect.verticalNormalizedPosition = 0f;
             scrollRect.verticalNormalizedPosition = 0f;
             yield return new WaitForSeconds(0.05f);
         }
