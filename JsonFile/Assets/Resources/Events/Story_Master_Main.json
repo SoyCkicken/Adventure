@@ -142,7 +142,12 @@
       "Scene_Code": "MainScene_1_1_10",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_10",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": 100
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": null,
       "Choice2_Text": null,

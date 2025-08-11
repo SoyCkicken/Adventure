@@ -49,7 +49,7 @@ public class StoryDisplayManager : MonoBehaviour
     private void Start()
     {
         playerState = PlayerState.Instance;
-
+        jsonManager = JsonManager.Instance; // 수정
         var handler = SkipButton.GetComponent<SkipOrScrollHandler>();
         if (handler != null)
         {
@@ -102,6 +102,7 @@ public class StoryDisplayManager : MonoBehaviour
         currentStory = storyList[currentIndex];
         touchCatcher.SetActive(true);
         ClearContent();
+        Debug.Log("시작부분");
         // 첫 시퀀스 표시
         DisplayCurrentStory();
     }
@@ -115,6 +116,7 @@ public class StoryDisplayManager : MonoBehaviour
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         ClearTouchCatcher();
         // currentIndex는 마지막 진행 지점을 자동 보존합니다.
+        Debug.Log($"[MainStory] 스토리 중지됨. 현재 인덱스: {currentIndex}");
         ClearContent();
         SkipButton.SetActive(false);
     }
@@ -249,9 +251,11 @@ public class StoryDisplayManager : MonoBehaviour
 
     public void ClearContent()
     {
+        Debug.Log("호출이 되었습니다");
         ClearDisplayBlocks();       // 텍스트 / 이미지 블록 제거
         ClearChoiceButtons();       // 선택지 버튼 제거
         ClearTouchCatcher();        // 터치 패널 이벤트 초기화
+        Debug.Log($"남은 블록의 갯수{Testblocks.Count()}");
     }
     private void ClearDisplayBlocks()
     {
@@ -302,19 +306,19 @@ public class StoryDisplayManager : MonoBehaviour
         NextScene();
     }
 
-    //// 텍스트 블록 생성 (초기화만)
-    //private void CreateTextBlock(string text,bool isClear)
-    //{
-    //    var go = Instantiate(TextPrefab, content);
-    //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
-    //    fontSizeManager.Register(tmp);
-    //    //var tmp = go.GetComponent<TMP_Text>();
-    //    StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
-    //    Testblocks.Add(go);
-    //}
+    // 텍스트 블록 생성 (초기화만)
+    private void CreateTextBlock(string text, bool isClear)
+    {
+        var go = Instantiate(TextPrefab, content);
+        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+        fontSizeManager.Register(tmp);
+        //var tmp = go.GetComponent<TMP_Text>();
+        StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
+        Testblocks.Add(go);
+    }
 
     // 타입라이터 이펙트
-    //private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go,bool isClear)
+    //private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     //{
     //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
     //    isTyping = true;
@@ -367,18 +371,19 @@ public class StoryDisplayManager : MonoBehaviour
     //                ClearContent();
     //            NextScene();
     //        });
-    //    };
+    //    }
+    //    ;
     //}
 
-    private void CreateTextBlock(string text, bool isClear)
-    {
-        var go = Instantiate(TextPrefab, content);
-        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
-        fontSizeManager.Register(tmp);
+    //private void CreateTextBlock(string text, bool isClear)
+    //{
+    //    var go = Instantiate(TextPrefab, content);
+    //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+    //    fontSizeManager.Register(tmp);
 
-        StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
-        Testblocks.Add(go);
-    }
+    //    StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
+    //    Testblocks.Add(go);
+    //}
     private List<(string part, bool isWave)> ParseWaveTags(string text)
     {
         var result = new List<(string, bool)>();
@@ -416,69 +421,64 @@ public class StoryDisplayManager : MonoBehaviour
 
     private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
-        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         isTyping = true;
+        bool skipAll = false;
 
         var segments = ParseWaveTags(fullText);
-        tmp.text = ""; // 기존 TMP는 일반 텍스트 전용
 
-        bool skipAll = false;
+        // go는 첫 번째 일반 텍스트 블록 (CreateTextBlock에서 받은 것)
+        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
 
         foreach (var (part, isWave) in segments)
         {
-            if (skipAll) break;
+            GameObject targetGo;
+            TMP_Text targetTmp;
 
             if (isWave)
             {
-                TMP_Text waveTmp = Instantiate(tmp, tmp.transform.parent);
-                waveTmp.text = "";
-                waveTmp.transform.SetSiblingIndex(tmp.transform.GetSiblingIndex() + 1);
+                // 웨이브 텍스트는 새 블록 생성
+                targetGo = Instantiate(TextPrefab, content);
+                targetTmp = targetGo.GetComponentInChildren<TMP_Text>();
+                fontSizeManager.Register(targetTmp);
+                Testblocks.Add(targetGo);
 
-                var waveEffect = waveTmp.gameObject.AddComponent<TMPWaveEffect>();
-                waveEffect.txt = waveTmp;
-                Testblocks.Add(waveTmp.gameObject);
-
-                for (int i = 0; i < part.Length; i++)
-                {
-                    if (isSkip)
-                    {
-                        waveTmp.text = part;
-                        skipAll = true;
-                        break;
-                    }
-                    waveTmp.text += part[i];
-                    yield return new WaitForSeconds(0.05f);
-                }
+                var waveEffect = targetGo.AddComponent<TMPWaveEffect>();
+                waveEffect.txt = targetTmp;
             }
             else
             {
-                for (int i = 0; i < part.Length; i++)
-                {
-                    if (isSkip)
-                    {
-                        tmp.text = tmp.text + part.Substring(i); // 남은 부분만 넣기
-                        skipAll = true;
-                        break;
-                    }
-                    tmp.text += part[i];
-                    yield return new WaitForSeconds(0.05f);
-                }
+                // 일반 텍스트는 기존 블록 사용
+                targetGo = go;
+                targetTmp = tmp;
             }
+
+            for (int i = 0; i < part.Length; i++)
+            {
+                if (isSkip)
+                {
+                    targetTmp.text += part.Substring(i);
+                    skipAll = true;
+                    break;
+                }
+                targetTmp.text += part[i];
+                yield return new WaitForSeconds(0.05f);
+            }
+
+            if (skipAll) break;
 
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
             scrollRect.verticalNormalizedPosition = 0f;
         }
 
-        // 타이핑 종료 처리
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
+
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
         scrollRect.verticalNormalizedPosition = 0f;
 
-        // 타이핑이 끝난 후에 선택지 출력
         if (!string.IsNullOrEmpty(currentStory.Choice1_Text) ||
             !string.IsNullOrEmpty(currentStory.Choice2_Text) ||
             !string.IsNullOrEmpty(currentStory.Choice3_Text))
@@ -487,16 +487,13 @@ public class StoryDisplayManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("");
             SkipButton.SetActive(true);
             SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
             SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
             SkipButton.GetComponent<Button>().onClick.AddListener(() =>
             {
                 SkipButton.SetActive(false);
-                if (isClear)
-
-                    ClearContent();
+                if (isClear) ClearContent();
                 NextScene();
             });
         }
@@ -712,6 +709,7 @@ public class StoryDisplayManager : MonoBehaviour
         }
         currentStory = nextNode;
         currentIndex = storyList.IndexOf(nextNode);
+        Debug.Log($"전투 결과에 따라 스토리 정리: {currentStory.Script_Text}");
         ClearContent();
         DisplayCurrentStory();
     }
@@ -725,9 +723,28 @@ public class StoryDisplayManager : MonoBehaviour
             switch (effect.ID)
             {
                 case "Effect_001":
-                    playerState.Experience += effect.Value;
-                    Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
-                    inventoryManager.updateSoulText();
+                    if (effect.Value >= 0)
+                    {
+                        var EffectTEXTObject = Instantiate(TextPrefab, content);
+                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+                        fontSizeManager.Register(targetTmp);
+                        Testblocks.Add(EffectTEXTObject);
+                        targetTmp.text = $"<color=#00ff00>+{effect.Value}</color>\n";
+                        playerState.Experience += effect.Value;
+                        Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
+                        inventoryManager.updateSoulText();
+                    }
+                    else
+                    {
+                        var EffectTEXTObject = Instantiate(TextPrefab, content);
+                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+                        fontSizeManager.Register(targetTmp);
+                        Testblocks.Add(EffectTEXTObject);
+                        targetTmp.text = $"<color=#ff0000>-{effect.Value} </color>\n";
+                        playerState.Experience -= effect.Value;
+                        Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
+                        inventoryManager.updateSoulText();
+                    } 
                     break;
 
                 case "Effect_002":
@@ -747,11 +764,22 @@ public class StoryDisplayManager : MonoBehaviour
 
                             inventoryManager.OnClickEquip();
 
+                            var EffectTEXTObject = Instantiate(TextPrefab, content);
+                            TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+                            fontSizeManager.Register(targetTmp);
+                            Testblocks.Add(EffectTEXTObject);
+                            targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
+
                             Debug.Log($"[자동 장착] {sceneCode}에서 {item.Item_Name} 장착 완료");
                         }
                         else
                         {
                             inventoryManager.AddItemToInventory(item); //초반 아니면 그냥 인벤토리에 추가
+                            var EffectTEXTObject = Instantiate(TextPrefab, content);
+                            TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+                            fontSizeManager.Register(targetTmp);
+                            Testblocks.Add(EffectTEXTObject);
+                            targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
                         }
                     }
                     else
@@ -956,6 +984,7 @@ public class StoryDisplayManager : MonoBehaviour
 
         touchCatcher.SetActive(true);
         isTyping = false;
+        Debug.Log("리모컨 기능 사용으로 스토리 넘어왔을때 정리");
         ClearContent();
 
         // 첫 시퀀스 표시
@@ -990,6 +1019,7 @@ public class StoryDisplayManager : MonoBehaviour
         currentStory = storyList[currentIndex];
         touchCatcher.SetActive(true);
         SkipButton.SetActive(true);
+        Debug.Log("세이브파일 로드 시 사용하고 있는 클리어 부분");
         ClearContent();
         DisplayCurrentStory();
     }

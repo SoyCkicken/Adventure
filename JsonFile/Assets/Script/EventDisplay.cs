@@ -526,7 +526,6 @@ public class EventDisplay : MonoBehaviour
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
             scrollRect.verticalNormalizedPosition = 0f;
-            yield return new WaitForSeconds(0.05f);
         }
 
         isTyping = false;
