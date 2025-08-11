@@ -377,28 +377,159 @@ public class EventDisplay : MonoBehaviour
         DisplayCurrentEvent();
 
     }
+
+    private List<(string part, bool isWave)> ParseWaveTags(string text)
+    {
+        var result = new List<(string, bool)>();
+        int index = 0;
+
+        while (index < text.Length)
+        {
+            int start = text.IndexOf("<웨이브>", index);
+            if (start == -1)
+            {
+                result.Add((text.Substring(index), false));
+                break;
+            }
+
+            if (start > index)
+                result.Add((text.Substring(index, start - index), false));
+
+            int end = text.IndexOf("</웨이브>", start);
+            if (end == -1)
+            {
+                result.Add((text.Substring(start + 7), true));
+                break;
+            }
+
+            string waveContent = text.Substring(start + 7, end - (start + 7));
+            result.Add((waveContent, true));
+            index = end + 9;
+        }
+
+        return result;
+    }
+
+    //private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
+    //{
+    //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+    //    isTyping = true;
+    //    string complete = tmp.text + fullText;
+
+    //    for (int i = 0; i < fullText.Length; i++)
+    //    {
+    //        if (isSkip)
+    //        {
+    //            tmp.text = complete;
+    //            Canvas.ForceUpdateCanvases();
+    //            var contentRect = scrollRect.content as RectTransform;
+    //            LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+    //            scrollRect.verticalNormalizedPosition = 0f;
+    //            break;
+    //        }
+    //        tmp.text += fullText[i];
+    //        Canvas.ForceUpdateCanvases();
+    //        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+    //        scrollRect.verticalNormalizedPosition = 0f;
+    //        scrollRect.verticalNormalizedPosition = 0f;
+    //        yield return new WaitForSeconds(0.05f);
+    //    }
+
+    //    isTyping = false;
+    //    isSkip = false;
+    //    SkipButton.SetActive(false);
+    //    Canvas.ForceUpdateCanvases();
+    //    LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+    //    scrollRect.verticalNormalizedPosition = 0f;
+
+    //    // 타이핑이 끝난 후에 선택지 출력
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice1_Text) ||
+    //        !string.IsNullOrEmpty(currentEvent.Choice2_Text) ||
+    //        !string.IsNullOrEmpty(currentEvent.Choice3_Text))
+    //    {
+    //        SetupChoices();
+    //        Canvas.ForceUpdateCanvases();
+    //        scrollRect.verticalNormalizedPosition = 0f;
+    //    }
+    //    else
+    //    {
+    //        SkipButton.SetActive(true);
+    //        CanvasGroup group = SkipButton.GetComponent<CanvasGroup>();
+    //        if (group != null) group.blocksRaycasts = true;
+
+    //        Button skipBtn = SkipButton.GetComponent<Button>();
+    //        skipBtn.onClick.RemoveAllListeners();
+
+    //        skipBtn.onClick.AddListener(() =>
+    //        {
+    //            SkipButton.SetActive(false);
+    //            if (isClear)
+    //            {
+    //                Debug.Log("[EventDisplay] ClearContent 호출됨");
+    //                ClearContent();
+    //            }
+    //            Debug.Log("AdvanceEvent 호출됨");
+    //            AdvanceEvent();
+    //        });
+    //    }
+    //}
     private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         isTyping = true;
-        string complete = tmp.text + fullText;
+        tmp.text = "";
 
-        for (int i = 0; i < fullText.Length; i++)
+        var segments = ParseWaveTags(fullText);
+        bool skipAll = false;
+
+        foreach (var (part, isWave) in segments)
         {
-            if (isSkip)
+            if (skipAll) break;
+
+            if (isWave)
             {
-                tmp.text = complete;
-                Canvas.ForceUpdateCanvases();
-                var contentRect = scrollRect.content as RectTransform;
-                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
-                scrollRect.verticalNormalizedPosition = 0f;
-                break;
+                TMP_Text waveTmp = Instantiate(tmp, tmp.transform.parent);
+                waveTmp.text = "";
+                waveTmp.transform.SetSiblingIndex(tmp.transform.GetSiblingIndex() + 1);
+
+                var waveEffect = waveTmp.gameObject.AddComponent<TMPWaveEffect>();
+                waveEffect.txt = waveTmp;
+                activeBlocks.Add(waveTmp.gameObject);
+
+                for (int i = 0; i < part.Length; i++)
+                {
+                    if (isSkip)
+                    {
+                        waveTmp.text = part;
+                        skipAll = true;
+                        break;
+                    }
+                    waveTmp.text += part[i];
+                    yield return new WaitForSeconds(0.05f);
+                }
             }
-            tmp.text += fullText[i];
+            else
+            {
+                for (int i = 0; i < part.Length; i++)
+                {
+                    if (isSkip)
+                    {
+                        tmp.text += part.Substring(i);
+                        skipAll = true;
+                        break;
+                    }
+                    tmp.text += part[i];
+                    yield return new WaitForSeconds(0.05f);
+                }
+            }
+
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
             scrollRect.verticalNormalizedPosition = 0f;
+<<<<<<< HEAD
             yield return new WaitForSeconds(0.05f);
+=======
+>>>>>>> parent of 9a9735b (Revert "텍스트 웨이브 추가")
         }
 
         isTyping = false;
@@ -408,38 +539,29 @@ public class EventDisplay : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
         scrollRect.verticalNormalizedPosition = 0f;
 
-        // 타이핑이 끝난 후에 선택지 출력
+        // 선택지 처리
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text) ||
             !string.IsNullOrEmpty(currentEvent.Choice2_Text) ||
             !string.IsNullOrEmpty(currentEvent.Choice3_Text))
         {
             SetupChoices();
-            Canvas.ForceUpdateCanvases();
-            scrollRect.verticalNormalizedPosition = 0f;
         }
         else
         {
             SkipButton.SetActive(true);
-            CanvasGroup group = SkipButton.GetComponent<CanvasGroup>();
+            var group = SkipButton.GetComponent<CanvasGroup>();
             if (group != null) group.blocksRaycasts = true;
 
-            Button skipBtn = SkipButton.GetComponent<Button>();
+            var skipBtn = SkipButton.GetComponent<Button>();
             skipBtn.onClick.RemoveAllListeners();
-
             skipBtn.onClick.AddListener(() =>
             {
                 SkipButton.SetActive(false);
-                if (isClear)
-                {
-                    Debug.Log("[EventDisplay] ClearContent 호출됨");
-                    ClearContent();
-                }
-                Debug.Log("AdvanceEvent 호출됨");
+                if (isClear) ClearContent();
                 AdvanceEvent();
             });
         }
     }
-
     private void CreateImageBlock(string name)
     {
         //Debug.Log("이미지 블록 생성");

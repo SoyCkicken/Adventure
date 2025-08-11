@@ -459,6 +459,46 @@
       "EventBreak": "Break",
       "NEXTWIN": null,
       "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 5.0,
+      "EventScript_Index": 1.0,
+      "Script_Code": "EventScript_5_1",
+      "KOR": "길을가던 중 누군가 야영지 처럼 꾸며놓은 텐트가 있다.",
+      "displayType": null,
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 5.0,
+      "EventScript_Index": 2.0,
+      "Script_Code": "EventScript_5_2",
+      "KOR": "여기서 쉬고 가면 좋을거 같은데..?",
+      "displayType": null,
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 5.0,
+      "EventScript_Index": 3.0,
+      "Script_Code": null,
+      "KOR": "쉬고간다.",
+      "displayType": null,
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
+    },
+    {
+      "Event_Index": 5.0,
+      "EventScript_Index": 4.0,
+      "Script_Code": null,
+      "KOR": "쉬지않고 지나간다.",
+      "displayType": null,
+      "EventBreak": null,
+      "NEXTWIN": null,
+      "NEXTLOSE": null
     }
   ]
 }

@@ -302,43 +302,175 @@ public class StoryDisplayManager : MonoBehaviour
         NextScene();
     }
 
-    // 텍스트 블록 생성 (초기화만)
-    private void CreateTextBlock(string text,bool isClear)
+    //// 텍스트 블록 생성 (초기화만)
+    //private void CreateTextBlock(string text,bool isClear)
+    //{
+    //    var go = Instantiate(TextPrefab, content);
+    //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+    //    fontSizeManager.Register(tmp);
+    //    //var tmp = go.GetComponent<TMP_Text>();
+    //    StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
+    //    Testblocks.Add(go);
+    //}
+
+    // 타입라이터 이펙트
+    //private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go,bool isClear)
+    //{
+    //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+    //    isTyping = true;
+    //    string complete = tmp.text + fullText;
+
+    //    for (int i = 0; i < fullText.Length; i++)
+    //    {
+    //        if (isSkip)
+    //        {
+    //            tmp.text = complete;
+    //            Canvas.ForceUpdateCanvases();
+    //            var contentRect = scrollRect.content as RectTransform;
+    //            LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
+    //            scrollRect.verticalNormalizedPosition = 0f;
+    //            break;
+    //        }
+    //        Canvas.ForceUpdateCanvases();
+    //        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+    //        scrollRect.verticalNormalizedPosition = 0f;
+    //        tmp.text += fullText[i];
+
+    //        yield return new WaitForSeconds(0.05f);
+    //    }
+
+    //    isTyping = false;
+    //    isSkip = false;
+    //    SkipButton.SetActive(false);
+    //    Canvas.ForceUpdateCanvases();
+    //    LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+    //    scrollRect.verticalNormalizedPosition = 0f;
+
+    //    // 타이핑이 끝난 후에 선택지 출력
+    //    if (!string.IsNullOrEmpty(currentStory.Choice1_Text) ||
+    //        !string.IsNullOrEmpty(currentStory.Choice2_Text) ||
+    //        !string.IsNullOrEmpty(currentStory.Choice3_Text))
+    //    {
+    //        SetupChoices();
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("");
+    //        SkipButton.SetActive(true);
+    //        SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+    //        SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
+    //        SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+    //        {
+    //            SkipButton.SetActive(false);
+    //            if (isClear)
+
+    //                ClearContent();
+    //            NextScene();
+    //        });
+    //    };
+    //}
+
+    private void CreateTextBlock(string text, bool isClear)
     {
         var go = Instantiate(TextPrefab, content);
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         fontSizeManager.Register(tmp);
-        //var tmp = go.GetComponent<TMP_Text>();
+
         StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
         Testblocks.Add(go);
     }
+    private List<(string part, bool isWave)> ParseWaveTags(string text)
+    {
+        var result = new List<(string, bool)>();
+        int index = 0;
 
-    // 타입라이터 이펙트
-    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go,bool isClear)
+        while (index < text.Length)
+        {
+            int start = text.IndexOf("<웨이브>", index);
+            if (start == -1)
+            {
+                // 남은 부분은 일반 텍스트
+                result.Add((text.Substring(index), false));
+                break;
+            }
+
+            // 웨이브 시작 전 일반 텍스트
+            if (start > index)
+                result.Add((text.Substring(index, start - index), false));
+
+            int end = text.IndexOf("</웨이브>", start);
+            if (end == -1)
+            {
+                // 닫는 태그 없음 → 남은 부분 전부 웨이브 처리
+                result.Add((text.Substring(start + 7), true));
+                break;
+            }
+
+            string waveContent = text.Substring(start + 7, end - (start + 7));
+            result.Add((waveContent, true));
+            index = end + 9; // 닫는 태그 이후로 이동
+        }
+
+        return result;
+    }
+
+    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
         isTyping = true;
-        string complete = tmp.text + fullText;
 
-        for (int i = 0; i < fullText.Length; i++)
+        var segments = ParseWaveTags(fullText);
+        tmp.text = ""; // 기존 TMP는 일반 텍스트 전용
+
+        bool skipAll = false;
+
+        foreach (var (part, isWave) in segments)
         {
-            if (isSkip)
+            if (skipAll) break;
+
+            if (isWave)
             {
-                tmp.text = complete;
-                Canvas.ForceUpdateCanvases();
-                var contentRect = scrollRect.content as RectTransform;
-                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
-                scrollRect.verticalNormalizedPosition = 0f;
-                break;
+                TMP_Text waveTmp = Instantiate(tmp, tmp.transform.parent);
+                waveTmp.text = "";
+                waveTmp.transform.SetSiblingIndex(tmp.transform.GetSiblingIndex() + 1);
+
+                var waveEffect = waveTmp.gameObject.AddComponent<TMPWaveEffect>();
+                waveEffect.txt = waveTmp;
+                Testblocks.Add(waveTmp.gameObject);
+
+                for (int i = 0; i < part.Length; i++)
+                {
+                    if (isSkip)
+                    {
+                        waveTmp.text = part;
+                        skipAll = true;
+                        break;
+                    }
+                    waveTmp.text += part[i];
+                    yield return new WaitForSeconds(0.05f);
+                }
             }
+            else
+            {
+                for (int i = 0; i < part.Length; i++)
+                {
+                    if (isSkip)
+                    {
+                        tmp.text = tmp.text + part.Substring(i); // 남은 부분만 넣기
+                        skipAll = true;
+                        break;
+                    }
+                    tmp.text += part[i];
+                    yield return new WaitForSeconds(0.05f);
+                }
+            }
+
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
             scrollRect.verticalNormalizedPosition = 0f;
-            tmp.text += fullText[i];
-
-            yield return new WaitForSeconds(0.05f);
         }
 
+        // 타이핑 종료 처리
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
@@ -363,13 +495,14 @@ public class StoryDisplayManager : MonoBehaviour
             {
                 SkipButton.SetActive(false);
                 if (isClear)
-                    
+
                     ClearContent();
                 NextScene();
             });
-        };
-
+        }
     }
+
+
     private void SetupChoices()
     {
         // 기존 버튼 클리어
