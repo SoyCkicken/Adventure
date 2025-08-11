@@ -526,10 +526,7 @@ public class EventDisplay : MonoBehaviour
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
             scrollRect.verticalNormalizedPosition = 0f;
-<<<<<<< HEAD
             yield return new WaitForSeconds(0.05f);
-=======
->>>>>>> parent of 9a9735b (Revert "텍스트 웨이브 추가")
         }
 
         isTyping = false;
