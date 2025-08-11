@@ -11,8 +11,7 @@ public class MonsterOptionManager : MonoBehaviour
 
     void Awake()
     {
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
+        jsonManager = JsonManager.Instance; // 수정
 
         effects = new Dictionary<string, IOptionEffect>();
         // 몬스터용 옵션만 등록

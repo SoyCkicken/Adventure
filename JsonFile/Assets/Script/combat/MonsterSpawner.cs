@@ -3,6 +3,7 @@ using System.Linq;
 using MyGame;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Playables;
 
 public class MonsterSpawner : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class MonsterSpawner : MonoBehaviour
     private void Awake()
     {
         // 자동 참조
-        if (jsonManager == null) jsonManager = FindObjectOfType<JsonManager>();
+        jsonManager = JsonManager.Instance; // 수정
         if (monsterOptionManager == null) monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
         if (combatTest == null) combatTest = FindObjectOfType<CombatTest>();
         if (player == null) player = GameObject.FindWithTag("Player");

@@ -159,7 +159,10 @@ public class OptionManager : MonoBehaviour
     public JsonManager jsonManager;
     private static Dictionary<string, Option_Master> optionDict = new();
 
-
+    private void Awake()
+    {
+        jsonManager = JsonManager.Instance; // 수정
+    }
     public static void Initialize(JsonManager json)
     {
         var options = json.GetOptionMasters("Option_Master");

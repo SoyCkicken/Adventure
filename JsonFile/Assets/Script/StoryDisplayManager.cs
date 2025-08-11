@@ -49,7 +49,7 @@ public class StoryDisplayManager : MonoBehaviour
     private void Start()
     {
         playerState = PlayerState.Instance;
-
+        jsonManager = JsonManager.Instance; // 수정
         var handler = SkipButton.GetComponent<SkipOrScrollHandler>();
         if (handler != null)
         {
