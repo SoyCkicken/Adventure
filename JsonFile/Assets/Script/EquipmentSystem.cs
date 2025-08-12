@@ -4,7 +4,8 @@ using MyGame;
 using UnityEngine.UI;
 using UnityEditor;
 using System;
-using System.Collections.Generic;  // Character, OptionContext 등이 있는 네임스페이스
+using System.Collections.Generic;
+using System.Collections;  // Character, OptionContext 등이 있는 네임스페이스
 
 public class EquipmentSystem : MonoBehaviour
 {
@@ -17,14 +18,47 @@ public class EquipmentSystem : MonoBehaviour
         jsonManager = JsonManager.Instance; // 수정
         playerState = PlayerState.Instance;
         OptionManager.Initialize(jsonManager);
-        
+
         //player.weapon_Name = null;
         //player.armor_Name = null;
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>();
+
+        if (jsonManager != null && jsonManager.IsReady)
+        {
+            Init();
+        }
+        else if (jsonManager != null)
+        {
+            // ✅ JsonManager 로딩 끝나면 실행
+            jsonManager.OnReady += HandleJsonReady;
+        }
+        else
+        {
+            Debug.LogWarning("[EquipmentSystem] JsonManager가 아직 씬에 없습니다. 다음 프레임 재시도.");
+            StartCoroutine(WaitAndInit());
+        }
+    }
+    private void HandleJsonReady()
+    {
+        jsonManager.OnReady -= HandleJsonReady;
         Init();
+    }
+    private IEnumerator WaitAndInit()
+    {
+        // JsonManager 생성 대기
+        while (JsonManager.Instance == null) yield return null;
+        jsonManager = JsonManager.Instance;
+
+        if (jsonManager.IsReady) Init();
+        else
+        {
+            jsonManager.OnReady += HandleJsonReady;
+        }
     }
 
     public void Init()
     {
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>();
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
         if (playerState == null)

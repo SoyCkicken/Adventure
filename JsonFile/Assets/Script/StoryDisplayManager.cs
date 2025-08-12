@@ -995,6 +995,8 @@ public class StoryDisplayManager : MonoBehaviour
     // ✅ 스토리 로드 이게 세이브 로드에서 사용중인거
     public void LoadMainStory(SaveData data)
     {
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
         playerState.CurrentChapterIndex = data.PlayerCurrentChapterIndex;
         currentStoryIndex = data.MainstoryEventIndex;
 

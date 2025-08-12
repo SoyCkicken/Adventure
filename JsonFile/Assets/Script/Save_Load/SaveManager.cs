@@ -194,6 +194,7 @@ public class SaveManager : MonoBehaviour
 
         string json = File.ReadAllText(path);
         pendingLoadData = JsonUtility.FromJson<SaveData>(json);
+        ToggleScene(); // 씬 전환
     }
     /// <summary>
     /// 저장용 데이터 구조
@@ -240,5 +241,13 @@ public class SaveManager : MonoBehaviour
     {
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
+    }
+    public void ToggleScene()
+    {
+        var currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene == "GameScene")
+        {
+            SceneManager.LoadScene("LobbyScenes");
+        }
     }
 }

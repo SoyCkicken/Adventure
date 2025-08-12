@@ -312,7 +312,7 @@ MonoBehaviour:
   content: {fileID: 529089260}
   choiceButtonParent: {fileID: 465859462}
   fontSizeManager: {fileID: 914221062}
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
   storyList: []
   currentStory:
     Chapter_Index: 0
@@ -3728,7 +3728,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999845
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6693,7 +6693,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1190628255}
   - {fileID: 25302958}
   - {fileID: 2041071671}
   - {fileID: 1847108098}
@@ -8912,7 +8911,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   merchantKey: BlackSmith
   displayCount: 10
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
   playerState: {fileID: 0}
   inventoryManager: {fileID: 1416507560}
   itemGridParent: {fileID: 4223843818678241983}
@@ -11855,50 +11854,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1184661408}
   m_CullTransparentMesh: 1
---- !u!1 &1190628253
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1190628255}
-  - component: {fileID: 1190628254}
-  m_Layer: 0
-  m_Name: JsonManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1190628254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1190628253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 476dec59a5193134d9966c1a2574ece9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1190628255
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1190628253}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 596016689}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1206244606
 GameObject:
   m_ObjectHideFlags: 0
@@ -11944,7 +11899,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9602dfa4e1df3409d744ca7ea423ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
   monsterOptionManager: {fileID: 2041071673}
   combatTest: {fileID: 1515041320}
   enemy: {fileID: 0}
@@ -11966,7 +11921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bce494c3f44159548b1a983227ce53fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
   monsterOptionManager: {fileID: 2041071673}
   focusCombatPrefab:
   - {fileID: 5052695314357578690, guid: e4403e3d9bf9fb04083ab81b432a6562, type: 3}
@@ -14569,7 +14524,7 @@ MonoBehaviour:
   pendingItemUIParent: {fileID: 1687269312}
   spriteBank: {fileID: 1169618366}
   equipmentSystem: {fileID: 2006169298}
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
   player: {fileID: 2006169296}
   playerState: {fileID: 715309318}
   confirmPopup: {fileID: 2138891217}
@@ -18448,7 +18403,7 @@ MonoBehaviour:
   eventDisplay: {fileID: 25302961}
   gameFlowManager: {fileID: 1847108099}
   inventoryManager: {fileID: 1416507560}
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
 --- !u!1001 &1730253938
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21536,7 +21491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerState: {fileID: 0}
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
   player: {fileID: 2006169296}
 --- !u!1 &2006255947
 GameObject:
@@ -21949,7 +21904,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00001335144}
+  m_AnchoredPosition: {x: 0, y: -0.0000014244829}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632
@@ -22169,7 +22124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffUI: {fileID: 249269732}
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
 --- !u!114 &2041071673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22182,7 +22137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62f0a2b82e69f7429d5a688ac253424, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonManager: {fileID: 1190628254}
+  jsonManager: {fileID: 0}
 --- !u!1 &2049506983
 GameObject:
   m_ObjectHideFlags: 0

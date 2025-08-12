@@ -13,6 +13,8 @@ using UnityEngine;
 public class JsonManager : MonoBehaviour
 {
     public static JsonManager Instance { get; private set; }
+    public bool IsReady { get; private set; }
+    public event Action OnReady;
 
     private void Awake()
     {
@@ -26,6 +28,8 @@ public class JsonManager : MonoBehaviour
         DontDestroyOnLoad(gameObject); // 씬 변경 시 유지
 
         LoadAllJsonFiles();
+        IsReady = true;
+        OnReady?.Invoke();
     }
 
     // 파일명 → 파싱된 List<Story_Master> 저장
@@ -540,18 +544,20 @@ public class JsonManager : MonoBehaviour
     //아이템 목록
     public List<Weapon_Master> GetWeaponMasters(string fileName)
     {
-        if (WeaponMasterDict.TryGetValue(fileName, out List<Weapon_Master> list))
+        if (WeaponMasterDict.TryGetValue(fileName, out var list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Weapon_Master 데이터가 없습니다.");
-        return null;
+        return new List<Weapon_Master>(); // ⬅︎ 빈 리스트
     }
+
     public List<Armor_Master> GetArmorMasters(string fileName)
     {
-        if (ArmorMasterDict.TryGetValue(fileName, out List<Armor_Master> list))
+        if (ArmorMasterDict.TryGetValue(fileName, out var list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Armor_Master 데이터가 없습니다.");
-        return null;
+        return new List<Armor_Master>(); // ⬅︎ 빈 리스트
     }
+
     public List<Item_Master> GetItemMasters(string fileName)
     {
         if (ItemMasterDict.TryGetValue(fileName, out List<Item_Master> list))

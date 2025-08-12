@@ -874,6 +874,9 @@ public class EventDisplay : MonoBehaviour
     {
         if (data.savedEventGroups == null || data.savedEventGroups.Count == 0) return;
 
+        if (jsonManager == null)
+            jsonManager = FindObjectOfType<JsonManager>();
+
         Debug.Log("이벤트 쪽 로드 시작 합니다");
         eventGroups = new List<int>(data.savedEventGroups);
         currentGroup = data.savedCurrentEventGroup;
