@@ -224,20 +224,15 @@ public class StoryDisplayManager : MonoBehaviour
 
     private void HandleTextDisplayWithChoice(string text, GameObject lastBlock, bool isClear)
     {
-        if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
+        if (lastBlock == null || lastBlock.TryGetComponent<UnityEngine.UI.Image>(out _))
         {
-            CreateTextBlock(text, isClear);
+            // 새 텍스트 블록 생성 → 이펙트 초기화 O
+            CreateTextBlock(text, isClear); // 내부에서 resetFx=true로 코루틴 시작
+            return;
         }
-        else if (!string.IsNullOrEmpty(currentStory.Next_Scene))
-        {
-            //여기면 선택지였을테니까 
-            NextScene();
-        }
-        else
-        {
-            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear));
-        }
-           
+
+        // 같은 블록에 이어붙임 → 이펙트 초기화 X
+        StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear, resetFx: false));
     }
 
 
@@ -319,7 +314,7 @@ public class StoryDisplayManager : MonoBehaviour
         fx.ClearEffects(); // 💥 여기도 안전하게 초기화
         fontSizeManager.Register(tmp);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
+        StartCoroutine(TypeTextEffectWithChoice(text, go, isClear,true));
         Testblocks.Add(go);
     }
     //진짜 버그 심하면 쓸 원본 텍스트 타이핑
@@ -380,13 +375,13 @@ public class StoryDisplayManager : MonoBehaviour
     //    }
     //    ;
     //}
-    IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
+    IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear, bool resetFx)
     {
         var tmp = go.GetComponentInChildren<TMP_Text>();
         var fx = go.GetComponent<TMPTextRangeEffects>() ?? go.AddComponent<TMPTextRangeEffects>();
         List<TextFragment> fragments = TextEffectParser.ParseFragments(fullText);
 
-        fx.ClearEffects();
+        if (resetFx) fx.ClearEffects();
         isTyping = true;
         int cursor = tmp.text.Length;
 

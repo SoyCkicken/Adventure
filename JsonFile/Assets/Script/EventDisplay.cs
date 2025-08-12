@@ -230,10 +230,15 @@ public class EventDisplay : MonoBehaviour
 
     private void HandleTextDisplayWithChoice(string text, GameObject lastBlock,bool isClear)
     {
-        if (lastBlock == null || lastBlock.TryGetComponent<Image>(out _))
-            CreateTextBlock(text, isClear);
-        else
-            StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear));
+        if (lastBlock == null || lastBlock.TryGetComponent<UnityEngine.UI.Image>(out _))
+        {
+            // 새 텍스트 블록 생성 → 이펙트 초기화 O
+            CreateTextBlock(text, isClear); // 내부에서 resetFx=true로 코루틴 시작
+            return;
+        }
+
+        // 같은 블록에 이어붙임 → 이펙트 초기화 X
+        StartCoroutine(TypeTextEffectWithChoice(text, lastBlock, isClear, resetFx: false));
     }
     public void ClearContent()
     {
@@ -439,13 +444,13 @@ public class EventDisplay : MonoBehaviour
     //    }
     //}
 
-    IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
+    IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear, bool resetFx)
     {
         var tmp = go.GetComponentInChildren<TMP_Text>();
         var fx = go.GetComponent<TMPTextRangeEffects>() ?? go.AddComponent<TMPTextRangeEffects>();
         List<TextFragment> fragments = TextEffectParser.ParseFragments(fullText);
 
-        fx.ClearEffects();
+        if (resetFx) fx.ClearEffects();
         isTyping = true;
         int cursor = tmp.text.Length;
 
@@ -575,7 +580,7 @@ public class EventDisplay : MonoBehaviour
         fontSizeManager.Register(tmp);
         activeBlocks.Add(go);
         //var tmp = go.GetComponent<TMP_Text>();
-        StartCoroutine(TypeTextEffectWithChoice(text, go , isClear));
+        StartCoroutine(TypeTextEffectWithChoice(text, go , isClear, true));
     }
 
 
