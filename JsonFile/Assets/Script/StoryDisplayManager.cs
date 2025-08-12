@@ -602,6 +602,7 @@ public class StoryDisplayManager : MonoBehaviour
                         labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
                         percentScale: 1.6f              // % 숫자만 크게
                     );
+
             }
             // ───────────────────────────────────────────────────────────
 
@@ -611,9 +612,12 @@ public class StoryDisplayManager : MonoBehaviour
 
                 if (hasRate)
                 {
-                    bool ok = UnityEngine.Random.value < rate;
+                    float test = UnityEngine.Random.value;
+                    bool ok = test < rate;
                     nextCode = ok ? rateData.Success_Next_Script?.Trim()
                                   : rateData.Fail_Next_Script?.Trim();
+                    Debug.Log($"확률 계산 유니티에서 나온 확률 {test}, 범위 {rate}  성공 여부 {ok}");
+                   
                 }
 
                 if (string.IsNullOrEmpty(nextCode))
@@ -1242,7 +1246,7 @@ public class StoryDisplayManager : MonoBehaviour
         SkipButton.SetActive(true);
         Debug.Log("세이브파일 로드 시 사용하고 있는 클리어 부분");
         ClearContent();
-        DisplayCurrentStory();
+        //DisplayCurrentStory();
     }
     public void SetOnCompleteCallback(Action cb)
     {

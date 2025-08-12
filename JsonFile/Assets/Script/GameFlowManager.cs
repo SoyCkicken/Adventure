@@ -269,6 +269,7 @@ public class GameFlowManager : MonoBehaviour
                     mainStoryManager.LoadMainStory(data);
                     randomEventManager.LoadEventData(data);
                     mainStoryManager.SetOnCompleteCallback(OnMainStoryComplete);
+                    mainStoryManager.DisplayCurrentStory(); // ✅ 요걸 직접 추가
                     Debug.Log("메인스토리 불러옴");
                     break;
 
