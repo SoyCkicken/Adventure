@@ -206,7 +206,6 @@ public class EventDisplay : MonoBehaviour
             case "TEXT":
                 Debug.Log("텍스트 출력");
                 HandleTextDisplayWithChoice(script.KOR, lastBlock,false);
-                var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
                 break;
 
             case "IMAGE":

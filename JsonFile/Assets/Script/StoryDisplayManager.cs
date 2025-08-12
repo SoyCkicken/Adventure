@@ -47,6 +47,8 @@ public class StoryDisplayManager : MonoBehaviour
     /// </summary>
     /// 
 
+
+
     private void Start()
     {
         playerState = PlayerState.Instance;
@@ -1017,6 +1019,10 @@ public class StoryDisplayManager : MonoBehaviour
         Debug.Log("세이브파일 로드 시 사용하고 있는 클리어 부분");
         ClearContent();
         DisplayCurrentStory();
+    }
+    public void SetOnCompleteCallback(Action cb)
+    {
+        onCompleteCallback = cb;
     }
     void gameOver()
     {
