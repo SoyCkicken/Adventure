@@ -5,12 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using static UnityEngine.GraphicsBuffer;
-using UnityEngine.Playables;
 using static SaveManager;
-using System.Text;
-
-
+using MyGame.TextEffects;
 public class EventDisplay : MonoBehaviour
 {
     [Header("Prefabs & References")]
@@ -377,39 +373,8 @@ public class EventDisplay : MonoBehaviour
         DisplayCurrentEvent();
 
     }
-
-    private List<(string part, bool isWave)> ParseWaveTags(string text)
-    {
-        var result = new List<(string, bool)>();
-        int index = 0;
-
-        while (index < text.Length)
-        {
-            int start = text.IndexOf("<웨이브>", index);
-            if (start == -1)
-            {
-                result.Add((text.Substring(index), false));
-                break;
-            }
-
-            if (start > index)
-                result.Add((text.Substring(index, start - index), false));
-
-            int end = text.IndexOf("</웨이브>", start);
-            if (end == -1)
-            {
-                result.Add((text.Substring(start + 7), true));
-                break;
-            }
-
-            string waveContent = text.Substring(start + 7, end - (start + 7));
-            result.Add((waveContent, true));
-            index = end + 9;
-        }
-
-        return result;
-    }
-
+    //비상용 텍스트 출력 기능
+    //버그 터지면 이걸로 임시 대체
     //private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     //{
     //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
@@ -473,84 +438,116 @@ public class EventDisplay : MonoBehaviour
     //        });
     //    }
     //}
-    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
+
+    IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
-        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+        var tmp = go.GetComponentInChildren<TMP_Text>();
+        var fx = go.GetComponent<TMPTextRangeEffects>() ?? go.AddComponent<TMPTextRangeEffects>();
+        List<TextFragment> fragments = TextEffectParser.ParseFragments(fullText);
+
+        fx.ClearEffects();
         isTyping = true;
-        tmp.text = "";
+        int cursor = tmp.text.Length;
 
-        var segments = ParseWaveTags(fullText);
-        bool skipAll = false;
-
-        foreach (var (part, isWave) in segments)
+        foreach (var fragment in fragments)
         {
-            if (skipAll) break;
+            int start = cursor;
+            int written = 0;
 
-            if (isWave)
+            for (int i = 0; i < fragment.text.Length; i++)
             {
-                TMP_Text waveTmp = Instantiate(tmp, tmp.transform.parent);
-                waveTmp.text = "";
-                waveTmp.transform.SetSiblingIndex(tmp.transform.GetSiblingIndex() + 1);
-
-                var waveEffect = waveTmp.gameObject.AddComponent<TMPWaveEffect>();
-                waveEffect.txt = waveTmp;
-                activeBlocks.Add(waveTmp.gameObject);
-
-                for (int i = 0; i < part.Length; i++)
+                if (isSkip)
                 {
-                    if (isSkip)
-                    {
-                        waveTmp.text = part;
-                        skipAll = true;
-                        break;
-                    }
-                    waveTmp.text += part[i];
-                    yield return new WaitForSeconds(0.05f);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < part.Length; i++)
-                {
-                    if (isSkip)
-                    {
-                        tmp.text += part.Substring(i);
-                        skipAll = true;
-                        break;
-                    }
-                    tmp.text += part[i];
-                    yield return new WaitForSeconds(0.05f);
-                }
-            }
+                    // 🔥 스킵: 남은 텍스트 강제 출력
+                    string remaining = fragment.text.Substring(i);
+                    tmp.text += remaining;
+                    cursor += remaining.Length;
+                    written += remaining.Length;
 
-            Canvas.ForceUpdateCanvases();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
-            scrollRect.verticalNormalizedPosition = 0f;
+                    // 효과 강제 적용
+                    foreach (var fxData in fragment.effects)
+                    {
+                        switch (fxData.type)
+                        {
+                            case EffectType.Wave:
+                                if (written > 0) fx.AddWaveRange(start, written);
+                                break;
+                            case EffectType.Shake:
+                                if (written > 0) fx.AddShakeRange(start, written);
+                                break;
+                            case EffectType.Color:
+                                if (fxData.color.HasValue)
+                                    fx.AddColorRange(start, written, fxData.color.Value);
+                                break;
+                        }
+                    }
+
+                    break; // 해당 fragment 종료
+                }
+
+                // 1글자씩 출력
+                tmp.text += fragment.text[i];
+                written++;
+                cursor++;
+
+                // 효과 적용
+                foreach (var fxData in fragment.effects)
+                {
+                    switch (fxData.type)
+                    {
+                        case EffectType.Wave:
+                            if (written == 1) fx.AddWaveRange(start, 1);
+                            else fx.UpdateLastWaveLength(written);
+                            break;
+                        case EffectType.Shake:
+                            if (written == 1) fx.AddShakeRange(start, 1);
+                            else fx.UpdateLastShakeLength(written);
+                            break;
+                        case EffectType.Color:
+                            if (fxData.color.HasValue)
+                            {
+                                if (written == 1) fx.AddColorRange(start, 1, fxData.color.Value);
+                                else fx.UpdateLastColorLength(written);
+                            }
+                            break;
+                    }
+                }
+
+                // UI 업데이트
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)scrollRect.content);
+                scrollRect.verticalNormalizedPosition = 0f;
+
+                yield return new WaitForSeconds(0.05f);
+            }
         }
 
+        // 🔚 종료 처리
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
+
         Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)scrollRect.content);
         scrollRect.verticalNormalizedPosition = 0f;
 
-        // 선택지 처리
-        if (!string.IsNullOrEmpty(currentEvent.Choice1_Text) ||
-            !string.IsNullOrEmpty(currentEvent.Choice2_Text) ||
-            !string.IsNullOrEmpty(currentEvent.Choice3_Text))
+        // 🔘 선택지 or 다음 버튼
+        if (!string.IsNullOrEmpty(currentEvent?.Choice1_Text) ||
+            !string.IsNullOrEmpty(currentEvent?.Choice2_Text) ||
+            !string.IsNullOrEmpty(currentEvent?.Choice3_Text))
         {
             SetupChoices();
         }
         else
         {
             SkipButton.SetActive(true);
-            var group = SkipButton.GetComponent<CanvasGroup>();
-            if (group != null) group.blocksRaycasts = true;
+            var btn = SkipButton.GetComponent<Button>();
+            var cg = SkipButton.GetComponent<CanvasGroup>();
 
-            var skipBtn = SkipButton.GetComponent<Button>();
-            skipBtn.onClick.RemoveAllListeners();
-            skipBtn.onClick.AddListener(() =>
+            btn.onClick.RemoveAllListeners();
+            if (cg != null) cg.blocksRaycasts = true;
+
+            btn.onClick.AddListener(() =>
             {
                 SkipButton.SetActive(false);
                 if (isClear) ClearContent();
@@ -558,6 +555,7 @@ public class EventDisplay : MonoBehaviour
             });
         }
     }
+
     private void CreateImageBlock(string name)
     {
         //Debug.Log("이미지 블록 생성");

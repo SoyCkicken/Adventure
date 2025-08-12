@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using static SaveManager;
 using UnityEngine.SceneManagement;
+using MyGame.TextEffects;
 public class StoryDisplayManager : MonoBehaviour
 {
     public GameObject ImagePrefab;
@@ -285,7 +286,10 @@ public class StoryDisplayManager : MonoBehaviour
         if (touchCatcher != null)
         {
             var catcher = touchCatcher.GetComponent<TouchCatcher>();
-            catcher.onTapOutsideScrollView = () => { OnSkip(); };
+            Debug.Log("재 지정 되었습니다");
+            catcher.onTapOutsideScrollView = () => { 
+                Debug.Log("터치 캐처가 작동했습니다");
+                OnSkip(); };
         }
     }
 
@@ -311,12 +315,14 @@ public class StoryDisplayManager : MonoBehaviour
     {
         var go = Instantiate(TextPrefab, content);
         TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+        var fx = go.GetComponent<TMPTextRangeEffects>() ?? go.AddComponent<TMPTextRangeEffects>();
+        fx.ClearEffects(); // 💥 여기도 안전하게 초기화
         fontSizeManager.Register(tmp);
         //var tmp = go.GetComponent<TMP_Text>();
         StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
         Testblocks.Add(go);
     }
-
+    //진짜 버그 심하면 쓸 원본 텍스트 타이핑
     // 타입라이터 이펙트
     //private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     //{
@@ -374,159 +380,115 @@ public class StoryDisplayManager : MonoBehaviour
     //    }
     //    ;
     //}
-
-    //private void CreateTextBlock(string text, bool isClear)
-    //{
-    //    var go = Instantiate(TextPrefab, content);
-    //    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
-    //    fontSizeManager.Register(tmp);
-
-    //    StartCoroutine(TypeTextEffectWithChoice(text, go, isClear));
-    //    Testblocks.Add(go);
-    //}
-    //private List<(string part, bool isWave)> ParseWaveTags(string text)
-    //{
-    //    var result = new List<(string, bool)>();
-    //    int index = 0;
-
-    //    while (index < text.Length)
-    //    {
-    //        int start = text.IndexOf("<웨이브>", index);
-    //        if (start == -1)
-    //        {
-    //            // 남은 부분은 일반 텍스트
-    //            result.Add((text.Substring(index), false));
-    //            break;
-    //        }
-
-    //        // 웨이브 시작 전 일반 텍스트
-    //        if (start > index)
-    //            result.Add((text.Substring(index, start - index), false));
-
-    //        int end = text.IndexOf("</웨이브>", start);
-    //        if (end == -1)
-    //        {
-    //            // 닫는 태그 없음 → 남은 부분 전부 웨이브 처리
-    //            result.Add((text.Substring(start + 5), true));
-    //            break;
-    //        }
-
-    //        string waveContent = text.Substring(start + 5, end - (start + 5));
-    //        result.Add((waveContent, true));
-    //        index = end + 9; // 닫는 태그 이후로 이동
-    //    }
-
-    //    return result;
-    //}
-
-    private List<(string part, bool isWave)> ParseWaveTags(string text)
+    IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
     {
-        var result = new List<(string, bool)>();
-        int index = 0;
+        var tmp = go.GetComponentInChildren<TMP_Text>();
+        var fx = go.GetComponent<TMPTextRangeEffects>() ?? go.AddComponent<TMPTextRangeEffects>();
+        List<TextFragment> fragments = TextEffectParser.ParseFragments(fullText);
 
-        const string startTag = "<웨이브>";
-        const string endTag = "</웨이브>";
-
-        while (index < text.Length)
-        {
-            int start = text.IndexOf(startTag, index, StringComparison.Ordinal);
-            if (start == -1)
-            {
-                result.Add((text.Substring(index), false));
-                break;
-            }
-
-            if (start > index)
-                result.Add((text.Substring(index, start - index), false));
-
-            int end = text.IndexOf(endTag, start + startTag.Length, StringComparison.Ordinal);
-            if (end == -1)
-            {
-                result.Add((text.Substring(start + startTag.Length), true));
-                break;
-            }
-
-            string waveContent = text.Substring(start + startTag.Length, end - (start + startTag.Length));
-            result.Add((waveContent, true));
-            index = end + endTag.Length;
-        }
-
-        return result;
-    }
-
-
-    private IEnumerator TypeTextEffectWithChoice(string fullText, GameObject go, bool isClear)
-    {
+        fx.ClearEffects();
         isTyping = true;
-        bool skipAll = false;
+        int cursor = tmp.text.Length;
 
-        var segments = ParseWaveTags(fullText);
-
-        // go는 첫 번째 일반 텍스트 블록 (CreateTextBlock에서 받은 것)
-        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
-
-        foreach (var (part, isWave) in segments)
+        foreach (var fragment in fragments)
         {
-            GameObject targetGo;
-            TMP_Text targetTmp;
+            int start = cursor;
+            int written = 0;
 
-            if (isWave)
-            {
-                // 웨이브 텍스트는 새 블록 생성
-                targetGo = Instantiate(TextPrefab, content);
-                targetTmp = targetGo.GetComponentInChildren<TMP_Text>();
-                fontSizeManager.Register(targetTmp);
-                Testblocks.Add(targetGo);
-
-                var waveEffect = targetGo.AddComponent<TMPWaveEffect>();
-                waveEffect.txt = targetTmp;
-            }
-            else
-            {
-                // 일반 텍스트는 기존 블록 사용
-                targetGo = go;
-                targetTmp = tmp;
-            }
-
-            for (int i = 0; i < part.Length; i++)
+            for (int i = 0; i < fragment.text.Length; i++)
             {
                 if (isSkip)
                 {
-                    targetTmp.text += part.Substring(i);
-                    skipAll = true;
-                    break;
+                    // 🔥 스킵: 남은 텍스트 강제 출력
+                    string remaining = fragment.text.Substring(i);
+                    tmp.text += remaining;
+                    cursor += remaining.Length;
+                    written += remaining.Length;
+
+                    // 효과 강제 적용
+                    foreach (var fxData in fragment.effects)
+                    {
+                        switch (fxData.type)
+                        {
+                            case EffectType.Wave:
+                                if (written > 0) fx.AddWaveRange(start, written);
+                                break;
+                            case EffectType.Shake:
+                                if (written > 0) fx.AddShakeRange(start, written);
+                                break;
+                            case EffectType.Color:
+                                if (fxData.color.HasValue)
+                                    fx.AddColorRange(start, written, fxData.color.Value);
+                                break;
+                        }
+                    }
+
+                    break; // 해당 fragment 종료
                 }
-                targetTmp.text += part[i];
+
+                // 1글자씩 출력
+                tmp.text += fragment.text[i];
+                written++;
+                cursor++;
+
+                // 효과 적용
+                foreach (var fxData in fragment.effects)
+                {
+                    switch (fxData.type)
+                    {
+                        case EffectType.Wave:
+                            if (written == 1) fx.AddWaveRange(start, 1);
+                            else fx.UpdateLastWaveLength(written);
+                            break;
+                        case EffectType.Shake:
+                            if (written == 1) fx.AddShakeRange(start, 1);
+                            else fx.UpdateLastShakeLength(written);
+                            break;
+                        case EffectType.Color:
+                            if (fxData.color.HasValue)
+                            {
+                                if (written == 1) fx.AddColorRange(start, 1, fxData.color.Value);
+                                else fx.UpdateLastColorLength(written);
+                            }
+                            break;
+                    }
+                }
+
+                // UI 업데이트
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)scrollRect.content);
+                scrollRect.verticalNormalizedPosition = 0f;
+
                 yield return new WaitForSeconds(0.05f);
             }
-
-            if (skipAll) break;
-
-            Canvas.ForceUpdateCanvases();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
-            scrollRect.verticalNormalizedPosition = 0f;
         }
 
+        // 🔚 종료 처리
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
 
         Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content as RectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)scrollRect.content);
         scrollRect.verticalNormalizedPosition = 0f;
 
-        if (!string.IsNullOrEmpty(currentStory.Choice1_Text) ||
-            !string.IsNullOrEmpty(currentStory.Choice2_Text) ||
-            !string.IsNullOrEmpty(currentStory.Choice3_Text))
+        // 🔘 선택지 or 다음 버튼
+        if (!string.IsNullOrEmpty(currentStory?.Choice1_Text) ||
+            !string.IsNullOrEmpty(currentStory?.Choice2_Text) ||
+            !string.IsNullOrEmpty(currentStory?.Choice3_Text))
         {
             SetupChoices();
         }
         else
         {
             SkipButton.SetActive(true);
-            SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-            SkipButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            SkipButton.GetComponent<Button>().onClick.AddListener(() =>
+            var btn = SkipButton.GetComponent<Button>();
+            var cg = SkipButton.GetComponent<CanvasGroup>();
+
+            btn.onClick.RemoveAllListeners();
+            if (cg != null) cg.blocksRaycasts = true;
+
+            btn.onClick.AddListener(() =>
             {
                 SkipButton.SetActive(false);
                 if (isClear) ClearContent();
