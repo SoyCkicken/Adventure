@@ -46,13 +46,17 @@ public class StoryDisplayManager : MonoBehaviour
     /// 메인 스토리 연출 시작 (GameFlowManager에서 호출)
     /// </summary>
     /// 
-
+    private void Awake()
+    {
+        
+    }
 
 
     private void Start()
     {
         playerState = PlayerState.Instance;
         jsonManager = JsonManager.Instance; // 수정
+        spriteBank = SpriteBank.Instance;
         var handler = SkipButton.GetComponent<SkipOrScrollHandler>();
         if (handler != null)
         {
@@ -134,16 +138,14 @@ public class StoryDisplayManager : MonoBehaviour
         GameObject lastBlock = Testblocks.Count > 0 ? Testblocks[Testblocks.Count - 1] : null;
         Debug.Log($"[MainStory] currentIndex: {currentIndex}, listCount: {storyList.Count}");
         Debug.Log($"[MainStory] 지금 Effect = {currentStory.Main_Effect.ToString()}");
+        int rewardBlocks = 0;
         if (currentStory.Main_Effect != null && currentStory.Main_Effect.Count > 0)
         {
-            Debug.Log("이펙트 테스트에 들어오긴 했음");
-            ApplyEffects(currentStory.Main_Effect,matchingScript.Script_Code);
+            rewardBlocks = ApplyEffects(currentStory.Main_Effect, currentStory.Script_Text);
 
         }
-        //if (matchingScript.StoryBreak == "Break" && matchingScript.ChapterBreack == "Break")
-        //{
-        //    NextScene();
-        //}
+        if (rewardBlocks > 0)
+            lastBlock = null; // ✅ 새 텍스트 블록으로 시작시키기
 
         if (matchingScript == null)
         {
@@ -495,68 +497,220 @@ public class StoryDisplayManager : MonoBehaviour
     }
 
 
+    //private void SetupChoices()
+    //{
+    //    // 기존 버튼 클리어
+    //    foreach (Transform t in choiceButtonParent)
+    //        Destroy(t.gameObject);
+
+    //    // 성공 확률 데이터
+    //    var successRateList = jsonManager.GetSuccessRatesMainByScene(currentStory.Scene_Code);
+
+    //    // 1~3번 선택지 반복 처리
+    //    for (int i = 1; i <= 3; i++)
+    //    {
+    //        // Choice#_Text 필드 읽기
+    //        var choiceText = i == 1 ? currentStory.Choice1_Text
+    //                        : i == 2 ? currentStory.Choice2_Text
+    //                        : currentStory.Choice3_Text;
+    //        if (string.IsNullOrEmpty(choiceText))
+    //            continue;
+
+    //        // 화면에 보여줄 문자열
+    //        var display = GetDisplayTextFromScript(choiceText, scriptEventsCache);
+
+    //        // 우선 사용해야 할 Next_Scene (override)
+    //        var overrideScene = i == 1 ? currentStory.Choice1_Next_Scene
+    //                          : i == 2 ? currentStory.Choice2_Next_Scene
+    //                          : currentStory.Choice3_Next_Scene;
+    //        overrideScene = overrideScene?.Trim();
+
+    //        // 성공률이 있을 경우 가져오기
+    //        var rateData = successRateList.FirstOrDefault(r => r.Choice_No == i);
+
+    //        // 버튼 생성
+    //        var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
+    //        var btn = go.GetComponent<Button>();
+    //        var txt = go.GetComponentInChildren<TMP_Text>();
+    //        txt.text = display;
+
+
+    //        btn.onClick.AddListener(() =>
+    //        {
+    //            string nextCode = null;
+
+    //            if (rateData != null)
+    //            {
+    //                // 성공/실패 분기
+    //                float rate = EvaluateFormula(rateData.Success_Formula);
+    //                txt.text = $"{display} (성공률: {rate * 100:F1}%)"; // 버튼에 성공률 표시
+    //                bool ok = UnityEngine.Random.value < rate;
+    //                nextCode = ok
+    //                    ? rateData.Success_Next_Script?.Trim()
+    //                    : rateData.Fail_Next_Script?.Trim();
+    //            }
+
+    //            // 성공률 분기가 없거나 분기 결과가 비어있으면 overrideScene 사용
+    //            if (string.IsNullOrEmpty(nextCode))
+    //                nextCode = !string.IsNullOrEmpty(overrideScene)
+    //                    ? overrideScene
+    //                    : choiceText.Trim();
+
+    //            OnChoiceSelected(nextCode);
+    //        });
+    //    }
+    //}
+
     private void SetupChoices()
     {
-        // 기존 버튼 클리어
-        foreach (Transform t in choiceButtonParent)
-            Destroy(t.gameObject);
+        foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
 
-        // 성공 확률 데이터
         var successRateList = jsonManager.GetSuccessRatesMainByScene(currentStory.Scene_Code);
 
-        // 1~3번 선택지 반복 처리
         for (int i = 1; i <= 3; i++)
         {
-            // Choice#_Text 필드 읽기
-            var choiceText = i == 1 ? currentStory.Choice1_Text
-                            : i == 2 ? currentStory.Choice2_Text
-                            : currentStory.Choice3_Text;
-            if (string.IsNullOrEmpty(choiceText))
-                continue;
+            var choiceText = i == 1 ? currentStory.Choice1_Text : i == 2 ? currentStory.Choice2_Text : currentStory.Choice3_Text;
+            if (string.IsNullOrEmpty(choiceText)) continue;
 
-            // 화면에 보여줄 문자열
             var display = GetDisplayTextFromScript(choiceText, scriptEventsCache);
+            var overrideScene = (i == 1 ? currentStory.Choice1_Next_Scene : i == 2 ? currentStory.Choice2_Next_Scene : currentStory.Choice3_Next_Scene)?.Trim();
 
-            // 우선 사용해야 할 Next_Scene (override)
-            var overrideScene = i == 1 ? currentStory.Choice1_Next_Scene
-                              : i == 2 ? currentStory.Choice2_Next_Scene
-                              : currentStory.Choice3_Next_Scene;
-            overrideScene = overrideScene?.Trim();
-
-            // 성공률이 있을 경우 가져오기
             var rateData = successRateList.FirstOrDefault(r => r.Choice_No == i);
+            bool hasRate = false;
+            float rate = 0f;
+            if (rateData != null)
+            {
+                var r = EvaluateFormula(rateData.Success_Formula);
+                rate = Mathf.Clamp01(float.IsNaN(r) ? 0f : r);
+                hasRate = true;
+            }
 
-            // 버튼 생성
             var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
             var btn = go.GetComponent<Button>();
             var txt = go.GetComponentInChildren<TMP_Text>();
             txt.text = display;
-            
+
+            // ── 성공률 라벨 (있을 때만 생성) ──────────────────────────────
+            if (hasRate)
+            {
+                    CreateChanceBadgeOverButton(
+                        buttonGO: go,
+                        mainText: txt,
+                        rate01: rate,                   // 0~1
+                        bgSprite: null,                 // 없으면 null
+                        yOffset: -10f,                  // 버튼 내부 위쪽에서 아래로 10px
+                        labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
+                        percentScale: 1.6f              // % 숫자만 크게
+                    );
+            }
+            // ───────────────────────────────────────────────────────────
 
             btn.onClick.AddListener(() =>
             {
                 string nextCode = null;
 
-                if (rateData != null)
+                if (hasRate)
                 {
-                    // 성공/실패 분기
-                    float rate = EvaluateFormula(rateData.Success_Formula);
-                    txt.text = $"{display} (성공률: {rate * 100:F1}%)"; // 버튼에 성공률 표시
                     bool ok = UnityEngine.Random.value < rate;
-                    nextCode = ok
-                        ? rateData.Success_Next_Script?.Trim()
-                        : rateData.Fail_Next_Script?.Trim();
+                    nextCode = ok ? rateData.Success_Next_Script?.Trim()
+                                  : rateData.Fail_Next_Script?.Trim();
                 }
 
-                // 성공률 분기가 없거나 분기 결과가 비어있으면 overrideScene 사용
                 if (string.IsNullOrEmpty(nextCode))
-                    nextCode = !string.IsNullOrEmpty(overrideScene)
-                        ? overrideScene
-                        : choiceText.Trim();
+                    nextCode = !string.IsNullOrEmpty(overrideScene) ? overrideScene : choiceText.Trim();
 
                 OnChoiceSelected(nextCode);
             });
         }
+    }
+
+    private void CreateChanceBadgeOverButton(
+    GameObject buttonGO,
+    TMP_Text mainText,
+    float rate01,
+    Sprite bgSprite = null,
+    float yOffset = -8f,
+    int labelSize = 22,
+    float percentScale = 1.5f)
+    {
+        // 확률이 없으면 만들지 않음
+        if (rate01 <= 0f && rate01 >= 0f == false) return; // NaN 방지
+
+        var btnRT = buttonGO.GetComponent<RectTransform>();
+
+        // ── 컨테이너 (레이아웃 영향 X)
+        var holder = new GameObject("ChanceBadge", typeof(RectTransform));
+        holder.transform.SetParent(buttonGO.transform, false);
+        var hRT = (RectTransform)holder.transform;
+        hRT.anchorMin = new Vector2(0.5f, 1f);
+        hRT.anchorMax = new Vector2(0.5f, 1f);
+        hRT.pivot = new Vector2(0.5f, 1f);
+        hRT.anchoredPosition = new Vector2(0f, yOffset);
+        hRT.sizeDelta = new Vector2(btnRT.rect.width * 0.9f, 0f); // 가로 약간 좁게
+
+        var le = holder.AddComponent<LayoutElement>();
+        le.ignoreLayout = true;
+
+        // ── 배경 (브러시 이미지가 있으면)
+        Image bg = null;
+        if (bgSprite != null)
+        {
+            var bgGO = new GameObject("BG", typeof(RectTransform), typeof(Image));
+            bgGO.transform.SetParent(holder.transform, false);
+            bg = bgGO.GetComponent<Image>();
+            bg.sprite = bgSprite;
+            bg.type = Image.Type.Sliced;         // 9-slice 추천
+            bg.raycastTarget = false;
+
+            var bgRT = (RectTransform)bgGO.transform;
+            bgRT.anchorMin = new Vector2(0f, 0f);
+            bgRT.anchorMax = new Vector2(1f, 1f);
+            bgRT.pivot = new Vector2(0.5f, 0.5f);
+            bgRT.offsetMin = new Vector2(8f, -2f);    // 좌/하 패딩
+            bgRT.offsetMax = new Vector2(-8f, 26f);   // 우/상 패딩(윗쪽 여유)
+        }
+
+        // ── 텍스트 (리치텍스트로 %만 크게)
+        var txtGO = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+        txtGO.transform.SetParent(holder.transform, false);
+        var t = txtGO.GetComponent<TextMeshProUGUI>();
+
+        // 메인 폰트 재사용
+        if (mainText is TextMeshProUGUI main) t.font = main.font;
+
+        t.richText = true;
+        t.fontSize = labelSize;
+        t.alignment = TextAlignmentOptions.Center;
+        t.raycastTarget = false;
+        t.enableWordWrapping = false;
+
+        // 색상/외곽선
+        var col = ChanceColor(rate01);
+        t.color = col;
+        var mat = t.fontMaterial;
+        mat.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.18f);
+        mat.SetColor(ShaderUtilities.ID_OutlineColor, new Color(0, 0, 0, 0.75f));
+
+        // “성공률 100.0%” – 숫자만 크게
+        float pct = Mathf.Clamp01(rate01) * 100f;
+        string pctStr = pct.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
+        t.text = $"성공률 <size={(int)(percentScale * 100)}%>{pctStr}%</size>";
+
+        var trt = (RectTransform)txtGO.transform;
+        trt.anchorMin = new Vector2(0f, 0f);
+        trt.anchorMax = new Vector2(1f, 1f);
+        trt.pivot = new Vector2(0.5f, 0.5f);
+        trt.offsetMin = new Vector2(0f, 0f);
+        trt.offsetMax = new Vector2(0f, 0f);
+    }
+
+    // 성공률 색상 규칙
+    private Color ChanceColor(float r)
+    {
+        if (r >= 0.8f) return new Color32(65, 200, 90, 255); // 높음
+        if (r >= 0.6f) return new Color32(200, 190, 60, 255); // 보통
+        if (r >= 0.4f) return new Color32(220, 120, 60, 255); // 낮음
+        return new Color32(200, 70, 70, 255);    // 매우 낮음
     }
 
     private void OnChoiceSelected(string newSceneCode)
@@ -711,75 +865,142 @@ public class StoryDisplayManager : MonoBehaviour
     //선택지에 확률 적용
     //지금 같은 경우 확률이 버튼에 출력이 되고 있지는 않음
 
-    private void ApplyEffects(List<EffectTrigger> effects, string sceneCode)
+    //private void ApplyEffects(List<EffectTrigger> effects, string sceneCode)
+    //{
+    //    foreach (var effect in effects)
+    //    {
+    //        switch (effect.ID)
+    //        {
+    //            case "Effect_001":
+    //                if (effect.Value >= 0)
+    //                {
+    //                    var EffectTEXTObject = Instantiate(TextPrefab, content);
+    //                    TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+    //                    fontSizeManager.Register(targetTmp);
+    //                    Testblocks.Add(EffectTEXTObject);
+    //                    targetTmp.text = $"<color=#00ff00>+{effect.Value}</color>\n";
+    //                    playerState.Experience += effect.Value;
+    //                    Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
+    //                    inventoryManager.updateSoulText();
+    //                }
+    //                else
+    //                {
+    //                    var EffectTEXTObject = Instantiate(TextPrefab, content);
+    //                    TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+    //                    fontSizeManager.Register(targetTmp);
+    //                    Testblocks.Add(EffectTEXTObject);
+    //                    targetTmp.text = $"<color=#ff0000>-{effect.Value} </color>\n";
+    //                    playerState.Experience -= effect.Value;
+    //                    Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
+    //                    inventoryManager.updateSoulText();
+    //                } 
+    //                break;
+
+    //            case "Effect_002":
+    //                playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - Mathf.Abs(effect.Value));
+    //                Debug.Log($"체력 {effect.Value} 감소 → 현재: {playerState.CurrentHealth}");
+    //                break;
+
+    //            case "Effect_003": // 아이템 추가
+    //                ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
+    //                Debug.Log($"{item.Item_Name} , {item.Item_ID} , {item.Item_Type}");
+    //                if (item != null)
+    //                {
+
+    //                    if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
+    //                    {
+    //                        inventoryManager.selectedItem = item;
+
+    //                        inventoryManager.OnClickEquip();
+
+    //                        var EffectTEXTObject = Instantiate(TextPrefab, content);
+    //                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+    //                        fontSizeManager.Register(targetTmp);
+    //                        Testblocks.Add(EffectTEXTObject);
+    //                        targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
+
+    //                        Debug.Log($"[자동 장착] {sceneCode}에서 {item.Item_Name} 장착 완료");
+    //                    }
+    //                    else
+    //                    {
+    //                        inventoryManager.AddItemToInventory(item); //초반 아니면 그냥 인벤토리에 추가
+    //                        var EffectTEXTObject = Instantiate(TextPrefab, content);
+    //                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
+    //                        fontSizeManager.Register(targetTmp);
+    //                        Testblocks.Add(EffectTEXTObject);
+    //                        targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
+    //                }
+    //                break;
+
+    //            default:
+    //                Debug.LogWarning($"알 수 없는 이펙트 ID: {effect.ID}");
+    //                break;
+    //        }
+    //    }
+    //}
+    private int ApplyEffects(List<EffectTrigger> effects, string sceneCode)
     {
+        int createdBlocks = 0;
+
         foreach (var effect in effects)
         {
             switch (effect.ID)
             {
-                case "Effect_001":
-                    if (effect.Value >= 0)
+                case "Effect_001": // 소울 증감
                     {
-                        var EffectTEXTObject = Instantiate(TextPrefab, content);
-                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-                        fontSizeManager.Register(targetTmp);
-                        Testblocks.Add(EffectTEXTObject);
-                        targetTmp.text = $"<color=#00ff00>+{effect.Value}</color>\n";
-                        playerState.Experience += effect.Value;
-                        Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
+                        int delta = effect.Value; // 음수면 감소, 양수면 증가
+                        var go = Instantiate(TextPrefab, content);
+                        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+                        fontSizeManager.Register(tmp);
+                        Testblocks.Add(go);
+
+                        if (delta >= 0)
+                            tmp.text = $"<color=#00ff00>+{delta}</color>\n";
+                        else
+                            tmp.text = $"<color=#ff0000>{delta}</color>\n"; // 이미 음수 표시됨
+
+                        playerState.Experience += delta;
                         inventoryManager.updateSoulText();
+                        createdBlocks++;
                     }
-                    else
-                    {
-                        var EffectTEXTObject = Instantiate(TextPrefab, content);
-                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-                        fontSizeManager.Register(targetTmp);
-                        Testblocks.Add(EffectTEXTObject);
-                        targetTmp.text = $"<color=#ff0000>-{effect.Value} </color>\n";
-                        playerState.Experience -= effect.Value;
-                        Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
-                        inventoryManager.updateSoulText();
-                    } 
                     break;
 
-                case "Effect_002":
+                case "Effect_002": // 체력 감소(예시)
                     playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - Mathf.Abs(effect.Value));
-                    Debug.Log($"체력 {effect.Value} 감소 → 현재: {playerState.CurrentHealth}");
+                    // 필요하면 메시지 출력도 가능
                     break;
 
-                case "Effect_003": // 아이템 추가
-                    ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
-                    Debug.Log($"{item.Item_Name} , {item.Item_ID} , {item.Item_Type}");
-                    if (item != null)
+                case "Effect_003": // 아이템 지급
                     {
-
-                        if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
+                        ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
+                        if (item != null)
                         {
-                            inventoryManager.selectedItem = item;
+                            if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
+                            {
+                                inventoryManager.selectedItem = item;
+                                inventoryManager.OnClickEquip();
+                            }
+                            else
+                            {
+                                inventoryManager.AddItemToInventory(item);
+                            }
 
-                            inventoryManager.OnClickEquip();
-
-                            var EffectTEXTObject = Instantiate(TextPrefab, content);
-                            TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-                            fontSizeManager.Register(targetTmp);
-                            Testblocks.Add(EffectTEXTObject);
-                            targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
-
-                            Debug.Log($"[자동 장착] {sceneCode}에서 {item.Item_Name} 장착 완료");
+                            var go = Instantiate(TextPrefab, content);
+                            TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+                            fontSizeManager.Register(tmp);
+                            Testblocks.Add(go);
+                            tmp.text = $"<color=#00ff00>+ {item.Item_Name}을 획득했습니다</color>\n";
+                            createdBlocks++;
                         }
                         else
                         {
-                            inventoryManager.AddItemToInventory(item); //초반 아니면 그냥 인벤토리에 추가
-                            var EffectTEXTObject = Instantiate(TextPrefab, content);
-                            TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-                            fontSizeManager.Register(targetTmp);
-                            Testblocks.Add(EffectTEXTObject);
-                            targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
+                            Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
                         }
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
                     }
                     break;
 
@@ -788,7 +1009,10 @@ public class StoryDisplayManager : MonoBehaviour
                     break;
             }
         }
+
+        return createdBlocks;
     }
+
     private float EvaluateFormula(string formula)
     {
         if (string.IsNullOrEmpty(formula)) return 0f;

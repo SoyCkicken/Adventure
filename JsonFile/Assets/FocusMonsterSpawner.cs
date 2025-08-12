@@ -25,7 +25,8 @@ public class FocusMonsterSpawner : MonoBehaviour
     private void Awake()
     {
         jsonManager = JsonManager.Instance; // 수정
-        if (monsterOptionManager == null) monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
+
+        monsterOptionManager = MonsterOptionManager.Instance; // 몬스터 옵션 매니저 인스턴스 가져오기
         if (player == null) player = GameObject.FindWithTag("Player");
         focusCombcanves.SetActive(false);
     }

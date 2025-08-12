@@ -18,13 +18,8 @@ public class ItemSlotUI : MonoBehaviour
     {
         button = this.GetComponent<Button>();
         button.onClick.AddListener(OnClick);
+        spriteBank = SpriteBank.Instance;
     }
-    private void Start()
-    {
-        if (spriteBank == null)
-            spriteBank = FindObjectOfType<SpriteBank>();
-    }
-
     public void Setup(ItemData item, System.Action<ItemData> onClick)
     {
         data = item;

@@ -67,8 +67,7 @@ public class BuffIconUI : MonoBehaviour
     private BuffData buff; // 내부 로직용
     private void Awake()
     {
-        if (spriteBank == null)
-            spriteBank = FindObjectOfType<SpriteBank>();
+        spriteBank = SpriteBank.Instance;
         if (BattleImage == null)
         {
             BattleImage = GameObject.Find("자동전투화면Canvas(대략적으로 배치를 해 놓은것)");

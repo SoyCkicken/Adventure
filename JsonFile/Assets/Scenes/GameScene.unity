@@ -332,7 +332,7 @@ MonoBehaviour:
   isSkip: 0
   isTyping: 0
   playerState: {fileID: 715309318}
-  spriteBank: {fileID: 1169618366}
+  spriteBank: {fileID: 0}
   inventoryManager: {fileID: 1416507560}
   Testblocks: []
 --- !u!114 &25302961
@@ -3728,7 +3728,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999845
+  m_Size: 0.9963222
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6694,9 +6694,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 25302958}
-  - {fileID: 2041071671}
   - {fileID: 1847108098}
-  - {fileID: 1087320646}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &601747176
@@ -7856,37 +7854,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1895895126}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &733277685
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 733277686}
-  m_Layer: 0
-  m_Name: TMPWaveEffect
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &733277686
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 733277685}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1279609154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &735730936
 GameObject:
@@ -11109,59 +11076,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1076946319}
   m_CullTransparentMesh: 1
---- !u!1 &1087320645
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1087320646}
-  - component: {fileID: 1087320647}
-  m_Layer: 0
-  m_Name: SaveManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1087320646
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1087320645}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 596016689}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1087320647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1087320645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d012f921ae40dd94d83e98c00a60e723, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerState: {fileID: 715309318}
-  inventoryManager: {fileID: 1416507560}
-  displayManager: {fileID: 25302960}
-  eventDisplay: {fileID: 25302961}
-  gameFlowManager: {fileID: 1847108099}
-  fontSizeManager: {fileID: 914221062}
-  showPatchNoteToggle: {fileID: 0}
-  SaveButton: {fileID: 1002909044}
-  LoadButton: {fileID: 1001869574}
 --- !u!1 &1098235063
 GameObject:
   m_ObjectHideFlags: 0
@@ -11446,50 +11360,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135548603}
   m_CullTransparentMesh: 1
---- !u!1 &1169618364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1169618365}
-  - component: {fileID: 1169618366}
-  m_Layer: 0
-  m_Name: SpriteBank
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1169618365
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169618364}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1279609154}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1169618366
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169618364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d2e3d5662d55c54bba9edb1d939cf8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1178560228
 GameObject:
   m_ObjectHideFlags: 0
@@ -11900,7 +11770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jsonManager: {fileID: 0}
-  monsterOptionManager: {fileID: 2041071673}
+  monsterOptionManager: {fileID: 0}
   combatTest: {fileID: 1515041320}
   enemy: {fileID: 0}
   player: {fileID: 2006169295}
@@ -11922,7 +11792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jsonManager: {fileID: 0}
-  monsterOptionManager: {fileID: 2041071673}
+  monsterOptionManager: {fileID: 0}
   focusCombatPrefab:
   - {fileID: 5052695314357578690, guid: e4403e3d9bf9fb04083ab81b432a6562, type: 3}
   - {fileID: 5052695314357578690, guid: 2d3dedfa6b7506446b24620bf5d55a69, type: 3}
@@ -12521,13 +12391,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 914221061}
-  - {fileID: 1169618365}
   - {fileID: 1416507559}
   - {fileID: 897475661}
   - {fileID: 1497404941}
   - {fileID: 1334330993}
   - {fileID: 249269731}
-  - {fileID: 733277686}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1283343307
@@ -12987,7 +12855,7 @@ PrefabInstance:
     - target: {fileID: 1113283276190855491, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: spriteBank
       value: 
-      objectReference: {fileID: 1169618366}
+      objectReference: {fileID: 0}
     - target: {fileID: 1748744451924418848, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: m_Name
       value: "\uC544\uC774\uD15C \uC2AC\uB86F (\uC7A5\uC2E0\uAD6C1)"
@@ -14522,13 +14390,13 @@ MonoBehaviour:
   SoulTEXT: {fileID: 1687269311}
   pendingItemUIPrefab: {fileID: 103608524759104345, guid: e9d67566025cc46448a5822e7a3a1e3c, type: 3}
   pendingItemUIParent: {fileID: 1687269312}
-  spriteBank: {fileID: 1169618366}
+  spriteBank: {fileID: 0}
   equipmentSystem: {fileID: 2006169298}
   jsonManager: {fileID: 0}
   player: {fileID: 2006169296}
   playerState: {fileID: 715309318}
   confirmPopup: {fileID: 2138891217}
-  optionManager: {fileID: 2041071672}
+  optionManager: {fileID: 0}
   weaponEquipSlot: {fileID: 1687269327}
   armorEquipSlot: {fileID: 1687269326}
   selectedItem:
@@ -15383,8 +15251,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NormalBattle: {fileID: 1483688933}
-  optionManager: {fileID: 2041071672}
-  monsterOptionManager: {fileID: 2041071673}
+  optionManager: {fileID: 0}
+  monsterOptionManager: {fileID: 0}
   player: {fileID: 2006169296}
   enemy: {fileID: 0}
   playerState: {fileID: 715309318}
@@ -19169,7 +19037,7 @@ PrefabInstance:
     - target: {fileID: 1113283276190855491, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: spriteBank
       value: 
-      objectReference: {fileID: 1169618366}
+      objectReference: {fileID: 0}
     - target: {fileID: 1748744451924418848, guid: ca3915cfe8518cc48a8e5db583faf634, type: 3}
       propertyPath: m_Name
       value: "\uC544\uC774\uD15C \uC2AC\uB86F (\uC7A5\uC2E0\uAD6C2)"
@@ -21904,7 +21772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000014244829}
+  m_AnchoredPosition: {x: 0, y: 0.000613682}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632
@@ -22078,66 +21946,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2038939060}
   m_CullTransparentMesh: 1
---- !u!1 &2041071669
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2041071671}
-  - component: {fileID: 2041071672}
-  - component: {fileID: 2041071673}
-  m_Layer: 0
-  m_Name: OptionManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2041071671
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2041071669}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 596016689}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2041071672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2041071669}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38d749461727191419c0d4965d1dd9b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buffUI: {fileID: 249269732}
-  jsonManager: {fileID: 0}
---- !u!114 &2041071673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2041071669}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d62f0a2b82e69f7429d5a688ac253424, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jsonManager: {fileID: 0}
 --- !u!1 &2049506983
 GameObject:
   m_ObjectHideFlags: 0

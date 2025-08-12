@@ -58,14 +58,14 @@ public class InventoryManager : MonoBehaviour
     {
         jsonManager = JsonManager.Instance; // 수정
         playerState = PlayerState.Instance;
+        spriteBank = SpriteBank.Instance;
+        optionManager = OptionManager.Instance;
     }
     private void Start()
     {
-        
-
         // 테스트용 아이템 추가
         // 소모 아이템 같은 경우 아직 구조가 정해지지 않아서 이렇게 되어 있음
-        inventoryItems.Add(new ItemData { Item_ID = "Item_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });
+        //inventoryItems.Add(new ItemData { Item_ID = "Item_001", Item_Type = "Consumable", Item_Name = "빨간 포션", Heal_Value = 30, Description = "체력을 30 회복하는 포션입니다.", Icon = "potion_red" });
         // 여기 부터는 실질 적으로 아이템의 정보가 DATA로 들어가 있음
         //inventoryItems.Add(new ItemData { Item_ID = "Weapon_002", Item_Type = "Weapon", One_Handed = "TRUE", Icon = "sword_iron" });
         //inventoryItems.Add(new ItemData { Item_ID = "Armor_001", Item_Type = "Armor", Icon = "sword_iron" });

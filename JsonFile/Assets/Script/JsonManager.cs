@@ -12,10 +12,10 @@ using UnityEngine;
 /// </summary>
 public class JsonManager : MonoBehaviour
 {
-    public static JsonManager Instance { get; private set; }
+   
     public bool IsReady { get; private set; }
     public event Action OnReady;
-
+    public static JsonManager Instance { get; private set; }
     private void Awake()
     {
         // 싱글톤 인스턴스 설정

@@ -3,11 +3,23 @@ using UnityEngine;
 
 public class SpriteBank : MonoBehaviour
 {
+    public static SpriteBank Instance { get; private set; }
+
     // → Awake 시점에 “Images” 폴더(및 하위폴더) 안의 모든 스프라이트를 미리 로드
     Dictionary<string, Sprite> dict;
 
     void Awake()
     {
+        // 싱글톤 인스턴스 설정
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // 씬 변경 시 유지
+
+
         // “Images” 안에 있고, 그 하위 폴더(Chapter1, UI 등)에 있는 모든 Sprite를 로드
         Sprite[] all = Resources.LoadAll<Sprite>("Images");
 

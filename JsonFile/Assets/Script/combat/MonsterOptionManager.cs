@@ -6,12 +6,21 @@ using UnityEngine;
 
 public class MonsterOptionManager : MonoBehaviour
 {
+    public static MonsterOptionManager Instance { get; private set; }
     public JsonManager jsonManager;
     private Dictionary<string, IOptionEffect> effects;
 
     void Awake()
     {
-        jsonManager = JsonManager.Instance; // 수정
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // 씬 변경 시 유지
+
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>();
 
         effects = new Dictionary<string, IOptionEffect>();
         // 몬스터용 옵션만 등록

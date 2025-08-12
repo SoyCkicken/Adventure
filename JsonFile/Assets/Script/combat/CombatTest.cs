@@ -32,6 +32,8 @@ public class CombatTest : MonoBehaviour
 
     private void Awake()
     {
+        optionManager = OptionManager.Instance;
+        monsterOptionManager = MonsterOptionManager.Instance;
         NormalBattle.SetActive(false);
     }
     private void Start()

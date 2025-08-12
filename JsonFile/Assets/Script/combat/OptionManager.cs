@@ -155,13 +155,23 @@ public class OneShot_MPHealing : IOptionEffect
 // 4) OptionManager
 public class OptionManager : MonoBehaviour
 {
+    public static OptionManager Instance { get; private set; }
     public BuffUI buffUI;
     public JsonManager jsonManager;
     private static Dictionary<string, Option_Master> optionDict = new();
 
     private void Awake()
     {
-        jsonManager = JsonManager.Instance; // 수정
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // 씬 변경 시 유지
+
+        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>();
+        buffUI = FindObjectOfType<BuffUI>();
     }
     public static void Initialize(JsonManager json)
     {
