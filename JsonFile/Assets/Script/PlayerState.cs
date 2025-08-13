@@ -25,6 +25,9 @@ public class PlayerState : MonoBehaviour
 
     public static PlayerState Instance { get; private set; }
 
+    public float HealthRatio => HP > 0 ? (float)CurrentHealth / HP : 1f; //계산
+    public float MentalRatio => MP > 0 ? (float)CurrentMental / MP : 1f;
+
     public int CurrentChapterIndex = 0;
     private void Awake()
     {
@@ -40,6 +43,10 @@ public class PlayerState : MonoBehaviour
         RecalculateHPMP();
     }
 
+    private void Start()
+    {
+        
+    }
 
     private void OnEnable()
     {

@@ -17,6 +17,7 @@ public class EventDisplay : MonoBehaviour
     public Transform choiceButtonParent;
     public GameObject choiceButtonPrefab;
     public FontSizeManager fontSizeManager;
+    public InventoryManager inventoryManager;
     public GameObject TouchCatcher;
     private JsonManager jsonManager;
     private SpriteBank spriteBank;
@@ -188,7 +189,7 @@ public class EventDisplay : MonoBehaviour
         currentEvent = groupEvents[currentGroupIndex];
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
-
+        GameObject lastBlock = activeBlocks.Count > 0 ? activeBlocks.Last() : null;
         if (script == null)
         {
             Debug.LogWarning($"스크립트 매칭 실패: {currentEvent.Event_Text}");
@@ -196,8 +197,15 @@ public class EventDisplay : MonoBehaviour
             return;
         }
 
-        GameObject lastBlock = activeBlocks.Count > 0 ? activeBlocks.Last() : null;
+        int rewardBlocks = 0;
+        if (currentEvent.Main_Effect != null && currentEvent.Main_Effect.Count > 0)
+        {
+            //rewardBlocks = ApplyEffects(currentStory.Main_Effect, currentStory.Script_Text);
+            rewardBlocks = EffectProcessor.ApplyEffects(currentEvent.Main_Effect, playerState, inventoryManager, jsonManager, fontSizeManager, content, TextPrefab, "EventScene", activeBlocks);
 
+        }
+        if (rewardBlocks > 0)
+            lastBlock = null; // ✅ 새 텍스트 블록으로 시작시키기
         switch (script.displayType)
         {
             case "TEXT":

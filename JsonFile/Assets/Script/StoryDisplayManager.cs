@@ -141,7 +141,8 @@ public class StoryDisplayManager : MonoBehaviour
         int rewardBlocks = 0;
         if (currentStory.Main_Effect != null && currentStory.Main_Effect.Count > 0)
         {
-            rewardBlocks = ApplyEffects(currentStory.Main_Effect, currentStory.Script_Text);
+            //rewardBlocks = ApplyEffects(currentStory.Main_Effect, currentStory.Script_Text);
+            rewardBlocks = EffectProcessor.ApplyEffects(currentStory.Main_Effect,playerState,inventoryManager,jsonManager,fontSizeManager,content,TextPrefab,"MainScene",Testblocks);
 
         }
         if (rewardBlocks > 0)
@@ -866,156 +867,75 @@ public class StoryDisplayManager : MonoBehaviour
         ClearContent();
         DisplayCurrentStory();
     }
-    //선택지에 확률 적용
-    //지금 같은 경우 확률이 버튼에 출력이 되고 있지는 않음
-
-    //private void ApplyEffects(List<EffectTrigger> effects, string sceneCode)
+    //private int ApplyEffects(List<EffectTrigger> effects, string sceneCode)
     //{
-    //    foreach (var effect in effects)
-    //    {
-    //        switch (effect.ID)
-    //        {
-    //            case "Effect_001":
-    //                if (effect.Value >= 0)
-    //                {
-    //                    var EffectTEXTObject = Instantiate(TextPrefab, content);
-    //                    TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-    //                    fontSizeManager.Register(targetTmp);
-    //                    Testblocks.Add(EffectTEXTObject);
-    //                    targetTmp.text = $"<color=#00ff00>+{effect.Value}</color>\n";
-    //                    playerState.Experience += effect.Value;
-    //                    Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
-    //                    inventoryManager.updateSoulText();
-    //                }
-    //                else
-    //                {
-    //                    var EffectTEXTObject = Instantiate(TextPrefab, content);
-    //                    TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-    //                    fontSizeManager.Register(targetTmp);
-    //                    Testblocks.Add(EffectTEXTObject);
-    //                    targetTmp.text = $"<color=#ff0000>-{effect.Value} </color>\n";
-    //                    playerState.Experience -= effect.Value;
-    //                    Debug.Log($"소울 {effect.Value} 증가 → 현재: {playerState.Experience}");
-    //                    inventoryManager.updateSoulText();
-    //                } 
-    //                break;
+    //    //int createdBlocks = 0;
 
-    //            case "Effect_002":
-    //                playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - Mathf.Abs(effect.Value));
-    //                Debug.Log($"체력 {effect.Value} 감소 → 현재: {playerState.CurrentHealth}");
-    //                break;
+    //    //foreach (var effect in effects)
+    //    //{
+    //    //    switch (effect.ID)
+    //    //    {
+    //    //        case "Effect_001": // 소울 증감
+    //    //            {
+    //    //                int delta = effect.Value; // 음수면 감소, 양수면 증가
+    //    //                var go = Instantiate(TextPrefab, content);
+    //    //                TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+    //    //                fontSizeManager.Register(tmp);
+    //    //                Testblocks.Add(go);
 
-    //            case "Effect_003": // 아이템 추가
-    //                ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
-    //                Debug.Log($"{item.Item_Name} , {item.Item_ID} , {item.Item_Type}");
-    //                if (item != null)
-    //                {
+    //    //                if (delta >= 0)
+    //    //                    tmp.text = $"<color=#00ff00>+{delta}</color>\n";
+    //    //                else
+    //    //                    tmp.text = $"<color=#ff0000>{delta}</color>\n"; // 이미 음수 표시됨
 
-    //                    if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
-    //                    {
-    //                        inventoryManager.selectedItem = item;
+    //    //                playerState.Experience += delta;
+    //    //                inventoryManager.updateSoulText();
+    //    //                createdBlocks++;
+    //    //            }
+    //    //            break;
 
-    //                        inventoryManager.OnClickEquip();
+    //    //        case "Effect_002": // 체력 감소(예시)
+    //    //            playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - Mathf.Abs(effect.Value));
+    //    //            // 필요하면 메시지 출력도 가능
+    //    //            break;
 
-    //                        var EffectTEXTObject = Instantiate(TextPrefab, content);
-    //                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-    //                        fontSizeManager.Register(targetTmp);
-    //                        Testblocks.Add(EffectTEXTObject);
-    //                        targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
+    //    //        case "Effect_003": // 아이템 지급
+    //    //            {
+    //    //                ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
+    //    //                if (item != null)
+    //    //                {
+    //    //                    if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
+    //    //                    {
+    //    //                        inventoryManager.selectedItem = item;
+    //    //                        inventoryManager.OnClickEquip();
+    //    //                    }
+    //    //                    else
+    //    //                    {
+    //    //                        inventoryManager.AddItemToInventory(item);
+    //    //                    }
 
-    //                        Debug.Log($"[자동 장착] {sceneCode}에서 {item.Item_Name} 장착 완료");
-    //                    }
-    //                    else
-    //                    {
-    //                        inventoryManager.AddItemToInventory(item); //초반 아니면 그냥 인벤토리에 추가
-    //                        var EffectTEXTObject = Instantiate(TextPrefab, content);
-    //                        TMP_Text targetTmp = EffectTEXTObject.GetComponentInChildren<TMP_Text>();
-    //                        fontSizeManager.Register(targetTmp);
-    //                        Testblocks.Add(EffectTEXTObject);
-    //                        targetTmp.text = $"<color=#00ff00>+{item.Item_Name}을 흭득하셨습니다</color>\n";
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
-    //                }
-    //                break;
+    //    //                    var go = Instantiate(TextPrefab, content);
+    //    //                    TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
+    //    //                    fontSizeManager.Register(tmp);
+    //    //                    Testblocks.Add(go);
+    //    //                    tmp.text = $"<color=#00ff00>+ {item.Item_Name}을 획득했습니다</color>\n";
+    //    //                    createdBlocks++;
+    //    //                }
+    //    //                else
+    //    //                {
+    //    //                    Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
+    //    //                }
+    //    //            }
+    //    //            break;
 
-    //            default:
-    //                Debug.LogWarning($"알 수 없는 이펙트 ID: {effect.ID}");
-    //                break;
-    //        }
-    //    }
+    //    //        default:
+    //    //            Debug.LogWarning($"알 수 없는 이펙트 ID: {effect.ID}");
+    //    //            break;
+    //    //    }
+    //    //}
+
+    //    //return createdBlocks;
     //}
-    private int ApplyEffects(List<EffectTrigger> effects, string sceneCode)
-    {
-        int createdBlocks = 0;
-
-        foreach (var effect in effects)
-        {
-            switch (effect.ID)
-            {
-                case "Effect_001": // 소울 증감
-                    {
-                        int delta = effect.Value; // 음수면 감소, 양수면 증가
-                        var go = Instantiate(TextPrefab, content);
-                        TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
-                        fontSizeManager.Register(tmp);
-                        Testblocks.Add(go);
-
-                        if (delta >= 0)
-                            tmp.text = $"<color=#00ff00>+{delta}</color>\n";
-                        else
-                            tmp.text = $"<color=#ff0000>{delta}</color>\n"; // 이미 음수 표시됨
-
-                        playerState.Experience += delta;
-                        inventoryManager.updateSoulText();
-                        createdBlocks++;
-                    }
-                    break;
-
-                case "Effect_002": // 체력 감소(예시)
-                    playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - Mathf.Abs(effect.Value));
-                    // 필요하면 메시지 출력도 가능
-                    break;
-
-                case "Effect_003": // 아이템 지급
-                    {
-                        ItemData item = jsonManager.GetItemDataFromCode(effect.Code);
-                        if (item != null)
-                        {
-                            if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
-                            {
-                                inventoryManager.selectedItem = item;
-                                inventoryManager.OnClickEquip();
-                            }
-                            else
-                            {
-                                inventoryManager.AddItemToInventory(item);
-                            }
-
-                            var go = Instantiate(TextPrefab, content);
-                            TMP_Text tmp = go.GetComponentInChildren<TMP_Text>();
-                            fontSizeManager.Register(tmp);
-                            Testblocks.Add(go);
-                            tmp.text = $"<color=#00ff00>+ {item.Item_Name}을 획득했습니다</color>\n";
-                            createdBlocks++;
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"[이펙트 실패] 잘못된 아이템 코드: {effect.Code}");
-                        }
-                    }
-                    break;
-
-                default:
-                    Debug.LogWarning($"알 수 없는 이펙트 ID: {effect.ID}");
-                    break;
-            }
-        }
-
-        return createdBlocks;
-    }
 
     private float EvaluateFormula(string formula)
     {

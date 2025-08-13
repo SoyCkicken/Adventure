@@ -14,10 +14,10 @@ public class IntegerHPBarScaler : MonoBehaviour
 
     [Header("기준 설정")]
     public int maxStatHP = 5;         // 최대 체력 수치 (예: 5)
-    public float baseWidth = 160f;    // 체력이 5일 때 바 길이
+    public float baseWidth = 200f;    // 체력이 5일 때 바 길이
 
     [Header("최소 길이 보정")]
-    public float minWidth = 80f;
+    public float minWidth = 120f;
 
     private RectTransform barTransform;
 

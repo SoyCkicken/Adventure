@@ -7,6 +7,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_1",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -19,6 +20,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_2",
       "Choice1_Text": "EventScript_1_3",
       "Choice2_Text": "EventScript_1_6",
@@ -31,6 +33,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_3",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -43,6 +46,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_4",
       "Choice1_Text": "EventScript_1_8",
       "Choice2_Text": null,
@@ -55,6 +59,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_5",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -67,6 +72,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_6",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -79,6 +85,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_7",
       "Choice1_Text": "EventScript_1_8",
       "Choice2_Text": null,
@@ -91,6 +98,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_1_8",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -103,6 +111,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_1",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -115,6 +124,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_2",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -127,6 +137,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_3",
       "Choice1_Text": "EventScript_2_4",
       "Choice2_Text": "EventScript_2_6",
@@ -139,6 +150,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_4",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -151,6 +163,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_5",
       "Choice1_Text": "EventScript_2_10",
       "Choice2_Text": null,
@@ -163,6 +176,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_6",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -175,6 +189,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_7",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -187,6 +202,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_8",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -199,6 +215,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_9",
       "Choice1_Text": "EventScript_2_10",
       "Choice2_Text": null,
@@ -211,6 +228,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_2_10",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -223,6 +241,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_1",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -235,6 +254,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_2",
       "Choice1_Text": "EventScript_3_3",
       "Choice2_Text": "EventScript_3_5",
@@ -247,6 +267,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_3",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -259,6 +280,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_4",
       "Choice1_Text": "EventScript_3_17",
       "Choice2_Text": null,
@@ -271,6 +293,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_5",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -283,6 +306,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_6",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -295,6 +319,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_7",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -307,6 +332,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_8",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -319,6 +345,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_9",
       "Choice1_Text": "EventScript_3_10",
       "Choice2_Text": "EventScript_3_13",
@@ -330,6 +357,12 @@
       "Random_Event_ID": "EventScene_3_10",
       "Chapter_Index": [
         1
+      ],
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": -300
+        }
       ],
       "Event_Text": "EventScript_3_10",
       "Choice1_Text": null,
@@ -343,6 +376,12 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": -300
+        }
+      ],
       "Event_Text": "EventScript_3_11",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -354,6 +393,12 @@
       "Random_Event_ID": "EventScene_3_12",
       "Chapter_Index": [
         1
+      ],
+      "Main_Effect": [
+        {
+          "ID": "Effect_001",
+          "Value": -300
+        }
       ],
       "Event_Text": "EventScript_3_12",
       "Choice1_Text": "EventScript_3_17",
@@ -367,6 +412,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_13",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -379,6 +425,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_14",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -391,6 +438,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_15",
       "Choice1_Text": "EventScript_3_17",
       "Choice2_Text": null,
@@ -403,6 +451,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_16",
       "Choice1_Text": "EventScript_3_17",
       "Choice2_Text": null,
@@ -415,6 +464,7 @@
       "Chapter_Index": [
         1
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_3_17",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -428,6 +478,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_1",
       "Choice1_Text": "EventScript_4_2",
       "Choice2_Text": "EventScript_4_9",
@@ -441,6 +492,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_2",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -454,6 +506,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_3",
       "Choice1_Text": "EventScript_4_4",
       "Choice2_Text": "EventScript_4_9",
@@ -467,6 +520,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_4",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -480,6 +534,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_5",
       "Choice1_Text": "EventScript_4_6",
       "Choice2_Text": "EventScript_4_9",
@@ -493,6 +548,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_6",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -506,6 +562,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_7",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -519,6 +576,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_8",
       "Choice1_Text": "EventScript_4_11",
       "Choice2_Text": null,
@@ -532,6 +590,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_9",
       "Choice1_Text": null,
       "Choice2_Text": null,
@@ -545,6 +604,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_10",
       "Choice1_Text": "EventScript_4_11",
       "Choice2_Text": null,
@@ -558,6 +618,7 @@
         1,
         2
       ],
+      "Main_Effect": null,
       "Event_Text": "EventScript_4_11",
       "Choice1_Text": null,
       "Choice2_Text": null,

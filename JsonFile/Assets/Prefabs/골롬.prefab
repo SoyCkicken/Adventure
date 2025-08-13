@@ -679,6 +679,7 @@ MonoBehaviour:
   MaxTotalHP: 1000
   CurrentTotalHP: 1000
   hitChance: 80
+  GetEXP: 150
   partList:
   - partName: "\uC67C\uCABD \uD314"
     SlotName: M_jombie_LeftArm
