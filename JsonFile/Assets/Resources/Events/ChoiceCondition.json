@@ -1,0 +1,28 @@
+{
+  "ChoiceCondition": [
+    {
+      "ChoiceCode": "CHOICE_001",
+      "Type": "Gold",
+      "StatName": null,
+      "ItemID": null,
+      "Value": 500.0,
+      "Note": "500골드 필요"
+    },
+    {
+      "ChoiceCode": "CHOICE_001",
+      "Type": "Stat",
+      "StatName": "CHA",
+      "ItemID": null,
+      "Value": 4.0,
+      "Note": "카리스마 4 이상"
+    },
+    {
+      "ChoiceCode": "CHOICE_002",
+      "Type": "Item",
+      "StatName": null,
+      "ItemID": "Item_001",
+      "Value": null,
+      "Note": "빨간 포션 필요"
+    }
+  ]
+}

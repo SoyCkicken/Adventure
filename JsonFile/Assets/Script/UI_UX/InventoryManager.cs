@@ -351,6 +351,20 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public bool HasItem(string itemID)
+    {
+        foreach (var slot in slotUIs)
+        {
+            if (slot.CurrentItem == null) continue;
+
+            if (slot.CurrentItem.Item_ID == itemID)
+            {
+                return true; // 아이템 존재함
+            }
+        }
+
+        return false; // 전부 확인했지만 없음
+    }
     string GetStatText(ItemData item)
     {
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");

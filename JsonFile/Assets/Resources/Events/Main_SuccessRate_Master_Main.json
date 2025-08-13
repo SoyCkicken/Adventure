@@ -5,7 +5,8 @@
       "Choice_No": 1.0,
       "Success_Formula": "STR*10 ",
       "Success_Next_Script": "MainScript_1_2_8",
-      "Fail_Next_Script": "MainScript_1_2_15"
+      "Fail_Next_Script": "MainScript_1_2_15",
+      "ChoiceConditions": "CHOICE_001"
     }
   ]
 }

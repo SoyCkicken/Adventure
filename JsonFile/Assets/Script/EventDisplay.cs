@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using static SaveManager;
 using MyGame.TextEffects;
+using Unity.VisualScripting;
 public class EventDisplay : MonoBehaviour
 {
     [Header("Prefabs & References")]
@@ -627,6 +628,72 @@ public class EventDisplay : MonoBehaviour
     //        });
     //    }
     //}
+    //private void SetupChoices()
+    //{
+    //    ClearChoiceButtons();
+    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+
+    //    var choices = new List<(string code, string text, int choiceNo)>();
+
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
+    //        choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
+    //        choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text), 2));
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
+    //        choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
+
+    //    // 이벤트용 성공률 데이터
+    //    var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
+
+    //    foreach (var ch in choices)
+    //    {
+    //        var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
+    //        var btn = go.GetComponent<Button>();
+    //        var txt = go.GetComponentInChildren<TextMeshProUGUI>();
+    //        if (txt != null) txt.text = ch.text;
+
+    //        // 선택지별 성공률 사전 계산
+    //        var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
+    //        bool hasRate = false;
+    //        float rate01 = 0f; // 0~1
+
+    //        if (rateData != null)
+    //        {
+    //            rate01 = Mathf.Clamp01(EvaluateFormula(rateData.Success_Formula));
+    //            hasRate = true;
+    //        }
+
+    //        // 버튼 위에 성공률 배지 표시(있을 때만)
+    //        if (hasRate)
+    //        {
+    //            CreateChanceBadgeOverButton(
+    //                buttonGO: go,
+    //                mainText: txt,
+    //                rate01: rate01,
+    //                bgSprite: null,        // 배경 브러시가 있으면 전달
+    //                yOffset: -10f,
+    //                labelSize: Mathf.RoundToInt((txt != null ? txt.fontSize : 24) * 0.3f),
+    //                percentScale: 1.6f
+    //            );
+    //        }
+
+    //        // 클릭 시 분기
+    //        btn.onClick.AddListener(() =>
+    //        {
+    //            string nextCode = ch.code; // 기본값: 원래 코드로 이동
+
+    //            if (hasRate)
+    //            {
+    //                bool ok = UnityEngine.Random.value < rate01;
+    //                nextCode = ok ? rateData.Success_Next_Script
+    //                              : rateData.Fail_Next_Script;
+    //            }
+
+    //            OnChoice(nextCode);
+    //        });
+    //    }
+    //}
+
     private void SetupChoices()
     {
         ClearChoiceButtons();
@@ -641,7 +708,6 @@ public class EventDisplay : MonoBehaviour
         if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
             choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
 
-        // 이벤트용 성공률 데이터
         var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
 
         foreach (var ch in choices)
@@ -651,127 +717,71 @@ public class EventDisplay : MonoBehaviour
             var txt = go.GetComponentInChildren<TextMeshProUGUI>();
             if (txt != null) txt.text = ch.text;
 
-            // 선택지별 성공률 사전 계산
             var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
-            bool hasRate = false;
-            float rate01 = 0f; // 0~1
+            
 
-            if (rateData != null)
+            var conditions = jsonManager.GetConditionsForChoice(ch.code);
+
+            //var conditions = !string.IsNullOrEmpty(rateData?.ChoiceConditions)
+            //   ? jsonManager.GetConditionsForChoice(rateData.ChoiceConditions)
+            //   : null;
+
+            bool isAvailable = ChoiceEvaluator.IsChoiceAvailable(
+                conditions,
+                playerState,
+                inventoryManager
+            );
+
+            if (!isAvailable)
             {
-                rate01 = Mathf.Clamp01(EvaluateFormula(rateData.Success_Formula));
-                hasRate = true;
+                btn.interactable = false;
+                txt.color = Color.gray;
+                txt.text += "<size=70%><i> (조건 미달)</i></size>";
             }
 
-            // 버튼 위에 성공률 배지 표시(있을 때만)
+            bool hasRate = rateData != null;
+            ChoiceResult choiceResult = null;
             if (hasRate)
             {
-                CreateChanceBadgeOverButton(
+                choiceResult = ChoiceEvaluator.Resolve(
+                    formula: rateData.Success_Formula,
+                    nextOnSuccess: rateData.Success_Next_Script,
+                    nextOnFail: rateData.Fail_Next_Script,
+                    state: playerState
+                );
+            }
+
+            // 성공률 배지 출력
+            if (hasRate && choiceResult != null)
+            {
+                ChoiceUIHelper.CreateChanceBadge(
                     buttonGO: go,
                     mainText: txt,
-                    rate01: rate01,
-                    bgSprite: null,        // 배경 브러시가 있으면 전달
+                    rate01: choiceResult.SuccessRate,
+                    bgSprite: null,
                     yOffset: -10f,
-                    labelSize: Mathf.RoundToInt((txt != null ? txt.fontSize : 24) * 0.3f),
+                    labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
                     percentScale: 1.6f
                 );
             }
 
-            // 클릭 시 분기
             btn.onClick.AddListener(() =>
             {
-                string nextCode = ch.code; // 기본값: 원래 코드로 이동
+                string nextCode = ch.code; // 기본값: 원래 선택지 코드로 이동
 
-                if (hasRate)
+                if (hasRate && choiceResult != null)
                 {
-                    bool ok = UnityEngine.Random.value < rate01;
-                    nextCode = ok ? rateData.Success_Next_Script
-                                  : rateData.Fail_Next_Script;
+                    bool ok = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
+                    nextCode = ok ? rateData.Success_Next_Script?.Trim()
+                                  : rateData.Fail_Next_Script?.Trim();
+
+                    if (string.IsNullOrEmpty(nextCode))
+                        nextCode = ch.code; // 실패 시 분기 없는 경우 다시 기본 코드로
                 }
 
                 OnChoice(nextCode);
             });
         }
-    }
-    private void CreateChanceBadgeOverButton(
-    GameObject buttonGO,
-    TMP_Text mainText,
-    float rate01,
-    Sprite bgSprite = null,
-    float yOffset = -8f,
-    int labelSize = 22,
-    float percentScale = 1.5f)
-    {
-        if (float.IsNaN(rate01)) return;
-
-        var holder = new GameObject("ChanceBadge", typeof(RectTransform));
-        holder.transform.SetParent(buttonGO.transform, false);
-
-        var hRT = (RectTransform)holder.transform;
-        hRT.anchorMin = new Vector2(0.5f, 1f);
-        hRT.anchorMax = new Vector2(0.5f, 1f);
-        hRT.pivot = new Vector2(0.5f, 1f);
-        hRT.anchoredPosition = new Vector2(0f, yOffset);
-        hRT.sizeDelta = Vector2.zero;
-
-        var le = holder.AddComponent<LayoutElement>(); // 버튼 레이아웃에 영향 X
-        le.ignoreLayout = true;
-
-        // 배경 브러시(선택)
-        if (bgSprite != null)
-        {
-            var bgGO = new GameObject("BG", typeof(RectTransform), typeof(Image));
-            bgGO.transform.SetParent(holder.transform, false);
-            var bg = bgGO.GetComponent<Image>();
-            bg.sprite = bgSprite;
-            bg.type = Image.Type.Sliced;
-            bg.raycastTarget = false;
-
-            var bgRT = (RectTransform)bgGO.transform;
-            bgRT.anchorMin = new Vector2(0f, 0f);
-            bgRT.anchorMax = new Vector2(1f, 1f);
-            bgRT.pivot = new Vector2(0.5f, 0.5f);
-            bgRT.offsetMin = new Vector2(8f, -2f);
-            bgRT.offsetMax = new Vector2(-8f, 26f);
-        }
-
-        // 라벨
-        var txtGO = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-        txtGO.transform.SetParent(holder.transform, false);
-        var t = txtGO.GetComponent<TextMeshProUGUI>();
-
-        if (mainText is TextMeshProUGUI main) t.font = main.font;
-        t.richText = true;
-        t.fontSize = labelSize;
-        t.alignment = TextAlignmentOptions.Center;
-        t.raycastTarget = false;
-        t.enableWordWrapping = false;
-
-        // 외곽선
-        var mat = t.fontMaterial;
-        mat.SetFloat(TMPro.ShaderUtilities.ID_OutlineWidth, 0.18f);
-        mat.SetColor(TMPro.ShaderUtilities.ID_OutlineColor, new Color(0f, 0f, 0f, 0.75f));
-
-        float pct = Mathf.Clamp01(rate01) * 100f;
-        string pctStr = pct.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
-        t.color = ChanceColor(rate01);
-        t.text = $"성공률 <size={(int)(percentScale * 100)}%>{pctStr}%</size>";
-
-        var rt = (RectTransform)txtGO.transform;
-        rt.anchorMin = new Vector2(0f, 0f);
-        rt.anchorMax = new Vector2(1f, 1f);
-        rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-
-        if (fontSizeManager != null) fontSizeManager.Register(t);
-    }
-
-    private Color ChanceColor(float r)
-    {
-        if (r >= 0.8f) return new Color32(65, 200, 90, 255); // 높음
-        if (r >= 0.6f) return new Color32(200, 190, 60, 255); // 보통
-        if (r >= 0.4f) return new Color32(220, 120, 60, 255); // 낮음
-        return new Color32(200, 70, 70, 255);    // 매우 낮음
     }
 
     private void OnChoice(string code)

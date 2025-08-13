@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using static UnityEditor.VersionControl.Asset;
 
 
 /// <summary>
@@ -61,6 +62,9 @@ public class JsonManager : MonoBehaviour
 
     private Dictionary<string, List<MerchantItem>> merchantItemCache = new();
     private Dictionary<string, List<Patch_Notes>> patchNotesDict = new();
+    //선택지 선택 시 필요 조건 관련
+    public Dictionary<string, List<ChoiceCondition>> choiceConditions;
+    private List<Main_SuccessRate_Master_Main> _rates;
 
     private void LoadAllJsonFiles()
     {
@@ -444,6 +448,21 @@ public class JsonManager : MonoBehaviour
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (패치노트 {wrapper.items.Count}개)");
                     }
                 }
+                //선택지 필요 조건
+                else if (fileName.Contains("ChoiceConditions"))
+                {
+                    var jObj = Newtonsoft.Json.Linq.JObject.Parse(jsonContent);
+                    string arrayStr = jObj["ChoiceConditions"].ToString();
+                    string wrappedJson = WrapJsonArray(arrayStr);
+
+                    Wrapper<ChoiceCondition> wrapper = JsonUtility.FromJson<Wrapper<ChoiceCondition>>(wrappedJson);
+                    if (wrapper != null && wrapper.items != null)
+                    {
+                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                        choiceConditions[cleanFileName] = wrapper.items;
+                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (선택지 필요 조건 {wrapper.items.Count}개)");
+                    }
+                }
 
                 else
                 {
@@ -497,6 +516,35 @@ public class JsonManager : MonoBehaviour
         Debug.LogWarning($"[JsonManager] {fileName} Main_SuccessRate_Master_Main 데이터가 없습니다.");
         return null;
     }
+    //public List<Main_SuccessRate_Master_Main> GetSuccessRatesRanByScene(string sceneCode)
+    //{
+    //    if (_rates == null)
+    //    {
+    //        // TextAsset 불러오는 네 방식에 맞춰서 교체
+    //        TextAsset ta = Resources.Load<TextAsset>("RandomSuccessRates");
+    //        var file = JsonUtility.FromJson<ChoiceRateFile>(ta.text);
+    //        _rates = file?.Entries ?? new List<ChoiceRateEntry>();
+
+    //        // ⛑ 하위 호환: 평평한 필드만 있을 경우 Gate로 이식
+    //        foreach (var r in _rates)
+    //        {
+    //            if (r.Gate == null &&
+    //                (!string.IsNullOrEmpty(r.Req_StatName) || r.Req_StatMin > 0 ||
+    //                 !string.IsNullOrEmpty(r.Req_ItemID) || r.Req_Gold > 0))
+    //            {
+    //                r.Gate = new ChoiceGate
+    //                {
+    //                    Req_StatName = r.Req_StatName,
+    //                    Req_StatMin = r.Req_StatMin,
+    //                    Req_ItemID = r.Req_ItemID,
+    //                    Req_Gold = r.Req_Gold,
+    //                };
+    //            }
+    //        }
+    //    }
+    //}
+
+
     public List<Story_Effect_Master> GetStoryMainEffectMasters(string fileName)
     {
         if (storyMasterEffectDict.TryGetValue(fileName, out List<Story_Effect_Master> list))
@@ -700,6 +748,12 @@ public class JsonManager : MonoBehaviour
             return list;
         Debug.LogWarning($"[JsonManager] {fileKey} Patch_Notes 데이터가 없습니다.");
         return new List<Patch_Notes>();
+    }
+    public List<ChoiceCondition> GetConditionsForChoice(string choiceCode)
+    {
+        if (choiceConditions.TryGetValue(choiceCode, out var list))
+            return list;
+        return new List<ChoiceCondition>();
     }
 
     public ItemData GetItemDataFromCode(string code)
