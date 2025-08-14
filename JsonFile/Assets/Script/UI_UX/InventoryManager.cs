@@ -350,21 +350,28 @@ public class InventoryManager : MonoBehaviour
                 break;
         }
     }
+    // 추가 된 부분 확인용 주석
 
-    public bool HasItem(string itemID)
+    public int CountItem(string itemCode) => CountItemInstances(itemCode);
+
+    // 비스택: 같은 코드의 '객체 수'를 센다
+    public int CountItemInstances(string itemCode)
     {
-        foreach (var slot in slotUIs)
-        {
-            if (slot.CurrentItem == null) continue;
+        if (string.IsNullOrEmpty(itemCode) || inventoryItems == null) return 0;
 
-            if (slot.CurrentItem.Item_ID == itemID)
+        int total = 0;
+        foreach (var it in inventoryItems)
+        {
+            if (string.Equals(it.Item_ID, itemCode, StringComparison.OrdinalIgnoreCase))
             {
-                return true; // 아이템 존재함
+                // 스택이 아니므로 엔트리 하나가 곧 1개
+                total += 1;
             }
         }
-
-        return false; // 전부 확인했지만 없음
+        return total;
     }
+
+
     string GetStatText(ItemData item)
     {
         var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
@@ -668,6 +675,8 @@ public class InventoryManager : MonoBehaviour
         UpdateDPS_MaxHealth();       // DPS, 체력 갱신
         LoadInventory();        // 인벤토리 UI 갱신 
     }
+
+    
 }
 
 [System.Serializable]

@@ -8,6 +8,7 @@ using TMPro;
 using static SaveManager;
 using MyGame.TextEffects;
 using Unity.VisualScripting;
+using Newtonsoft.Json.Linq;
 public class EventDisplay : MonoBehaviour
 {
     [Header("Prefabs & References")]
@@ -24,7 +25,8 @@ public class EventDisplay : MonoBehaviour
     private SpriteBank spriteBank;
     public ScrollRect scrollRect;
     public PlayerState playerState;
-    
+    [SerializeField] private EquipmentSystem equipmentSystem;
+
     private bool isSkip = false;
     private bool isTyping = false;
     private System.Random rng = new System.Random();
@@ -69,6 +71,17 @@ public class EventDisplay : MonoBehaviour
         if (isTyping)
             isSkip = true;
     }
+
+    private List<ChoiceRequirement> GetRequirementsFor(string sceneKey, int choiceNo, Ran_SuccessRate_Master_Events rateRow)
+    {
+        // 1) 성공률 시트에 ChoiceRequirement 컬럼이 있으면 그것을 우선 사용
+        if (rateRow != null && rateRow.ChoiceRequirement != null && rateRow.ChoiceRequirement.Count > 0)
+            return rateRow.ChoiceRequirement;
+
+        // 2) 없으면 JsonManager 색인에서 보조 조회 (sceneKey = Random_Event_ID)
+        return jsonManager != null ? jsonManager.GetChoiceRequirementsByScene(sceneKey, choiceNo) : null;
+    }
+
     public void Start()
     {
         playerState = PlayerState.Instance;
@@ -694,13 +707,88 @@ public class EventDisplay : MonoBehaviour
     //    }
     //}
 
+    //private void SetupChoices()
+    //{
+    //    ClearChoiceButtons();
+    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+
+    //    var choices = new List<(string code, string text, int choiceNo)>();
+
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
+    //        choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
+    //        choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text), 2));
+    //    if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
+    //        choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
+
+    //    var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
+
+    //    foreach (var ch in choices)
+    //    {
+    //        var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
+    //        var btn = go.GetComponent<Button>();
+    //        var txt = go.GetComponentInChildren<TextMeshProUGUI>();
+    //        if (txt != null) txt.text = ch.text;
+
+    //        var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
+
+    //        bool hasRate = rateData != null;
+    //        ChoiceResult choiceResult = null;
+    //        if (hasRate)
+    //        {
+    //            choiceResult = ChoiceEvaluator.Resolve(
+    //                formula: rateData.Success_Formula,
+    //                nextOnSuccess: rateData.Success_Next_Script,
+    //                nextOnFail: rateData.Fail_Next_Script,
+    //                state: playerState
+    //            );
+    //        }
+
+    //        // 성공률 배지 출력
+    //        if (hasRate && choiceResult != null)
+    //        {
+    //            ChoiceUIHelper.CreateChanceBadge(
+    //                buttonGO: go,
+    //                mainText: txt,
+    //                rate01: choiceResult.SuccessRate,
+    //                bgSprite: null,
+    //                yOffset: -10f,
+    //                labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
+    //                percentScale: 1.6f
+    //            );
+    //        }
+
+    //        btn.onClick.AddListener(() =>
+    //        {
+    //            string nextCode = ch.code; // 기본값: 원래 선택지 코드로 이동
+
+    //            if (hasRate && choiceResult != null)
+    //            {
+    //                bool ok = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
+    //                nextCode = ok ? rateData.Success_Next_Script?.Trim()
+    //                              : rateData.Fail_Next_Script?.Trim();
+
+    //                if (string.IsNullOrEmpty(nextCode))
+    //                    nextCode = ch.code; // 실패 시 분기 없는 경우 다시 기본 코드로
+    //            }
+
+    //            OnChoice(nextCode);
+    //        });
+    //    }
+    //}
+
     private void SetupChoices()
     {
         ClearChoiceButtons();
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
 
-        var choices = new List<(string code, string text, int choiceNo)>();
+        // 참조 보장
+        equipmentSystem = equipmentSystem ?? FindObjectOfType<EquipmentSystem>();
+        playerState = playerState ?? PlayerState.Instance;
+        jsonManager = jsonManager ?? JsonManager.Instance;
 
+        // 선택지 1~3 추출 (+ 표시 텍스트)
+        var choices = new List<(string code, string text, int no)>();
         if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
             choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
         if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
@@ -708,6 +796,7 @@ public class EventDisplay : MonoBehaviour
         if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
             choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
 
+        // 이벤트용 성공률 데이터
         var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
 
         foreach (var ch in choices)
@@ -717,70 +806,62 @@ public class EventDisplay : MonoBehaviour
             var txt = go.GetComponentInChildren<TextMeshProUGUI>();
             if (txt != null) txt.text = ch.text;
 
-            var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
-            
+            // 🔴 1) 조건 로드 + 평가(먼저!)
+            var rateRow = successRates.FirstOrDefault(r => r.Choice_No == ch.no);
+            var reqs = GetRequirementsFor(currentEvent.Random_Event_ID, ch.no, rateRow);
 
-            var conditions = jsonManager.GetConditionsForChoice(ch.code);
+            bool ok = ConditionEvaluator.Evaluate(reqs, playerState, inventoryManager, equipmentSystem, out var reasons);
 
-            //var conditions = !string.IsNullOrEmpty(rateData?.ChoiceConditions)
-            //   ? jsonManager.GetConditionsForChoice(rateData.ChoiceConditions)
-            //   : null;
-
-            bool isAvailable = ChoiceEvaluator.IsChoiceAvailable(
-                conditions,
-                playerState,
-                inventoryManager
-            );
-
-            if (!isAvailable)
+            if (!ok)
             {
                 btn.interactable = false;
-                txt.color = Color.gray;
-                txt.text += "<size=70%><i> (조건 미달)</i></size>";
+                if (txt != null)
+                    txt.text = $"{ch.text}\n<color=#FF6666>조건: {string.Join(", ", reasons)}</color>";
+                continue;
             }
 
-            bool hasRate = rateData != null;
+            // 🔵 2) 조건 통과 → 확률/일반 버튼 생성
+            bool hasRate = rateRow != null;
             ChoiceResult choiceResult = null;
+
             if (hasRate)
             {
                 choiceResult = ChoiceEvaluator.Resolve(
-                    formula: rateData.Success_Formula,
-                    nextOnSuccess: rateData.Success_Next_Script,
-                    nextOnFail: rateData.Fail_Next_Script,
+                    formula: rateRow.Success_Formula,
+                    nextOnSuccess: rateRow.Success_Next_Script,
+                    nextOnFail: rateRow.Fail_Next_Script,
                     state: playerState
                 );
-            }
 
-            // 성공률 배지 출력
-            if (hasRate && choiceResult != null)
-            {
-                ChoiceUIHelper.CreateChanceBadge(
-                    buttonGO: go,
-                    mainText: txt,
-                    rate01: choiceResult.SuccessRate,
-                    bgSprite: null,
-                    yOffset: -10f,
-                    labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
-                    percentScale: 1.6f
-                );
-            }
-
-            btn.onClick.AddListener(() =>
-            {
-                string nextCode = ch.code; // 기본값: 원래 선택지 코드로 이동
-
-                if (hasRate && choiceResult != null)
+                if (choiceResult != null && txt != null)
                 {
-                    bool ok = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
-                    nextCode = ok ? rateData.Success_Next_Script?.Trim()
-                                  : rateData.Fail_Next_Script?.Trim();
-
-                    if (string.IsNullOrEmpty(nextCode))
-                        nextCode = ch.code; // 실패 시 분기 없는 경우 다시 기본 코드로
+                    ChoiceUIHelper.CreateChanceBadge(
+                        buttonGO: go,
+                        mainText: txt,
+                        rate01: choiceResult.SuccessRate,
+                        bgSprite: null,
+                        yOffset: -10f,
+                        labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
+                        percentScale: 1.6f
+                    );
                 }
 
-                OnChoice(nextCode);
-            });
+                btn.onClick.AddListener(() =>
+                {
+                    string nextCode;
+                    bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
+                    nextCode = success ? rateRow.Success_Next_Script?.Trim()
+                                       : rateRow.Fail_Next_Script?.Trim();
+
+                    if (string.IsNullOrEmpty(nextCode)) nextCode = ch.code;
+                    OnChoice(nextCode);
+                });
+            }
+            else
+            {
+                // 일반 버튼
+                btn.onClick.AddListener(() => OnChoice(ch.code));
+            }
         }
     }
 
@@ -796,11 +877,11 @@ public class EventDisplay : MonoBehaviour
         {
             //여기가 문제인거 확인
             //currentGroupIndex = eventList.IndexOf(target);
-            currentGroupIndex = target.Script_Index;
-           Debug.Log(target.Script_Index);
+            currentGroupIndex = groupEvents.IndexOf(target); // ← 이렇게 바꿔줘
+            Debug.Log(target.Script_Index);
             if (targetscript.EventBreak == "Break")
             {
-                //끝나는 선택지 누를 시 
+                //끝나는 선택지 누를 시 s
                 //이벤트 종료 시킴
                 if (targetscript != null && targetscript.EventBreak == "Break")
                 {

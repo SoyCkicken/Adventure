@@ -1,6 +1,22 @@
 {
   "Ran_SuccessRate_Master_Events": [
     {
+      "Scene_Code": "EvnetScene_0_0",
+      "Choice_No": 1.0,
+      "Success_Formula": "STR * 10",
+      "Success_Next_Script": "EventScript_0_0",
+      "Fail_Next_Script": "EventScript_0_0",
+      "Success_Effect": "Effect_1",
+      "Fail_Effect": "Effect_2",
+      "ChoiceRequirement": [
+        {
+          "ID": "STATE",
+          "Code": "STR",
+          "Value": 5
+        }
+      ]
+    },
+    {
       "Scene_Code": "EventScene_1_2",
       "Choice_No": 1.0,
       "Success_Formula": "STR * 10",
@@ -8,7 +24,13 @@
       "Fail_Next_Script": "EventScript_1_6",
       "Success_Effect": "Effect_1",
       "Fail_Effect": "Effect_2",
-      "ChoiceGate": "[{Req_StatName=STR},{Req_StatMin=4}]"
+      "ChoiceRequirement": [
+        {
+          "ID": "STATE",
+          "Code": "STR",
+          "Value": 10
+        }
+      ]
     },
     {
       "Scene_Code": "EventScene_1_2",
@@ -18,7 +40,13 @@
       "Fail_Next_Script": "EventScript_1_6",
       "Success_Effect": "Effect_1",
       "Fail_Effect": "Effect_2",
-      "ChoiceGate": "[{item_001}]"
+      "ChoiceRequirement": [
+        {
+          "ID": "GOLD",
+          "Code": "GOLD",
+          "Value": 500
+        }
+      ]
     },
     {
       "Scene_Code": "EventScript_3_9",
@@ -28,7 +56,7 @@
       "Fail_Next_Script": null,
       "Success_Effect": null,
       "Fail_Effect": null,
-      "ChoiceGate": "{Req_Gold=500}"
+      "ChoiceRequirement": null
     },
     {
       "Scene_Code": "EventScene_3_9",
@@ -38,7 +66,7 @@
       "Fail_Next_Script": "EventScript_3_16",
       "Success_Effect": null,
       "Fail_Effect": null,
-      "ChoiceGate": null
+      "ChoiceRequirement": null
     }
   ]
 }

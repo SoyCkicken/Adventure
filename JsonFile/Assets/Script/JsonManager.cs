@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
-using static UnityEditor.VersionControl.Asset;
+
 
 
 /// <summary>
@@ -63,9 +63,8 @@ public class JsonManager : MonoBehaviour
     private Dictionary<string, List<MerchantItem>> merchantItemCache = new();
     private Dictionary<string, List<Patch_Notes>> patchNotesDict = new();
     //선택지 선택 시 필요 조건 관련
-    public Dictionary<string, List<ChoiceCondition>> choiceConditions;
-    private List<Main_SuccessRate_Master_Main> _rates;
-
+    private readonly Dictionary<(string scene, int choiceNo), List<ChoiceRequirement>> _choiceReqBySceneChoice
+    = new Dictionary<(string, int), List<ChoiceRequirement>>();
     private void LoadAllJsonFiles()
     {
         TextAsset[] jsonFiles = Resources.LoadAll<TextAsset>("Events");
@@ -448,22 +447,6 @@ public class JsonManager : MonoBehaviour
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (패치노트 {wrapper.items.Count}개)");
                     }
                 }
-                //선택지 필요 조건
-                else if (fileName.Contains("ChoiceConditions"))
-                {
-                    var jObj = Newtonsoft.Json.Linq.JObject.Parse(jsonContent);
-                    string arrayStr = jObj["ChoiceConditions"].ToString();
-                    string wrappedJson = WrapJsonArray(arrayStr);
-
-                    Wrapper<ChoiceCondition> wrapper = JsonUtility.FromJson<Wrapper<ChoiceCondition>>(wrappedJson);
-                    if (wrapper != null && wrapper.items != null)
-                    {
-                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
-                        choiceConditions[cleanFileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (선택지 필요 조건 {wrapper.items.Count}개)");
-                    }
-                }
-
                 else
                 {
                     Debug.LogWarning($"[JsonManager] {fileName}.json 은 인식되지 않는 형식입니다.");
@@ -543,6 +526,18 @@ public class JsonManager : MonoBehaviour
     //        }
     //    }
     //}
+    private void IndexChoiceRequirements(string sceneCode, int choiceNo, List<ChoiceRequirement> reqs)
+    {
+        if (string.IsNullOrEmpty(sceneCode) || reqs == null) return;
+        var key = (sceneCode, choiceNo);
+        if (!_choiceReqBySceneChoice.TryGetValue(key, out var list))
+        {
+            list = new List<ChoiceRequirement>();
+            _choiceReqBySceneChoice[key] = list;
+        }
+        // 같은 씬/선택번호에 여러 줄이 들어올 수 있으면 병합, 아니면 교체해도 됨
+        list.AddRange(reqs);
+    }
 
 
     public List<Story_Effect_Master> GetStoryMainEffectMasters(string fileName)
@@ -737,6 +732,11 @@ public class JsonManager : MonoBehaviour
         }
     }
 
+    public List<ChoiceRequirement> GetChoiceRequirementsByScene(string sceneCode, int choiceNo)
+    {
+        if (string.IsNullOrEmpty(sceneCode)) return null;
+        return _choiceReqBySceneChoice.TryGetValue((sceneCode, choiceNo), out var list) ? list : null;
+    }
 
     // 전체 로드된 Story_Master 파일명 리스트
     public List<string> GetLoadedStoryFiles() => new List<string>(storyMasterDict.Keys);
@@ -748,12 +748,6 @@ public class JsonManager : MonoBehaviour
             return list;
         Debug.LogWarning($"[JsonManager] {fileKey} Patch_Notes 데이터가 없습니다.");
         return new List<Patch_Notes>();
-    }
-    public List<ChoiceCondition> GetConditionsForChoice(string choiceCode)
-    {
-        if (choiceConditions.TryGetValue(choiceCode, out var list))
-            return list;
-        return new List<ChoiceCondition>();
     }
 
     public ItemData GetItemDataFromCode(string code)

@@ -13,26 +13,28 @@ public class GoogleManager : MonoBehaviour
     {
         PlayGamesPlatform.DebugLogEnabled = true;
         PlayGamesPlatform.Activate();
+#if UNITY_ANDROID
         SignIn();
+#endif
     }
 
     public void SignIn()
     {
-        //PlayGamesPlatform.Instance.Authenticate((SignInStatus success) =>
+        //playgamesplatform.instance.authenticate((signinstatus success) =>
         //{
-        //    if (success == SignInStatus.Success)
+        //    if (success == signinstatus.success)
         //    {
-        //        string name = PlayGamesPlatform.Instance.GetUserDisplayName();
-        //        string id = PlayGamesPlatform.Instance.GetUserId();
-        //        string ImgUrl = PlayGamesPlatform.Instance.GetUserImageUrl();
+        //        string name = playgamesplatform.instance.getuserdisplayname();
+        //        string id = playgamesplatform.instance.getuserid();
+        //        string imgurl = playgamesplatform.instance.getuserimageurl();
 
-        //        logText.text = "로그인 성공: " + name;
-        //        Debug.Log($"[GPGS] 이름: {name}, ID: {id}, 이미지URL: {ImgUrl}");
+        //        logtext.text = "로그인 성공: " + name;
+        //        debug.log($"[gpgs] 이름: {name}, id: {id}, 이미지url: {imgurl}");
         //    }
         //    else
         //    {
-        //        logText.text = "로그인 실패";
-        //        Debug.LogError("[GPGS] 로그인 실패");
+        //        logtext.text = "로그인 실패";
+        //        debug.logerror("[gpgs] 로그인 실패");
         //    }
         //});
 

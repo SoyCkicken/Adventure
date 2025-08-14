@@ -21,7 +21,7 @@ public static class EffectProcessor
     /// <param name="textBlockList">생성된 텍스트 블록 리스트(optional)</param>
     /// <returns>생성된 블록 수</returns>
     public static int ApplyEffects(
-        List<EffectTrigger> effects,
+        List<Main_Effect> effects,
         PlayerState playerState,
         InventoryManager inventoryManager,
         JsonManager jsonManager,

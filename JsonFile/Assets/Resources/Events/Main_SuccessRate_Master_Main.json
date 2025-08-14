@@ -1,12 +1,26 @@
 {
   "Main_SuccessRate_Master_Main": [
     {
+      "Scene_Code": "MainScene_0_0_0",
+      "Choice_No": 1.0,
+      "Success_Formula": "STR*10 ",
+      "Success_Next_Script": "MainScript_0_0_0",
+      "Fail_Next_Script": "MainScript_0_0_0",
+      "ChoiceRequirement": [
+        {
+          "ID": "STATE",
+          "Code": "STR",
+          "Value": 5
+        }
+      ]
+    },
+    {
       "Scene_Code": "MainScene_1_2_6",
       "Choice_No": 1.0,
       "Success_Formula": "STR*10 ",
       "Success_Next_Script": "MainScript_1_2_8",
       "Fail_Next_Script": "MainScript_1_2_15",
-      "ChoiceConditions": "CHOICE_001"
+      "ChoiceRequirement": null
     }
   ]
 }

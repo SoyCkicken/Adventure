@@ -76,50 +76,6 @@ public static class ChoiceEvaluator
             NextCode = isSuccess ? nextOnSuccess : nextOnFail
         };
     }
-
-    public static bool IsChoiceAvailable(
-       List<ChoiceCondition> conditions,
-       PlayerState player,
-       InventoryManager inventory)
-    {
-        if (conditions == null || conditions.Count == 0) return true;
-
-        foreach (var cond in conditions)
-        {
-            switch (cond.Type)
-            {
-                case "Gold":
-                    if (player.Experience < cond.Value) return false;
-                    break;
-                case "Stat":
-                    if (!HasStat(cond.StatName, cond.Value, player)) return false;
-                    break;
-                case "Item":
-                    if (!inventory.HasItem(cond.ItemID)) // ← 여기만 수정
-                        return false;
-                    break;
-                default:
-                    Debug.LogWarning($"[조건 오류] 알 수 없는 조건 타입: {cond.Type}");
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static bool HasStat(string stat, int min, PlayerState player)
-    {
-        return stat switch
-        {
-            "STR" => player.STR >= min,
-            "AGI" => player.AGI >= min,
-            "INT" => player.INT >= min,
-            "CHA" => player.CHA >= min,
-            "MAG" => player.MAG >= min,
-            "DIV" => player.DIV >= min,
-            _ => false
-        };
-    }
 }
 
 /// <summary>

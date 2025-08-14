@@ -11,6 +11,7 @@ public class EquipmentSystem : MonoBehaviour
 {
     public PlayerState playerState;
     public JsonManager jsonManager;
+    public InventoryManager inventoryManager;
     public Character player;
 
     private void Start()
@@ -57,16 +58,21 @@ public class EquipmentSystem : MonoBehaviour
 
     public void Init()
     {
-        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>();
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
-        if (playerState == null)
-            playerState = FindObjectOfType<PlayerState>();
+        jsonManager ??= JsonManager.Instance ?? FindObjectOfType<JsonManager>();
+        playerState ??= PlayerState.Instance ?? FindObjectOfType<PlayerState>();
+        if (jsonManager == null || player == null || playerState == null)
+        {
+            Debug.LogWarning("[EquipmentSystem] Init 대기: 참조 부족");
+            return;
+        }
         ClearInit();
         // 자동 참조
-        
-        var weapon = jsonManager.GetWeaponMasters("Weapon_Master")
-                          .FirstOrDefault(w => w.Weapon_ID == player.weapon_Name);
+
+        var weaponId = string.IsNullOrEmpty(player.weapon_Name) ? null : player.weapon_Name;
+        var weapon = !string.IsNullOrEmpty(weaponId)
+            ? jsonManager.GetWeaponMasters("Weapon_Master").FirstOrDefault(w => w.Weapon_ID == weaponId)
+            : null;
+
         Debug.Log($"무기 = {player.weapon_Name != ""}");
         // 무기 장착 처리
         if (weapon != null)
@@ -96,8 +102,10 @@ public class EquipmentSystem : MonoBehaviour
                     option_ID = weapon.Option_2_ID
                 });
         }
-            var armor = jsonManager.GetArmorMasters("Armor_Master")
-                             .FirstOrDefault(w => w.Armor_ID == player.armor_Name);
+        var armorId = string.IsNullOrEmpty(player.armor_Name) ? null : player.armor_Name;
+        var armor = !string.IsNullOrEmpty(armorId)
+            ? jsonManager.GetArmorMasters("Armor_Master").FirstOrDefault(a => a.Armor_ID == armorId)
+            : null;
         Debug.Log($"방어구 = {player.armor_Name != ""}");
         // 방어구 장착 처리
         if (armor != null)
@@ -123,6 +131,48 @@ public class EquipmentSystem : MonoBehaviour
                 });
         }
     }
+    //public void EquipItem(
+    //ItemData item,
+    //List<ItemData> inventoryItems,
+    //ItemSlotUI weaponSlot,
+    //ItemSlotUI armorSlot,
+    //Action<ItemData> onClick)
+    //{
+    //    if (item.Item_Type == "Weapon")
+    //    {
+    //        if (weaponSlot.CurrentItem != null)
+    //            inventoryItems.Add(weaponSlot.CurrentItem.Clone());
+
+    //        weaponSlot.Setup(item, onClick);  // ✅ 콜백 전달
+    //        inventoryItems.Remove(item);
+    //        player.weapon_Name = item.Item_ID;
+    //    }
+    //    else if (item.Item_Type == "Armor")
+    //    {
+    //        if (armorSlot.CurrentItem != null)
+    //            inventoryItems.Add(armorSlot.CurrentItem.Clone());
+
+    //        armorSlot.Setup(item, onClick);  // ✅ 콜백 전달
+    //        inventoryItems.Remove(item);
+    //        player.armor_Name = item.Item_ID;
+    //    }
+
+    //    Init();
+    //}
+
+    //public void UnequipItem(ItemSlotUI slot, List<ItemData> inventoryItems)
+    //{
+    //    if (slot.CurrentItem == null) return;
+
+    //    inventoryItems.Add(slot.CurrentItem.Clone());
+    //    player.RemoveBuffByItem(slot.CurrentItem.Item_ID);
+    //    if (slot.CurrentItem.Item_Type == "Weapon")
+    //        player.weapon_Name = null;
+    //    else if (slot.CurrentItem.Item_Type == "Armor")
+    //        player.armor_Name = null;
+    //    slot.Clear();
+    //    Init();
+    //}
     public void EquipItem(
     ItemData item,
     List<ItemData> inventoryItems,
@@ -130,12 +180,15 @@ public class EquipmentSystem : MonoBehaviour
     ItemSlotUI armorSlot,
     Action<ItemData> onClick)
     {
+        if (item == null) return;
+
+        // 1) 같은 타입의 기존 장비를 인벤토리로 되돌리기(스왑)
         if (item.Item_Type == "Weapon")
         {
             if (weaponSlot.CurrentItem != null)
                 inventoryItems.Add(weaponSlot.CurrentItem.Clone());
 
-            weaponSlot.Setup(item, onClick);  // ✅ 콜백 전달
+            weaponSlot.Setup(item, onClick);
             inventoryItems.Remove(item);
             player.weapon_Name = item.Item_ID;
         }
@@ -144,32 +197,46 @@ public class EquipmentSystem : MonoBehaviour
             if (armorSlot.CurrentItem != null)
                 inventoryItems.Add(armorSlot.CurrentItem.Clone());
 
-            armorSlot.Setup(item, onClick);  // ✅ 콜백 전달
+            armorSlot.Setup(item, onClick);
             inventoryItems.Remove(item);
             player.armor_Name = item.Item_ID;
         }
+        else
+        {
+            Debug.LogWarning($"[EquipmentSystem] 장착 불가 타입: {item.Item_Type}");
+            return;
+        }
 
+        // 2) 버프/스탯 재적용
         Init();
     }
 
     public void UnequipItem(ItemSlotUI slot, List<ItemData> inventoryItems)
     {
-        if (slot.CurrentItem == null) return;
+        if (slot?.CurrentItem == null) return;
 
-        inventoryItems.Add(slot.CurrentItem.Clone());
-        player.RemoveBuffByItem(slot.CurrentItem.Item_ID);
-        if (slot.CurrentItem.Item_Type == "Weapon")
+        var equipped = slot.CurrentItem;
+        // 1) 인벤토리로 복귀
+        inventoryItems.Add(equipped.Clone());
+
+        // 2) 장착 해제 (buff 제거는 Init()에서 재계산로 보정 + 아래 Remove로 보조)
+        player.RemoveBuffByItem(equipped.Item_ID);
+
+        if (equipped.Item_Type == "Weapon")
             player.weapon_Name = null;
-        else if (slot.CurrentItem.Item_Type == "Armor")
+        else if (equipped.Item_Type == "Armor")
             player.armor_Name = null;
+
         slot.Clear();
+
+        // 3) 버프/스탯 재적용
         Init();
     }
-
 
     void ClearInit()
     {
         Debug.LogError("플레이어 능력치 초기화");
+        // 기본치 재설정
         player.OnHitOptions.Clear();
         Debug.Log($"Player의 장비 장착 여부 무기 : {player.weapon_Name} , 갑옷 : {player.armor_Name} ");
 
@@ -211,9 +278,35 @@ public class EquipmentSystem : MonoBehaviour
             {
                 player.CitChance = 10;
             }
+        }     
+    }
+    public bool MeetsEquipRequirement(string code)
+    {
+        if (string.IsNullOrWhiteSpace(code)) return false;
+        var c = code.Trim();
+
+        // 1) 슬롯만 검사 ("Weapon" | "Armor")
+        if (c.Equals("Weapon", StringComparison.OrdinalIgnoreCase))
+            return !string.IsNullOrEmpty(player?.weapon_Name);
+        if (c.Equals("Armor", StringComparison.OrdinalIgnoreCase))
+            return !string.IsNullOrEmpty(player?.armor_Name);
+
+        // 2) 슬롯:아이템코드 ("Weapon:Weapon_001" | "Armor:Armor_007")
+        var parts = c.Split(':');
+        if (parts.Length == 2)
+        {
+            var slot = parts[0].Trim();
+            var itemCode = parts[1].Trim();
+
+            if (slot.Equals("Weapon", StringComparison.OrdinalIgnoreCase))
+                return string.Equals(player?.weapon_Name, itemCode, StringComparison.OrdinalIgnoreCase);
+
+            if (slot.Equals("Armor", StringComparison.OrdinalIgnoreCase))
+                return string.Equals(player?.armor_Name, itemCode, StringComparison.OrdinalIgnoreCase);
         }
-       
-            
+
+        // 포맷 불일치
+        return false;
     }
 }
 
