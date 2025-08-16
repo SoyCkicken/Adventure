@@ -292,6 +292,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519925866}
   m_CullTransparentMesh: 1
+--- !u!1 &531649188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 531649190}
+  - component: {fileID: 531649189}
+  m_Layer: 0
+  m_Name: GoogleADMob
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &531649189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531649188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36c0d42a763743419b44a79d40c171c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useProductionIds: 0
+  testBannerId: ca-app-pub-3940256099942544/6300978111
+  testInterstitialId: ca-app-pub-3940256099942544/1033173712
+  testRewardedId: ca-app-pub-3940256099942544/5224354917
+  bannerId_Prod: 
+  interstitialId_Prod: 
+  rewardedId_Prod: 
+  showBannerOnStart: 1
+--- !u!4 &531649190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 531649188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &551039249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1965,58 +2017,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1519235881}
   m_CullTransparentMesh: 1
---- !u!1 &1580741493
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1580741494}
-  - component: {fileID: 1580741495}
-  m_Layer: 0
-  m_Name: GoogleADMob
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1580741494
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580741493}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.041796874, y: 0.7423802, z: 90}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1580741495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580741493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1843564cf65a96449aec64568c239c23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useProductionIds: 0
-  testBannerId: ca-app-pub-3940256099942544/6300978111
-  testInterstitialId: ca-app-pub-3940256099942544/1033173712
-  testRewardedId: ca-app-pub-3940256099942544/5224354917
-  bannerId_Prod: 
-  interstitialId_Prod: 
-  rewardedId_Prod: 
-  showBannerOnStart: 1
 --- !u!1 &1609662289
 GameObject:
   m_ObjectHideFlags: 0
@@ -3030,4 +3030,4 @@ SceneRoots:
   - {fileID: 400796921}
   - {fileID: 744743968}
   - {fileID: 551039251}
-  - {fileID: 1580741494}
+  - {fileID: 531649190}

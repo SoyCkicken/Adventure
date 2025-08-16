@@ -60,6 +60,7 @@ public class GoogleManager : MonoBehaviour
             else
             {
                 if (!canvas.gameObject.activeSelf)
+
                     canvas.gameObject.SetActive(true); // 캔버스 활성화
                 retryButton.gameObject.SetActive(true); // 재시도 버튼 활성화
                 failCount++;
