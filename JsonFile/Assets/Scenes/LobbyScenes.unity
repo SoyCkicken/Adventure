@@ -2237,6 +2237,82 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: ForceModule.z.scalar
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: ForceModule.x.minScalar
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: ForceModule.z.minScalar
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: ForceModule.x.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: ForceModule.y.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: ForceModule.z.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startSpeed.minScalar
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.5636525
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.8214778
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.8415094
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.minColor.b
+      value: 0.41010326
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.minColor.g
+      value: 0.7537707
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.minColor.r
+      value: 0.90943396
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: InitialModule.startColor.minMaxState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682946474137918401, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
+      propertyPath: EmissionModule.rateOverTime.minScalar
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 8926341539133295174, guid: 6131170e6393a21429e8395cb9e67f83, type: 3}
       propertyPath: m_Name
       value: Dust
