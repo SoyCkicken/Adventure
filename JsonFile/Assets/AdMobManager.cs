@@ -140,7 +140,7 @@ public sealed class AdMobManager : MonoBehaviour
 
         string adUnitId = useProductionIds && !string.IsNullOrEmpty(bannerId_Prod) ? bannerId_Prod : testBannerId;
 
-        AdSize size = GetAdaptiveAdSize();
+        AdSize size = AdSize.Banner;
         banner = new BannerView(adUnitId, size, AdPosition.Bottom);
 
         banner.OnBannerAdLoaded += () => Debug.Log("[AdMob] Banner loaded");
