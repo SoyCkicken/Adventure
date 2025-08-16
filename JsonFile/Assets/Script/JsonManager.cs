@@ -13,7 +13,6 @@ using UnityEngine;
 /// </summary>
 public class JsonManager : MonoBehaviour
 {
-   
     public bool IsReady { get; private set; }
     public event Action OnReady;
     public static JsonManager Instance { get; private set; }
@@ -526,20 +525,6 @@ public class JsonManager : MonoBehaviour
     //        }
     //    }
     //}
-    private void IndexChoiceRequirements(string sceneCode, int choiceNo, List<ChoiceRequirement> reqs)
-    {
-        if (string.IsNullOrEmpty(sceneCode) || reqs == null) return;
-        var key = (sceneCode, choiceNo);
-        if (!_choiceReqBySceneChoice.TryGetValue(key, out var list))
-        {
-            list = new List<ChoiceRequirement>();
-            _choiceReqBySceneChoice[key] = list;
-        }
-        // 같은 씬/선택번호에 여러 줄이 들어올 수 있으면 병합, 아니면 교체해도 됨
-        list.AddRange(reqs);
-    }
-
-
     public List<Story_Effect_Master> GetStoryMainEffectMasters(string fileName)
     {
         if (storyMasterEffectDict.TryGetValue(fileName, out List<Story_Effect_Master> list))

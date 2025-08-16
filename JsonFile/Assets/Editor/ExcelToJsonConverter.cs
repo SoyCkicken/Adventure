@@ -264,7 +264,6 @@ public class ExcelAutoGenerator : EditorWindow
 
     private void ConvertExcel(string path)
     {
-        // ❌ TypeRegistry.Clear();  // 제거: 이제 전체 런 기준으로 한 번만 클리어
         using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
         using var reader = ExcelReaderFactory.CreateReader(stream);
         var conf = new ExcelDataSetConfiguration { ConfigureDataTable = _ => new ExcelDataTableConfiguration { UseHeaderRow = true } };
@@ -273,7 +272,7 @@ public class ExcelAutoGenerator : EditorWindow
         foreach (DataTable table in dataSet.Tables)
         {
             CreateJson(table);
-            CreateCSharpClass(table);   // ✅ 이 함수는 이제 "주 클래스"만 생성
+            CreateCSharpClass(table);   // 이제 "주 클래스"만 생성
             Debug.Log($"{table.TableName}를 변환 중입니다");
         }
     }
@@ -304,7 +303,6 @@ public class ExcelAutoGenerator : EditorWindow
                         }
                         continue;
                     }
-
                     // 기존: 배열 형태 문자열이면 JArray로 보관
                     if (trimmed.StartsWith("["))
                     {

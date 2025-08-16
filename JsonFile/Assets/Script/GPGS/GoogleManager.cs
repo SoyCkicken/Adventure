@@ -1,89 +1,91 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
 using TMPro;
+using UnityEngine.UI;
 
 public class GoogleManager : MonoBehaviour
 {
+    public Canvas canvas; // ğŸ¯ ìº”ë²„ìŠ¤ (ì¸ìŠ¤í™í„° ì—°ê²°)
     public TextMeshProUGUI logText;
+    public Button retryButton; // ğŸ¯ ì¬ì‹œë„ ë²„íŠ¼ (ì¸ìŠ¤í™í„° ì—°ê²°)
+
+    private int failCount = 0;
+    private const int maxFailCount = 3;
+
 
     void Start()
     {
         PlayGamesPlatform.DebugLogEnabled = true;
         PlayGamesPlatform.Activate();
-#if UNITY_ANDROID
+
+        
+#if UNITY_EDITOR
+        // ì—ë””í„°ì—ì„œëŠ” ìë™ ë¡œê·¸ì¸
+        if (!canvas.gameObject.activeSelf)
+            canvas.gameObject.SetActive(false); // ìº”ë²„ìŠ¤ ë¹„í™œì„±í™”
+        logText.text = "ì—ë””í„° ëª¨ë“œì—ì„œëŠ” ìë™ ë¡œê·¸ì¸ë©ë‹ˆë‹¤.";
+        failCount = 0; // ì‹¤íŒ¨ íšŸìˆ˜ ì´ˆê¸°í™”
+#elif UNITY_ANDROID
         SignIn();
 #endif
+
+
+        // ì¬ì‹œë„ ë²„íŠ¼ ìˆ¨ê¸°ê¸°
+        if (retryButton != null)
+            retryButton.gameObject.SetActive(false);
     }
 
     public void SignIn()
     {
-        //playgamesplatform.instance.authenticate((signinstatus success) =>
-        //{
-        //    if (success == signinstatus.success)
-        //    {
-        //        string name = playgamesplatform.instance.getuserdisplayname();
-        //        string id = playgamesplatform.instance.getuserid();
-        //        string imgurl = playgamesplatform.instance.getuserimageurl();
-
-        //        logtext.text = "·Î±×ÀÎ ¼º°ø: " + name;
-        //        debug.log($"[gpgs] ÀÌ¸§: {name}, id: {id}, ÀÌ¹ÌÁöurl: {imgurl}");
-        //    }
-        //    else
-        //    {
-        //        logtext.text = "·Î±×ÀÎ ½ÇÆĞ";
-        //        debug.logerror("[gpgs] ·Î±×ÀÎ ½ÇÆĞ");
-        //    }
-        //});
+        if (retryButton != null)
+            retryButton.gameObject.SetActive(false); // ë¡œê·¸ì¸ ì‹œë„ ì¤‘ ë²„íŠ¼ ìˆ¨ê¹€
 
         PlayGamesPlatform.Instance.Authenticate((SignInStatus result) =>
         {
-            Debug.LogError($"[GPGS] ·Î±×ÀÎ °á°ú: {result}");
+            Debug.LogError($"[GPGS] ë¡œê·¸ì¸ ê²°ê³¼: {result}");
 
-            switch (result)
+            if (result == SignInStatus.Success)
             {
-                case SignInStatus.Success:
-                    string name = PlayGamesPlatform.Instance.GetUserDisplayName();
-                    string id = PlayGamesPlatform.Instance.GetUserId();
-                    string ImgUrl = PlayGamesPlatform.Instance.GetUserImageUrl();
+                string name = PlayGamesPlatform.Instance.GetUserDisplayName();
+                string id = PlayGamesPlatform.Instance.GetUserId();
+                string imgUrl = PlayGamesPlatform.Instance.GetUserImageUrl();
 
-                    logText.text = "·Î±×ÀÎ ¼º°ø: " + name;
-                    Debug.Log($"[GPGS] ÀÌ¸§: {name}, ID: {id}, ÀÌ¹ÌÁöURL: {ImgUrl}");
-                    //Debug.LogError("°³¹ßÀÚ ¿À·ù - OAuth Å¬¶óÀÌ¾ğÆ® ID°¡ Àß¸øµÇ¾ú°Å³ª SHA-1ÀÌ ¾È ¸ÂÀ½");
-                    break;
-                case SignInStatus.InternalError:
-                    Debug.LogError("GPGS ³»ºÎ ¿À·ù");
-                    break;
-                default:
-                    Debug.LogError($"Á¤ÀÇµÇÁö ¾ÊÀº ¿¡·¯: {result}");
-                    break;
+                logText.text = "ë¡œê·¸ì¸ ì„±ê³µ: " + name;
+                Debug.Log($"[GPGS] ì´ë¦„: {name}, ID: {id}, ì´ë¯¸ì§€URL: {imgUrl}");
+                failCount = 0; // ì‹¤íŒ¨ íšŸìˆ˜ ì´ˆê¸°í™”
+            }
+            else
+            {
+                if (!canvas.gameObject.activeSelf)
+                    canvas.gameObject.SetActive(true); // ìº”ë²„ìŠ¤ í™œì„±í™”
+                retryButton.gameObject.SetActive(true); // ì¬ì‹œë„ ë²„íŠ¼ í™œì„±í™”
+                failCount++;
+                logText.text = $"ë¡œê·¸ì¸ ì‹¤íŒ¨ ({failCount}/{maxFailCount})";
+
+                if (failCount >= maxFailCount)
+                {
+                    logText.text = "ë¡œê·¸ì¸ ì‹¤íŒ¨ íšŸìˆ˜ ì´ˆê³¼. ê²Œì„ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.";
+#if UNITY_EDITOR
+                    //UnityEditor.EditorApplication.isPlaying = false;
+                    canvas.gameObject.SetActive(false); // ìº”ë²„ìŠ¤ ìˆ¨ê¹€
+#else
+                    Application.Quit();
+#endif
+                }
+                else
+                {
+                    // ì¬ì‹œë„ ë²„íŠ¼ í‘œì‹œ
+                    if (retryButton != null)
+                    {
+                        retryButton.gameObject.SetActive(true);
+                        retryButton.onClick.RemoveAllListeners();
+                        retryButton.onClick.AddListener(SignIn);
+                    }
+                }
             }
         });
-    }
-
-
-    internal void ProcessAuthentication(SignInStatus status)
-    {
-        if (status == SignInStatus.Success)
-        {
-            // Continue with Play Games Services
-            // Perfectly login success
-
-            string name = PlayGamesPlatform.Instance.GetUserDisplayName();
-            string id = PlayGamesPlatform.Instance.GetUserId();
-            string ImgUrl = PlayGamesPlatform.Instance.GetUserImageUrl();
-
-            logText.text = "¼º°øÀÔ´Ï´Ù \n" + name;
-        }
-        else
-        {
-            logText.text = "Sign in Failed!";
-            // Disable your integration with Play Games Services or show a login button
-            // to ask users to sign-in. Clicking it should call
-            //PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication).
-            // Login failed
-        }
     }
 }
