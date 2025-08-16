@@ -1,0 +1,370 @@
+﻿// AdMobManager.cs
+// Google Mobile Ads Unity 10.x 대응
+// - 싱글톤 + DontDestroyOnLoad
+// - 배너(상시 표시), 전면/리워드(풀스크린 시 배너 자동 숨김/복원)
+// - 씬 전환/앱 복귀/해상도 변화 시 배너 자동 복구
+// - Editor/PC에서 컴파일 오류 방지를 위해 모든 AdMob 타입 참조에 UNITY_ANDROID 가드 적용
+// ─────────────────────────────────────────────────────────────────────────────
+
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+#if UNITY_ANDROID
+using GoogleMobileAds.Api;
+#endif
+
+public sealed class AdMobManager : MonoBehaviour
+{
+    public static AdMobManager Instance { get; private set; }
+
+    [Header("Use Production IDs (운영 전환 시 체크)")]
+    public bool useProductionIds = false;
+
+    [Header("Ad Unit IDs - TEST (Google 공식)")]
+    public string testBannerId = "ca-app-pub-3940256099942544/6300978111";
+    public string testInterstitialId = "ca-app-pub-3940256099942544/1033173712";
+    public string testRewardedId = "ca-app-pub-3940256099942544/5224354917";
+
+    [Header("Ad Unit IDs - PRODUCTION (콘솔 발급값 입력)")]
+    public string bannerId_Prod = "";
+    public string interstitialId_Prod = "";
+    public string rewardedId_Prod = "";
+
+    [Header("Behavior")]
+    [Tooltip("게임 시작 시 배너 자동 표시")]
+    public bool showBannerOnStart = true;
+
+#if UNITY_ANDROID
+    private BannerView banner;
+    private InterstitialAd interstitial;
+    private RewardedAd rewarded;
+
+    private bool initialized;
+    private bool bannerWasVisibleBeforeFullscreen;
+    private int lastWidthDp = -1; // 폭(dp) 바뀌면 재생성 트리거
+#else
+    // 에디터/타 플랫폼에서도 함수 호출은 가능하게 하되, 내부는 NO-OP
+    private bool initialized;
+#endif
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Lifecycle
+    // ─────────────────────────────────────────────────────────────────────────
+    private void Awake()
+    {
+        // 싱글톤 보장 + 씬 유지
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        // 씬 변경, 포커스/일시정지 이벤트 구독
+        SceneManager.sceneLoaded += OnSceneLoaded;     // ← 이 이벤트로 변경
+        SceneManager.activeSceneChanged -= OnActiveSceneChanged; // 혹시 이전 코드 있으면 제거
+
+#if UNITY_ANDROID
+        // (선택) 동의/타겟팅 정책은 필요시 RequestConfiguration 속성으로 지정
+        var cfg = new RequestConfiguration
+        {
+            // 예: 테스트 디바이스 등록 필요 시
+            // TestDeviceIds = new System.Collections.Generic.List<string> { "TEST_DEVICE_ID" }
+        };
+        MobileAds.SetRequestConfiguration(cfg);
+
+        MobileAds.Initialize(_ =>
+        {
+            Debug.Log("[AdMob] Initialize complete");
+            initialized = true;
+
+            PreloadAll();
+
+            if (showBannerOnStart)
+                ShowBanner();
+        });
+#else
+        Debug.Log("[AdMob] Android에서만 동작 (에디터/PC는 NO-OP)");
+#endif
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;     // 구독 해제
+
+#if UNITY_ANDROID
+        DestroyBanner();
+
+        interstitial?.Destroy();
+        rewarded?.Destroy();
+        interstitial = null;
+        rewarded = null;
+#endif
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+#if UNITY_ANDROID
+    // 씬 로드 직후 한 텀 쉬고 "항상" 재생성 (폭 변경/포커스 이슈까지 한방에 해결)
+    StartCoroutine(RecreateBannerSoon());
+#endif
+    }
+
+#if UNITY_ANDROID
+private System.Collections.IEnumerator RecreateBannerSoon()
+{
+    yield return null;                       // 1프레임 대기
+    yield return new WaitForSecondsRealtime(0.05f); // 기기별 타이밍 이슈 대비 살짝 더 대기
+    RecreateForOrientationChange();          // Destroy → Show (새 배너 생성)
+}
+#endif
+
+
+    // ── OnApplicationPause/Focus 도 이렇게 간단히
+    private void OnApplicationPause(bool pause)
+    {
+#if UNITY_ANDROID
+    if (!pause) StartCoroutine(RecreateBannerSoon());
+#endif
+    }
+    private void OnApplicationFocus(bool hasFocus)
+    {
+#if UNITY_ANDROID
+    if (hasFocus) StartCoroutine(RecreateBannerSoon());
+#endif
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Banner (상시)
+    // ─────────────────────────────────────────────────────────────────────────
+    public void ShowBanner()
+    {
+#if UNITY_ANDROID
+        if (!initialized) { Debug.LogWarning("[AdMob] 아직 초기화 전"); return; }
+
+        if (banner != null) { banner.Show(); return; }
+
+        string adUnitId = useProductionIds && !string.IsNullOrEmpty(bannerId_Prod) ? bannerId_Prod : testBannerId;
+
+        AdSize size = AdSize.Banner;
+        banner = new BannerView(adUnitId, size, AdPosition.Bottom);
+
+        banner.OnBannerAdLoaded     += () => Debug.Log("[AdMob] Banner loaded");
+        banner.OnBannerAdLoadFailed += (e) => Debug.LogError($"[AdMob] Banner load failed: {e}");
+        banner.OnAdPaid             += (v) => Debug.Log($"[AdMob] Banner paid {v.Value} micros {v.CurrencyCode}");
+
+        banner.LoadAd(new AdRequest());
+#endif
+    }
+
+    public void HideBanner()
+    {
+#if UNITY_ANDROID
+        banner?.Hide();
+#endif
+    }
+
+    public void DestroyBanner()
+    {
+#if UNITY_ANDROID
+        banner?.Destroy();
+        banner = null;
+#endif
+    }
+
+#if UNITY_ANDROID
+    private AdSize GetAdaptiveAdSize()
+    {
+        // px -> dp 변환
+        float dpi = Screen.dpi <= 0 ? 160f : Screen.dpi;
+        int widthDp = Mathf.Clamp(Mathf.RoundToInt(Screen.width / (dpi / 160f)), 320, 1200);
+        lastWidthDp = widthDp;
+        return AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(widthDp);
+    }
+#endif
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Interstitial (전면)
+    // ─────────────────────────────────────────────────────────────────────────
+    public void PreloadInterstitial()
+    {
+#if UNITY_ANDROID
+        if (!initialized || interstitial != null) return;
+
+        string adUnitId = useProductionIds && !string.IsNullOrEmpty(interstitialId_Prod) ? interstitialId_Prod : testInterstitialId;
+
+        InterstitialAd.Load(adUnitId, new AdRequest(), (ad, error) =>
+        {
+            if (error != null || ad == null) { Debug.LogError($"[AdMob] Interstitial load failed: {error}"); return; }
+
+            interstitial = ad;
+            RegisterInterstitialEvents(ad);
+            Debug.Log("[AdMob] Interstitial loaded");
+        });
+#endif
+    }
+
+#if UNITY_ANDROID
+    private void RegisterInterstitialEvents(InterstitialAd ad)
+    {
+        ad.OnAdFullScreenContentOpened += () =>
+        {
+            bannerWasVisibleBeforeFullscreen = banner != null;
+            HideBanner();
+        };
+        ad.OnAdFullScreenContentClosed += () =>
+        {
+            Debug.Log("[AdMob] Interstitial closed");
+            ad.Destroy();
+            interstitial = null;
+            if (bannerWasVisibleBeforeFullscreen) ShowBanner();
+            PreloadInterstitial();
+        };
+        ad.OnAdFullScreenContentFailed += (err) =>
+        {
+            Debug.LogError($"[AdMob] Interstitial show failed: {err}");
+            ad.Destroy();
+            interstitial = null;
+            if (bannerWasVisibleBeforeFullscreen) ShowBanner();
+            PreloadInterstitial();
+        };
+    }
+#endif
+
+    public bool ShowInterstitial(Action onClosed = null)
+    {
+#if UNITY_ANDROID
+        if (interstitial != null && interstitial.CanShowAd())
+        {
+            interstitial.OnAdFullScreenContentClosed += () => onClosed?.Invoke();
+            interstitial.Show();
+            return true;
+        }
+        Debug.LogWarning("[AdMob] Interstitial not ready");
+        PreloadInterstitial();
+#endif
+        onClosed?.Invoke(); // 비안드로이드에서도 콜백 보장
+        return false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Rewarded (보상형)
+    // ─────────────────────────────────────────────────────────────────────────
+    public void PreloadRewarded()
+    {
+#if UNITY_ANDROID
+        if (!initialized || rewarded != null) return;
+
+        string adUnitId = useProductionIds && !string.IsNullOrEmpty(rewardedId_Prod) ? rewardedId_Prod : testRewardedId;
+
+        RewardedAd.Load(adUnitId, new AdRequest(), (ad, error) =>
+        {
+            if (error != null || ad == null) { Debug.LogError($"[AdMob] Rewarded load failed: {error}"); return; }
+
+            rewarded = ad;
+            RegisterRewardedEvents(ad);
+            Debug.Log("[AdMob] Rewarded loaded");
+        });
+#endif
+    }
+
+#if UNITY_ANDROID
+    private void RegisterRewardedEvents(RewardedAd ad)
+    {
+        ad.OnAdFullScreenContentOpened += () =>
+        {
+            bannerWasVisibleBeforeFullscreen = banner != null;
+            HideBanner();
+        };
+        ad.OnAdFullScreenContentClosed += () =>
+        {
+            Debug.Log("[AdMob] Rewarded closed");
+            ad.Destroy();
+            rewarded = null;
+            if (bannerWasVisibleBeforeFullscreen) ShowBanner();
+            PreloadRewarded();
+        };
+        ad.OnAdFullScreenContentFailed += (err) =>
+        {
+            Debug.LogError($"[AdMob] Rewarded show failed: {err}");
+            ad.Destroy();
+            rewarded = null;
+            if (bannerWasVisibleBeforeFullscreen) ShowBanner();
+            PreloadRewarded();
+        };
+    }
+#endif
+
+    /// <summary>보상형 광고 표시. 성공(보상 지급) 시 true 반환.</summary>
+    public bool ShowRewarded(Action<bool> onFinished = null)
+    {
+#if UNITY_ANDROID
+        if (rewarded != null && rewarded.CanShowAd())
+        {
+            rewarded.Show(reward =>
+            {
+                // 필요하면 reward.Amount / reward.Type 사용
+                onFinished?.Invoke(true);
+            });
+            return true;
+        }
+        Debug.LogWarning("[AdMob] Rewarded not ready");
+        PreloadRewarded();
+#endif
+        onFinished?.Invoke(false);
+        return false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Utilities
+    // ─────────────────────────────────────────────────────────────────────────
+    public void PreloadAll()
+    {
+        PreloadInterstitial();
+        PreloadRewarded();
+    }
+
+#if UNITY_ANDROID
+    private void EnsureBannerVisibleSoon(bool checkRecreate = true)
+    {
+        StartCoroutine(_EnsureBannerVisibleCo(checkRecreate));
+    }
+
+    private IEnumerator _EnsureBannerVisibleCo(bool checkRecreate)
+    {
+        yield return null; // 씬 전환 직후 한 프레임 대기
+        if (!initialized) yield break;
+
+        if (checkRecreate && ShouldRecreateForWidthChange())
+        {
+            RecreateForOrientationChange();
+            yield break;
+        }
+
+        if (banner == null) ShowBanner();
+        else { banner.Hide(); banner.Show(); } // 토글로 가시성 회복
+    }
+
+    private bool ShouldRecreateForWidthChange()
+    {
+        float dpi = Screen.dpi <= 0 ? 160f : Screen.dpi;
+        int widthDpNow = Mathf.Clamp(Mathf.RoundToInt(Screen.width / (dpi / 160f)), 320, 1200);
+        if (lastWidthDp < 0) { lastWidthDp = widthDpNow; return false; }
+        bool changed = widthDpNow != lastWidthDp;
+        if (changed) lastWidthDp = widthDpNow;
+        return changed;
+    }
+
+    public void RecreateForOrientationChange()
+    {
+        DestroyBanner();
+        ShowBanner();
+    }
+#endif
+
+    private void OnActiveSceneChanged(Scene prev, Scene next)
+    {
+#if UNITY_ANDROID
+        EnsureBannerVisibleSoon(true);
+#endif
+    }
+}
