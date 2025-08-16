@@ -7,6 +7,7 @@ using UnityEngine.Playables;
 using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using Spine;
+using DG.Tweening;
 
 public class CombatTest : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class CombatTest : MonoBehaviour
     public GameObject EnemyAttackImage;
     public GameObject ImageGameObject;
     public GameObject PopupObject;
-
+    public ScreenShake _screenShake;
     // 전투 완료 콜백
     private Action<bool> onComplete;
     // 전투 종료시 넘길 변수
@@ -172,7 +173,7 @@ public class CombatTest : MonoBehaviour
     private IEnumerator AttackOnce(Character attacker, Character target, bool isPlayer, bool isEnemy)
     {
         yield return new WaitForSeconds(0.1f); // 약간의 텀
-        attacker.Attack(target);
+        //attacker.Attack(target);
         PlayAttackEffect(attacker);
         // 플레이어 온히트 옵션 적용
         ApplyOnHitOptions(attacker, target, isPlayer, isEnemy);
@@ -189,7 +190,7 @@ public class CombatTest : MonoBehaviour
         {
             yield return new WaitForSeconds(1f / attacker.speed);
             if (battleOver) yield break;
-            attacker.Attack(target);
+            //attacker.Attack(target);
             PlayAttackEffect(attacker);
             // 플레이어 온히트 옵션 적용
             ApplyOnHitOptions(attacker, target, isPlayer, isEnemy);
@@ -204,9 +205,36 @@ public class CombatTest : MonoBehaviour
     {
         if (attacker == enemy)
         {
-            var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
-            gameObject.transform.localScale = new Vector3(100, 100, 0);
-            Destroy(gameObject, 1f);
+            var (damage, iscrit) = attacker.Attack(player);
+            if (iscrit)
+            {
+                var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
+                gameObject.transform.localScale = new Vector3(100, 100, 0);
+                Destroy(gameObject, 1f);
+            }
+            if (gameObject == null)
+            {
+                return;
+            }
+            else
+            {
+                if (_screenShake == null)
+                    _screenShake = FindObjectOfType<ScreenShake>(); // 또는 DI로 주입
+                if (_screenShake != null)
+                {
+                    // DOVirtual.DelayedCall은 특정 타겟에 묶이지 않아 fx가 파괴되어도 안전.
+                    DOVirtual.DelayedCall(0.4f, () =>
+                    {
+                        // 일반 히트
+
+                        _screenShake.Shake();
+                        // 크리티컬이면 강하게 (원하면 주석 해제)
+
+                    })
+                    .SetUpdate(true); // 타임스케일 무시(연출용)
+                    Debug.Log(attacker.speed);
+                }
+            }
         }
 
         if (attacker == player)
@@ -217,6 +245,7 @@ public class CombatTest : MonoBehaviour
                 Debug.Log("크리티컬 공격입니다");
                 Enemy_Animator.SetTrigger("isHit");
             }
+           
         }
     }
 

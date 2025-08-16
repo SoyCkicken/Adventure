@@ -101,11 +101,11 @@ namespace MyGame
         {
             Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
-
-            bool isCrit = UnityEngine.Random.Range(0, 100) < CitChance;
+            int testnum = UnityEngine.Random.Range(0, 100);
+            bool isCrit = testnum < CitChance;
             int finalDamage = isCrit ? damage * 2 : damage;
 
-            Debug.Log($"{isCrit} , {CitChance} ");
+            Debug.Log($"{isCrit} , {CitChance} {testnum}");
             Debug.Log(finalDamage);
 
             int dealtDamage = target.TakeDamage(finalDamage);

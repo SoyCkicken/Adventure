@@ -92,7 +92,7 @@ public class FocusMonsterSpawner : MonoBehaviour
         TESTBoss.MaxTotalHP = data.Mon_HP;
         TESTBoss.CurrentTotalHP = data.Mon_HP;
         TESTBoss.attackPower = data.Mon_ATK;
-        TESTBoss.hitChance = data.Mon_Speed;
+        //TESTBoss.hitChance = data.Mon_Speed;
 
         bossPartCombatManager.BossSkeleton = skeletonAnim;
         bossPartCombatManager.TESTBoss = TESTBoss;
