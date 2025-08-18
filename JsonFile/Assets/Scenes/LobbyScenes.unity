@@ -327,7 +327,7 @@ MonoBehaviour:
   testRewardedId: ca-app-pub-3940256099942544/5224354917
   bannerId_Prod: 
   interstitialId_Prod: 
-  rewardedId_Prod: 
+  rewardedId_Prod: ca-app-pub-6137530854025743~3771415897
   showBannerOnStart: 1
 --- !u!4 &531649190
 Transform:

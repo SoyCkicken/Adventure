@@ -618,7 +618,7 @@ public class InventoryManager : MonoBehaviour
     {
         return Mathf.Clamp(minSlotCount + (strength / 3), minSlotCount, maxSlotCount);
     }
-    public void updateSoulText()
+    public void UpdateGoldText()
     {
         SoulTEXT.text = $"Gold: {playerState.Experience:0}";
     }

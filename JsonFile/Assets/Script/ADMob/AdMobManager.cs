@@ -63,6 +63,8 @@ public sealed class AdMobManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;     // ← 이 이벤트로 변경
         SceneManager.activeSceneChanged -= OnActiveSceneChanged; // 혹시 이전 코드 있으면 제거
 
+        
+
 #if UNITY_ANDROID
         // (선택) 동의/타겟팅 정책은 필요시 RequestConfiguration 속성으로 지정
         var cfg = new RequestConfiguration
@@ -101,6 +103,7 @@ public sealed class AdMobManager : MonoBehaviour
         StartCoroutine(RecreateBannerSoon());
 #endif
     }
+    // ── OnApplicationPause/Focus 도 이렇게 간단히
     private void OnApplicationPause(bool pause)
     {
 #if UNITY_ANDROID
@@ -116,7 +119,8 @@ public sealed class AdMobManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+        SceneManager.sceneLoaded -= OnSceneLoaded;     // 구독 해제
+
 
 #if UNITY_ANDROID
         DestroyBanner();

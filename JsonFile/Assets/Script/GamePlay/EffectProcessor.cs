@@ -48,7 +48,7 @@ public static class EffectProcessor
                         }
 
                         playerState.Experience += delta;
-                        inventoryManager.updateSoulText();
+                        inventoryManager.UpdateGoldText();
 
                         if (textBlockList != null)
                         {

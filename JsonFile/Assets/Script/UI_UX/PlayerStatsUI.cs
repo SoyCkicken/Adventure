@@ -70,7 +70,7 @@ public class PlayerStatsUI : MonoBehaviour
         //갱신 한번 더 해주고
         InventoryManager.UpdateDPS_MaxHealth();
         InventoryManager.UpdateInventoryByStrength();
-        InventoryManager.updateSoulText();
+        InventoryManager.UpdateGoldText();
     }
 
     public bool TryLevelUp()
@@ -164,7 +164,7 @@ public class PlayerStatsUI : MonoBehaviour
             UpdateUI();
             InventoryManager.UpdateDPS_MaxHealth();
             InventoryManager.UpdateInventoryByStrength();
-            InventoryManager.updateSoulText();
+            InventoryManager.UpdateGoldText();
         }
     }
 }

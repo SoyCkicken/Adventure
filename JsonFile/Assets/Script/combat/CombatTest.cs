@@ -140,7 +140,7 @@ public class CombatTest : MonoBehaviour
         {
             playerState.Experience += exp;
             playerState.statsUI.UpdateUI();
-            inventoryManager.updateSoulText();
+            inventoryManager.UpdateGoldText();
             player.GetComponent<EquipmentSystem>().Init();
             onComplete?.Invoke(true);
         }, false);

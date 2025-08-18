@@ -67,7 +67,12 @@ public class PlayerState : MonoBehaviour
         if (equipmentSystem == null)
             equipmentSystem = FindObjectOfType<EquipmentSystem>();
     }
-
+    public void AddGold(int num)
+    {
+        Experience += num;
+        inventoryManager.UpdateGoldText();
+        inventoryManager.LoadInventory();
+    }
 
     public void GenerateRandomStats()
     {

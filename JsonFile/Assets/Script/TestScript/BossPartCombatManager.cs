@@ -137,7 +137,7 @@ public class BossPartCombatManager : MonoBehaviour
         {
             playerState.Experience += TESTBoss.GetEXP;
             playerState.statsUI.UpdateUI();
-            inventoryManager.updateSoulText();
+            inventoryManager.UpdateGoldText();
             playerCharacter.GetComponent<EquipmentSystem>().Init();
             onCombatEndCallback?.Invoke(true);
         }, false);
