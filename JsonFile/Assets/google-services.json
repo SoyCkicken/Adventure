@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "630849042922",
+    "project_id": "adventurer-s-journal",
+    "storage_bucket": "adventurer-s-journal.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630849042922:android:98c76772f8de73af27da93",
+        "android_client_info": {
+          "package_name": "com.Pofol2025.AdventurersJournal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZop6qkhVD9gTfXFh4eYEUZwltxwNaIC4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
