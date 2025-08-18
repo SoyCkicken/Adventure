@@ -49,7 +49,7 @@ public class PatchNoteViewer : MonoBehaviour
         }
         else
         {
-            patchNotePannelObject.SetActive(false);
+            patchNotePannelObject.SetActive(true);
             //Debug.Log(saveData.showPatchNoteToggle);
         }
         close_Button.onClick.AddListener(() =>

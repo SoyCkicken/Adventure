@@ -78,7 +78,7 @@ public class FontSizeManager : MonoBehaviour
             resetTextSetting();
         });
         SaveButton.onClick.AddListener(() => { saveManager.SaveGame(); });
-        LoadButton.onClick.AddListener(() => { saveManager.LoadGame(); });
+        LoadButton.onClick.AddListener(() => { saveManager.OnClickLoadGame(); });
 
         LoadSaveTimeOnly();
     }

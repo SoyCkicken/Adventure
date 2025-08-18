@@ -211,29 +211,29 @@ public class CombatTest : MonoBehaviour
                 var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
                 gameObject.transform.localScale = new Vector3(100, 100, 0);
                 Destroy(gameObject, 1f);
+                if (iscrit)
+                {
+                    if (_screenShake == null)
+                        _screenShake = FindObjectOfType<ScreenShake>(); // 또는 DI로 주입
+                    if (_screenShake != null)
+                    {
+                        // DOVirtual.DelayedCall은 특정 타겟에 묶이지 않아 fx가 파괴되어도 안전.
+                        DOVirtual.DelayedCall(0.4f, () =>
+                        {
+                            // 일반 히트
+
+                            _screenShake.Shake();
+                            // 크리티컬이면 강하게 (원하면 주석 해제)
+
+                        })
+                        .SetUpdate(true); // 타임스케일 무시(연출용)
+                        Debug.Log(attacker.speed);
+                    }
+                }
             }
             if (gameObject == null)
             {
                 return;
-            }
-            else
-            {
-                if (_screenShake == null)
-                    _screenShake = FindObjectOfType<ScreenShake>(); // 또는 DI로 주입
-                if (_screenShake != null)
-                {
-                    // DOVirtual.DelayedCall은 특정 타겟에 묶이지 않아 fx가 파괴되어도 안전.
-                    DOVirtual.DelayedCall(0.4f, () =>
-                    {
-                        // 일반 히트
-
-                        _screenShake.Shake();
-                        // 크리티컬이면 강하게 (원하면 주석 해제)
-
-                    })
-                    .SetUpdate(true); // 타임스케일 무시(연출용)
-                    Debug.Log(attacker.speed);
-                }
             }
         }
 
