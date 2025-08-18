@@ -642,16 +642,17 @@ public class InventoryManager : MonoBehaviour
     public void SaveInventoryData(ref SaveManager.SaveData data)
     {
         data.inventoryItems = inventoryItems.Select(item => item.Clone()).ToList();
-
-        if (weaponEquipSlot.CurrentItem != null && !string.IsNullOrEmpty(weaponEquipSlot.CurrentItem.Item_ID))
-            data.equippedWeaponData = weaponEquipSlot.CurrentItem.Clone();
-        else
-            data.equippedWeaponData = null;
-
-        if (armorEquipSlot.CurrentItem != null && !string.IsNullOrEmpty(armorEquipSlot.CurrentItem.Item_ID))
-            data.equippedArmorData = armorEquipSlot.CurrentItem.Clone();
-        else
-            data.equippedArmorData = null;
+  
+            if (!string.IsNullOrEmpty(player.weapon_Name))
+                data.equippedWeaponData = weaponEquipSlot.CurrentItem.Clone();
+            else
+                data.equippedWeaponData = null;
+            if (!string.IsNullOrEmpty(player.armor_Name))
+                data.equippedArmorData = armorEquipSlot.CurrentItem.Clone();
+            else
+                data.equippedArmorData = null;
+      
+            
     }
 
     public void LoadInventoryData(SaveManager.SaveData data)

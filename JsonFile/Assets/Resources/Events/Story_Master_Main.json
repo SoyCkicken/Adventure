@@ -1,34 +1,19 @@
 {
   "Story_Master_Main": [
     {
-      "Chapter_Index": 0.0,
-      "Event_Index": 0.0,
-      "Script_Index": 0.0,
-      "Scene_Code": "MainScene_0_0_0",
-      "Next_Scene": "MainScene_0_0_0",
-      "Script_Text": "MainScript_0_0_0",
-      "Main_Effect": [
-        {
-          "ID": "Effect_003",
-          "Code": "Weapon_001",
-          "Value": 1
-        }
-      ],
-      "Choice1_Text": "MainScript_0_0_0",
-      "Choice1_Next_Scene": "MainScene_0_0_0",
-      "Choice2_Text": "MainScript_0_0_0",
-      "Choice2_Next_Scene": "MainScene_0_0_0",
-      "Choice3_Text": "MainScript_0_0_0",
-      "Choice3_Next_Scene": "MainScene_0_0_0"
-    },
-    {
       "Chapter_Index": 1.0,
       "Event_Index": 1.0,
       "Script_Index": 1.0,
       "Scene_Code": "MainScene_1_1_1",
       "Next_Scene": null,
       "Script_Text": "MainScript_1_1_1",
-      "Main_Effect": null,
+      "Main_Effect": [
+        {
+          "ID": "Effect_003",
+          "Code": "Item_001",
+          "Value": 1
+        }
+      ],
       "Choice1_Text": null,
       "Choice1_Next_Scene": "MainScene_1_1_1",
       "Choice2_Text": null,
@@ -166,6 +151,7 @@
       "Main_Effect": [
         {
           "ID": "Effect_001",
+          "Code": "",
           "Value": 100
         }
       ],

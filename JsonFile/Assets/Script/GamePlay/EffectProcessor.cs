@@ -73,7 +73,7 @@ public static class EffectProcessor
 
                 case "Effect_003": // 아이템 지급
                     {
-                        var item = jsonManager.GetItemDataFromCode(effect.Code);
+                        var item = jsonManager.GetItemDataFromCode(effect.);
                         if (item != null)
                         {
                             if (sceneCode == "MainScript_1_3_5" || sceneCode == "MainScript_1_3_6" || sceneCode == "MainScript_1_3_7")
