@@ -265,7 +265,6 @@ public sealed class AdMobManager : MonoBehaviour
         });
 #endif
     }
-
 #if UNITY_ANDROID
     private void RegisterRewardedEvents(RewardedAd ad)
     {

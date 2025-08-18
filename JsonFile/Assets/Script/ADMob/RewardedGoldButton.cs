@@ -26,46 +26,38 @@ public class RewardedWithPopupButton : MonoBehaviour
 
     void OnClick()
     {
-        if (busy) return;
+        // 1) 정책 체크
+        if (!AdRewardPolicy.Instance.CanShow(out var reason, out var wait))
+        {
+            ConfirmPopup.ShowInfo(reason ?? "광고를 지금은 볼 수 없습니다.");
+            return;
+        }
 
+        // 2) 사용자 확인
         ConfirmPopup.Show(
-            message: $"광고를 시청하고\n<color=#FFD54F>{rewardAmount}</color> 골드를 받으시겠습니까?",
+            message: $"광고 시청으로 <color=#FFD54F>{rewardAmount}</color> 골드를 받으시겠습니까?",
             onConfirm: TryShowRewarded,
-            showNoButton: true,
-            yesLabel: "시청", noLabel: "취소"
+            showNoButton: true, yesLabel: "시청", noLabel: "취소"
         );
     }
 
+
     void TryShowRewarded()
     {
-        if (busy) return;
-        busy = true;
-        if (button) button.interactable = false;
-
         bool shown = AdMobManager.Instance.ShowRewarded(success =>
         {
-            busy = false;
-            if (button) button.interactable = true;
-
             if (success)
             {
-                // TODO: 네 게임의 보상 지급 로직
-                // 예) PlayerState.Instance.AddGold(rewardAmount);
-                Debug.Log($"[Rewarded] +{rewardAmount} 지급");
-                ConfirmPopup.ShowInfo($"보상이 지급되었습니다.\n+{rewardAmount}");
-                PlayerState.Instance.AddGold(rewardAmount); // 플레이어 상태에 골드 추가
+                AdRewardPolicy.Instance.RecordShown(); // ★ 성공 시 기록
+                                                       // 보상 지급 로직…
             }
             else
             {
-                ConfirmPopup.ShowInfo("광고 시청이 완료되지 않아 보상이 지급되지 않았습니다.");
+                ConfirmPopup.ShowInfo("광고 시청이 완료되지 않았습니다.");
             }
         });
 
         if (!shown)
-        {
-            busy = false;
-            if (button) button.interactable = true;
-            ConfirmPopup.ShowInfo("광고가 아직 준비되지 않았습니다.\n잠시 후 다시 시도해 주세요.");
-        }
+            ConfirmPopup.ShowInfo("광고가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.");
     }
 }
