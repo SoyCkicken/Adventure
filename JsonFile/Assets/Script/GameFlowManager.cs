@@ -238,6 +238,11 @@ public class GameFlowManager : MonoBehaviour
         Debug.Log("▶ 상태 강제 초기화 완료");
     }
 
+    public FlowState GetCurrentState()
+    {
+        return currentState; // 또는 현재 상태를 반환하는 로직
+    }
+
     public void SaveFlow(ref SaveData data)
     {
         data.flowState = currentState.ToString();

@@ -181,21 +181,85 @@ public class EventDisplay : MonoBehaviour
     /// <summary>
     /// 현재 이벤트 노드 표시
     /// </summary>
+    //public void DisplayCurrentEvent()
+    //{
+    //    //이것도 상관 없었음
+    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    Debug.Log("이벤트 출력 시작");
+    //    //유력 용의자
+    //    SkipButton.SetActive(true);
+    //    //이건 상관 없음
+    //    TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
+    //    {
+    //        OnSkip();
+    //    };
+    //    if (groupEvents == null || currentGroupIndex >= groupEvents.Count)
+    //    {
+    //        Debug.LogError("groupEvents가 비어있거나 인덱스 초과");
+    //        onCompleteCallback?.Invoke(false);
+    //        return;
+    //    }
+
+    //    currentEvent = groupEvents[currentGroupIndex];
+    //    var script = scriptEventsCache.FirstOrDefault(s =>
+    //        s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
+    //    GameObject lastBlock = activeBlocks.Count > 0 ? activeBlocks.Last() : null;
+    //    if (script == null)
+    //    {
+    //        Debug.LogWarning($"스크립트 매칭 실패: {currentEvent.Event_Text}");
+    //        SetupSkipToEnd();  // → 이후 스킵 처리 및 복귀
+    //        return;
+    //    }
+
+    //    int rewardBlocks = 0;
+    //    if (currentEvent.Main_Effect != null && currentEvent.Main_Effect.Count > 0)
+    //    {
+    //        //rewardBlocks = ApplyEffects(currentStory.Main_Effect, currentStory.Script_Text);
+    //        rewardBlocks = EffectProcessor.ApplyEffects(currentEvent.Main_Effect, playerState, inventoryManager, jsonManager, fontSizeManager, content, TextPrefab, "EventScene", activeBlocks);
+
+    //    }
+    //    if (rewardBlocks > 0)
+    //        lastBlock = null; // ✅ 새 텍스트 블록으로 시작시키기
+    //    switch (script.displayType)
+    //    {
+    //        case "TEXT":
+    //            Debug.Log("텍스트 출력");
+    //            HandleTextDisplayWithChoice(script.KOR, lastBlock,false);
+    //            break;
+
+    //        case "IMAGE":
+    //            Debug.Log("이미지 출력");
+    //            CreateImageBlock(script.KOR);
+    //            break;
+    //        case "CLEAR" :
+    //            HandleTextDisplayWithChoice(script.KOR, lastBlock,true);
+    //            break;
+    //        case "BATTLE":
+    //            Debug.Log("전투 시작");
+    //            winScriptCode = script.NEXTWIN?.Trim();
+    //            loseScriptCode = script.NEXTLOSE?.Trim();
+    //            Debug.Log($"전투 승리시 들어갈 코드{winScriptCode}");
+    //            Debug.Log($"전투 패배시 들어갈 코드{loseScriptCode}");
+    //            SkipButton.SetActive(false);
+    //            BattleState(script.KOR);
+    //            break;
+    //    }
+    //}
+
     public void DisplayCurrentEvent()
     {
-        //이것도 상관 없었음
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        Debug.Log("이벤트 출력 시작");
-        //유력 용의자
+        Debug.Log("[EventDisplay] 이벤트 출력 시작");
+
         SkipButton.SetActive(true);
-        //이건 상관 없음
         TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
         {
             OnSkip();
         };
+
         if (groupEvents == null || currentGroupIndex >= groupEvents.Count)
         {
-            Debug.LogError("groupEvents가 비어있거나 인덱스 초과");
+            Debug.LogError("[EventDisplay] groupEvents가 비어있거나 인덱스 초과");
             onCompleteCallback?.Invoke(false);
             return;
         }
@@ -204,47 +268,51 @@ public class EventDisplay : MonoBehaviour
         var script = scriptEventsCache.FirstOrDefault(s =>
             s.Script_Code.Trim() == currentEvent.Event_Text.Trim());
         GameObject lastBlock = activeBlocks.Count > 0 ? activeBlocks.Last() : null;
+
         if (script == null)
         {
-            Debug.LogWarning($"스크립트 매칭 실패: {currentEvent.Event_Text}");
-            SetupSkipToEnd();  // → 이후 스킵 처리 및 복귀
+            Debug.LogWarning($"[EventDisplay] 스크립트 매칭 실패: {currentEvent.Event_Text}");
+            SetupSkipToEnd();
             return;
         }
 
         int rewardBlocks = 0;
         if (currentEvent.Main_Effect != null && currentEvent.Main_Effect.Count > 0)
         {
-            //rewardBlocks = ApplyEffects(currentStory.Main_Effect, currentStory.Script_Text);
             rewardBlocks = EffectProcessor.ApplyEffects(currentEvent.Main_Effect, playerState, inventoryManager, jsonManager, fontSizeManager, content, TextPrefab, "EventScene", activeBlocks);
-
         }
+
         if (rewardBlocks > 0)
-            lastBlock = null; // ✅ 새 텍스트 블록으로 시작시키기
+            lastBlock = null;
+
         switch (script.displayType)
         {
             case "TEXT":
-                Debug.Log("텍스트 출력");
-                HandleTextDisplayWithChoice(script.KOR, lastBlock,false);
+                Debug.Log("[EventDisplay] 텍스트 출력");
+                HandleTextDisplayWithChoice(script.KOR, lastBlock, false);
                 break;
 
             case "IMAGE":
-                Debug.Log("이미지 출력");
+                Debug.Log("[EventDisplay] 이미지 출력");
                 CreateImageBlock(script.KOR);
                 break;
-            case "CLEAR" :
-                HandleTextDisplayWithChoice(script.KOR, lastBlock,true);
+
+            case "CLEAR":
+                HandleTextDisplayWithChoice(script.KOR, lastBlock, true);
                 break;
+
             case "BATTLE":
-                Debug.Log("전투 시작");
+                Debug.Log("[EventDisplay] 전투 시작");
                 winScriptCode = script.NEXTWIN?.Trim();
                 loseScriptCode = script.NEXTLOSE?.Trim();
-                Debug.Log($"전투 승리시 들어갈 코드{winScriptCode}");
-                Debug.Log($"전투 패배시 들어갈 코드{loseScriptCode}");
+                Debug.Log($"전투 승리시 들어갈 코드: {winScriptCode}");
+                Debug.Log($"전투 패배시 들어갈 코드: {loseScriptCode}");
                 SkipButton.SetActive(false);
                 BattleState(script.KOR);
                 break;
         }
     }
+
 
     private void HandleTextDisplayWithChoice(string text, GameObject lastBlock,bool isClear)
     {
@@ -600,184 +668,7 @@ public class EventDisplay : MonoBehaviour
         //var tmp = go.GetComponent<TMP_Text>();
         StartCoroutine(TypeTextEffectWithChoice(text, go , isClear, true));
     }
-
-
-    //private void SetupChoices()
-    //{
-    //    ClearChoiceButtons();
-    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-
-    //    var choices = new List<(string code, string text, int choiceNo)>();
-
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-    //        choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
-    //        choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text), 2));
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
-    //        choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
-
-    //    var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
-
-    //    foreach (var ch in choices)
-    //    {
-    //        var btn = Instantiate(choiceButtonPrefab, choiceButtonParent).GetComponent<Button>();
-    //        Debug.Log($"[DEBUG] SetupChoices에서 생성된 버튼 부모: {btn.transform.parent.name}");
-    //        btn.GetComponentInChildren<TMP_Text>().text = ch.text;
-
-    //        var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
-
-    //        btn.onClick.AddListener(() =>
-    //        {
-    //            string nextCode = ch.code; // 기본값
-
-    //            if (rateData != null)
-    //            {
-    //                float chance = EvaluateFormula(rateData.Success_Formula);
-    //                bool isSuccess = UnityEngine.Random.value < chance;
-    //                nextCode = isSuccess ? rateData.Success_Next_Script : rateData.Fail_Next_Script;
-    //            }
-
-    //            OnChoice(nextCode);
-    //        });
-    //    }
-    //}
-    //private void SetupChoices()
-    //{
-    //    ClearChoiceButtons();
-    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-
-    //    var choices = new List<(string code, string text, int choiceNo)>();
-
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-    //        choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
-    //        choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text), 2));
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
-    //        choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
-
-    //    // 이벤트용 성공률 데이터
-    //    var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
-
-    //    foreach (var ch in choices)
-    //    {
-    //        var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
-    //        var btn = go.GetComponent<Button>();
-    //        var txt = go.GetComponentInChildren<TextMeshProUGUI>();
-    //        if (txt != null) txt.text = ch.text;
-
-    //        // 선택지별 성공률 사전 계산
-    //        var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
-    //        bool hasRate = false;
-    //        float rate01 = 0f; // 0~1
-
-    //        if (rateData != null)
-    //        {
-    //            rate01 = Mathf.Clamp01(EvaluateFormula(rateData.Success_Formula));
-    //            hasRate = true;
-    //        }
-
-    //        // 버튼 위에 성공률 배지 표시(있을 때만)
-    //        if (hasRate)
-    //        {
-    //            CreateChanceBadgeOverButton(
-    //                buttonGO: go,
-    //                mainText: txt,
-    //                rate01: rate01,
-    //                bgSprite: null,        // 배경 브러시가 있으면 전달
-    //                yOffset: -10f,
-    //                labelSize: Mathf.RoundToInt((txt != null ? txt.fontSize : 24) * 0.3f),
-    //                percentScale: 1.6f
-    //            );
-    //        }
-
-    //        // 클릭 시 분기
-    //        btn.onClick.AddListener(() =>
-    //        {
-    //            string nextCode = ch.code; // 기본값: 원래 코드로 이동
-
-    //            if (hasRate)
-    //            {
-    //                bool ok = UnityEngine.Random.value < rate01;
-    //                nextCode = ok ? rateData.Success_Next_Script
-    //                              : rateData.Fail_Next_Script;
-    //            }
-
-    //            OnChoice(nextCode);
-    //        });
-    //    }
-    //}
-
-    //private void SetupChoices()
-    //{
-    //    ClearChoiceButtons();
-    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-
-    //    var choices = new List<(string code, string text, int choiceNo)>();
-
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice1_Text))
-    //        choices.Add((currentEvent.Choice1_Text, GetScriptText(currentEvent.Choice1_Text), 1));
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice2_Text))
-    //        choices.Add((currentEvent.Choice2_Text, GetScriptText(currentEvent.Choice2_Text), 2));
-    //    if (!string.IsNullOrEmpty(currentEvent.Choice3_Text))
-    //        choices.Add((currentEvent.Choice3_Text, GetScriptText(currentEvent.Choice3_Text), 3));
-
-    //    var successRates = jsonManager.GetSuccessRatesRanByScene(currentEvent.Random_Event_ID);
-
-    //    foreach (var ch in choices)
-    //    {
-    //        var go = Instantiate(choiceButtonPrefab, choiceButtonParent);
-    //        var btn = go.GetComponent<Button>();
-    //        var txt = go.GetComponentInChildren<TextMeshProUGUI>();
-    //        if (txt != null) txt.text = ch.text;
-
-    //        var rateData = successRates.FirstOrDefault(r => r.Choice_No == ch.choiceNo);
-
-    //        bool hasRate = rateData != null;
-    //        ChoiceResult choiceResult = null;
-    //        if (hasRate)
-    //        {
-    //            choiceResult = ChoiceEvaluator.Resolve(
-    //                formula: rateData.Success_Formula,
-    //                nextOnSuccess: rateData.Success_Next_Script,
-    //                nextOnFail: rateData.Fail_Next_Script,
-    //                state: playerState
-    //            );
-    //        }
-
-    //        // 성공률 배지 출력
-    //        if (hasRate && choiceResult != null)
-    //        {
-    //            ChoiceUIHelper.CreateChanceBadge(
-    //                buttonGO: go,
-    //                mainText: txt,
-    //                rate01: choiceResult.SuccessRate,
-    //                bgSprite: null,
-    //                yOffset: -10f,
-    //                labelSize: Mathf.RoundToInt(txt.fontSize * 0.7f),
-    //                percentScale: 1.6f
-    //            );
-    //        }
-
-    //        btn.onClick.AddListener(() =>
-    //        {
-    //            string nextCode = ch.code; // 기본값: 원래 선택지 코드로 이동
-
-    //            if (hasRate && choiceResult != null)
-    //            {
-    //                bool ok = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
-    //                nextCode = ok ? rateData.Success_Next_Script?.Trim()
-    //                              : rateData.Fail_Next_Script?.Trim();
-
-    //                if (string.IsNullOrEmpty(nextCode))
-    //                    nextCode = ch.code; // 실패 시 분기 없는 경우 다시 기본 코드로
-    //            }
-
-    //            OnChoice(nextCode);
-    //        });
-    //    }
-    //}
-
-    private void SetupChoices()
+     private void SetupChoices()
     {
         ClearChoiceButtons();
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -848,59 +739,133 @@ public class EventDisplay : MonoBehaviour
 
                 btn.onClick.AddListener(() =>
                 {
+                    //string nextCode;
+                    //bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
+                    //nextCode = success ? rateRow.Success_Next_Script?.Trim()
+                    //                   : rateRow.Fail_Next_Script?.Trim();
+
+                    //if (string.IsNullOrEmpty(nextCode)) nextCode = ch.code;
+                    //OnChoice(nextCode);
                     string nextCode;
                     bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
                     nextCode = success ? rateRow.Success_Next_Script?.Trim()
                                        : rateRow.Fail_Next_Script?.Trim();
 
                     if (string.IsNullOrEmpty(nextCode)) nextCode = ch.code;
-                    OnChoice(nextCode);
+
+                    // 🔴 라벨 텍스트 같이 전달
+                    OnChoice(nextCode, ch.text);
                 });
             }
             else
             {
                 // 일반 버튼
-                btn.onClick.AddListener(() => OnChoice(ch.code));
+                btn.onClick.AddListener(() => OnChoice(ch.code,ch.text));
+
             }
         }
     }
 
-    private void OnChoice(string code)
+    private string GetNextEventCodeInGroupOrNull()
     {
-        // 선택된 코드로 이동
+        var next = groupEvents.FirstOrDefault(e =>
+            e.RandomEvent_Index == currentEvent.RandomEvent_Index &&
+            e.Script_Index == currentEvent.Script_Index + 1);
+
+        return next != null ? next.Event_Text?.Trim() : null;
+    }
+
+    //private void OnChoice(string code)
+    //{
+    //    // 선택된 코드로 이동
+    //    var target = eventList.FirstOrDefault(e => e.Event_Text.Trim() == code.Trim());
+    //    var targetscript = scriptEventsCache.FirstOrDefault(e => e.Script_Code.Trim() == code.Trim());
+    //    Debug.Log($"{targetscript.KOR} , {targetscript.EventBreak} ");
+    //    Debug.Log($"{target.Random_Event_ID}\n{target.Event_Text}");
+    //    ClearContent();
+    //    if (target != null)
+    //    {
+    //        //여기가 문제인거 확인
+    //        //currentGroupIndex = eventList.IndexOf(target);
+    //        currentGroupIndex = groupEvents.IndexOf(target); // ← 이렇게 바꿔줘
+    //        Debug.Log(target.Script_Index);
+    //        if (targetscript.EventBreak == "Break")
+    //        {
+    //            //끝나는 선택지 누를 시 s
+    //            //이벤트 종료 시킴
+    //            if (targetscript != null && targetscript.EventBreak == "Break")
+    //            {
+    //                Debug.Log("이벤트 종료: Break 문 탐지");
+    //                SetupSkipToEnd();
+    //                return;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            //이벤트 끝나는 부분이 아님
+    //            DisplayCurrentEvent();
+    //        }
+
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning("이벤트 코드 미발견: " + code);
+    //    }
+    //}
+    // 기존 시그니처 유지 + 선택적 파라미터 추가
+    private void OnChoice(string code, string labelText = null)
+    {
         var target = eventList.FirstOrDefault(e => e.Event_Text.Trim() == code.Trim());
         var targetscript = scriptEventsCache.FirstOrDefault(e => e.Script_Code.Trim() == code.Trim());
-        Debug.Log($"{targetscript.KOR} , {targetscript.EventBreak} ");
-        Debug.Log($"{target.Random_Event_ID}\n{target.Event_Text}");
+
         ClearContent();
-        if (target != null)
+
+        if (target == null || targetscript == null)
         {
-            //여기가 문제인거 확인
-            //currentGroupIndex = eventList.IndexOf(target);
-            currentGroupIndex = groupEvents.IndexOf(target); // ← 이렇게 바꿔줘
-            Debug.Log(target.Script_Index);
-            if (targetscript.EventBreak == "Break")
+            Debug.LogWarning("이벤트 코드 미발견: " + code);
+            return;
+        }
+
+        // 🔴 라벨 억제: 라벨로 사용한 스크립트 노드는 본문 출력 1회 패스
+        if (!string.IsNullOrEmpty(labelText))
+        {
+            // 양쪽 공백/개행/색 태그 등 최소한만 정규화
+            string norm(string s) => s?.Trim();
+            if (norm(targetscript.KOR) == norm(labelText))
             {
-                //끝나는 선택지 누를 시 s
-                //이벤트 종료 시킴
-                if (targetscript != null && targetscript.EventBreak == "Break")
+                // 같은 그룹 내 다음 Script_Index로 점프
+                var next = groupEvents.FirstOrDefault(e =>
+                    e.RandomEvent_Index == target.RandomEvent_Index &&
+                    e.Script_Index == target.Script_Index + 1);
+
+                if (next != null)
                 {
-                    Debug.Log("이벤트 종료: Break 문 탐지");
+                    currentEvent = next;
+                    currentGroupIndex = groupEvents.IndexOf(next);
+                    DisplayCurrentEvent();
+                    return;
+                }
+                else
+                {
+                    // 다음이 없으면 이벤트 종료 처리
                     SetupSkipToEnd();
                     return;
                 }
             }
-            else
-            {
-                //이벤트 끝나는 부분이 아님
-                DisplayCurrentEvent();
-            }
-            
         }
-        else
+
+        // 평소 흐름
+        currentEvent = target;
+        currentGroupIndex = groupEvents.IndexOf(target);
+
+        // Break 노드면 종료
+        if (targetscript.EventBreak == "Break")
         {
-            Debug.LogWarning("이벤트 코드 미발견: " + code);
+            SetupSkipToEnd();
+            return;
         }
+
+        DisplayCurrentEvent();
     }
 
     private string GetScriptText(string code)
@@ -926,132 +891,7 @@ public class EventDisplay : MonoBehaviour
         PickNewGroup();  // or onCompleteCallback?.Invoke(false); depending on context
         SkipButton.SetActive(false);
     }
-    //private float EvaluateFormula(string formula)
-    //{
-    //    if (string.IsNullOrEmpty(formula)) return 0f;
-    //    // 간단한 STR * 10 구조만 처리
-    //    if (formula.Contains("STR"))
-    //    {
-    //        int str = playerState.STR; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("STR*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (str * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-
-
-    //    }
-    //    else if (formula.Contains("DEX"))
-    //    {
-    //        int DEX = playerState.AGI; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("DEX*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (DEX * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-    //    }
-    //    else if (formula.Contains("DIV"))
-    //    {
-    //        int DIV = playerState.DIV; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("DIV*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (DIV * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-    //    }
-
-    //    else if (formula.Contains("INT"))
-    //    {
-    //        int INT = playerState.INT; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("INT*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (INT * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-    //    }
-
-    //    else if (formula.Contains("MAG"))
-    //    {
-    //        int MAG = playerState.MAG; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("MAG*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (MAG * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-    //    }
-
-    //    else if (formula.Contains("CHA"))
-    //    {
-    //        int CHA = playerState.CHA; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("CHA*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (CHA * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-    //    }
-
-    //    else if (formula.Contains("HEALTH"))
-    //    {
-    //        int HEALTH = playerState.Health; // 임시 값 (플레이어 스탯에서 가져와야 함)
-    //        string sanitized = formula.Replace(" ", ""); // 공백 제거
-    //        string factor = sanitized.Replace("HEALTH*", "");
-
-    //        if (float.TryParse(factor, out float percent))
-    //        {
-    //            //Debug.Log($"계산된 배율: {percent}");
-    //            return (HEALTH * percent) / 100f;
-    //        }
-    //        else
-    //        {
-    //            Debug.LogWarning($"배율 파싱 실패: {factor}");
-    //        }
-    //    }
-    //    return 0f;
-    //}
-
-    public void LoadEventStory(int groupID)
+   public void LoadEventStory(int groupID)
     {
         Debug.Log($"[리모컨] 수동 로드된 이벤트 그룹 ID: {groupID}");
 
@@ -1111,14 +951,56 @@ public class EventDisplay : MonoBehaviour
 
         Debug.Log("[EventDisplay] 이벤트 데이터 저장 완료");
     }
+    //public void LoadEventData(SaveManager.SaveData data)
+    //{
+    //    if (data.savedEventGroups == null || data.savedEventGroups.Count == 0) return;
+
+    //    if (jsonManager == null)
+    //        jsonManager = FindObjectOfType<JsonManager>();
+
+    //    Debug.Log("이벤트 쪽 로드 시작 합니다");
+    //    eventGroups = new List<int>(data.savedEventGroups);
+    //    currentGroup = data.savedCurrentEventGroup;
+    //    currentGroupIndex = data.savedCurrentEvetnGroupIndex;
+
+    //    jsonManager ??= FindObjectOfType<JsonManager>();
+    //    spriteBank ??= FindObjectOfType<SpriteBank>();
+
+    //    eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event")
+    //        .OrderBy(e => e.RandomEvent_Index)
+    //        .ThenBy(e => e.Script_Index)
+    //        .ToList();
+
+    //    scriptEventsCache = jsonManager.GetRandomScriptMasters("Ran_Script_Master_Event");
+
+    //    groupEvents = eventList
+    //        .Where(e => e.RandomEvent_Index == currentGroup)
+    //        .OrderBy(e => e.Script_Index)
+    //        .ToList();
+
+    //    currentEvent = groupEvents[currentGroupIndex];
+
+    //    ClearContent();
+    //    TouchCatcher.SetActive(true);
+    //    SkipButton.SetActive(true);
+    //    SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
+
+    //    // ⛔ DisplayCurrentEvent() 호출 안함!
+    //}
     public void LoadEventData(SaveManager.SaveData data)
     {
-        if (data.savedEventGroups == null || data.savedEventGroups.Count == 0) return;
+        if (data.savedEventGroups == null || data.savedEventGroups.Count == 0)
+        {
+            Debug.Log("[EventDisplay] 저장된 이벤트 그룹이 없습니다.");
+            return;
+        }
 
         if (jsonManager == null)
             jsonManager = FindObjectOfType<JsonManager>();
 
-        Debug.Log("이벤트 쪽 로드 시작 합니다");
+        Debug.Log("[EventDisplay] 이벤트 데이터 로드 시작");
+
         eventGroups = new List<int>(data.savedEventGroups);
         currentGroup = data.savedCurrentEventGroup;
         currentGroupIndex = data.savedCurrentEvetnGroupIndex;
@@ -1127,6 +1009,7 @@ public class EventDisplay : MonoBehaviour
         spriteBank ??= FindObjectOfType<SpriteBank>();
 
         eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event")
+            .Where(e => e.Chapter_Index.Contains(playerState.CurrentChapterIndex))
             .OrderBy(e => e.RandomEvent_Index)
             .ThenBy(e => e.Script_Index)
             .ToList();
@@ -1138,6 +1021,19 @@ public class EventDisplay : MonoBehaviour
             .OrderBy(e => e.Script_Index)
             .ToList();
 
+        // 유효성 검사
+        if (groupEvents == null || groupEvents.Count == 0)
+        {
+            Debug.LogWarning($"[EventDisplay] 그룹 {currentGroup}에 해당하는 이벤트가 없습니다.");
+            return;
+        }
+
+        if (currentGroupIndex >= groupEvents.Count)
+        {
+            Debug.LogWarning($"[EventDisplay] 그룹 인덱스 {currentGroupIndex}가 범위를 벗어남. groupEvents.Count: {groupEvents.Count}");
+            currentGroupIndex = 0;
+        }
+
         currentEvent = groupEvents[currentGroupIndex];
 
         ClearContent();
@@ -1146,8 +1042,9 @@ public class EventDisplay : MonoBehaviour
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());
 
-        // ⛔ DisplayCurrentEvent() 호출 안함!
+        Debug.Log($"[EventDisplay] 로드 완료 - Group: {currentGroup}, Index: {currentGroupIndex}");
     }
+
     public void SetOnCompleteCallback(Action<bool> callback)
     {
         onCompleteCallback = callback;

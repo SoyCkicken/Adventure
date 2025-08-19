@@ -136,7 +136,7 @@ public class CombatTest : MonoBehaviour
         //enemy.RemoveTemporaryBuffs();
         //player.RemoveTemporaryBuffs();
         //buffUI.ClearAll();
-        //NormalBattle.SetActive(false);
+        NormalBattle.SetActive(false);
 
         ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {exp}흭득", () =>
         {
@@ -157,7 +157,7 @@ public class CombatTest : MonoBehaviour
         //player.RemoveTemporaryBuffs();
         //buffUI.ClearAll();
         PopupObject.SetActive(true);
-        //NormalBattle.SetActive(false);
+        NormalBattle.SetActive(false);
 
         if (playerState.CurrentHealth <= 0 || playerState.CurrentMental <= 0)
         {
