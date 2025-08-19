@@ -64,7 +64,7 @@ public class MonsterSpawner : MonoBehaviour
         
         _currentMonster = Instantiate(monsterPrefab, canvusImage.transform.position, Quaternion.identity,canvusImage.transform);
         _currentMonster.transform.localPosition = vector3;
-        _currentMonster.transform.localScale = new Vector3(100, 100, 0);
+        _currentMonster.transform.localScale = new Vector3(80, 80, 0);
         _currentMonster.name = data.Mon_Name;
         if (enemy == null) enemy = GameObject.FindWithTag("Enemy");
 
