@@ -96,7 +96,8 @@ public class BuffUI : MonoBehaviour
             icon.Set(buff);
             activeIcons.Add(icon);
             Debug.Log($"[BuffUI] 아이콘 추가됨: {buff.BuffID}");
-            battleGameObject.SetActive(false); // 아이콘 생성 후 자동 전투 화면 캔버스 비활성화
+            //battleGameObject.gameObject.SetActive(true);
+            //battleGameObject.SetActive(false); // 아이콘 생성 후 자동 전투 화면 캔버스 비활성화
         }
     }
 

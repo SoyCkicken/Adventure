@@ -10,16 +10,9 @@ namespace MyGame
 {
     public class Character : MonoBehaviour
     {
-
-        //private void Update()
-        //{
-        //    UpdateBuffs(Time.deltaTime);
-        //}
-
-        private void StartBuffRoutine()
+        public interface IEquipmentQuery
         {
-            if (buffCoroutine != null) return;
-            buffCoroutine = StartCoroutine(BuffTickRoutine());
+            bool IsItemEquipped(string itemID);
         }
 
         [Header("캐릭터 기본 정보입니다 여기 값 + 능력치를 적용 시킬 예정입니다")]
@@ -45,7 +38,7 @@ namespace MyGame
         //옵션들 리스트에 기록
         public List<EquippedOption> OnHitOptions = new List<EquippedOption>();
         public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();
-        public Dictionary<string, BuffData> activeBuffs = new();
+        private readonly Dictionary<string, BuffData> activeBuffs = new();
         public BattleUI battleUI;
         public BuffUI buffUI;
         private Coroutine uiRefreshRoutine;
@@ -58,6 +51,9 @@ namespace MyGame
         public int hitChance = 80; // 명중률 (0~100)
 
         public bool IsDead => CurrentHP <= 0;
+        public IEquipmentQuery equipmentQuery; // EquipmentSystem에서 주입
+        bool IsStillEquipped(BuffData buff)
+            => buff.IsPassive && equipmentQuery != null && equipmentQuery.IsItemEquipped(buff.SourceItemID);
 
         public List<FocusBuffData> ActiveDebuffs = new();
         //이 부분은 캐릭터 클래스의 하위에 있어야 되는 부분이라서 맨 아래로 안배고 맨 위에 넣음
@@ -73,14 +69,10 @@ namespace MyGame
             public int Value;
             public string item_ID;
         }
-
-        private bool IsStillEquipped(BuffData buff)
+        private string GetBuffKey(BuffData b)
         {
-            if (!buff.IsPassive) return false;
-
-            return buff.SourceItemID == armor_Name || buff.SourceItemID == weapon_Name;
+            return string.IsNullOrEmpty(b.SourceItemID) ? b.BuffID : $"{b.BuffID}:{b.SourceItemID}";
         }
-
         [System.Serializable]
         public struct MonsterOption
         {
@@ -114,67 +106,135 @@ namespace MyGame
         //원래 코드
         public void AddBuff(BuffData buff)
         {
-            Debug.Log($"버프를 누가 사용중인가 {this.name}");
-            activeBuffs[buff.BuffID] = buff;
-            //여기는 버프에 대한 설명만 작성 해주면 됨
-            if (buff.OptionID == "Option_002") // 치명타 확률 증가
-            {
-                Debug.Log($"치명타 확률 +{buff.Value}% 버프 적용됨");
-                CitChance += buff.Value;
-            }
-            if (buff.OptionID == "Option_003")
-            {
-                int Damagehp = Convert.ToInt32(buff.Target.MaxHealth * 0.02);
-                buff.Target.Health -= Damagehp;
-                //StartCoroutine(BurnDebuff(buff));
-                Debug.Log($"화상 디버프 적용중 : {buff.Target}에게 화상 피해 : {Damagehp}를 적용중입니다");
-            }
-            if (buff.OptionID == "Option_004")
-            {
-                int Healinghp = Convert.ToInt32(buff.Target.MaxHealth * 0.02);
-                //StartCoroutine(HealthingBuff(buff));
-                Debug.Log($"회복 버프 적용중 : {buff.Target}에게 체력 회복 : {Healinghp}를 적용중입니다");
-            }
-            if (buff.OptionID == "Option_005")
-            {
-                float multiplier = buff.Value / 100f;
-                speed *= (1f + multiplier);  // 예: 20% → speed *= 1.2f
-                Debug.Log($"[공속 증가] {charaterName} → speed x{1f + multiplier} = {speed}");
-                Debug.Log($"공격 속도 버프 {buff.Value}%만큼 증가");
-            }
-            Debug.LogWarning($"누가 버프가 추가 되고 있는가? {this}");
+            if (buff == null) return;
+            string key = GetBuffKey(buff);
 
-            if (uiRefreshRoutine != null) StopCoroutine(uiRefreshRoutine);
-            uiRefreshRoutine = StartCoroutine(DelayUIRefresh());
-            StartBuffRoutine();
-            // 필요 시 스탯 반영
+            // 동일 출처/동일 BuffID가 이미 있으면 → 갱신(지속시간 리셋)
+            if (activeBuffs.TryGetValue(key, out var existing))
+            {
+                existing.Duration = buff.Duration;
+                existing.Elapsed = 0f;
+                existing.Value = buff.Value; // 필요 시 값도 갱신
+                Debug.Log($"[Buff] Refresh: {key} (Duration reset, Value={existing.Value})");
+
+                // GameObject가 활성화되어 있을 때만 UI 갱신
+                RefreshBuffUI();
+                StartBuffRoutineSafe();
+                return;
+            }
+
+            // 신규 등록
+            activeBuffs[key] = buff;
+
+            // 즉시형 효과 로그/즉시 반영
+            switch (buff.OptionID)
+            {
+                case "Option_003": // 화상 즉시 2% (Tick도 별도 진행)
+                    int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+                    buff.Target.Health -= dmg;
+                    Debug.Log($"[화상 즉시] {buff.Target.charaterName} -{dmg}");
+                    break;
+                case "Option_004": // 회복 즉시 2%
+                    int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
+                    buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
+                    Debug.Log($"[회복 즉시] {buff.Target.charaterName} +{heal}");
+                    break;
+            }
+
+            // 스탯형은 적용
+            ApplyStatDelta(buff, apply: true);
+
+            // GameObject가 활성화되어 있을 때만 UI/루틴 처리
+            RefreshBuffUI();
+            StartBuffRoutineSafe();
+
+            Debug.Log($"[Buff] Add: {key} ({buff.OptionID}) from {buff.SourceItemID}");
         }
+
+        private void StartBuffRoutineSafe()
+        {
+            if (buffCoroutine != null) return;
+
+            // GameObject가 활성화되어 있고 enabled 상태일 때만 코루틴 시작
+            if (gameObject != null && gameObject.activeInHierarchy && enabled)
+            {
+                buffCoroutine = StartCoroutine(BuffTickRoutine());
+            }
+            else
+            {
+                Debug.LogWarning($"[Buff] {gameObject.name}이 비활성 상태여서 버프 루틴을 시작할 수 없습니다.");
+            }
+        }
+        private void RefreshBuffUI()
+        {
+            // GameObject가 활성화되어 있을 때만 UI 갱신 코루틴 시작
+            if (gameObject != null && gameObject.activeInHierarchy && enabled)
+            {
+                if (uiRefreshRoutine != null) StopCoroutine(uiRefreshRoutine);
+                uiRefreshRoutine = StartCoroutine(DelayUIRefresh());
+            }
+            else
+            {
+                // 코루틴을 사용할 수 없는 경우 직접 UI 갱신
+                RefreshBuffUIDirect();
+            }
+        }
+        private void RefreshBuffUIDirect()
+        {
+            try
+            {
+                buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
+                Debug.Log($"[Buff] UI 직접 갱신 완료 for {gameObject.name}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[Buff] UI 갱신 실패: {e.Message}");
+            }
+        }
+        private void ApplyStatDelta(BuffData buff, bool apply)
+        {
+            switch (buff.OptionID)
+            {
+                case "Option_002": // 치확
+                    CitChance += apply ? buff.Value : -buff.Value;
+                    break;
+
+                case "Option_005": // 공속
+                    float mul = buff.Value / 100f;
+                    if (apply) speed *= (1f + mul);
+                    else speed /= (1f + mul);
+                    break;
+            }
+        }
+
         private IEnumerator BuffTickRoutine()
         {
             WaitForSeconds wait = new WaitForSeconds(1f);
 
-            if (gameFlowManager == null || gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
-            {
-                Debug.Log($"[버프 무시] 현재 상태가 Battle이 아님 → 버프 적용 안 함");
-                yield return wait;
-            }
-
             while (true)
             {
+                // 전투 중이 아닐 때는 쉬되, 루틴은 유지 (재진입 비용 방지)
+                if (gameFlowManager == null || gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
+                {
+                    yield return wait;
+                    continue;
+                }
+
                 var expired = new List<string>();
 
                 foreach (var kv in activeBuffs)
                 {
                     var buff = kv.Value;
 
-                    // ✅ 장착 중인 패시브는 시간 초기화 (무한 유지)
+                    // 패시브인데 아직 장착중이면 시간 고정(무한)
                     if (IsStillEquipped(buff))
                     {
                         buff.Elapsed = 0f;
                         continue;
                     }
 
-                    buff.Elapsed += 1f;
+                    //buff.Elapsed += 1f;
+                    //버프마다 자동으로 계산중
 
                     // Tick 효과
                     switch (buff.OptionID)
@@ -182,30 +242,32 @@ namespace MyGame
                         case "Option_003": // 화상
                             int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
                             buff.Target.Health -= dmg;
-                            Debug.Log($"[화상 Tick] {buff.Target.charaterName} → {dmg} 피해");
+                            Debug.Log($"[화상 Tick] {buff.Target.charaterName} -{dmg}");
                             break;
 
                         case "Option_004": // 회복
                             int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
                             buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
-                            Debug.Log($"[회복 Tick] {buff.Target.charaterName} → {heal} 회복");
+                            Debug.Log($"[회복 Tick] {buff.Target.charaterName} +{heal}");
                             break;
                     }
 
-                    if (buff.Elapsed >= buff.Duration)
+                    if (buff.Duration > 0 && buff.Elapsed >= buff.Duration)
                         expired.Add(kv.Key);
                 }
 
+                // 만료 반영
                 foreach (var key in expired)
                     RemoveBuff(key);
 
+                // 모두 없어지면 루틴 종료
                 if (activeBuffs.Count == 0)
                 {
                     buffCoroutine = null;
                     yield break;
                 }
 
-                battleUI.UpdateUI();
+                battleUI?.UpdateUI();
                 yield return wait;
             }
         }
@@ -222,32 +284,25 @@ namespace MyGame
         //장착 해제 시 버프 해제
         public void RemoveBuffByItem(string itemID)
         {
-            // itemID가 일치하는 버프만 먼저 찾음
-            var matchingBuffs = activeBuffs
+            var keys = activeBuffs
                 .Where(kv => kv.Value.SourceItemID == itemID)
-                .ToList(); // 딕셔너리 순회 중 수정 방지
+                .Select(kv => kv.Key)
+                .ToList();
 
-            foreach (var kv in matchingBuffs)
+            foreach (var key in keys)
             {
-                var buff = kv.Value;
+                var buff = activeBuffs[key];
 
-                // 스탯 복원 처리
-                if (buff.OptionID == "Option_002")
-                    CitChance -= buff.Value;
+                // 패시브든 아니든, 아이템이 해제되면 제거 + 복원
+                ApplyStatDelta(buff, apply: false);
+                activeBuffs.Remove(key);
+                buffUI?.ClearBuffByID(buff.BuffID);
 
-                if (buff.OptionID == "Option_005")
-                {
-                    float multiplier = buff.Value / 100f;
-                    speed /= (1f + multiplier);
-                    Debug.Log($"[공속 복원] {charaterName} → speed 복구 = {speed}");
-                }
-
-                activeBuffs.Remove(kv.Key);
-                Debug.Log($"[장비 해제] 버프 제거됨: {kv.Key}");
-                buffUI.ClearBuffByID(buff.BuffID); // UI에서 해당 버프 아이콘 제거
+                Debug.Log($"[장비 해제] {itemID} → {key} 제거");
             }
 
-            buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
+            // 안전한 UI 갱신
+            RefreshBuffUI();
         }
 
         //버프 제거용
@@ -289,23 +344,58 @@ namespace MyGame
         //    // UI 갱신
         //    buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
         //}
+
+        private void OnDisable()
+        {
+            if (buffCoroutine != null)
+            {
+                StopCoroutine(buffCoroutine);
+                buffCoroutine = null;
+            }
+            if (uiRefreshRoutine != null)
+            {
+                StopCoroutine(uiRefreshRoutine);
+                uiRefreshRoutine = null;
+            }
+        }
+        private void OnEnable()
+        {
+            // 활성 버프가 있고 전투 중이라면 루틴 재시작
+            if (activeBuffs.Count > 0 && gameFlowManager != null &&
+                gameFlowManager.GetCurrentFlowState() == GameFlowManager.FlowState.Battle)
+            {
+                StartBuffRoutineSafe();
+            }
+        }
         public void RemoveBuff(string buffID)
         {
-            if (!activeBuffs.TryGetValue(buffID, out var buff))
-                return;
+            // buffID 단독으로는 모호 → 해당 ID를 가진 모든 엔트리 제거 (패시브 제외)
+            var toRemove = activeBuffs
+                .Where(kv => kv.Value.BuffID == buffID && !kv.Value.IsPassive)
+                .Select(kv => kv.Key)
+                .ToList();
 
+            foreach (var key in toRemove)
+                RemoveBuffByKey(key);
+        }
+        private void RemoveBuffByKey(string key)
+        {
+            if (!activeBuffs.TryGetValue(key, out var buff)) return;
+
+            // 패시브는 코드로 제거하지 않음 (장비 해제로만 제거)
             if (buff.IsPassive)
             {
-                Debug.Log($"[패시브 버프 유지됨] {buffID} , {armor_Name}");
+                Debug.Log($"[패시브 유지] {key} from {buff.SourceItemID}");
                 return;
             }
 
-            activeBuffs.Remove(buffID);
+            // 스탯 복원
+            ApplyStatDelta(buff, apply: false);
 
-            // UI에서 제거
-            buffUI?.ClearBuffByID(buffID);
+            activeBuffs.Remove(key);
+            buffUI?.ClearBuffByID(buff.BuffID);
+            Debug.Log($"[Buff] Removed: {key}");
         }
-
         //일시적인 버프 모두 제거
         public void RemoveTemporaryBuffs()
         {

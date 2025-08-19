@@ -94,6 +94,7 @@ public class CombatTest : MonoBehaviour
         {
             Debug.Log("[선공권] 공격 한방에 전투 종료");
 
+            // 전투 정리는 CheckDeath에서 이미 처리됨
             battleOver = true;
             yield return new WaitUntil(() => battleOver);
 
@@ -107,7 +108,7 @@ public class CombatTest : MonoBehaviour
             }
 
             player.GetComponent<EquipmentSystem>().Init();
-            yield break; // 루프 스킵
+            yield break;
         }
 
         // 일반 턴 전투 루프
@@ -132,9 +133,10 @@ public class CombatTest : MonoBehaviour
     {
         PopupObject.SetActive(true);
         battleOver = true;
-        enemy.RemoveTemporaryBuffs();
-        player.RemoveTemporaryBuffs();
-        buffUI.ClearAll();
+        //enemy.RemoveTemporaryBuffs();
+        //player.RemoveTemporaryBuffs();
+        //buffUI.ClearAll();
+        //NormalBattle.SetActive(false);
 
         ConfirmPopup.Show($"전투에서 승리했습니다\n경험치 : {exp}흭득", () =>
         {
@@ -151,17 +153,19 @@ public class CombatTest : MonoBehaviour
         battleOver = false;
         playerState.CurrentHealth--;
         playerState.CurrentMental--;
-        enemy.RemoveTemporaryBuffs();
-        player.RemoveTemporaryBuffs();
-        buffUI.ClearAll();
+        //enemy.RemoveTemporaryBuffs();
+        //player.RemoveTemporaryBuffs();
+        //buffUI.ClearAll();
         PopupObject.SetActive(true);
+        //NormalBattle.SetActive(false);
+
         if (playerState.CurrentHealth <= 0 || playerState.CurrentMental <= 0)
         {
             SceneManager.LoadScene("GameOverScene");
             return;
         }
 
-        NormalBattle.SetActive(false);
+        //NormalBattle.SetActive(false);
 
         ConfirmPopup.Show("전투에서 패배했습니다", () =>
         {
@@ -290,13 +294,31 @@ public class CombatTest : MonoBehaviour
     {
         if (target.Health <= 0 || attacker.Health <= 0)
         {
-            enemy.RemoveTemporaryBuffs();
-            player.RemoveTemporaryBuffs();
-            buffUI.ClearAll();
-            NormalBattle.SetActive(false);
+            Debug.Log($"[CheckDeath] 사망 감지: {target.charaterName} HP={target.Health}, {attacker.charaterName} HP={attacker.Health}");
+
+            // 버프만 정리하고 캔버스는 유지
+            CleanupBuffsOnly();
+
             battleOver = true;
             return true;
         }
         return false;
+    }
+
+    private void CleanupBuffsOnly()
+    {
+        try
+        {
+            // 버프만 정리
+            enemy?.RemoveTemporaryBuffs();
+            player?.RemoveTemporaryBuffs();
+            buffUI?.ClearAll();
+
+            Debug.Log("[Combat] 버프 정리 완료 (캔버스 유지)");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[Combat] 버프 정리 중 오류: {e.Message}");
+        }
     }
 }

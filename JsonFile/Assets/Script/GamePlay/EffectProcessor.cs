@@ -64,10 +64,19 @@ public static class EffectProcessor
                     }
                     break;
 
-                case "Effect_002": // 체력 감소
+                case "Effect_002": // 체력 감소 , 회복
                     {
-                        int loss = Mathf.Abs(effect.Value);
-                        playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - loss);
+                        if (effect.Value >= 1)
+                        {
+                            int Poss = Mathf.Abs(effect.Value);
+                            playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth + Poss);
+                        }
+                        else
+                        {
+                            int loss = Mathf.Abs(effect.Value);
+                            playerState.CurrentHealth = Mathf.Max(0, playerState.CurrentHealth - loss);
+                        }
+                            
                     }
                     break;
 

@@ -96,18 +96,22 @@ public class BuffIconUI : MonoBehaviour
         buffData = data; 
         iconImage.sprite = spriteBank.Load(buff.OptionID);
         timerSlider.fillAmount = 1f;
-        BattleImage.SetActive(false);
+        //BattleImage.SetActive(false);
     }
 
     private void Update()
     {
         if (buffData == null || buffData.Duration <= 0f) return;
 
+        // 경과 시간 증가
         buffData.Elapsed += Time.deltaTime;
-        float remaining = Mathf.Max(buffData.Duration - buffData.Elapsed, 0f);
-        timerSlider.fillAmount = remaining / buffData.Duration;
 
-        if (remaining <= 0f)
+        // fillAmount를 0에서 1로 증가시킴
+        float progress = Mathf.Clamp01(buffData.Elapsed / buffData.Duration);
+        timerSlider.fillAmount = progress;
+
+        // Duration을 다 채우면 제거
+        if (progress >= 1f)
         {
             Destroy(gameObject);
         }
