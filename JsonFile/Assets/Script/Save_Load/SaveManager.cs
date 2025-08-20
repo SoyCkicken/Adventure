@@ -875,10 +875,10 @@ public class SaveManager : MonoBehaviour
         playerState?.LoadPlayer(data);
         inventoryManager?.LoadInventoryData(data);
 
-        // ✅ 수정: GameFlowManager 먼저 로드해서 상태 복원
+        // GameFlowManager 먼저 로드해서 상태 복원
         gameFlowManager?.LoadFlow(data);
 
-        // ✅ 수정: 스토리/이벤트 로드 후 실제 표시까지 처리
+        // 스토리/이벤트 로드 후 실제 표시까지 처리
         if (displayManager != null)
         {
             displayManager.LoadMainStory(data);

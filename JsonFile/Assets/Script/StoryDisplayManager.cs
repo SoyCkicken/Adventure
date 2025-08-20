@@ -414,7 +414,7 @@ public class StoryDisplayManager : MonoBehaviour
             {
                 if (isSkip)
                 {
-                    // 🔥 스킵: 남은 텍스트 강제 출력
+                    // 스킵: 남은 텍스트 강제 출력
                     string remaining = fragment.text.Substring(i);
                     tmp.text += remaining;
                     cursor += remaining.Length;
@@ -478,7 +478,7 @@ public class StoryDisplayManager : MonoBehaviour
             }
         }
 
-        // 🔚 종료 처리
+        // 종료 처리
         isTyping = false;
         isSkip = false;
         SkipButton.SetActive(false);
@@ -487,7 +487,7 @@ public class StoryDisplayManager : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)scrollRect.content);
         scrollRect.verticalNormalizedPosition = 0f;
 
-        // 🔘 선택지 or 다음 버튼
+        // 선택지 or 다음 버튼
         if (!string.IsNullOrEmpty(currentStory?.Choice1_Text) ||
             !string.IsNullOrEmpty(currentStory?.Choice2_Text) ||
             !string.IsNullOrEmpty(currentStory?.Choice3_Text))
