@@ -63,8 +63,13 @@ public class BuffIconUI : MonoBehaviour
     public GameObject BattleImage; // 배치용 캔버스 (버프 생성 시 일시 활성화용)
     public SpriteBank spriteBank;
 
-    public BuffData buffData; // 외부 접근용 버프 데이터 (UI 제거용 등)
+    public BuffData buffData { get; private set; }
     private BuffData buff; // 내부 로직용
+
+    private void EnsureSpriteBank()
+    {
+        if (spriteBank == null) spriteBank = SpriteBank.Instance; // /Resources/Images 로드하는 싱글톤()
+    }
     private void Awake()
     {
         spriteBank = SpriteBank.Instance;
@@ -81,39 +86,33 @@ public class BuffIconUI : MonoBehaviour
 
     public void Set(BuffData data)
     {
-        if (BattleImage == null)
+        EnsureSpriteBank(); // 🔴 가장 중요: 비활성 부모여도 null 안 나게 즉시 보장
+
+        buffData = data;
+        // 아이콘 로드
+        var spr = (spriteBank != null) ? spriteBank.Load(buffData.OptionID) : null;
+        if (spr == null)
         {
-            BattleImage = transform.Find("자동전투화면Canvas(대략적으로 배치를 해 놓은것)")?.gameObject;
-            if (BattleImage == null)
-            {
-                Debug.LogWarning("[BuffIconUI] BattleImage를 찾지 못했습니다. 자동 비활성화 생략.");
-            }
+            Debug.LogWarning($"[BuffIconUI] 스프라이트 미발견: {buffData.OptionID}");
+        }
+        else
+        {
+            iconImage.sprite = spr;
         }
 
-
-        BattleImage?.SetActive(true);
-        buff = data;
-        buffData = data; 
-        iconImage.sprite = spriteBank.Load(buff.OptionID);
-        timerSlider.fillAmount = 1f;
-        //BattleImage.SetActive(false);
+        // 게이지는 0→1로 차오르게
+        timerSlider.fillAmount = Mathf.Clamp01(buffData.Elapsed / Mathf.Max(0.0001f, buffData.Duration));
     }
 
     private void Update()
     {
         if (buffData == null || buffData.Duration <= 0f) return;
 
-        // 경과 시간 증가
         buffData.Elapsed += Time.deltaTime;
-
-        // fillAmount를 0에서 1로 증가시킴
         float progress = Mathf.Clamp01(buffData.Elapsed / buffData.Duration);
         timerSlider.fillAmount = progress;
 
-        // Duration을 다 채우면 제거
-        if (progress >= 1f)
-        {
+        if (progress >= 0.99f)
             Destroy(gameObject);
-        }
     }
 }
