@@ -178,6 +178,7 @@ public class StoryDisplayManager : MonoBehaviour
                     break;
                 case "TEXT":
                     Debug.Log("텍스트 생성에 들어왔습니다");
+                    //Debug.LogError($"현재 스크립트: {matchingScript.Script_Code}, KOR: {matchingScript.KOR}");
                     if (matchingScript.StoryBreak == "Break")
                     {
                         NextScene();
@@ -187,7 +188,7 @@ public class StoryDisplayManager : MonoBehaviour
                         HandleTextDisplayWithChoice(matchingScript.KOR, lastBlock, false);
                     }
                     break;
-                case "CLAER":
+                case "CLEAR":
                     Debug.Log("클리어 후 텍스트 생성에 들어왔습니다");
                     HandleTextDisplayWithChoice(matchingScript.KOR, null, true);
                     //ClearContent();
@@ -670,16 +671,71 @@ public class StoryDisplayManager : MonoBehaviour
     //        onCompleteCallback?.Invoke();
     //    }
     //}
+    //private void OnChoiceSelected(string newSceneCode, string labelScriptCode = null)
+    //{
+    //    if (newSceneCode.StartsWith("MainScript"))
+    //        newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
+
+    //    // 버튼 제거
+    //    foreach (Transform t in choiceButtonParent)
+    //        Destroy(t.gameObject);
+
+    //    // 실제 다음 스토리 찾기
+    //    var next = storyList.FirstOrDefault(s => s.Scene_Code.Trim() == newSceneCode.Trim());
+    //    if (next == null)
+    //    {
+    //        Debug.LogWarning($"선택된 씬을 찾을 수 없습니다: {newSceneCode}");
+    //        onCompleteCallback?.Invoke();
+    //        return;
+    //    }
+
+    //    // 🔴 라벨 억제: 도착한 씬의 Script_Text가 라벨 스크립트 코드와 같으면 1회 패스
+    //    if (!string.IsNullOrEmpty(labelScriptCode) &&
+    //        !string.IsNullOrEmpty(next.Script_Text) &&
+    //        next.Script_Text.Trim() == labelScriptCode.Trim())
+    //    {
+    //        // “다음 씬”으로 진행
+    //        var next2 = storyList.FirstOrDefault(s =>
+    //            s.Chapter_Index == next.Chapter_Index &&
+    //            s.Event_Index == next.Event_Index &&
+    //            s.Script_Index == next.Script_Index + 1);
+    //        Debug.Log($"[ChoiceSelected] newScene={newSceneCode}, next.Scene={next.Scene_Code}, next.Script={next.Script_Text}, label={labelScriptCode}");
+
+    //        if (next2 != null)
+    //        {
+    //            currentStory = next2;
+    //            DisplayCurrentStory();
+    //            Debug.Log($"next2의 값이 null이 아님 next의 값 : {next}");
+    //            return;
+    //        }
+    //        else if (!string.IsNullOrEmpty(next.Next_Scene))
+    //        {
+    //            var jump = storyList.FirstOrDefault(s => s.Scene_Code.Trim() == next.Next_Scene.Trim());
+    //            if (jump != null)
+    //            {
+    //                currentStory = jump;
+    //                DisplayCurrentStory();
+    //                Debug.Log($"jump의 값이 null이 아님 next의 값 : {next}");
+    //                return;
+    //            }
+    //        }
+    //        // 패스할 다음이 없으면 종료 처리
+    //        NextScene();
+    //        return;
+    //    }
+
+    //    // 평소 흐름
+    //    currentStory = next;
+    //    DisplayCurrentStory();
+    //}
+
     private void OnChoiceSelected(string newSceneCode, string labelScriptCode = null)
     {
         if (newSceneCode.StartsWith("MainScript"))
             newSceneCode = newSceneCode.Replace("MainScript", "MainScene");
 
-        // 버튼 제거
-        foreach (Transform t in choiceButtonParent)
-            Destroy(t.gameObject);
+        foreach (Transform t in choiceButtonParent) Destroy(t.gameObject);
 
-        // 실제 다음 스토리 찾기
         var next = storyList.FirstOrDefault(s => s.Scene_Code.Trim() == newSceneCode.Trim());
         if (next == null)
         {
@@ -688,12 +744,32 @@ public class StoryDisplayManager : MonoBehaviour
             return;
         }
 
-        // 🔴 라벨 억제: 도착한 씬의 Script_Text가 라벨 스크립트 코드와 같으면 1회 패스
-        if (!string.IsNullOrEmpty(labelScriptCode) &&
+        // 다음 노드의 스크립트 메타
+        Main_Script_Master_Main nextScriptMeta = null;
+        if (!string.IsNullOrEmpty(next.Script_Text))
+            nextScriptMeta = scriptEventsCache.FirstOrDefault(sm => sm.Script_Code.Trim() == next.Script_Text.Trim());
+
+        // 실행형 노드(상점/전투/이미지/클리어)는 스킵 금지
+        bool isExecutableNode = false;
+        if (nextScriptMeta != null)
+        {
+            string dt = nextScriptMeta.displayType?.Trim();
+            isExecutableNode = dt == "MERCHANT" || dt == "BATTLE" || dt == "IMAGE" || dt == "CLAER";
+        }
+
+        // 🔒 보상(효과) 유무 확인: 보상이 하나라도 있으면 라벨 스킵 금지
+        bool nextHasReward = next.Main_Effect != null && next.Main_Effect.Count > 0;
+
+        // ✅ 라벨 스킵은 오직 "실행형 아님 + TEXT + 메타 있음 + 보상 없음"일 때만
+        if (!isExecutableNode &&
+            nextScriptMeta != null &&
+            nextScriptMeta.displayType == "TEXT" &&
+            !nextHasReward &&                                    // ★ 보상 있으면 스킵 금지
+            !string.IsNullOrEmpty(labelScriptCode) &&
             !string.IsNullOrEmpty(next.Script_Text) &&
             next.Script_Text.Trim() == labelScriptCode.Trim())
         {
-            // “다음 씬”으로 진행
+            // “다음 씬”으로 1회 패스 (기존 로직 유지)
             var next2 = storyList.FirstOrDefault(s =>
                 s.Chapter_Index == next.Chapter_Index &&
                 s.Event_Index == next.Event_Index &&
@@ -715,7 +791,6 @@ public class StoryDisplayManager : MonoBehaviour
                     return;
                 }
             }
-            // 패스할 다음이 없으면 종료 처리
             NextScene();
             return;
         }
@@ -724,7 +799,6 @@ public class StoryDisplayManager : MonoBehaviour
         currentStory = next;
         DisplayCurrentStory();
     }
-
     private string GetDisplayTextFromScript(string code, List<Main_Script_Master_Main> scriptEvents)
     {
         var match = scriptEvents.FirstOrDefault(sm => sm.Script_Code.Trim() == code.Trim());

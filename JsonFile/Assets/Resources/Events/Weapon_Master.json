@@ -93,7 +93,7 @@
       "Description": null,
       "ItemType": "Weapon",
       "One-Handed": true,
-      "Item_Price": 5.0
+      "Item_Price": 100.0
     },
     {
       "Weapon_ID": "Weapon_006",

@@ -29,6 +29,7 @@ public class InventoryManager : MonoBehaviour
     public Button OffInventoryButton;
     public Button OffItemDetailButton;
     public Button removeButton;
+    public Button SaleButton; // 판매 버튼 추가
     public TextMeshProUGUI DPSText;
     public TextMeshProUGUI HPText;
     public TMP_Text SoulTEXT;
