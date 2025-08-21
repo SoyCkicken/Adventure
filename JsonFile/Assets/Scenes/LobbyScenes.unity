@@ -2395,9 +2395,9 @@ MonoBehaviour:
   gameFlowManager: {fileID: 0}
   fontSizeManager: {fileID: 0}
   showPatchNoteToggle: {fileID: 776750099}
-  NewGameStartButton: {fileID: 1609662291}
+  _startButton: {fileID: 1609662291}
   SaveButton: {fileID: 0}
-  LoadButton: {fileID: 2060242954}
+  LoadButton: {fileID: 0}
 --- !u!4 &1947755918
 Transform:
   m_ObjectHideFlags: 0

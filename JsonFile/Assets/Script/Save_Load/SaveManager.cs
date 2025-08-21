@@ -715,10 +715,9 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private EventDisplay eventDisplay;
     [SerializeField] private GameFlowManager gameFlowManager;
     [SerializeField] private FontSizeManager fontSizeManager;
-
     // UI
     [SerializeField] public Toggle showPatchNoteToggle;
-    public Button NewGameStartButton;
+    public Button _startButton;
     public Button SaveButton;
     public Button LoadButton;
 
@@ -757,14 +756,17 @@ public class SaveManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        
+
+
         // 레퍼런스 재바인딩
         RefreshReferences();
-
-        // 새 게임 버튼 설정
-        SetupNewGameButton();
+        //버튼 초기화
 
         // 토글 설정
         SetupPatchNoteToggle();
+        // 새 게임 버튼 설정
+        SetupNewGameButton();
 
         // 버튼 리스너 재등록
         SetupButtons();
@@ -794,10 +796,10 @@ public class SaveManager : MonoBehaviour
 
     private void SetupNewGameButton()
     {
-        if (NewGameStartButton != null)
+        if (_startButton != null)
         {
-            NewGameStartButton.onClick.RemoveAllListeners();
-            NewGameStartButton.onClick.AddListener(() =>
+            _startButton.onClick.RemoveAllListeners();
+            _startButton.onClick.AddListener(() =>
             {
                 if (SceneFader.Instance != null)
                 {
@@ -844,7 +846,9 @@ public class SaveManager : MonoBehaviour
     private void SetupButtons()
     {
         if (SaveButton == null) SaveButton = FindButtonByNameContains("Save");
+        if (_startButton == null) _startButton = FindButtonByNameContains("Start");
         if (LoadButton == null) LoadButton = FindButtonByNameContains("Load");
+        
 
         if (SaveButton != null)
         {
@@ -856,6 +860,30 @@ public class SaveManager : MonoBehaviour
         {
             LoadButton.onClick.RemoveAllListeners();
             LoadButton.onClick.AddListener(OnClickLoadGame);
+        }
+        if (_startButton != null)
+        {
+            _startButton.onClick.RemoveAllListeners();
+            _startButton.onClick.AddListener(() =>
+            {
+                if (SceneFader.Instance != null)
+                {
+                    SceneFader.Instance.LoadSceneWithFade(
+                        sceneName: "GameScene",
+                        fadeOut: 0.35f,
+                        fadeIn: 0.25f,
+                        onBeforeUnload: () =>
+                        {
+                            //DeleteSave(); // 새 게임 시작 시 기존 저장 삭제
+                            playerState?.GenerateRandomStats();
+                        },
+                        onAfterLoad: () =>
+                        {
+                            SaveGame(); // 새 게임 시작 시 자동 저장
+                        }
+                    );
+                }
+            });
         }
     }
 
@@ -976,7 +1004,8 @@ public class SaveManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F7))
         {
-            DeleteSave();
+           
+            PlayerPrefs.DeleteAll(); // 모든 플레이어 프리퍼스 삭제
             Debug.Log("▶ 저장된 플레이어 능력치 삭제 완료");
         }
     }
@@ -1006,8 +1035,20 @@ public class SaveManager : MonoBehaviour
         data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         data.lastSeenVersion = currentGameVersion;
 
-        // 파일로 기록
-        string json = JsonUtility.ToJson(data, true);
+        if (SceneManager.GetActiveScene().name != "GameScene")
+        {
+            data.showPatchNoteToggle = showPatchNoteToggle.isOn; // 꼭 로비 씬에서 토글 상태 저장
+            Debug.Log("로비씬에서 저장을 시도 합니다");
+        }
+        else
+        {
+            Debug.Log("다른 씬에서 저장을 시도 했습니다");
+            Debug.Log($" 토글값 : {data.showPatchNoteToggle}");
+        }
+
+
+            // 파일로 기록
+            string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
 
         Debug.Log("[SaveManager] 저장 완료 → " + SavePath);
@@ -1121,7 +1162,7 @@ public class SaveManager : MonoBehaviour
 
         // 패치노트 관련
         public string lastSeenVersion;
-        public bool showPatchNoteToggle = true;
+        public bool showPatchNoteToggle;
 
         public List<ItemData> inventoryItems = new();
     }

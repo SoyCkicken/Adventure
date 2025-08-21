@@ -12,6 +12,7 @@ public class PatchNoteViewer : MonoBehaviour
     public TextAsset jsonFile; // Resources에 넣고 연결
     public Button close_Button; // 닫기 버튼
     public SaveManager saveManager; // SaveManager 인스턴스
+    public PlayerPrefs playerPrefs;
 
     public void Open(bool forceShow)
     {
@@ -24,9 +25,23 @@ public class PatchNoteViewer : MonoBehaviour
     {
         var saveData = saveManager != null ? saveManager.WriteLoadFile() : null;
 
+        Debug.Log(PlayerPrefs.GetInt("ShowPatchNoteToggle"));
+        if (PlayerPrefs.GetInt("ShowPatchNoteToggle") == 1)
+        {
+            saveData.showPatchNoteToggle = true; // PlayerPrefs에서 가져온 값이 1이면 토글 활성화
+            Debug.Log("플레이어 토글의 값은 1입니다");
+        }
+        else
+        {
+            saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
+            Debug.Log("플레이어 토글의 값은 0입니다");
+        }
+
         // 토글이 false면(표시하지 않기로 설정) 패널 비활성화 후 종료
         if (saveData != null && saveData.showPatchNoteToggle)
         {
+           
+            Debug.Log(saveData.showPatchNoteToggle);
             if (saveData.lastSeenVersion != Application.version)
             {
                 // 버전이 다르면 무조건 표시
@@ -37,6 +52,7 @@ public class PatchNoteViewer : MonoBehaviour
             {
                 // 버전이 같고 토글이 켜져있으면 패널 비활성화
                 Debug.Log("버전이 같지만 토글이 활성화 되어 있어서 여기 들어와졌습니다");
+                //forceShow = true; // 강제로 표시하도록 설정
                 patchNotePannelObject.SetActive(false);
                 return;
             }
@@ -44,7 +60,40 @@ public class PatchNoteViewer : MonoBehaviour
             {
                 Debug.Log("버전도 같지만 토글이 비활성화 되어 있거나 예외적인 상황입니다");
                 // 버전이 같고 토글이 켜져있으면 표시
-                forceShow = saveData.showPatchNoteToggle;
+                //forceShow = saveData.showPatchNoteToggle;
+                patchNotePannelObject.SetActive(true);
+
+                patchNoteRead();
+
+                close_Button.onClick.AddListener(() =>
+                {
+                    var data = saveManager.WriteLoadFile();
+                    if (data == null) data = new SaveManager.SaveData();
+
+                    if (forceShow)
+                    {
+                        // 버전 다를 때는 무조건 새 버전 기록
+                        data.lastSeenVersion = Application.version;
+                    }
+                    else
+                    {
+                        // 버전 같을 때는 토글 상태만 저장
+                        data.showPatchNoteToggle = saveManager.showPatchNoteToggle.isOn;
+                    }
+                    PlayerPrefs.SetInt("ShowPatchNoteToggle", data.showPatchNoteToggle ? 1 : 0);
+                    if (PlayerPrefs.GetInt("ShowPatchNoteToggle") == 1)
+                    {
+                        saveData.showPatchNoteToggle = true; // PlayerPrefs에서 가져온 값이 1이면 토글 활성화
+                        Debug.Log("플레이어 토글의 값은 1입니다");
+                    }
+                    else
+                    {
+                        saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
+                        Debug.Log("플레이어 토글의 값은 0입니다");
+                    }
+                    saveManager.WriteSaveFile(data);
+                    patchNotePannelObject.SetActive(false);
+                });
             }
         }
         else
@@ -67,12 +116,27 @@ public class PatchNoteViewer : MonoBehaviour
                 // 버전 같을 때는 토글 상태만 저장
                 data.showPatchNoteToggle = saveManager.showPatchNoteToggle.isOn;
             }
-
+            PlayerPrefs.SetInt("ShowPatchNoteToggle", data.showPatchNoteToggle ? 1 : 0);
+            if (PlayerPrefs.GetInt("ShowPatchNoteToggle") == 1)
+            {
+                saveData.showPatchNoteToggle = true; // PlayerPrefs에서 가져온 값이 1이면 토글 활성화
+                Debug.Log("플레이어 토글의 값은 1입니다");
+            }
+            else
+            {
+                saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
+                Debug.Log("플레이어 토글의 값은 0입니다");
+            }
             saveManager.WriteSaveFile(data);
             patchNotePannelObject.SetActive(false);
         });
 
+        patchNoteRead();
 
+    }
+
+    void patchNoteRead()
+    {
         Patch_Note_List data = JsonUtility.FromJson<Patch_Note_List>(jsonFile.text);
 
         // 버전 내림차순 정렬
@@ -99,5 +163,4 @@ public class PatchNoteViewer : MonoBehaviour
             spaceObj.GetComponent<TMP_Text>().text = "";
         }
     }
-    
 }
