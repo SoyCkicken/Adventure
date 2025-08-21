@@ -58,61 +58,77 @@ using UnityEngine.UI;
 
 public class BuffIconUI : MonoBehaviour
 {
-    public Image iconImage;        // 아이콘 스프라이트
-    public Image timerSlider;      // 버프 남은 시간 표시용 슬라이더
-    public GameObject BattleImage; // 배치용 캔버스 (버프 생성 시 일시 활성화용)
-    public SpriteBank spriteBank;
+    [SerializeField] private Image iconImage;
+    [SerializeField] private Image timerSlider; // UI 게이지 (Image.type = Filled, Fill Amount 사용)
+    [SerializeField] private SpriteBank spriteBank;
 
     public BuffData buffData { get; private set; }
-    private BuffData buff; // 내부 로직용
 
-    private void EnsureSpriteBank()
+    // 패시브/무한 지속이면 타이머를 돌리지 않는다
+    private bool noTimer;
+
+    public void Set(BuffData data)
     {
-        if (spriteBank == null) spriteBank = SpriteBank.Instance; // /Resources/Images 로드하는 싱글톤()
-    }
-    private void Awake()
-    {
-        spriteBank = SpriteBank.Instance;
-        if (BattleImage == null)
+        buffData = data;
+
+        // 스프라이트 뱅크 지연 바인딩 (씬 전환/비활성 부모 대비)
+        if (spriteBank == null) spriteBank = SpriteBank.Instance;
+
+        // 아이콘 세팅
+        var spr = (spriteBank != null) ? spriteBank.Load(buffData.OptionID) : null;
+        if (spr != null) iconImage.sprite = spr;
+
+        // 패시브 또는 Duration<=0 은 타이머 숨김
+        noTimer = buffData.IsPassive || buffData.Duration <= 0f;
+        if (timerSlider != null)
         {
-            BattleImage = GameObject.Find("자동전투화면Canvas(대략적으로 배치를 해 놓은것)");
-
-            if (BattleImage == null)
+            if (noTimer)
             {
-                Debug.LogWarning("[BuffIconUI] BattleImage를 찾을 수 없습니다. null 상태입니다.");
+                // ① 아예 숨기기
+                timerSlider.gameObject.SetActive(false);
+
+                // (선택) 숨기지 않고 비우고 싶다면:
+                // timerSlider.gameObject.SetActive(true);
+                // timerSlider.fillAmount = 0f;
+            }
+            else
+            {
+                timerSlider.gameObject.SetActive(true);
+                UpdateFill(); // 최초 반영
             }
         }
     }
 
-    public void Set(BuffData data)
-    {
-        EnsureSpriteBank(); // 🔴 가장 중요: 비활성 부모여도 null 안 나게 즉시 보장
-
-        buffData = data;
-        // 아이콘 로드
-        var spr = (spriteBank != null) ? spriteBank.Load(buffData.OptionID) : null;
-        if (spr == null)
-        {
-            Debug.LogWarning($"[BuffIconUI] 스프라이트 미발견: {buffData.OptionID}");
-        }
-        else
-        {
-            iconImage.sprite = spr;
-        }
-
-        // 게이지는 0→1로 차오르게
-        timerSlider.fillAmount = Mathf.Clamp01(buffData.Elapsed / Mathf.Max(0.0001f, buffData.Duration));
-    }
-
     private void Update()
     {
-        if (buffData == null || buffData.Duration <= 0f) return;
+        if (buffData == null) return;
 
-        buffData.Elapsed += Time.deltaTime;
+        // 시간 주도권은 Character가 가짐 — UI는 표시만
+        if (noTimer) return;
+
+        UpdateFill();
+    }
+
+    private void UpdateFill()
+    {
+        if (buffData.Duration <= 0f) return; // 안전망
+
         float progress = Mathf.Clamp01(buffData.Elapsed / buffData.Duration);
         timerSlider.fillAmount = progress;
 
-        if (progress >= 0.99f)
+        // 수명 끝나면 UI 제거 (일시적 버프만)
+        if (progress >= 1f - 1e-4f)
+        {
             Destroy(gameObject);
+        }
+    }
+
+    // (선택) 외부에서 동일 버프 갱신 시 호출해도 잘 동작하도록
+    public void Refresh(BuffData updated)
+    {
+        buffData.Duration = updated.Duration;
+        buffData.Elapsed = updated.Elapsed;
+        buffData.Value = updated.Value;
+        Set(buffData); // 타이머 on/off 재판단
     }
 }

@@ -116,7 +116,7 @@ public class BossPartCombatManager : MonoBehaviour
         selectedPartName = null;
         UpdateSelectedPartUI();
         UpdateSliders();
-        playerCharacter.TickDebuffs();
+        playerCharacter.TurnDebuff();
     }
 
     private void EndCombat(bool playerVictory)
@@ -192,7 +192,7 @@ public class BossPartCombatManager : MonoBehaviour
         isPlayerTurn = false;
         UpdateSliders();
         Invoke(nameof(EnemyTurn), 1.5f);
-        playerCharacter.TickDebuffs();
+        playerCharacter.TurnDebuff();
     }
 
     public void SetSelectedPart(string partName)

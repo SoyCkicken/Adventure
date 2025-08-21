@@ -233,7 +233,7 @@ namespace MyGame
                         continue;
                     }
 
-                    //buff.Elapsed += 1f;
+                        buff.Elapsed += 1f;
                     //버프마다 자동으로 계산중
 
                     // Tick 효과
@@ -292,16 +292,15 @@ namespace MyGame
             foreach (var key in keys)
             {
                 var buff = activeBuffs[key];
-
-                // 패시브든 아니든, 아이템이 해제되면 제거 + 복원
                 ApplyStatDelta(buff, apply: false);
                 activeBuffs.Remove(key);
-                buffUI?.ClearBuffByID(buff.BuffID);
 
+                // ❌ UI 직접 제거 호출 금지 (다른 진영/출처까지 지우는 원인)
+                // buffUI?.ClearBuffByID(buff.BuffID);
                 Debug.Log($"[장비 해제] {itemID} → {key} 제거");
             }
 
-            // 안전한 UI 갱신
+            // ✅ 단 한 번의 동기화로 안전하게 반영(캐릭터별 맵에서 '보이는 것만 남김')
             RefreshBuffUI();
         }
 
@@ -382,19 +381,22 @@ namespace MyGame
         {
             if (!activeBuffs.TryGetValue(key, out var buff)) return;
 
-            // 패시브는 코드로 제거하지 않음 (장비 해제로만 제거)
             if (buff.IsPassive)
             {
                 Debug.Log($"[패시브 유지] {key} from {buff.SourceItemID}");
                 return;
             }
 
-            // 스탯 복원
             ApplyStatDelta(buff, apply: false);
-
             activeBuffs.Remove(key);
-            buffUI?.ClearBuffByID(buff.BuffID);
+
+            // ❌ UI 직접 제거 호출 금지
+            // buffUI?.ClearBuffByID(buff.BuffID);
+
             Debug.Log($"[Buff] Removed: {key}");
+
+            // ✅ 상태 변경 직후 동기화
+            RefreshBuffUI();
         }
         //일시적인 버프 모두 제거
         public void RemoveTemporaryBuffs()
@@ -411,7 +413,7 @@ namespace MyGame
             }
         }
 
-        public void TickDebuffs()
+        public void TurnDebuff()
         {
             List<FocusBuffData> expired = new();
 

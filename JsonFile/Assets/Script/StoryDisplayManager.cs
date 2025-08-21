@@ -202,6 +202,7 @@ public class StoryDisplayManager : MonoBehaviour
                     break;
                 case "MERCHANT":
                     string merchantKey = matchingScript.KOR.Trim();  // KOR이 실제 키값임
+                    Debug.Log($"상점 키: {merchantKey}");
                     OpenMerchant(merchantKey);
                     break;
             }

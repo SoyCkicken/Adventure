@@ -24,10 +24,10 @@ public class GoogleManager : MonoBehaviour
         
 #if UNITY_EDITOR
         // 에디터에서는 자동 로그인
-        if (!canvas.gameObject.activeSelf)
-            canvas.gameObject.SetActive(false); // 캔버스 비활성화
-        logText.text = "에디터 모드에서는 자동 로그인됩니다.";
-        failCount = 0; // 실패 횟수 초기화
+        //if (!canvas.gameObject.activeSelf)
+        //    canvas.gameObject.SetActive(false); // 캔버스 비활성화
+        //logText.text = "에디터 모드에서는 자동 로그인됩니다.";
+        //failCount = 0; // 실패 횟수 초기화
 #elif UNITY_ANDROID
         SignIn();
 #endif

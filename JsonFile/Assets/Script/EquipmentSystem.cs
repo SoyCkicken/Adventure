@@ -65,6 +65,10 @@ public class EquipmentSystem : MonoBehaviour
             Debug.LogWarning("[EquipmentSystem] Init 대기: 참조 부족");
             return;
         }
+        if (player != null)
+        {
+            player.equipmentQuery = new EquipmentQueryImpl(() => player.weapon_Name, () => player.armor_Name);
+        }
         ClearInit();
         // 자동 참조
 
@@ -182,11 +186,19 @@ public class EquipmentSystem : MonoBehaviour
     {
         if (item == null) return;
 
-        // 1) 같은 타입의 기존 장비를 인벤토리로 되돌리기(스왑)
+        // 이미 같은 아이템이면 불필요한 재적용 방지 (더블 스택/더미 방지)
+        if (item.Item_Type == "Weapon" && player.weapon_Name == item.Item_ID) return;
+        if (item.Item_Type == "Armor" && player.armor_Name == item.Item_ID) return;
+
         if (item.Item_Type == "Weapon")
         {
+            // 🔴 교체될 기존 무기 버프 먼저 제거
             if (weaponSlot.CurrentItem != null)
+            {
+                var oldId = weaponSlot.CurrentItem.Item_ID;
                 inventoryItems.Add(weaponSlot.CurrentItem.Clone());
+                player.RemoveBuffByItem(oldId); // ← 핵심
+            }
 
             weaponSlot.Setup(item, onClick);
             inventoryItems.Remove(item);
@@ -194,8 +206,13 @@ public class EquipmentSystem : MonoBehaviour
         }
         else if (item.Item_Type == "Armor")
         {
+            // 🔴 교체될 기존 방어구 버프 먼저 제거
             if (armorSlot.CurrentItem != null)
+            {
+                var oldId = armorSlot.CurrentItem.Item_ID;
                 inventoryItems.Add(armorSlot.CurrentItem.Clone());
+                player.RemoveBuffByItem(oldId); // ← 핵심
+            }
 
             armorSlot.Setup(item, onClick);
             inventoryItems.Remove(item);
@@ -207,7 +224,7 @@ public class EquipmentSystem : MonoBehaviour
             return;
         }
 
-        // 2) 버프/스탯 재적용
+        // 새 장비 옵션/버프 적용
         Init();
     }
 
@@ -235,7 +252,7 @@ public class EquipmentSystem : MonoBehaviour
 
     void ClearInit()
     {
-        Debug.LogError("플레이어 능력치 초기화");
+        //Debug.LogError("플레이어 능력치 초기화");
         // 기본치 재설정
         player.OnHitOptions.Clear();
         Debug.Log($"Player의 장비 장착 여부 무기 : {player.weapon_Name} , 갑옷 : {player.armor_Name} ");
@@ -308,5 +325,19 @@ public class EquipmentSystem : MonoBehaviour
         // 포맷 불일치
         return false;
     }
+    private class EquipmentQueryImpl : Character.IEquipmentQuery
+    {
+        private readonly Func<string> getWeapon;
+        private readonly Func<string> getArmor;
+        public EquipmentQueryImpl(Func<string> w, Func<string> a) { getWeapon = w; getArmor = a; }
+
+        public bool IsItemEquipped(string itemID)
+        {
+            if (string.IsNullOrEmpty(itemID)) return false;
+            return string.Equals(getWeapon(), itemID, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(getArmor(), itemID, StringComparison.OrdinalIgnoreCase);
+        }
+    }
 }
+
 
