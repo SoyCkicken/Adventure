@@ -813,7 +813,14 @@ public class SaveManager : MonoBehaviour
                         },
                         onAfterLoad: () =>
                         {
-                            SaveGame(); // 새 게임 시작 시 자동 저장
+                            // 1) 레퍼런스 재바인딩(씬 갓 로드 직후)
+                            RefreshReferences();
+                                 // 2) 게임 흐름을 "메인 스토리"로 명시 전환
+                            gameFlowManager?.SetState(GameFlowManager.FlowState.MainStory);
+                                 // 3) 첫 스토리 바로 띄우기
+                            StartCoroutine(DelayedDisplayMainStory());
+                                 // 4) 시작 상태 저장
+                            SaveGame();
                         }
                     );
                 }
