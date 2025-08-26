@@ -33,8 +33,16 @@ public class PatchNoteViewer : MonoBehaviour
         }
         else
         {
-            saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
-            Debug.Log("플레이어 토글의 값은 0입니다");
+            if (saveData != null)
+            {
+                saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
+                Debug.Log("플레이어 토글의 값은 0입니다");
+            }
+            else
+            {
+                Debug.Log("세이브 데이터가 없습니다");
+            }
+
         }
 
         // 토글이 false면(표시하지 않기로 설정) 패널 비활성화 후 종료
@@ -124,7 +132,7 @@ public class PatchNoteViewer : MonoBehaviour
             }
             else
             {
-                saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
+                //saveData.showPatchNoteToggle = false; // PlayerPrefs에서 가져온 값이 0이면 토글 비활성화   
                 Debug.Log("플레이어 토글의 값은 0입니다");
             }
             saveManager.WriteSaveFile(data);

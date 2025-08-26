@@ -67,6 +67,7 @@ public class StoryDisplayManager : MonoBehaviour
                 // 여기에 기존 스킵 처리 로직 넣어도 됨
             };
         }
+
     }
 
     private void OnSkip()
@@ -180,6 +181,10 @@ public class StoryDisplayManager : MonoBehaviour
                     Debug.Log("텍스트 생성에 들어왔습니다");
                     //Debug.LogError($"현재 스크립트: {matchingScript.Script_Code}, KOR: {matchingScript.KOR}");
                     if (matchingScript.StoryBreak == "Break")
+                    {
+                        NextScene();
+                    }
+                    else if (!string.IsNullOrEmpty(currentStory.Next_Scene))
                     {
                         NextScene();
                     }
