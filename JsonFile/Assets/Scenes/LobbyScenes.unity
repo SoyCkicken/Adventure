@@ -2398,6 +2398,9 @@ MonoBehaviour:
   _startButton: {fileID: 1609662291}
   SaveButton: {fileID: 0}
   LoadButton: {fileID: 0}
+  serverBaseUrl: http://localhost:8001
+  playerId: USER_001
+  useServerOnLoad: 1
 --- !u!4 &1947755918
 Transform:
   m_ObjectHideFlags: 0

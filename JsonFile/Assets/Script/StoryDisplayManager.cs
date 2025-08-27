@@ -94,8 +94,8 @@ public class StoryDisplayManager : MonoBehaviour
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         RegisterTouchCatcher();
 
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
+        //if (jsonManager == null)
+        //    jsonManager = FindObjectOfType<JsonManager>();
         onCompleteCallback = onComplete;
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");
@@ -168,7 +168,7 @@ public class StoryDisplayManager : MonoBehaviour
             Debug.Log("버튼 초기화 되는 중 이였음!");
             SkipButton.GetComponent<Button>().onClick.AddListener(() => OnMainStoryComplete());
         }
-        else if (matchingScript != null)
+        else
         {
             Debug.Log(matchingScript);
             switch (matchingScript.displayType)
@@ -212,10 +212,6 @@ public class StoryDisplayManager : MonoBehaviour
                     OpenMerchant(merchantKey);
                     break;
             }
-        }
-        else
-        {
-            Debug.LogWarning("해당 스크립트를 찾지 못했습니다.");
         }
         // Choice 버튼 세팅, OnChoiceSelected에서 currentIndex++, 필요 시 onCompleteCallback 호출
     }
@@ -953,8 +949,8 @@ public class StoryDisplayManager : MonoBehaviour
 
         flowManager?.SetState(GameFlowManager.FlowState.MainStory);
 
-        if (jsonManager == null)
-            jsonManager = FindObjectOfType<JsonManager>();
+        //if (jsonManager == null)
+        //    jsonManager = FindObjectOfType<JsonManager>();
 
         RegisterTouchCatcher();
         storyList.Clear();

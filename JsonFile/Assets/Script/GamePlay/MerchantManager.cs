@@ -134,7 +134,7 @@ public class MerchantManager : MonoBehaviour
         MerchantItem_BuyButton.onClick.AddListener(() =>
         {
             ConfirmPopup.Show(
-                $"[{bs.Item_Name}] 을(를) {bs.Item_Price:0.##} 골드에 구매하시겠습니까?", () =>
+                $"[{bs.Item_Name}] 을(를) {(bs.Item_Price*5):0.##} 골드에 구매하시겠습니까?", () =>
                 {
                     TryBuy(bs);
                 }
@@ -145,13 +145,13 @@ public class MerchantManager : MonoBehaviour
 
     void TryBuy(MerchantItem bs)
     {
-        if (playerState.Experience < bs.Item_Price)
+        if (playerState.Experience < (bs.Item_Price*5))
         {
             Debug.Log("골드가 부족합니다.");
             return;
         }
 
-        playerState.Experience -= bs.Item_Price;
+        playerState.Experience -= (bs.Item_Price*5);
         inventoryManager.AddItemToInventory(ConvertToItemData(bs));
         RefreshGoldUI();
         //shopItems.Remove(bs);

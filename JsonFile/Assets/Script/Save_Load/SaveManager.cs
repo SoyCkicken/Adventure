@@ -2,261 +2,6 @@
 //using System.Collections;
 //using System.Collections.Generic;
 //using System.IO;
-//using TMPro;
-//using UnityEditor;
-//using UnityEngine;
-//using UnityEngine.Playables;
-//using UnityEngine.SceneManagement;
-//using UnityEngine.UI;
-//using static SaveManager;
-
-//public class SaveManager : MonoBehaviour
-//{
-//    public PlayerState playerState;
-//    [SerializeField] private InventoryManager inventoryManager;
-//    [SerializeField] private StoryDisplayManager displayManager;
-//    [SerializeField] private EventDisplay eventDisplay;
-//    [SerializeField] private GameFlowManager gameFlowManager;
-//    [SerializeField] private FontSizeManager fontSizeManager;
-//    [SerializeField] public Toggle showPatchNoteToggle; // 패치 노트 표시 여부 토글
-//    public Button SaveButton;
-//    public Button LoadButton;
-//    public static SaveManager Instance { get; private set; }
-//    private string currentGameVersion;
-
-
-//    private void Awake()
-//    {
-//        if (Instance != null && Instance != this)
-//        {
-//            Destroy(gameObject);
-//            return;
-//        }
-//        Instance = this;
-//        DontDestroyOnLoad(gameObject);
-//        // 여기서 초기화
-//        currentGameVersion = Application.version;
-//        //토글 초기화
-//        //SaveManager는 게임 시작 시 한 번만 생성지만 씬이 변경이 되면서 또 호출이 될수도 있으니 예외처리
-//        if (showPatchNoteToggle != null)
-//        {
-//            var data = WriteLoadFile();
-//            if (data != null)
-//                showPatchNoteToggle.isOn = data.showPatchNoteToggle;
-//        }
-
-//    }
-
-//    private void OnEnable()
-//    {
-//        SceneManager.sceneLoaded += OnSceneLoaded;
-//    }
-
-//    private void OnDisable()
-//    {
-//        SceneManager.sceneLoaded -= OnSceneLoaded;
-//    }
-//    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-//    {
-//        if (playerState == null) playerState = PlayerState.Instance;
-//        if (inventoryManager == null) inventoryManager = FindObjectOfType<InventoryManager>();
-//        if (displayManager == null) displayManager = FindObjectOfType<StoryDisplayManager>();
-//        if (eventDisplay == null) eventDisplay = FindObjectOfType<EventDisplay>();
-//        if (gameFlowManager == null) gameFlowManager = FindObjectOfType<GameFlowManager>();
-//        if (fontSizeManager == null) fontSizeManager = FindObjectOfType<FontSizeManager>();
-//        // 버튼 이벤트 등록
-//        if (SaveButton != null) SaveButton.onClick.AddListener(SaveGame);
-//        if (LoadButton != null) LoadButton.onClick.AddListener(LoadGame);
-
-//        if (scene.name == "LobbyScenes") // 메인 화면에서만 체크
-//        {
-//            CheckPatchNoteDisplay();
-//        }
-
-//        if (scene.name == "GameScene" && SaveManager.pendingLoadData != null)
-//        {
-//            var data = SaveManager.pendingLoadData;
-//            playerState.LoadPlayer(data);
-//            inventoryManager.LoadInventoryData(data);
-//            gameFlowManager.LoadFlow(data);
-//            SaveManager.pendingLoadData = null; // 한 번 쓰고 초기화
-//        }
-
-
-//    }
-
-//    private void Start()
-//    {
-//    }
-
-//    public void OnPatchNoteToggleChanged(bool value)
-//    {
-//        SaveData data = WriteLoadFile();
-//        if (data == null) data = new SaveData();
-//        data.showPatchNoteToggle = value;
-//        WriteSaveFile(data);
-//    }
-
-
-//    // 패치노트 표시 여부 체크
-//    private void CheckPatchNoteDisplay()
-//    {
-//        SaveData data = WriteLoadFile();
-//        if (data == null)
-//        {
-//            ShowPatchNote();
-//            return;
-//        }
-
-//        if (data.lastSeenVersion != currentGameVersion)
-//        {
-//            // 버전이 다르면 무조건 표시
-//            ShowPatchNote(forceShow: true);
-//        }
-//        else if (data.showPatchNoteToggle)
-//        {
-//            // 버전이 같고 토글이 켜져있으면 표시
-//            ShowPatchNote();
-//        }
-//    }
-//    private void ShowPatchNote(bool forceShow = false)
-//    {
-//        Debug.Log("[SaveManager] 패치노트 표시");
-
-//        var patchNoteUI = FindObjectOfType<PatchNoteViewer>(true); // 비활성화 상태까지 검색
-//        if (patchNoteUI != null)
-//        {
-//            patchNoteUI.Open(forceShow);
-//        }
-//    }
-
-//    private void Update()
-//    {
-
-//        if (Input.GetKeyDown(KeyCode.F7))
-//        {
-//            DeleteSave();
-
-//            Debug.Log("▶ 저장된 플레이어 능력치 삭제 완료");
-//        }
-//    }
-
-//    public static string SavePath => Application.persistentDataPath + "/save.json";
-//    public static SaveData pendingLoadData; // 임시 저장
-//    /// <summary>
-//    /// 저장 존재 여부 확인
-//    /// </summary>
-//    public static bool HasSave() => File.Exists(SavePath);
-
-//    /// <summary>
-//    /// 저장 삭제 (테스트용)
-//    /// </summary>
-//    public static void DeleteSave()
-//    {
-//        if (File.Exists(SavePath))
-//        {
-//            File.Delete(SavePath);
-//            Debug.Log("[SaveManager] 저장 파일 삭제됨");
-//        }
-//    }
-
-
-//    public void SaveGame()
-//    {
-//        SaveData data = new SaveData();
-//        playerState.SavePlayer(ref data);
-//        gameFlowManager.SaveFlow(ref data);
-//        displayManager.SaveMainStory(ref data);
-//        eventDisplay.SaveEventData(ref data);
-//        inventoryManager.SaveInventoryData(ref data); // 인벤토리 저장
-//        data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-//        // 현재 게임 버전 기록 (이 부분 추가)
-//        data.lastSeenVersion = currentGameVersion;
-//        string json = JsonUtility.ToJson(data, true);
-
-
-//        File.WriteAllText(Application.persistentDataPath + "/save.json", json);
-//        Debug.Log("저장 완료");
-//        if (fontSizeManager != null)
-//        {
-//            Debug.Log("세이브 버튼 눌림");
-//            fontSizeManager.LoadSaveTimeOnly();
-//        }
-//    }
-//    public void LoadGame()
-//    {
-//        string path = Application.persistentDataPath + "/save.json";
-//        if (!File.Exists(path))
-//        {
-//            Debug.LogWarning("세이브 파일이 없습니다.");
-//            return;
-//        }
-
-//        string json = File.ReadAllText(path);
-//        pendingLoadData = JsonUtility.FromJson<SaveData>(json);
-//        ToggleScene(); // 씬 전환
-//    }
-//    /// <summary>
-//    /// 저장용 데이터 구조
-//    /// </summary>
-//   [System.Serializable]
-//    public class SaveData
-//    {
-//        public string playerName;
-//        public int STR, INT, AGI, MAG, CHA, Health;
-//        public int HP, MP;
-//        public int Level, Experience, ExperienceRequired;
-//        public ItemData equippedWeaponData;
-//        public ItemData equippedArmorData;
-//        public int PlayerCurrentChapterIndex;
-//        public int MainstoryEventIndex;
-//        public int MainstoryCurrentIndex;
-//        public string MainstorySceneCode;
-
-//        public List<int> savedEventGroups = new();
-//        public int savedCurrentEventGroup;
-//        public int savedCurrentEvetnGroupIndex;
-
-//        public string flowState;
-//        public string saveTime;
-
-//        // 패치노트 관련
-//        public string lastSeenVersion;      // 마지막으로 본 게임 버전
-//        public bool showPatchNoteToggle = true; // 같은 버전에서도 표시할지 여부
-
-//        public List<ItemData> inventoryItems = new();
-//    }
-
-//    // 저장 파일 로드 (유틸)
-//    public SaveData WriteLoadFile()
-//    {
-//        if (!File.Exists(SavePath))
-//            return null;
-//        string json = File.ReadAllText(SavePath);
-//        return JsonUtility.FromJson<SaveData>(json);
-//    }
-
-//    // 저장 파일 저장 (유틸)
-//    public void WriteSaveFile(SaveData data)
-//    {
-//        string json = JsonUtility.ToJson(data, true);
-//        File.WriteAllText(SavePath, json);
-//    }
-//    public void ToggleScene()
-//    {
-//        var currentScene = SceneManager.GetActiveScene().name;
-//        if (currentScene == "GameScene")
-//        {
-//            SceneManager.LoadScene("LobbyScenes");
-//        }
-//    }
-//}
-
-//using System;
-//using System.Collections;
-//using System.Collections.Generic;
-//using System.IO;
-//using TMPro;
 //using UnityEngine;
 //using UnityEngine.SceneManagement;
 //using UnityEngine.UI;
@@ -266,36 +11,27 @@
 //    // ====== Singleton ======
 //    public static SaveManager Instance { get; private set; }
 
-//    // ====== Scene References (씬이 바뀌면 깨지므로 OnSceneLoaded에서 항상 재바인딩) ======
+//    // ====== Scene References ======
 //    public PlayerState playerState;
 //    [SerializeField] private InventoryManager inventoryManager;
 //    [SerializeField] private StoryDisplayManager displayManager;
 //    [SerializeField] private EventDisplay eventDisplay;
 //    [SerializeField] private GameFlowManager gameFlowManager;
 //    [SerializeField] private FontSizeManager fontSizeManager;
-
-//    // UI (씬마다 프리팹/오브젝트가 다를 수 있으니 OnSceneLoaded에서 재연결)
-//    [SerializeField] public Toggle showPatchNoteToggle; // 패치 노트 표시 여부 토글
-//    public Button NewGameStartButton;
+//    // UI
+//    [SerializeField] public Toggle showPatchNoteToggle;
+//    public Button _startButton;
 //    public Button SaveButton;
 //    public Button LoadButton;
 
-//    // 버전 기록
 //    private string currentGameVersion;
 
 //    // ====== Save Path / Pending Data ======
 //    public static string SavePath => Application.persistentDataPath + "/save.json";
-
-//    /// <summary>
-//    /// 씬 전환 중 전달할 로드 데이터(일회성).
-//    /// LobbyScene → GameScene으로 넘어간 뒤, GameScene에서 이 값을 실제로 적용하고 null로 되돌린다.
-//    /// </summary>
 //    public static SaveData pendingLoadData;
 
-//    // ====== Unity Lifecycle ======
 //    private void Awake()
 //    {
-//        // 싱글톤 보장
 //        if (Instance != null && Instance != this)
 //        {
 //            Destroy(gameObject);
@@ -304,128 +40,233 @@
 //        Instance = this;
 //        DontDestroyOnLoad(gameObject);
 
-//        // 현재 실행 중 게임 버전
 //        currentGameVersion = Application.version;
 //        if (!HasSave())
 //        {
-//            LoadButton.gameObject.SetActive(false); // 저장된 데이터가 없으면 로드 버튼 숨김
+//            if (LoadButton != null) LoadButton.gameObject.SetActive(false);
 //        }
 //    }
 
 //    private void OnEnable()
 //    {
-//        // 씬 로드 콜백 등록
 //        SceneManager.sceneLoaded += OnSceneLoaded;
 //    }
 
 //    private void OnDisable()
 //    {
-//        // 씬 로드 콜백 해제
 //        SceneManager.sceneLoaded -= OnSceneLoaded;
 //    }
 
-//    /// <summary>
-//    /// 씬이 로드될 때마다 필요한 레퍼런스를 안전하게 갱신하고,
-//    /// 버튼 리스너를 재등록한다. (DontDestroyOnLoad 오브젝트는 씬 참조가 자주 끊긴다)
-//    /// </summary>
 //    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
 //    {
-//        // --- 레퍼런스 재바인딩 ---
+
+
+
+//        // 레퍼런스 재바인딩
+//        RefreshReferences();
+//        //버튼 초기화
+
+//        // 토글 설정
+//        SetupPatchNoteToggle();
+//        // 새 게임 버튼 설정
+//        SetupNewGameButton();
+
+//        // 버튼 리스너 재등록
+//        SetupButtons();
+
+//        // 씬별 초기화
+//        if (scene.name == "LobbyScenes")
+//        {
+//            CheckPatchNoteDisplay();
+//        }
+
+//        if (scene.name == "GameScene")
+//        {
+//            // ✅ 수정: 중복 호출 방지
+//            ApplyPendingLoadDataOnce();
+//        }
+//    }
+
+//    private void RefreshReferences()
+//    {
 //        if (playerState == null) playerState = PlayerState.Instance;
 //        if (inventoryManager == null) inventoryManager = FindObjectOfType<InventoryManager>(true);
 //        if (displayManager == null) displayManager = FindObjectOfType<StoryDisplayManager>(true);
 //        if (eventDisplay == null) eventDisplay = FindObjectOfType<EventDisplay>(true);
 //        if (gameFlowManager == null) gameFlowManager = FindObjectOfType<GameFlowManager>(true);
 //        if (fontSizeManager == null) fontSizeManager = FindObjectOfType<FontSizeManager>(true);
-//        if(NewGameStartButton != null) NewGameStartButton.onClick.AddListener(() =>
+//    }
+
+//    private void SetupNewGameButton()
+//    {
+//        if (_startButton != null)
 //        {
-//            if (SceneFader.Instance != null)
+//            _startButton.onClick.RemoveAllListeners();
+//            _startButton.onClick.AddListener(() =>
 //            {
-//                SceneFader.Instance.LoadSceneWithFade(
-//                    sceneName: "GameScene",
-//                    fadeOut: 0.35f,
-//                    fadeIn: 0.25f,
-//                    onBeforeUnload: () =>
-//                    {
-//                        ApplyPendingLoadData();
-//                        playerState.GenerateRandomStats();
+//                if (SceneFader.Instance != null)
+//                {
+//                    SceneFader.Instance.LoadSceneWithFade(
+//                        sceneName: "GameScene",
+//                        fadeOut: 0.35f,
+//                        fadeIn: 0.25f,
+//                        onBeforeUnload: () =>
+//                        {
+//                            playerState?.GenerateRandomStats();
+//                        },
+//                        onAfterLoad: () =>
+//                        {
+//                            // 1) 레퍼런스 재바인딩(씬 갓 로드 직후)
+//                            RefreshReferences();
+//                                 // 2) 게임 흐름을 "메인 스토리"로 명시 전환
+//                            gameFlowManager?.SetState(GameFlowManager.FlowState.MainStory);
+//                                 // 3) 첫 스토리 바로 띄우기
+//                            StartCoroutine(DelayedDisplayMainStory());
+//                                 // 4) 시작 상태 저장
+//                            SaveGame();
+//                        }
+//                    );
+//                }
+//                else
+//                {
+//                    Debug.LogWarning("[SaveManager] SceneFader가 없어 즉시 로드로 대체합니다.");
+//                    SceneManager.LoadScene("GameScene");
+//                }
+//            });
+//        }
+//    }
 
-//                    },
-//                    onAfterLoad: () =>
-//                    {
-//                        // 3) GameScene 로드 직후, 같은 프레임에서 데이터 적용
-//                        SaveGame(); // 새 게임 시작 시 자동 저장
-
-//                    }
-//                );
-//            }
-//            else
-//            {
-//                // 백업: SceneFader가 없다면 즉시 로드
-//                Debug.LogWarning("[SaveManager] SceneFader가 없어 즉시 로드로 대체합니다.");
-//                SceneManager.LoadScene("GameScene");
-//                // 로드 직후 적용
-//                ApplyPendingLoadData();
-//            }
-
-//        });
-
-//        // 토글/버튼 레퍼런스가 프리팹 교체로 null일 수 있으니, 씬에서 재탐색 시도
+//    private void SetupPatchNoteToggle()
+//    {
 //        if (showPatchNoteToggle == null)
 //        {
-//            // 이름으로 특정할 수 있으면 GameObject.Find("ShowPatchNoteToggle") 후 GetComponent<Toggle>()로 더 정확히 잡아도 됨.
 //            showPatchNoteToggle = FindObjectOfType<Toggle>(true);
-//            // 찾은 토글에 저장된 상태를 반영
-//            if (showPatchNoteToggle != null)
-//            {
-//                var data = WriteLoadFile();
-//                if (data != null) showPatchNoteToggle.isOn = data.showPatchNoteToggle;
-//                // 토글 변경 시 저장
-//                showPatchNoteToggle.onValueChanged.RemoveAllListeners();
-//                showPatchNoteToggle.onValueChanged.AddListener(OnPatchNoteToggleChanged);
-//            }
 //        }
-//        else
-//        {
-//            // 이미 직렬화 연결되어 있던 경우에도 리스너 재등록(중복 방지)
-//            showPatchNoteToggle.onValueChanged.RemoveAllListeners();
-//            showPatchNoteToggle.onValueChanged.AddListener(OnPatchNoteToggleChanged);
 
-//            // 저장값 반영
+//        if (showPatchNoteToggle != null)
+//        {
 //            var data = WriteLoadFile();
 //            if (data != null) showPatchNoteToggle.isOn = data.showPatchNoteToggle;
-//        }
 
-//        // --- 버튼 리스너 재등록(즉시 호출 방지: 괄호 X) ---
+//            showPatchNoteToggle.onValueChanged.RemoveAllListeners();
+//            showPatchNoteToggle.onValueChanged.AddListener(OnPatchNoteToggleChanged);
+//        }
+//    }
+
+//    private void SetupButtons()
+//    {
 //        if (SaveButton == null) SaveButton = FindButtonByNameContains("Save");
+//        if (_startButton == null) _startButton = FindButtonByNameContains("Start");
 //        if (LoadButton == null) LoadButton = FindButtonByNameContains("Load");
+
 
 //        if (SaveButton != null)
 //        {
 //            SaveButton.onClick.RemoveAllListeners();
 //            SaveButton.onClick.AddListener(SaveGame);
 //        }
+
 //        if (LoadButton != null)
 //        {
 //            LoadButton.onClick.RemoveAllListeners();
-//            LoadButton.onClick.AddListener(OnClickLoadGame); // ※ 괄호 없음!
+//            LoadButton.onClick.AddListener(OnClickLoadGame);
 //        }
-
-//        // --- 씬별 초기화 ---
-//        if (scene.name == "LobbyScenes")
+//        if (_startButton != null)
 //        {
-//            // 메인 화면에서만 패치노트 표시 여부 체크
-//            CheckPatchNoteDisplay();
-//        }
-
-//        if (scene.name == "GameScene")
-//        {
-//            // pending 데이터가 준비되어 있다면 실제 적용
-//            ApplyPendingLoadData();
+//            _startButton.onClick.RemoveAllListeners();
+//            _startButton.onClick.AddListener(() =>
+//            {
+//                if (SceneFader.Instance != null)
+//                {
+//                    SceneFader.Instance.LoadSceneWithFade(
+//                        sceneName: "GameScene",
+//                        fadeOut: 0.35f,
+//                        fadeIn: 0.25f,
+//                        onBeforeUnload: () =>
+//                        {
+//                            //DeleteSave(); // 새 게임 시작 시 기존 저장 삭제
+//                            playerState?.GenerateRandomStats();
+//                        },
+//                        onAfterLoad: () =>
+//                        {
+//                            SaveGame(); // 새 게임 시작 시 자동 저장
+//                        }
+//                    );
+//                }
+//            });
 //        }
 //    }
 
-//    // ====== Patch Note ======
+//    // ✅ 수정: 중복 호출 방지를 위한 새로운 메서드
+//    private void ApplyPendingLoadDataOnce()
+//    {
+//        if (pendingLoadData == null) return;
+
+//        Debug.Log("[SaveManager] pendingLoadData 적용 시작");
+
+//        // 레퍼런스 재확인
+//        RefreshReferences();
+
+//        var data = pendingLoadData;
+
+//        // 실제 데이터 적용
+//        playerState?.LoadPlayer(data);
+//        inventoryManager?.LoadInventoryData(data);
+
+//        // GameFlowManager 먼저 로드해서 상태 복원
+//        gameFlowManager?.LoadFlow(data);
+
+//        // 스토리/이벤트 로드 후 실제 표시까지 처리
+//        if (displayManager != null)
+//        {
+//            displayManager.LoadMainStory(data);
+//            // 메인 스토리가 진행 중이었다면 표시
+//            if (gameFlowManager?.GetCurrentState() == GameFlowManager.FlowState.MainStory)
+//            {
+//                StartCoroutine(DelayedDisplayMainStory());
+//            }
+//        }
+
+//        if (eventDisplay != null)
+//        {
+//            eventDisplay.LoadEventData(data);
+//            // 랜덤 이벤트가 진행 중이었다면 표시
+//            if (gameFlowManager?.GetCurrentState() == GameFlowManager.FlowState.RandomEvent)
+//            {
+//                StartCoroutine(DelayedDisplayEvent());
+//            }
+//        }
+
+//        // 일회성 사용
+//        pendingLoadData = null;
+//        Debug.Log("[SaveManager] pendingLoadData 적용 완료");
+//    }
+
+//    // ✅ 추가: 딜레이를 둔 스토리 표시 (UI 초기화 대기)
+//    private IEnumerator DelayedDisplayMainStory()
+//    {
+//        yield return new WaitForEndOfFrame(); // UI 초기화 대기
+//        if (displayManager != null)
+//        {
+//            displayManager.SetOnCompleteCallback(() => {
+//                //gameFlowManager?.SetState(GameFlowManager.FlowState.None);
+//            });
+//            //displayManager.DisplayCurrentStory();
+//        }
+//    }
+
+//    // ✅ 추가: 딜레이를 둔 이벤트 표시
+//    private IEnumerator DelayedDisplayEvent()
+//    {
+//        yield return new WaitForEndOfFrame();
+//        if (eventDisplay != null)
+//        {
+//            eventDisplay.SetOnCompleteCallback((battleResult) => {
+//                //gameFlowManager?.SetState(GameFlowManager.FlowState.None);
+//            });
+//            //eventDisplay.DisplayCurrentEvent();
+//        }
+//    }
 
 //    public void OnPatchNoteToggleChanged(bool value)
 //    {
@@ -435,9 +276,6 @@
 //        WriteSaveFile(data);
 //    }
 
-//    /// <summary>
-//    /// 패치노트 표시 여부 체크
-//    /// </summary>
 //    private void CheckPatchNoteDisplay()
 //    {
 //        SaveData data = WriteLoadFile();
@@ -448,18 +286,16 @@
 //        }
 //        if (!HasSave())
 //        {
-//            ShowPatchNote(); //세이브 데이터가 없으면 무조건 표시
+//            ShowPatchNote();
 //            return;
 //        }
 
 //        if (data.lastSeenVersion != currentGameVersion)
 //        {
-//            // 버전이 다르면 무조건 표시
 //            ShowPatchNote(forceShow: true);
 //        }
 //        else if (data.showPatchNoteToggle)
 //        {
-//            // 버전이 같고 토글이 켜져있으면 표시
 //            ShowPatchNote();
 //        }
 //    }
@@ -467,34 +303,25 @@
 //    private void ShowPatchNote(bool forceShow = false)
 //    {
 //        Debug.Log("[SaveManager] 패치노트 표시");
-//        var patchNoteUI = FindObjectOfType<PatchNoteViewer>(true); // 비활성화 상태까지 검색
+//        var patchNoteUI = FindObjectOfType<PatchNoteViewer>(true);
 //        if (patchNoteUI != null)
 //        {
 //            patchNoteUI.Open(forceShow);
 //        }
 //    }
 
-//    // ====== Debug ======
-
 //    private void Update()
 //    {
 //        if (Input.GetKeyDown(KeyCode.F7))
 //        {
-//            DeleteSave();
+
+//            PlayerPrefs.DeleteAll(); // 모든 플레이어 프리퍼스 삭제
 //            Debug.Log("▶ 저장된 플레이어 능력치 삭제 완료");
 //        }
 //    }
 
-//    // ====== Save/Load Core ======
-
-//    /// <summary>
-//    /// 저장 존재 여부
-//    /// </summary>
 //    public static bool HasSave() => File.Exists(SavePath);
 
-//    /// <summary>
-//    /// 저장 삭제 (테스트용)
-//    /// </summary>
 //    public static void DeleteSave()
 //    {
 //        if (File.Exists(SavePath))
@@ -504,9 +331,6 @@
 //        }
 //    }
 
-//    /// <summary>
-//    /// 저장
-//    /// </summary>
 //    public void SaveGame()
 //    {
 //        SaveData data = new SaveData();
@@ -519,17 +343,26 @@
 //        inventoryManager?.SaveInventoryData(ref data);
 
 //        data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-//        // 현재 게임 버전 기록
 //        data.lastSeenVersion = currentGameVersion;
 
-//        // 파일로 기록
-//        string json = JsonUtility.ToJson(data, true);
+//        if (SceneManager.GetActiveScene().name != "GameScene")
+//        {
+//            data.showPatchNoteToggle = showPatchNoteToggle.isOn; // 꼭 로비 씬에서 토글 상태 저장
+//            Debug.Log("로비씬에서 저장을 시도 합니다");
+//        }
+//        else
+//        {
+//            Debug.Log("다른 씬에서 저장을 시도 했습니다");
+//            Debug.Log($" 토글값 : {data.showPatchNoteToggle}");
+//        }
+
+
+//            // 파일로 기록
+//            string json = JsonUtility.ToJson(data, true);
 //        File.WriteAllText(SavePath, json);
 
 //        Debug.Log("[SaveManager] 저장 완료 → " + SavePath);
 
-//        // 저장시간 UI 갱신 등
 //        if (fontSizeManager != null)
 //        {
 //            Debug.Log("세이브 버튼 눌림");
@@ -537,9 +370,6 @@
 //        }
 //    }
 
-//    /// <summary>
-//    /// (유틸) 저장 파일 로드 → SaveData 반환. 씬 전환은 하지 않는다.
-//    /// </summary>
 //    public SaveData ReadSaveFile()
 //    {
 //        if (!File.Exists(SavePath))
@@ -551,12 +381,7 @@
 //        return JsonUtility.FromJson<SaveData>(json);
 //    }
 
-//    /// <summary>
-//    /// 로드 버튼 핸들러.
-//    /// 1) 저장 파일 검사 및 읽기
-//    /// 2) pendingLoadData에 적재
-//    /// 3) 페이드 아웃 → GameScene 로드 → 씬 로드 직후 ApplyPendingLoadData() 호출 → 페이드 인
-//    /// </summary>
+//    // ✅ 수정: 중복 호출 제거
 //    public void OnClickLoadGame()
 //    {
 //        if (!HasSave())
@@ -565,7 +390,6 @@
 //            return;
 //        }
 
-//        // 1) 저장 파일을 읽어 pending에 적재
 //        pendingLoadData = ReadSaveFile();
 //        if (pendingLoadData == null)
 //        {
@@ -573,69 +397,23 @@
 //            return;
 //        }
 
-//        // 2) 페이드 전환으로 GameScene 로드
 //        if (SceneFader.Instance != null)
 //        {
 //            SceneFader.Instance.LoadSceneWithFade(
 //                sceneName: "GameScene",
 //                fadeOut: 0.35f,
 //                fadeIn: 0.25f,
-//                onBeforeUnload: () =>
-//                {
-//                    // 로비에서 떠나기 직전 정리할 것(사운드 Stop 등) 필요 시 여기에
-//                    ApplyPendingLoadData();
-//                },
-//                onAfterLoad: () =>
-//                {
-//                    // 3) GameScene 로드 직후, 같은 프레임에서 데이터 적용
-
-//                }
+//                onBeforeUnload: null, // ✅ 수정: 여기서는 호출하지 않음
+//                onAfterLoad: null     // ✅ 수정: 여기서도 호출하지 않음 (OnSceneLoaded에서 처리)
 //            );
 //        }
 //        else
 //        {
-//            // 백업: SceneFader가 없다면 즉시 로드
 //            Debug.LogWarning("[SaveManager] SceneFader가 없어 즉시 로드로 대체합니다.");
 //            SceneManager.LoadScene("GameScene");
-//            // 로드 직후 적용
-//            ApplyPendingLoadData();
 //        }
 //    }
 
-//    /// <summary>
-//    /// pendingLoadData를 실제 씬 오브젝트들에 적용하고, 일회성으로 null 초기화.
-//    /// OnSceneLoaded("GameScene")과 onAfterLoad 둘 다 이 함수를 호출하게 설계하여
-//    /// 흐름이 끊기지 않도록 했다(중복 적용 방지를 위해 null 체크).
-//    /// </summary>
-//    private void ApplyPendingLoadData()
-//    {
-//        if (pendingLoadData == null) return;
-
-//        // 씬 내 레퍼런스가 혹시 비어있다면 재바인딩
-//        if (playerState == null) playerState = PlayerState.Instance;
-//        if (inventoryManager == null) inventoryManager = FindObjectOfType<InventoryManager>(true);
-//        if (displayManager == null) displayManager = FindObjectOfType<StoryDisplayManager>(true);
-//        if (eventDisplay == null) eventDisplay = FindObjectOfType<EventDisplay>(true);
-//        if (gameFlowManager == null) gameFlowManager = FindObjectOfType<GameFlowManager>(true);
-
-//        var data = pendingLoadData;
-
-//        // 실제 데이터 적용 (존재하는 것만)
-//        playerState?.LoadPlayer(data);
-//        inventoryManager?.LoadInventoryData(data);
-//        gameFlowManager?.LoadFlow(data);
-//        displayManager?.LoadMainStory(data);
-//        eventDisplay?.LoadEventData(data);
-
-//        // 일회성 사용
-//        pendingLoadData = null;
-
-//        Debug.Log("[SaveManager] pendingLoadData 적용 완료");
-//    }
-
-//    // ====== JSON 유틸 ======
-
-//    /// <summary> 저장 파일 로드 (외부에서도 호출하는 간단 유틸) </summary>
 //    public SaveData WriteLoadFile()
 //    {
 //        if (!File.Exists(SavePath))
@@ -644,14 +422,12 @@
 //        return JsonUtility.FromJson<SaveData>(json);
 //    }
 
-//    /// <summary> 저장 파일 저장 (외부에서도 호출하는 간단 유틸) </summary>
 //    public void WriteSaveFile(SaveData data)
 //    {
 //        string json = JsonUtility.ToJson(data, true);
 //        File.WriteAllText(SavePath, json);
 //    }
 
-//    // ====== Helper: 이름에 키워드가 들어간 버튼을 느슨하게 찾는다(씬마다 프리팹 이름이 달라도 어느 정도 대응) ======
 //    private Button FindButtonByNameContains(string keyword)
 //    {
 //        var buttons = FindObjectsOfType<Button>(true);
@@ -662,8 +438,15 @@
 //        }
 //        return null;
 //    }
+//    public void ToggleScene()
+//    {
+//        var currentScene = SceneManager.GetActiveScene().name;
+//        if (currentScene == "GameScene")
+//        {
+//            SceneManager.LoadScene("LobbyScenes");
+//        }
+//    }
 
-//    // ====== 저장용 데이터 구조 ======
 //    [System.Serializable]
 //    public class SaveData
 //    {
@@ -688,20 +471,23 @@
 //        public string saveTime;
 
 //        // 패치노트 관련
-//        public string lastSeenVersion;             // 마지막으로 본 게임 버전
-//        public bool showPatchNoteToggle = true;    // 같은 버전에서도 표시할지 여부
+//        public string lastSeenVersion;
+//        public bool showPatchNoteToggle;
 
 //        public List<ItemData> inventoryItems = new();
 //    }
 //}
+
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Text;                  // ← 추가
+using UnityEngine.Networking;       // ← 추가
 
 public class SaveManager : MonoBehaviour
 {
@@ -720,6 +506,15 @@ public class SaveManager : MonoBehaviour
     public Button _startButton;
     public Button SaveButton;
     public Button LoadButton;
+
+    // === [추가] 서버 동기화 옵션 ===
+    [Header("Server Sync")]
+    [Tooltip("배포 시 https://pofol2025.cafe24app.com, 로컬 테스트는 http://localhost:8001")]
+    public string serverBaseUrl = "http://localhost:8001";
+    [Tooltip("플레이어 식별자(계정/슬롯). 서버 저장 키로 사용됩니다.")]
+    public string playerId = "USER_001";
+    [Tooltip("로드 시 서버 데이터를 우선 시도할지 여부(오프라인/개발중이면 false 권장).")]
+    public bool useServerOnLoad = false;
 
     private string currentGameVersion;
 
@@ -742,6 +537,8 @@ public class SaveManager : MonoBehaviour
         {
             if (LoadButton != null) LoadButton.gameObject.SetActive(false);
         }
+        if (autoCreateOnBoot && !HasSave())
+            WriteSaveFile(CreateDefaultSave());
     }
 
     private void OnEnable()
@@ -756,7 +553,7 @@ public class SaveManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        
+
 
 
         // 레퍼런스 재바인딩
@@ -781,6 +578,9 @@ public class SaveManager : MonoBehaviour
         {
             // ✅ 수정: 중복 호출 방지
             ApplyPendingLoadDataOnce();
+            //OnClickLoadGame();
+            //LoadFromServerThenEnterScene();
+
         }
     }
 
@@ -815,11 +615,11 @@ public class SaveManager : MonoBehaviour
                         {
                             // 1) 레퍼런스 재바인딩(씬 갓 로드 직후)
                             RefreshReferences();
-                                 // 2) 게임 흐름을 "메인 스토리"로 명시 전환
+                            // 2) 게임 흐름을 "메인 스토리"로 명시 전환
                             gameFlowManager?.SetState(GameFlowManager.FlowState.MainStory);
-                                 // 3) 첫 스토리 바로 띄우기
+                            // 3) 첫 스토리 바로 띄우기
                             StartCoroutine(DelayedDisplayMainStory());
-                                 // 4) 시작 상태 저장
+                            // 4) 시작 상태 저장
                             SaveGame();
                         }
                     );
@@ -855,7 +655,7 @@ public class SaveManager : MonoBehaviour
         if (SaveButton == null) SaveButton = FindButtonByNameContains("Save");
         if (_startButton == null) _startButton = FindButtonByNameContains("Start");
         if (LoadButton == null) LoadButton = FindButtonByNameContains("Load");
-        
+
 
         if (SaveButton != null)
         {
@@ -905,10 +705,12 @@ public class SaveManager : MonoBehaviour
         RefreshReferences();
 
         var data = pendingLoadData;
-
+        
         // 실제 데이터 적용
         playerState?.LoadPlayer(data);
         inventoryManager?.LoadInventoryData(data);
+
+       
 
         // GameFlowManager 먼저 로드해서 상태 복원
         gameFlowManager?.LoadFlow(data);
@@ -1011,7 +813,7 @@ public class SaveManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F7))
         {
-           
+
             PlayerPrefs.DeleteAll(); // 모든 플레이어 프리퍼스 삭제
             Debug.Log("▶ 저장된 플레이어 능력치 삭제 완료");
         }
@@ -1032,7 +834,7 @@ public class SaveManager : MonoBehaviour
     {
         SaveData data = new SaveData();
 
-        // 각 시스템에 저장 위임
+        // 기존: 각 시스템에 저장 위임 (변경 없음)
         playerState?.SavePlayer(ref data);
         gameFlowManager?.SaveFlow(ref data);
         displayManager?.SaveMainStory(ref data);
@@ -1044,18 +846,10 @@ public class SaveManager : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name != "GameScene")
         {
-            data.showPatchNoteToggle = showPatchNoteToggle.isOn; // 꼭 로비 씬에서 토글 상태 저장
-            Debug.Log("로비씬에서 저장을 시도 합니다");
+            data.showPatchNoteToggle = showPatchNoteToggle.isOn;
         }
-        else
-        {
-            Debug.Log("다른 씬에서 저장을 시도 했습니다");
-            Debug.Log($" 토글값 : {data.showPatchNoteToggle}");
-        }
-
-
-            // 파일로 기록
-            string json = JsonUtility.ToJson(data, true);
+        // 파일로 기록
+        string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
 
         Debug.Log("[SaveManager] 저장 완료 → " + SavePath);
@@ -1064,6 +858,11 @@ public class SaveManager : MonoBehaviour
         {
             Debug.Log("세이브 버튼 눌림");
             fontSizeManager.LoadSaveTimeOnly();
+        }
+        // === [추가] 서버에 비동기 업로드 (오류는 게임 진행을 막지 않음) ===
+        if (!string.IsNullOrEmpty(serverBaseUrl))
+        {
+            StartCoroutine(UploadSaveToServer(playerId, data));
         }
     }
 
@@ -1081,33 +880,31 @@ public class SaveManager : MonoBehaviour
     // ✅ 수정: 중복 호출 제거
     public void OnClickLoadGame()
     {
-        if (!HasSave())
+        if (useServerOnLoad && !string.IsNullOrEmpty(serverBaseUrl))
         {
-            Debug.LogWarning("[SaveManager] 세이브 파일이 없습니다.");
+            StartCoroutine(LoadFromServerThenEnterScene());
             return;
         }
-
+        if (!HasSave()) { Debug.LogWarning("[SaveManager] 세이브 없음"); return; }
         pendingLoadData = ReadSaveFile();
-        if (pendingLoadData == null)
-        {
-            Debug.LogWarning("[SaveManager] 저장 파일 읽기에 실패했습니다.");
-            return;
-        }
-
+        if (pendingLoadData == null) { Debug.LogWarning("[SaveManager] 로컬 읽기 실패"); return; }
+        EnterGameScene();
+    }
+    private void EnterGameScene()
+    {
         if (SceneFader.Instance != null)
         {
             SceneFader.Instance.LoadSceneWithFade(
                 sceneName: "GameScene",
                 fadeOut: 0.35f,
                 fadeIn: 0.25f,
-                onBeforeUnload: null, // ✅ 수정: 여기서는 호출하지 않음
-                onAfterLoad: null     // ✅ 수정: 여기서도 호출하지 않음 (OnSceneLoaded에서 처리)
+                onBeforeUnload: null,
+                onAfterLoad: null
             );
         }
         else
         {
-            Debug.LogWarning("[SaveManager] SceneFader가 없어 즉시 로드로 대체합니다.");
-            SceneManager.LoadScene("GameScene");
+            //SceneManager.LoadScene("GameScene");
         }
     }
 
@@ -1118,6 +915,7 @@ public class SaveManager : MonoBehaviour
         string json = File.ReadAllText(SavePath);
         return JsonUtility.FromJson<SaveData>(json);
     }
+
 
     public void WriteSaveFile(SaveData data)
     {
@@ -1142,6 +940,195 @@ public class SaveManager : MonoBehaviour
         {
             SceneManager.LoadScene("LobbyScenes");
         }
+    }
+
+    // ================== [추가] 서버 통신 루틴 ==================
+
+    // 서버 저장 업로드: POST /api/v1/save  (body: { playerId, data })
+    private IEnumerator UploadSaveToServer(string pid, SaveData data)
+    {
+        // serverBaseUrl 뒤에 슬래시 유무와 /api/v1/save 중복을 막는다
+        var url = CombineUrl(serverBaseUrl, "api/v1", "save");
+
+        var payload = new SaveUpload { playerId = pid, data = data };
+        string json = JsonUtility.ToJson(payload);
+
+        using (var req = new UnityWebRequest(url, "POST"))
+        {
+            req.timeout = 10;
+            byte[] body = System.Text.Encoding.UTF8.GetBytes(json);
+            req.uploadHandler = new UploadHandlerRaw(body);
+            req.downloadHandler = new DownloadHandlerBuffer();
+            req.SetRequestHeader("Content-Type", "application/json");
+
+            yield return req.SendWebRequest();
+
+#if UNITY_2020_3_OR_NEWER
+            bool ok = req.result == UnityWebRequest.Result.Success;
+#else
+        bool ok = !(req.isNetworkError || req.isHttpError);
+#endif
+            if (!ok)
+            {
+                Debug.LogWarning($"[SaveManager] 서버 업로드 실패: HTTP {req.responseCode} {req.error} {req.downloadHandler.text}");
+            }
+            else
+            {
+                Debug.Log($"[SaveManager] 서버 업로드 성공: {req.downloadHandler.text}");
+            }
+        }
+    }
+
+
+    // 서버에서 로드 → 로컬 파일로 저장 → 씬 진입
+    private IEnumerator LoadFromServerThenEnterScene()
+    {
+        var url = CombineUrl(serverBaseUrl, "api/v1", "save", UnityWebRequest.EscapeURL(playerId));
+        SaveData serverData = null;
+
+        using (var req = UnityWebRequest.Get(url))
+        {
+            req.timeout = 10;
+            yield return req.SendWebRequest();
+
+#if UNITY_2020_3_OR_NEWER
+            var ok = req.result == UnityWebRequest.Result.Success;
+#else
+        var ok = !(req.isNetworkError || req.isHttpError);
+#endif
+            if (!ok)
+            {
+                Debug.LogWarning($"[SaveManager] 서버 로드 실패: HTTP {req.responseCode} {req.error}");
+            }
+            else
+            {
+                var raw = req.downloadHandler.text;
+                //Debug.Log($"[SaveManager] RAW: {raw}");
+
+                try
+                {
+                    // 1) payload_json이 객체로 오는 일반 케이스
+                    var respObj = JsonUtility.FromJson<ServerLoadResponse>(raw);
+                    if (respObj != null && respObj.ok && respObj.data != null && respObj.data.payload_json != null)
+                    {
+                        serverData = respObj.data.payload_json;
+                        Debug.Log("[SaveManager] 서버 데이터 수신(Object) ✓");
+                    }
+                    else
+                    {
+                        // 2) payload_json이 문자열로 오는 케이스 방어
+                        var respStr = JsonUtility.FromJson<ServerLoadResponseStr>(raw);
+                        if (respStr != null && respStr.ok && respStr.data != null && !string.IsNullOrEmpty(respStr.data.payload_json))
+                        {
+                            serverData = JsonUtility.FromJson<SaveData>(respStr.data.payload_json);
+                            Debug.Log("[SaveManager] 서버 데이터 수신(String→SaveData) ✓");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("[SaveManager] 서버 응답은 성공이지만 data가 비었거나 예상과 다릅니다.");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[SaveManager] 서버 응답 파싱 실패: {e.Message}");
+                }
+            }
+        }
+
+        if (serverData != null)
+        {
+            WriteSaveFile(serverData);
+            pendingLoadData = serverData;
+            EnterGameScene();
+            yield break;
+        }
+
+        // 폴백: 로컬 세이브
+        if (HasSave())
+        {
+            pendingLoadData = ReadSaveFile();
+            if (pendingLoadData != null) { EnterGameScene(); yield break; }
+        }
+
+        Debug.LogWarning("[SaveManager] 서버/로컬 모두 저장 없음");
+    }
+
+    // 클래스 내부 어딘가(예: 필드들 아래)에 추가
+    private static string CombineUrl(params string[] parts)
+    {
+        if (parts == null || parts.Length == 0) return string.Empty;
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < parts.Length; i++)
+        {
+            if (string.IsNullOrEmpty(parts[i])) continue;
+            var p = parts[i].Trim();
+            if (i == 0) sb.Append(p.TrimEnd('/'));
+            else sb.Append('/').Append(p.Trim('/'));
+        }
+        return sb.ToString();
+    }
+
+    [Header("Save – options")]
+    public bool autoCreateOnBoot = true;   // 처음 실행 시 자동 생성 여부
+
+    public SaveData CreateDefaultSave()
+    {
+        return new SaveData
+        {
+            // 처음값 원하는 대로 채워
+            lastSeenVersion = "",   // 아직 패치노트를 본 버전 없음
+            showPatchNoteToggle = true // 기본 표시할지 여부(기본값 결정)
+                                       // ... 나머지 세이브 기본값
+        };
+    }
+
+    // 세이브가 없으면 생성하고 반환
+    public SaveData GetOrCreateSave()
+    {
+        var data = ReadSaveFile();           // 네 프로젝트의 읽기 함수
+        if (data == null)
+        {
+            data = CreateDefaultSave();
+            WriteSaveFile(data);             // 즉시 생성
+        }
+        return data;
+    }
+
+    [Serializable]
+    private class ServerLoadResponseStr
+    {
+        public bool ok;
+        public ServerLoadRowStr data;
+    }
+
+    [Serializable]
+    private class ServerLoadRowStr
+    {
+        public string player_id;
+        public string payload_json; // payload_json이 "문자열"일 때 받기
+        public string updated_at;
+    }
+    // 서버 업로드용 래퍼
+    [Serializable]
+    private class ServerLoadResponse
+    {
+        public bool ok;
+        public ServerLoadRow data;     // 서버의 "data" 객체 (없으면 null)
+    }
+
+    [Serializable]
+    private class ServerLoadRow
+    {
+        public string player_id;
+        public SaveData payload_json;  // ★ JSON 컬럼을 SaveData로 직접 매핑
+        public string updated_at;      // 참고용
+    }
+    [Serializable]
+    private class SaveUpload
+    {
+        public string playerId;  // 서버에서 요구하는 필드명과 동일
+        public SaveData data;    // 네 게임의 저장 데이터 구조
     }
 
     [System.Serializable]
