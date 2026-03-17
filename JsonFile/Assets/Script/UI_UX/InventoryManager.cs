@@ -291,7 +291,8 @@ public class InventoryManager : MonoBehaviour
         }
 
         itemStatText.text = GetStatText(item);
-        itemOptionText.text = GetOptionText(item);
+        //itemOptionText.text = GetOptionText(item);
+        itemOptionText.text = ""; // 옵션 텍스트는 일단 비워둠. 옵션 시스템이 완성되면 다시 구현 예정
 
         equipButton.gameObject.SetActive(false);
         unequipButton.gameObject.SetActive(false);
@@ -306,14 +307,14 @@ public class InventoryManager : MonoBehaviour
                 unequipButton.gameObject.SetActive(isWeaponEquipped);
                 removeButton.gameObject.SetActive (!isWeaponEquipped);
                 var weapon_Master = weaponMasters.FirstOrDefault(i => i.Weapon_ID == selectedItem.Item_ID);
-                selectedItem.Option_1_ID = weapon_Master.Option_1_ID;
-                selectedItem.Option_Value1 = weapon_Master.Option_Value1;
-                selectedItem.Option_2_ID = weapon_Master.Option_2_ID;
-                selectedItem.Option_Value2 = weapon_Master.Option_Value1;
-                if(!string.IsNullOrEmpty(selectedItem.Option_1_ID))
-                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
-                if(!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
+                //selectedItem.Option_1_ID = weapon_Master.Option_1_ID;
+                //selectedItem.Option_Value1 = weapon_Master.Option_Value1;
+                //selectedItem.Option_2_ID = weapon_Master.Option_2_ID;
+                //selectedItem.Option_Value2 = weapon_Master.Option_Value1;
+                //if(!string.IsNullOrEmpty(selectedItem.Option_1_ID))
+                //Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                //if(!string.IsNullOrEmpty(selectedItem.Option_2_ID))
+                //Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
                 break;
 
             case "Armor":
@@ -322,14 +323,14 @@ public class InventoryManager : MonoBehaviour
                 unequipButton.gameObject.SetActive(isArmorEquipped);
                 removeButton.gameObject.SetActive(!isArmorEquipped);
                 var armor_Master = armorMasters.FirstOrDefault(i => i.Armor_ID == selectedItem.Item_ID);
-                selectedItem.Option_1_ID = armor_Master.Armor_Option1;
-                selectedItem.Option_Value1 = armor_Master.Option1_Value;
-                selectedItem.Option_2_ID = armor_Master.Armor_Option2;
-                selectedItem.Option_Value2 = armor_Master.Option2_Value;
-                if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
-                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
-                if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                    Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
+                //selectedItem.Option_1_ID = armor_Master.Armor_Option1;
+                //selectedItem.Option_Value1 = armor_Master.Option1_Value;
+                //selectedItem.Option_2_ID = armor_Master.Armor_Option2;
+                //selectedItem.Option_Value2 = armor_Master.Option2_Value;
+                //if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
+                //    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                //if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
+                //    Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
                 break;
 
             case "Consumable":
@@ -337,14 +338,14 @@ public class InventoryManager : MonoBehaviour
                 removeButton.gameObject.SetActive(true);
                 var item_Master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
                 //Debug.Log($"옵션 아이디 값 : {master.Item_Option1}");
-                selectedItem.Option_1_ID = item_Master.Item_Option1;
-                selectedItem.Option_Value1 = item_Master.Option1_Value;
-                selectedItem.Option_2_ID = item_Master.Item_Option2;
-                selectedItem.Option_Value2 = item_Master.Option2_Value;
-                if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
-                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
-                if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                    Debug.Log($"{selectedItem.Option_2_ID}  :  {selectedItem.Option_Value2}");
+                //selectedItem.Option_1_ID = item_Master.Item_Option1;
+                //selectedItem.Option_Value1 = item_Master.Option1_Value;
+                //selectedItem.Option_2_ID = item_Master.Item_Option2;
+                //selectedItem.Option_Value2 = item_Master.Option2_Value;
+                //if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
+                //    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
+                //if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
+                //    Debug.Log($"{selectedItem.Option_2_ID}  :  {selectedItem.Option_Value2}");
                 break;
             case "Item":
                 removeButton.gameObject.SetActive(true);
@@ -397,67 +398,68 @@ public class InventoryManager : MonoBehaviour
         return "";
     }
 
-    string GetOptionText(ItemData item)
-    {
-        List<string> options = new();
-        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-        var itemMasters = jsonManager.GetItemMasters("Item_Master");
-        var optionMasters = jsonManager.GetOptionMasters("Option_Master");
+    //string GetOptionText(ItemData item)
+    //{
+    //    List<string> options = new();
+    //    var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
+    //    var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
+    //    var itemMasters = jsonManager.GetItemMasters("Item_Master");
+    //    var optionMasters = jsonManager.GetOptionMasters("Option_Master");
 
-        string id1 = "", id2 = "";
-        int val1 = 0, val2 = 0;
+    //    string id1 = "", id2 = "";
+    //    int val1 = 0, val2 = 0;
 
-        if (item.Item_Type == "Weapon")
-        {
-            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == item.Item_ID);
-            id1 = weapon?.Option_1_ID;
-            val1 = weapon?.Option_Value1 ?? 0;
-            id2 = weapon?.Option_2_ID;
-            val2 = weapon?.Option_Value2 ?? 0;
-        }
-        else if (item.Item_Type == "Armor")
-        {
-            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == item.Item_ID);
-            id1 = armor?.Armor_Option1;
-            val1 = armor?.Option1_Value ?? 0;
-            id2 = armor?.Armor_Option2;
-            val2 = armor?.Option2_Value ?? 0;
-        }
-        else if (item.Item_Type == "Consumable")
-        {
-            var Consumable = itemMasters.FirstOrDefault(a => a.Item_ID == item.Item_ID);
-            id1 = Consumable?.Item_Option1;
-            val1 = Consumable?.Option1_Value ?? 0;
-            id2 = Consumable?.Item_Option2;
-            val2 = Consumable?.Option2_Value ?? 0;
-        }
-        else
-        {
-            id1 = item.Option_1_ID;
-            val1 = item.Option_Value1;
-            id2 = item.Option_2_ID;
-            val2 = item.Option_Value2;
-        }
+    //    if (item.Item_Type == "Weapon")
+    //    {
+    //        var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == item.Item_ID);
+    //        id1 = weapon?.Option_1_ID;
+    //        val1 = weapon?.Option_Value1 ?? 0;
+    //        id2 = weapon?.Option_2_ID;
+    //        val2 = weapon?.Option_Value2 ?? 0;
+    //    }
+    //    else if (item.Item_Type == "Armor")
+    //    {
+    //        var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == item.Item_ID);
+    //        id1 = armor?.Armor_Option1;
+    //        val1 = armor?.Option1_Value ?? 0;
+    //        id2 = armor?.Armor_Option2;
+    //        val2 = armor?.Option2_Value ?? 0;
+    //    }
+    //    else if (item.Item_Type == "Consumable")
+    //    {
+    //        var Consumable = itemMasters.FirstOrDefault(a => a.Item_ID == item.Item_ID);
+    //        id1 = Consumable?.Item_Option1;
+    //        val1 = Consumable?.Option1_Value ?? 0;
+    //        id2 = Consumable?.Item_Option2;
+    //        val2 = Consumable?.Option2_Value ?? 0;
+    //    }
+    //    else
+    //    {
+    //        //    id1 = item.Option_1_ID;
+    //        //    val1 = item.Option_Value1;
+    //        //    id2 = item.Option_2_ID;
+    //        //    val2 = item.Option_Value2;
+    //        //}
 
-        if (!string.IsNullOrEmpty(id1) && id1 != "null")
-        {
-           var option_1 = optionMasters.FirstOrDefault(a => a.Option_ID == id1);
-            string desc = option_1.Option_Description;
-            if (!string.IsNullOrEmpty(desc))
-                options.Add($"{desc} +{val1}");
-        }
+    //        if (!string.IsNullOrEmpty(id1) && id1 != "null")
+    //        {
+    //            var option_1 = optionMasters.FirstOrDefault(a => a.Option_ID == id1);
+    //            string desc = option_1.Option_Description;
+    //            if (!string.IsNullOrEmpty(desc))
+    //                options.Add($"{desc} +{val1}");
+    //        }
 
-        if (!string.IsNullOrEmpty(id2) && id2 != "null")
-        {
-            var option_2 = optionMasters.FirstOrDefault(a => a.Option_ID == id2);
-            string desc = option_2.Option_Description;
-            if (!string.IsNullOrEmpty(desc))
-                options.Add($"{desc} +{val2}");
-        }
+    //        if (!string.IsNullOrEmpty(id2) && id2 != "null")
+    //        {
+    //            var option_2 = optionMasters.FirstOrDefault(a => a.Option_ID == id2);
+    //            string desc = option_2.Option_Description;
+    //            if (!string.IsNullOrEmpty(desc))
+    //                options.Add($"{desc} +{val2}");
+    //        }
 
-        return string.Join("\n", options);
-    }
+    //        return string.Join("\n", options);
+    //    }
+    //}
     //public void OnClickEquip()
     //{
     //    if (selectedItem == null) return;
@@ -591,27 +593,27 @@ public class InventoryManager : MonoBehaviour
     }
     public void OnClickUse()
     {
-        if (selectedItem == null || selectedItem.Item_Type != "Consumable") return;
-        var itemMasters = jsonManager.GetItemMasters("Item_Master");
-        var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
-        Debug.Log("아이템 사용을 시도 했습니다");
-        OptionManager.UseItem(selectedItem, new OptionContext
-        {
-            User = player,
-            playerState = playerState,
-            option_ID = master.Item_Option1,
+        //if (selectedItem == null || selectedItem.Item_Type != "Consumable") return;
+        //var itemMasters = jsonManager.GetItemMasters("Item_Master");
+        //var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+        //Debug.Log("아이템 사용을 시도 했습니다");
+        //OptionManager.UseItem(selectedItem, new OptionContext
+        //{
+        //    User = player,
+        //    playerState = playerState,
+        //    option_ID = master.Item_Option1,
 
-            Value = master.Option1_Value
-        });
+        //    Value = master.Option1_Value
+        //});
 
-            inventoryItems.Remove(selectedItem);
-        itemDetailPanel.SetActive(false);
+        //    inventoryItems.Remove(selectedItem);
+        //itemDetailPanel.SetActive(false);
         LoadInventory();
     }
     public void UpdateDPS_MaxHealth()
     {
         Debug.Log($"player.damage = {player.damage}");
-        DPSText.text = (player.damage * player.speed).ToString("0.0");
+        //DPSText.text = (player.damage * player.speed).ToString("0.0");
         HPText.text = player.MaxHealth.ToString();
         //Debug.Log($"플레이어의 공격력 : {player.damage}\n플레이어의 속도 : {player.speed}\n플레이어의 체력 : {player.MaxHealth}");
     }
@@ -644,14 +646,14 @@ public class InventoryManager : MonoBehaviour
     {
         data.inventoryItems = inventoryItems.Select(item => item.Clone()).ToList();
   
-            if (!string.IsNullOrEmpty(player.weapon_Name))
-                data.equippedWeaponData = weaponEquipSlot.CurrentItem.Clone();
-            else
-                data.equippedWeaponData = null;
-            if (!string.IsNullOrEmpty(player.armor_Name))
-                data.equippedArmorData = armorEquipSlot.CurrentItem.Clone();
-            else
-                data.equippedArmorData = null;
+            //if (!string.IsNullOrEmpty(player.weapon_Name))
+            //    data.equippedWeaponData = weaponEquipSlot.CurrentItem.Clone();
+            //else
+            //    data.equippedWeaponData = null;
+            //if (!string.IsNullOrEmpty(player.armor_Name))
+            //    data.equippedArmorData = armorEquipSlot.CurrentItem.Clone();
+            //else
+            //    data.equippedArmorData = null;
       
             
     }
@@ -664,63 +666,18 @@ public class InventoryManager : MonoBehaviour
         if (data.equippedWeaponData != null && !string.IsNullOrEmpty(data.equippedWeaponData.Item_ID))
         {
             weaponEquipSlot.Setup(data.equippedWeaponData.Clone(), ShowItemDetail);
-            player.weapon_Name = data.equippedWeaponData.Item_ID;
+            //player.weapon_Name = data.equippedWeaponData.Item_ID;
         }
 
         if (data.equippedArmorData != null && !string.IsNullOrEmpty(data.equippedArmorData.Item_ID))
         {
             armorEquipSlot.Setup(data.equippedArmorData.Clone(), ShowItemDetail);
-            player.armor_Name = data.equippedArmorData.Item_ID;
+            //player.armor_Name = data.equippedArmorData.Item_ID;
         }
 
-        equipmentSystem.Init();      // 능력치 반영
+        //equipmentSystem.Init();      // 능력치 반영
         UpdateDPS_MaxHealth();       // DPS, 체력 갱신
         LoadInventory();        // 인벤토리 UI 갱신 
     }
-
-    
 }
 
-[System.Serializable]
-public class ItemData
-{
-    public string Item_ID;
-    public string Item_Type;
-    public string Item_Name;
-    public int Weapon_DMG;
-    public int Armor_DEF;
-    public int Armor_HP;
-    public string One_Handed;
-    public int Heal_Value;
-    public int Mental_Heal_Value;
-    public string Option_1_ID;
-    public int Option_Value1;
-    public string Option_2_ID;
-    public int Option_Value2;
-    public string Description;
-    public string Icon;
-    public int Item_Price;
-
-    public ItemData Clone()
-    {
-        return new ItemData
-        {
-            Item_ID = this.Item_ID,
-            Item_Type = this.Item_Type,
-            Item_Name = this.Item_Name,
-            Weapon_DMG = this.Weapon_DMG,
-            Armor_DEF = this.Armor_DEF,
-            Armor_HP = this.Armor_HP,
-            One_Handed = this.One_Handed,
-            Heal_Value = this.Heal_Value,
-            Mental_Heal_Value = this.Mental_Heal_Value,
-            Option_1_ID = this.Option_1_ID,
-            Option_Value1 = this.Option_Value1,
-            Option_2_ID = this.Option_2_ID,
-            Option_Value2 = this.Option_Value2,
-            Description = this.Description,
-            Icon = this.Icon,
-            Item_Price = this.Item_Price
-        };
-    }
-}

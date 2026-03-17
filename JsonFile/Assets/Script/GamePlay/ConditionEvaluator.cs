@@ -44,7 +44,7 @@ public static class ConditionEvaluator
 
                 case "EQUIP":
                     // 슬롯만(Weapon/Armor) 또는 특정장비(Weapon:Weapon_001)
-                    if (equipment == null || !equipment.MeetsEquipRequirement(code))
+                    if (equipment == null || !equipment.IsItemEquipped(code))
                         reasons.Add($"장비 {code} 필요");
                     break;
 

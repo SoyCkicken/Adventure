@@ -138,7 +138,7 @@ public class PlayerStatsUI : MonoBehaviour
         SaveTempStats();
         playerState.inventoryManager.UpdateDPS_MaxHealth();
         playerState.inventoryManager.UpdateInventoryByStrength();
-        playerState.equipmentSystem.Init();
+        //playerState.equipmentSystem.Init();
 
     }
 

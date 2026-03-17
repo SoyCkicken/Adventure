@@ -185,10 +185,10 @@ public class MerchantManager : MonoBehaviour
             //Heal_Value = bs.Heal_Value,
             //Mental_Heal_Value = bs.Mental_Heal_Value
             // 필요한 경우 추가 필드(Heal_Value 등)도 채워 주세요.
-            Option_1_ID = bs.Item_Option_1,
-            Option_Value1 = (int)bs.Item_Option_value1,
-            Option_2_ID = bs.Item_Option_2,
-            Option_Value2 = (int)bs.Item_Option_value2
+            //Option_1_ID = bs.Item_Option_1,
+            //Option_Value1 = (int)bs.Item_Option_value1,
+            //Option_2_ID = bs.Item_Option_2,
+            //Option_Value2 = (int)bs.Item_Option_value2
         };
     }
 
@@ -249,19 +249,19 @@ public class MerchantManager : MonoBehaviour
         //    val2 = item.Option_Value2;
         //}
 
-        if (!string.IsNullOrEmpty(id1) && id1 != "null")
-        {
-            string desc = OptionManager.GetOptionDescription(id1);
-            if (!string.IsNullOrEmpty(desc))
-                options.Add($"{desc} +{val1}");
-        }
+        //if (!string.IsNullOrEmpty(id1) && id1 != "null")
+        //{
+        //    string desc = OptionManager.GetOptionDescription(id1);
+        //    if (!string.IsNullOrEmpty(desc))
+        //        options.Add($"{desc} +{val1}");
+        //}
 
-        if (!string.IsNullOrEmpty(id2) && id2 != "null")
-        {
-            string desc = OptionManager.GetOptionDescription(id2);
-            if (!string.IsNullOrEmpty(desc))
-                options.Add($"{desc} +{val2}");
-        }
+        //if (!string.IsNullOrEmpty(id2) && id2 != "null")
+        //{
+        //    string desc = OptionManager.GetOptionDescription(id2);
+        //    if (!string.IsNullOrEmpty(desc))
+        //        options.Add($"{desc} +{val2}");
+        //}
 
         return string.Join("\n", options);
     }

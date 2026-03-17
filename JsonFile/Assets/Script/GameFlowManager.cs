@@ -6,7 +6,7 @@ using static SaveManager;
 
 public class GameFlowManager : MonoBehaviour
 {
-    public enum FlowState { None, MainStory, RandomEvent, Battle , FocusBattle }
+    public enum FlowState { None, MainStory, RandomEvent, Battle }
     FlowState currentState = FlowState.None;
     FlowState prevState = FlowState.None;
 
@@ -17,9 +17,6 @@ public class GameFlowManager : MonoBehaviour
     public MonsterSpawner monsterSpawner;
     public InventoryManager inventoryManager;
     [Header("집중 전투 전용")]
-    [SerializeField] public FocusMonsterSpawner focusMonsterSpawner; // 집중 전투용 몬스터 스포너
-    [SerializeField] public TESTBoss testBoss; // 집중 전투용 TESTBoss
-    [SerializeField] public BossPartCombatManager bossPartCombatManager; // 일반 전투용 CombatTest
     private string pendingMonsterID;
     //public int CurrentChapterIndex = 1;
 
@@ -30,8 +27,6 @@ public class GameFlowManager : MonoBehaviour
         playerState = PlayerState.Instance;
         mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
         randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-        mainStoryManager.OnFocusBattleJoin += HandleStoryFocusBattleJoin;
-        randomEventManager.OnFocusBattleJoin += HandleEventFocusBattleJoin;
         if (playerState.CurrentChapterIndex == 0)
         {
             playerState.CurrentChapterIndex++; // 챕터 증가
@@ -64,9 +59,6 @@ public class GameFlowManager : MonoBehaviour
             case FlowState.Battle:
                 battleManager.StopBattle();
                 break;
-                case FlowState.FocusBattle:
-                battleManager.StopBattle();
-                break;
         }
 
         currentState = next;
@@ -87,9 +79,6 @@ public class GameFlowManager : MonoBehaviour
             case FlowState.Battle:
                 Debug.Log("▶ 전투에 진입합니다.");
                 battleManager.StartBattle(OnBattleComplete);
-                break;
-            case FlowState.FocusBattle:
-                battleManager.FocusBattleStart(StartFocusCombat);
                 break;
         }
     }
@@ -157,34 +146,6 @@ public class GameFlowManager : MonoBehaviour
     }
 
     //스토리 집중 전투 요청 처리
-    private void HandleStoryFocusBattleJoin(string monsterID)
-    {
-        Debug.Log("▶ 메인스토리 중 집중 전투 진입 요청");
-        mainStoryManager.StopMainStory();
-        pendingMonsterID = monsterID;
-       focusMonsterSpawner.SpawnFocusBossByID(monsterID);
-        currentState = FlowState.FocusBattle;
-        battleManager.FocusBattleStart(playerWon =>
-        {
-            mainStoryManager.WinBattle(playerWon);
-            currentState = FlowState.None;
-        });
-    }
-    //이벤트 집중 전투 요청 처리
-    private void HandleEventFocusBattleJoin(string monsterID)
-    {
-        Debug.Log("▶ 랜덤 이벤트 중 집중 전투 진입 요청");
-        randomEventManager.StopRandomEvent();
-        pendingMonsterID = monsterID;
-        monsterSpawner.SpawnMonsterByID(pendingMonsterID);
-        currentState = FlowState.FocusBattle;
-        battleManager.StartBattle(playerWon =>
-        {
-            randomEventManager.WinBattle(playerWon);
-            currentState = FlowState.None;
-        });
-    }
-
     public bool CanEnterFlow()
     {
         return currentState == FlowState.None;

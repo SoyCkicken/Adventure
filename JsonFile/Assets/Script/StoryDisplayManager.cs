@@ -35,7 +35,6 @@ public class StoryDisplayManager : MonoBehaviour
     private List<Main_Script_Master_Main> scriptEventsCache;
     public InventoryManager inventoryManager; // 아이템 지급을 위해 필요
     public event Action<string> OnBattleJoin;
-    public event Action<string> OnFocusBattleJoin; // 집중 전투 이벤트
     private bool isStoryTransitioning = false;
     [Header("UI References")]
     public List<GameObject> Testblocks = new List<GameObject>();
@@ -218,25 +217,21 @@ public class StoryDisplayManager : MonoBehaviour
     
     private void BattleState(string enemyID)
     {
-        //일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
-        for (int i = 0; i < 2; i++)
-        {
-            var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
-            var btn = testbutton.GetComponent<Button>();
-            var txt = testbutton.GetComponentInChildren<TMP_Text>();
-            if (i == 0)
-            {
-                txt.text = "자동 전투 입니다";
-                btn.onClick.AddListener(() => { OnBattleJoin?.Invoke(enemyID); });
-            }
-            else
-            {
-                btn.onClick.AddListener(() => { OnFocusBattleJoin?.Invoke(enemyID); });
-                txt.text = "집중 전투 입니다";
-            }
+        ////일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
+        //for (int i = 0; i < 2; i++)
+        //{
+        //    var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
+        //    var btn = testbutton.GetComponent<Button>();
+        //    var txt = testbutton.GetComponentInChildren<TMP_Text>();
+        //    if (i == 0)
+        //    {
+        //        txt.text = "자동 전투 입니다";
+        //        btn.onClick.AddListener(() => { OnBattleJoin?.Invoke(enemyID); });
+        //    }
+
             
-        }
-      
+        //}
+      OnBattleJoin?.Invoke(enemyID);
     }
 
     private void HandleTextDisplayWithChoice(string text, GameObject lastBlock, bool isClear)

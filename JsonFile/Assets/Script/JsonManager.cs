@@ -612,10 +612,10 @@ public class JsonManager : MonoBehaviour
                 Item_Price = m.Item_Price,
                 Description = m.Item_Description,
 
-                Option_1_ID = m.Item_Option1,
-                Option_Value1 = m.Option1_Value,
-                Option_2_ID = m.Item_Option2,
-                Option_Value2 = m.Option2_Value,
+                //Option_1_ID = m.Item_Option1,
+                //Option_Value1 = m.Option1_Value,
+                //Option_2_ID = m.Item_Option2,
+                //Option_Value2 = m.Option2_Value,
 
                 Heal_Value = 0,
                 Mental_Heal_Value = 0

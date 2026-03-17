@@ -46,6 +46,13 @@ public class BattleUI : MonoBehaviour
         
         playerHpSlider.value = player.Health;
     }
+    public void ShowResultPopup(bool isPlayerWin)
+    {
+        //전투 결과 팝업 띄우는 함수
+        //isPlayerWin이 true면 승리, false면 패배
+        //팝업 UI는 따로 만들어야 할듯
+        //아무튼 팝업 띄우는 로직은 여기서 처리
+    }
     // Update is called once per frame
     void Update()
     {

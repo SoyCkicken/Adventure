@@ -45,7 +45,6 @@ public class EventDisplay : MonoBehaviour
     public List<GameObject> activeBlocks = new List<GameObject>();
     //전투 관련 액션
     public event Action<string> OnBattleJoin;
-    public event Action<string> OnFocusBattleJoin; // 집중 전투 이벤트
     // 이벤트 데이터들
     private List<RandomEvents_Master_Event> eventList;
     private RandomEvents_Master_Event currentEvent;
@@ -350,23 +349,24 @@ public class EventDisplay : MonoBehaviour
 
     public void BattleState(string enemyID)
     {
-        //일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
-        for (int i = 0; i < 2; i++)
-        {
-            var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
-            var btn = testbutton.GetComponent<Button>();
-            var txt = testbutton.GetComponentInChildren<TMP_Text>();
-            if (i == 0)
-            {
-                txt.text = "자동 전투 입니다";
-                btn.onClick.AddListener(() => { OnBattleJoin?.Invoke(enemyID); });
-            }
-            else
-            {
-                txt.text = "집중 전투 입니다";
-                btn.onClick.AddListener(() => { OnFocusBattleJoin?.Invoke(enemyID); });
-            }
-        }
+        ////일단 여기서는 버튼 생성해서 집중 전투 , 자동 전투 선택 가능하게 할꺼임
+        //for (int i = 0; i < 2; i++)
+        //{
+        //    var testbutton = Instantiate(choiceButtonPrefab, choiceButtonParent);
+        //    var btn = testbutton.GetComponent<Button>();
+        //    var txt = testbutton.GetComponentInChildren<TMP_Text>();
+        //    if (i == 0)
+        //    {
+        //        txt.text = "자동 전투 입니다";
+        //        btn.onClick.AddListener(() => { OnBattleJoin?.Invoke(enemyID); });
+        //    }
+        //    else
+        //    {
+        //        txt.text = "집중 전투 입니다";
+        //        btn.onClick.AddListener(() => { OnFocusBattleJoin?.Invoke(enemyID); });
+        //    }
+        //}
+        OnBattleJoin?.Invoke(enemyID);
 
     }
     private void ClearChoiceButtons()
