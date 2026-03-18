@@ -20,7 +20,7 @@ public class MonsterSpawner : MonoBehaviour
     public GameObject canves;
     public GameObject monsterPrefab;
     // 생성된 몬스터 인스턴스를 저장할 필드
-
+    
     public GameObject canvusImage;
     private GameObject _currentMonster; //<-이거 공용 프리팹으로 사용할듯? 
     // 외부에서 접근할 수 있도록 프로퍼티
@@ -61,8 +61,8 @@ public class MonsterSpawner : MonoBehaviour
 
         // (3) 인스턴스 생성 후 필드에 저장
         Vector3 vector3 = new Vector3(10, -125, 0);
-
-        _currentMonster = Instantiate(monsterPrefab, canvusImage.transform.position, Quaternion.identity, canvusImage.transform);
+        
+        _currentMonster = Instantiate(monsterPrefab, canvusImage.transform.position, Quaternion.identity,canvusImage.transform);
         _currentMonster.transform.localPosition = vector3;
         _currentMonster.transform.localScale = new Vector3(80, 80, 0);
         _currentMonster.name = data.Mon_Name;
@@ -76,63 +76,64 @@ public class MonsterSpawner : MonoBehaviour
         ch.Health = ch.MaxHealth;
         ch.damage = data.Mon_ATK;
         ch.armor = data.Mon_Def;
-        //ch.speed = data.Mon_Speed;
-        //ch.MonPas_Effect1 = data.MonPas_Effect1;
-        //ch.MonPas_Effect2 = data.MonPas_Effect2;
-        //ch.MonPas_Value1 = data.Effect1_Stat;
-        //ch.MonPas_Value2 = data.Effect2_Stat;
+        ch.speed = data.Mon_Speed;
+        ch.MonPas_Effect1 = data.MonPas_Effect1;
+        ch.MonPas_Effect2 = data.MonPas_Effect2;
+        ch.MonPas_Value1 = data.Effect1_Stat;
+        ch.MonPas_Value2 = data.Effect2_Stat;
         battleUI.Enemy = ch;
-        //ch.battleUI = battleUI;
-        //ch.buffUI = buffUI;
-        //ch.GetEXP = data.Get_Soul;
+        ch.battleUI = battleUI;
+        ch.buffUI = buffUI;
+        ch.GetEXP = data.Get_Soul;
 
-        //if (data.MonPas_Effect1 != null)
-        //{
-        //    ch.OnEnemyHitOptions.Add(new Character.MonsterOption
-        //    {
-        //        OptionID = data.MonPas_Effect1,
-        //        Value = data.Effect1_Stat
-        //    });
-        //}
+        if (data.MonPas_Effect1 != null)
+        {
+            ch.OnEnemyHitOptions.Add(new Character.MonsterOption
+            {
+                OptionID = data.MonPas_Effect1,
+                Value = data.Effect1_Stat
+            });
+        }
 
-        //if (data.MonPas_Effect2 != null)
-        //{
-        //    ch.OnEnemyHitOptions.Add(new Character.MonsterOption
-        //    {
-        //        OptionID = data.MonPas_Effect2,
-        //        Value = data.Effect2_Stat
-        //    });
-        //}
-
+        if (data.MonPas_Effect2 != null)
+        {
+            ch.OnEnemyHitOptions.Add(new Character.MonsterOption
+            {
+                OptionID = data.MonPas_Effect2,
+                Value = data.Effect2_Stat
+            });
+        }
+            
         // (5) CombatTest에 할당
         combatTest.enemy = ch;
 
         // (6) 패시브 옵션 적용
-        //ApplyPassive(data.MonPas_Effect1, data.Effect1_Stat, data.Mon_ID, ch);
-        //ApplyPassive(data.MonPas_Effect2, data.Effect2_Stat, data.Mon_ID, ch);
+        ApplyPassive(data.MonPas_Effect1, data.Effect1_Stat, data.Mon_ID, ch);
+        ApplyPassive(data.MonPas_Effect2, data.Effect2_Stat, data.Mon_ID, ch);
 
         Debug.Log($"[Spawn] {_currentMonster.name} 세팅 완료");
         battleUI.SetingUI();//UI 갱신시켜줌
     }
 
     //여기서 패시브 등록을 해줌
-    //private void ApplyPassive(string optionID, int value, string sourceID, Character target)
-    //{
-    //    if (string.IsNullOrEmpty(optionID) || optionID == "--" || optionID == null)
-    //        return;
+    private void ApplyPassive(string optionID, int value, string sourceID, Character target)
+    {
+        if (string.IsNullOrEmpty(optionID) || optionID == "--" || optionID == null)
+            return;
 
-    //    var ctx = new OptionContext
-    //    {
-    //        User = enemy.GetComponent<Character>(),
-    //        Target = player.GetComponent<Character>(),
-    //        option_ID = optionID,
-    //        Value = value,
-    //        // 필요한 추가 컨텍스트 필드 설정
-    //    };
-    //    Debug.Log($"ApplyPassive에서의 {value}");
-    //    Debug.Log($"ApplyPassive = ctx.user의 값 : {ctx.User}\nApplyPassive = ctx.Target = {ctx.Target}");
-    //    monsterOptionManager.ApplyMonsterOption(optionID, ctx);
-    //}
+        var ctx = new OptionContext
+        {
+            User = enemy.GetComponent<Character>(),
+            Target = player.GetComponent<Character>(),
+            option_ID = optionID,
+            Value = value,
+            // 필요한 추가 컨텍스트 필드 설정
+        };
+        Debug.Log($"ApplyPassive에서의 {value}");
+        Debug.Log($"ApplyPassive = ctx.user의 값 : {ctx.User}\nApplyPassive = ctx.Target = {ctx.Target}");
+        monsterOptionManager.ApplyMonsterOption(optionID, ctx);
+    }
 
     //집중 전투 용
 }
+ 

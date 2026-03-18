@@ -1712,6 +1712,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 143431303}
   m_CullTransparentMesh: 1
+--- !u!1 &163893746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 163893747}
+  - component: {fileID: 163893750}
+  m_Layer: 0
+  m_Name: "\uC9D1\uC911 \uC804\uD22C\uC6A9"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &163893747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163893746}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1010119033}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &163893750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163893746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f6eae55d3c3804c8aff5f8d61dba02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalHPSlider: {fileID: 1347826652}
+  playerHPSlider: {fileID: 1651114564}
+  BossSkeleton: {fileID: 0}
+  TESTBoss: {fileID: 0}
+  inventoryManager: {fileID: 1416507560}
+  playerCharacter: {fileID: 2006169296}
+  playerState: {fileID: 715309318}
+  selectedPartText: {fileID: 1283343309}
+  leftButton: {fileID: 1273424284}
+  rightButton: {fileID: 750321847}
+  attackButton: {fileID: 555678100}
+  combatCanvas: {fileID: 1895895120}
+  popupObject: {fileID: 169547624}
+  audioSource: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: 2375dadc4293d3f4380b59887ce8416b, type: 3}
+  damageSound: {fileID: 8300000, guid: d64e91cef03af304fa237225b23c5707, type: 3}
+  DodgeSound: {fileID: 8300000, guid: 13182107f288fdc47a11f9216c8f062b, type: 3}
 --- !u!1 &168550873
 GameObject:
   m_ObjectHideFlags: 0
@@ -3733,7 +3794,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1939005715}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99984175
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6710,7 +6771,6 @@ Transform:
   m_Children:
   - {fileID: 25302958}
   - {fileID: 1847108098}
-  - {fileID: 1208015138}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &601747176
@@ -7618,40 +7678,11 @@ MonoBehaviour:
   CHA: 5
   Health: 5
   INT: 5
-  CRT: 10
   CurrentHealth: 0
   CurrentMental: 0
   Level: 1
   Experience: 100000
   ExperienceRequired: 100
-  equippedWeapon:
-    Item_ID: 
-    Item_Type: 
-    Item_Name: 
-    Weapon_DMG: 0
-    Armor_DEF: 0
-    Armor_HP: 0
-    One_Handed: 
-    Heal_Value: 0
-    Mental_Heal_Value: 0
-    Description: 
-    Icon: 
-    Item_Price: 0
-    Options: []
-  equippedArmor:
-    Item_ID: 
-    Item_Type: 
-    Item_Name: 
-    Weapon_DMG: 0
-    Armor_DEF: 0
-    Armor_HP: 0
-    One_Handed: 
-    Heal_Value: 0
-    Mental_Heal_Value: 0
-    Description: 
-    Icon: 
-    Item_Price: 0
-    Options: []
   statsUI: {fileID: 1497404942}
   inventoryManager: {fileID: 1416507560}
   equipmentSystem: {fileID: 2006169298}
@@ -10248,6 +10279,8 @@ Transform:
   - {fileID: 2006169297}
   - {fileID: 1206244608}
   - {fileID: 715309319}
+  - {fileID: 163893747}
+  - {fileID: 1630125088}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1010119034
@@ -10263,6 +10296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatTest: {fileID: 1515041320}
+  bossPartCombatManager: {fileID: 163893750}
 --- !u!1 &1018794061
 GameObject:
   m_ObjectHideFlags: 0
@@ -11950,6 +11984,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1206244608}
   - component: {fileID: 1206244609}
+  - component: {fileID: 1206244610}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -11994,50 +12029,29 @@ MonoBehaviour:
   canves: {fileID: 1483688933}
   monsterPrefab: {fileID: 6894815111855523166, guid: 696174efed67bcf4aaf8d7707e140be4, type: 3}
   canvusImage: {fileID: 1076220275}
---- !u!1 &1208015137
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1208015138}
-  - component: {fileID: 1208015139}
-  m_Layer: 0
-  m_Name: JsonManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1208015138
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208015137}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 596016689}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1208015139
+--- !u!114 &1206244610
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208015137}
+  m_GameObject: {fileID: 1206244606}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 476dec59a5193134d9966c1a2574ece9, type: 3}
+  m_Script: {fileID: 11500000, guid: bce494c3f44159548b1a983227ce53fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jsonManager: {fileID: 0}
+  monsterOptionManager: {fileID: 0}
+  focusCombatPrefab:
+  - {fileID: 5052695314357578690, guid: e4403e3d9bf9fb04083ab81b432a6562, type: 3}
+  - {fileID: 5052695314357578690, guid: 2d3dedfa6b7506446b24620bf5d55a69, type: 3}
+  focusCombcanves: {fileID: 1895895120}
+  focusCombatImage: {fileID: 346191472}
+  enemy: {fileID: 0}
+  player: {fileID: 2006169295}
+  bossPartCombatManager: {fileID: 163893750}
+  TESTBoss: {fileID: 0}
 --- !u!114 &1224261889 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1512233413251116345, guid: a9ad5f6729fc6e84cb8feadb31d94915, type: 3}
@@ -14701,7 +14715,6 @@ MonoBehaviour:
   OffInventoryButton: {fileID: 1465027299}
   OffItemDetailButton: {fileID: 1687269314}
   removeButton: {fileID: 1687269315}
-  SaleButton: {fileID: 0}
   DPSText: {fileID: 1687269328}
   HPText: {fileID: 1687269329}
   SoulTEXT: {fileID: 1687269311}
@@ -14726,10 +14739,13 @@ MonoBehaviour:
     One_Handed: 
     Heal_Value: 0
     Mental_Heal_Value: 0
+    Option_1_ID: 
+    Option_Value1: 0
+    Option_2_ID: 
+    Option_Value2: 0
     Description: 
     Icon: 
     Item_Price: 0
-    Options: []
 --- !u!1 &1422642116
 GameObject:
   m_ObjectHideFlags: 0
@@ -15564,14 +15580,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ca1316692c221843a90cd2dd44bbb82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2006169296}
-  enemy: {fileID: 0}
+  NormalBattle: {fileID: 1483688933}
   optionManager: {fileID: 0}
   monsterOptionManager: {fileID: 0}
+  player: {fileID: 2006169296}
+  enemy: {fileID: 0}
+  playerState: {fileID: 715309318}
+  inventoryManager: {fileID: 1416507560}
   battleUI: {fileID: 1334330994}
   buffUI: {fileID: 249269732}
-  playerState: {fileID: 715309318}
-  battleCanvas: {fileID: 1483688933}
+  Enemy_Animator: {fileID: 0}
+  EnemyAttackImage: {fileID: 4565169904349560994, guid: a7a93e3228aa90749bb084323864ae30, type: 3}
+  ImageGameObject: {fileID: 1076220275}
+  PopupObject: {fileID: 2926340291049917966}
+  _screenShake: {fileID: 986163960}
 --- !u!4 &1515041321
 Transform:
   m_ObjectHideFlags: 0
@@ -17073,6 +17095,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1615343720}
   m_CullTransparentMesh: 1
+--- !u!1 &1630125087
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1630125088}
+  - component: {fileID: 1630125089}
+  m_Layer: 0
+  m_Name: MousePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1630125088
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1630125087}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1010119033}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1630125089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1630125087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0e295382e3e6de42bdc7c059bee6207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  manager: {fileID: 163893750}
 --- !u!1001 &1634365829
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19863,6 +19933,9 @@ MonoBehaviour:
   battleManager: {fileID: 1010119034}
   monsterSpawner: {fileID: 1206244609}
   inventoryManager: {fileID: 1416507560}
+  focusMonsterSpawner: {fileID: 1206244610}
+  testBoss: {fileID: 0}
+  bossPartCombatManager: {fileID: 163893750}
 --- !u!1 &1847514786
 GameObject:
   m_ObjectHideFlags: 0
@@ -21288,13 +21361,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd025e7acd703d3498f186734050314e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameFlowManager: {fileID: 1847108099}
   charaterName: Player
+  playerState: {fileID: 0}
   MaxHealth: 50
   Health: 50
   damage: 10
+  speed: 2
   armor: 5
   CitChance: 10
-  currentOptions: []
+  GetEXP: 0
+  weapon_Name: 
+  armor_Name: 
+  MonPas_Effect1: 
+  MonPas_Value1: 0
+  MonPas_Effect2: 
+  MonPas_Value2: 1
+  OnHitOptions: []
+  OnEnemyHitOptions: []
+  battleUI: {fileID: 1334330994}
+  buffUI: {fileID: 249269732}
+  BossPartCombatManager: {fileID: 163893750}
+  MaxHP: 500
+  CurrentHP: 0
+  AttackPower: 200
+  hitChance: 110
+  ActiveDebuffs: []
 --- !u!4 &2006169297
 Transform:
   m_ObjectHideFlags: 0
@@ -21322,7 +21414,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51481fccdb2862745af7b58864f0df20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerState: {fileID: 715309318}
+  playerState: {fileID: 0}
   jsonManager: {fileID: 0}
   inventoryManager: {fileID: 1416507560}
   player: {fileID: 2006169296}
@@ -21737,7 +21829,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00075589516}
+  m_AnchoredPosition: {x: 0, y: 0.000015393898}
   m_SizeDelta: {x: 0, y: 706.97}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2035566632
@@ -22720,7 +22812,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2476770376639408423, guid: 223b62826b8a1e5429364c57dfddd461, type: 3}
   m_PrefabInstance: {fileID: 2926340291049917965}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2926340291049917966}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47204adf4b871ff4ab910762b43e0dea, type: 3}
@@ -22926,6 +23018,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 223b62826b8a1e5429364c57dfddd461, type: 3}
+--- !u!1 &2926340291049917966 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5332261028143136017, guid: 223b62826b8a1e5429364c57dfddd461, type: 3}
+  m_PrefabInstance: {fileID: 2926340291049917965}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3377012384569185214
 PrefabInstance:
   m_ObjectHideFlags: 0

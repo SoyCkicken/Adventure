@@ -24,25 +24,25 @@ public class MonsterOptionManager : MonoBehaviour
 
         effects = new Dictionary<string, IOptionEffect>();
         // 몬스터용 옵션만 등록
-        //effects["MonEffect_001"] = new MonsterCorrosionEffect();
+        effects["MonEffect_001"] = new MonsterCorrosionEffect();
         //effects["MonEffect_002"] = new PoisonCloudEffect();
         //여기 계속 추가 하는 식으로 하면 됨
     }
 
 
-    //public class MonsterCorrosionEffect : IOptionEffect
-    //{
-    //    public void Apply(OptionContext ctx)
-    //    {
-    //        //상대방의 방어력을 깎는다
-    //        Debug.Log($"ctx.Target.armor의 값은 {ctx.Target.armor}" + $"ctx.Value의 값은 : {ctx.Value}");
-    //        int debufArmor = ctx.Target.armor - ctx.Value;
-    //        Debug.Log(debufArmor);
-    //        //Debug.Log($"ctx의 유저는 = {ctx.User}  , ctx.target = {ctx.Target} , ctx.target.armor {ctx.Target.armor}");
-    //        ctx.Target.armor = debufArmor;
-    //        Debug.Log($"몬스터 옵션 테스트용 debug 입니다 {ctx.Target.armor}");
-    //    }
-    //}
+    public class MonsterCorrosionEffect : IOptionEffect
+    {
+        public void Apply(OptionContext ctx)
+        {
+            //상대방의 방어력을 깎는다
+            Debug.Log($"ctx.Target.armor의 값은 {ctx.Target.armor}" + $"ctx.Value의 값은 : {ctx.Value}");
+            int debufArmor = ctx.Target.armor - ctx.Value;
+            Debug.Log(debufArmor);
+            //Debug.Log($"ctx의 유저는 = {ctx.User}  , ctx.target = {ctx.Target} , ctx.target.armor {ctx.Target.armor}");
+            ctx.Target.armor = debufArmor;
+            Debug.Log($"몬스터 옵션 테스트용 debug 입니다 {ctx.Target.armor}");
+        }
+    }
 
     public void ApplyMonsterOption(string optionID, OptionContext ctx)
     {

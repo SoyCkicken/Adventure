@@ -11,7 +11,6 @@ public class PlayerState : MonoBehaviour
     [Header("플레이어 능력치")]
     public int STR = 5, AGI = 5, DIV = 5, MAG = 5, CHA = 5;
     public int Health = 5, INT = 5;
-    public int CRT = 10; // 크리티컬 확률 (기본 10% 고정, 필요시 스탯 기반으로 변경 가능)
     public int HP { get;  set; }
     public int MP { get;  set; }
     public int CurrentHealth = 0, CurrentMental = 0;
@@ -19,12 +18,6 @@ public class PlayerState : MonoBehaviour
     public int Level = 1;
     public int Experience = 100000;
     public int ExperienceRequired = 100;
-
-    [Header("현재 착용 장비")]
-    public ItemData equippedWeapon;
-    public ItemData equippedArmor;
-
-    public Action OnStatsChanged;
 
     [SerializeField] public PlayerStatsUI statsUI;
     [SerializeField] public InventoryManager inventoryManager;
@@ -107,37 +100,6 @@ public class PlayerState : MonoBehaviour
         RecalculateHPMP();
     }
 
-    public void CalculateFinalStats(out int finalATK, out int finalHP, out int finalDEF)
-    {
-        // 1. 플레이어 본체의 기본 능력치 (예시)
-        finalATK = this.STR * 2;
-        finalHP = 100 + (this.DIV * 10);
-        finalDEF = this.AGI;
-
-        // 2. 무기 대미지 추가
-        if (equippedWeapon != null)
-        {
-            finalATK += equippedWeapon.Weapon_DMG;
-        }
-
-        // 3. 방어구 능력치 추가
-        if (equippedArmor != null)
-        {
-            finalDEF += equippedArmor.Armor_DEF;
-            finalHP += equippedArmor.Armor_HP;
-        }
-    }
-    public void RefreshStats()
-    {
-        int atk, hp, def;
-        // 기존에 만드신 계산 로직 호출
-        CalculateFinalStats(out atk, out hp, out def);
-
-        // 이벤트를 발생시켜 Character와 UI들이 알게 함
-        OnStatsChanged?.Invoke();
-
-        Debug.Log($"[PlayerState] 장비 변경으로 능력치 갱신됨: ATK {atk}, HP {hp}, DEF {def}");
-    }
 
     public void RecalculateHPMP()
     {
@@ -189,7 +151,6 @@ public class PlayerState : MonoBehaviour
         if (statsUI!=null)
         statsUI.UpdateUI();
         if (equipmentSystem != null)
-        { }
-            //equipmentSystem.Init();
+            equipmentSystem.Init();
     }
 }
