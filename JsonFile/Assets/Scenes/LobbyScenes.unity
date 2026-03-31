@@ -2398,9 +2398,10 @@ MonoBehaviour:
   _startButton: {fileID: 1609662291}
   SaveButton: {fileID: 0}
   LoadButton: {fileID: 0}
-  serverBaseUrl: http://localhost:8001
+  serverBaseUrl: http://pofol2025.cafe24app.com
   playerId: USER_001
   useServerOnLoad: 1
+  autoCreateOnBoot: 1
 --- !u!4 &1947755918
 Transform:
   m_ObjectHideFlags: 0

@@ -692,7 +692,7 @@ namespace MyGame
         /// 집중전투(턴 기반)에서는 자동 전투 버프와 완전히 분리된 디버프 리스트를 사용
         /// - 턴이 지날 때마다 TurnDebuff()에서 Elapsed +1 및 효과 Tick
         /// </summary>
-        public List<FocusBuffData> ActiveDebuffs = new();
+        // public List<FocusBuffData> ActiveDebuffs = new();
 
         // NOTE: 집중전투 관련 필드가 파일 하단이 아닌 상단에 위치해야 해서 여기 배치
 
@@ -1048,118 +1048,6 @@ namespace MyGame
         }
         #endregion
 
-        #region 집중전투(턴 기반) — 자동 전투와 완전히 분리된 경로
-        /// <summary>
-        /// 집중전투에서 턴이 지날 때 호출
-        /// - ActiveDebuffs의 Elapsed를 +1
-        /// - 효과 적용 후 만료되면 제거
-        /// - UI 표시는 "버프창에 띄우기" 목표만 있으면 자동전투 UI와 분리해도 OK
-        /// </summary>
-        public void TurnDebuff()
-        {
-            List<FocusBuffData> expired = new();
-
-            foreach (var buff in ActiveDebuffs)
-            {
-                buff.Elapsed += 1f;
-                ApplyFocusBuffEffect(buff);
-
-                if (buff.Elapsed >= buff.Duration)
-                {
-                    expired.Add(buff);
-                    Debug.Log($"[버프 만료] {buff.OptionID}");
-                }
-            }
-
-            foreach (var b in expired)
-                ActiveDebuffs.Remove(b);
-        }
-
-        /// <summary>집중전투 디버프의 턴당 효과 적용(예: 화상 피해)</summary>
-        private void ApplyFocusBuffEffect(FocusBuffData buff)
-        {
-            if (buff.OptionID == "Option_003") // 화상(예시)
-            {
-                int damage = Mathf.FloorToInt(MaxHP * (buff.Value / 100f));
-                TakeDamage(damage, "화상");
-                Debug.Log($"🔥 [플레이어 화상 피해] {damage} 데미지");
-            }
-            // TODO: 다른 디버프 추가
-        }
-
-        private void StartBuffRoutineSafe()
-        {
-            if (buffCoroutine != null) return;
-
-            // GameObject가 활성화되어 있고 enabled 상태일 때만 코루틴 시작
-            if (gameObject != null && gameObject.activeInHierarchy && enabled)
-            {
-                buffCoroutine = StartCoroutine(BuffTickRoutine());
-            }
-            else
-            {
-                Debug.LogWarning($"[Buff] {gameObject.name}이 비활성 상태여서 버프 루틴을 시작할 수 없습니다.");
-            }
-        }
-
-        /// <summary>집중전투 디버프 추가/갱신</summary>
-        public void AddFocusBuff(FocusBuffData newBuff)
-        {
-            var existing = ActiveDebuffs.FirstOrDefault(b => b.OptionID == newBuff.OptionID);
-            if (existing != null)
-            {
-                existing.Elapsed = 0f;
-                existing.Duration = newBuff.Duration;
-                Debug.Log($"[버프 갱신] {newBuff.OptionID} → 지속 {newBuff.Duration}턴");
-            }
-            else
-            {
-                ActiveDebuffs.Add(newBuff);
-                Debug.Log($"[버프 적용] {newBuff.OptionID} → 지속 {newBuff.Duration}턴");
-            }
-        }
-        #endregion
-
-        #region 집중전투: 부위 공격/피해(턴 전용 체계)
-        public void PerformAttack(TESTBoss target, string partName)
-        {
-            if (target == null || target.IsDead) return;
-            if (!target.CanAttackPart(partName)) return;
-
-            int evade = target.GetEvadeRate(partName);
-            int roll = Random.Range(0, 100);
-
-            Debug.Log($"[Player] 명중 굴림: {roll} vs 명중 필요치: {hitChance - evade}");
-
-            if (roll >= (hitChance - evade))
-            {
-                Debug.Log($"[Player] {partName} 부위를 공격했지만 빗나갔습니다!\n");
-                BossPartCombatManager.PlayDodgeSound();
-                return;
-            }
-
-            target.DamagePart(partName, AttackPower);
-            Debug.Log($"[Player] {partName} 부위에 {AttackPower} 데미지 적중!\n");
-            BossPartCombatManager.PlayHitSound();
-        }
-
-        // 집중전투 체력 감소(자동 전투 Health와는 별개)
-        public void TakeDamage(int amount, string source = "직접 피해")
-        {
-            CurrentHP -= amount;
-            CurrentHP = Mathf.Max(CurrentHP, 0);
-            Debug.Log($"[Player] 피해: -{amount} ({source}), 현재 체력: {CurrentHP}");
-        }
-
-        // 집중전투 시작 시 스테이터스 리셋(자동 전투 수치 기반 배율)
-        public void FocusBattleStateReset()
-        {
-            MaxHP = MaxHealth * 5;
-            CurrentHP = MaxHP;
-            AttackPower = damage * 5;
-        }
-        #endregion
-
         #region 생명주기(코루틴/갱신 훅)
         private void OnDisable()
         {
@@ -1232,15 +1120,5 @@ namespace MyGame
         public bool IsDebuff;         // 디버프 여부(표시/정렬 등에 쓰일 수 있음)
         public Character Target;      // 효과를 받는 대상(예: 화상 피해 대상)
         public Character User;        // 시전자(본인)
-
-        // 집중전투용(부위 특화 등) — 자동 전투와는 별개
-        public FocusPartData FocusData = null;
-
-        [System.Serializable]
-        public class FocusPartData
-        {
-            public string PartName;      // "Head", "Arm", "Leg" 등
-            public float DamageRatio;    // ex) 0.25f, 0.5f
-        }
     }
 }

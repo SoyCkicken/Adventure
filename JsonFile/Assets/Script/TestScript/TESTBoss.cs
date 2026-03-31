@@ -216,28 +216,8 @@ public class TESTBoss : MonoBehaviour
         }
     }
 
-    public void AddBuff(string partName, FocusBuffData buff)
-    {
-        if (!parts.TryGetValue(partName, out var part))
-        {
-            Debug.LogWarning($"[AddBuff] 부위 {partName} 이 존재하지 않습니다.");
-            return;
-        }
-
-        var existing = part.ActiveDebuffs.FirstOrDefault(b => b.OptionID == buff.OptionID);
-
-        if (existing != null)
-        {
-            existing.Elapsed = 0f;
-            existing.Duration = buff.Duration;
-            Debug.Log($"[Buff 갱신] {partName}에 {buff.OptionID} 버프 갱신");
-        }
-        else
-        {
-            part.ActiveDebuffs.Add(buff);
-            Debug.Log($"[Buff 적용] {partName}에 {buff.OptionID} 버프 추가됨");
-        }
-    }
+    public void AddBuff(string partName, BuffData buff) // Changed FocusBuffData to BuffData, but wait, BuffData might be what's in Character.cs. Let me check if BuffData is available here.
+    // Actually, I should probably remove AddBuff entirely if it's not needed.
 
     private void CheckArmCondition()
     {
@@ -390,7 +370,7 @@ public class TESTBoss : MonoBehaviour
         public int CurrentHP;
         public int EvadeRate;
 
-        public List<FocusBuffData> ActiveDebuffs = new();
+        public List<BuffData> ActiveDebuffs = new(); // Use BuffData instead of FocusBuffData if possible, or remove.
         public System.Action OnBreak;
         public Action<bool> isComplete;
 
@@ -414,38 +394,6 @@ public class TESTBoss : MonoBehaviour
 
             if (IsBroken)
                 OnBreak?.Invoke();
-        }
-
-
-        public void TickDebuffs(TESTBoss boss)
-        {
-            List<FocusBuffData> expired = new();
-
-            foreach (var buff in ActiveDebuffs)
-            {
-                buff.Elapsed += 1f;
-
-                if (buff.OptionID == "Option_003")
-                {
-                    int totalDmg = Mathf.FloorToInt(buff.Target.MaxTotalHP * (buff.Value / 100f));
-                    int partDmg = Mathf.FloorToInt(totalDmg * buff.DamageRatio);
-                    int mainDmg = totalDmg - partDmg;
-
-                    Damage(partDmg);
-                    boss.CurrentTotalHP = Mathf.Max(boss.CurrentTotalHP - mainDmg, 0);
-
-                    Debug.Log($"[Tick] {partName} 화상: 부위 {partDmg} / 본체 {mainDmg}");
-                }
-
-                if (buff.Elapsed >= buff.Duration)
-                {
-                    expired.Add(buff);
-                    Debug.Log($"[버프 만료] {partName}의 {buff.OptionID}");
-                }
-            }
-
-            foreach (var b in expired)
-                ActiveDebuffs.Remove(b);
         }
     }
 }

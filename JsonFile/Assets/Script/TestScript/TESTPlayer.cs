@@ -12,66 +12,11 @@ public class TESTPlayer : MonoBehaviour
     public int AttackPower = 30;
     public int hitChance = 80; // 명중률 (0~100)
 
-    public List<FocusBuffData> ActiveDebuffs = new();
-
     public bool IsDead => CurrentHP <= 0;
 
     void Start()
     {
         CurrentHP = MaxHP;
-    }
-
-    // 플레이어의 턴 종료 시 디버프 효과 적용 및 갱신
-    public void TickDebuffs()
-    {
-        List<FocusBuffData> expired = new();
-
-        foreach (var buff in ActiveDebuffs)
-        {
-            buff.Elapsed += 1f;
-
-            ApplyFocusBuffEffect(buff);
-
-            if (buff.Elapsed >= buff.Duration)
-            {
-                expired.Add(buff);
-                Debug.Log($"[버프 만료] {buff.OptionID}");
-            }
-        }
-
-        foreach (var b in expired)
-            ActiveDebuffs.Remove(b);
-    }
-
-
-    // 디버프 효과 적용 처리
-    private void ApplyFocusBuffEffect(FocusBuffData buff)
-    {
-        if (buff.OptionID == "Option_003") // 화상
-        {
-            int damage = Mathf.FloorToInt(MaxHP * (buff.Value / 100f));
-            TakeDamage(damage, "화상");
-            Debug.Log($"🔥 [플레이어 화상 피해] {damage} 데미지");
-        }
-
-        // 다른 디버프 효과도 여기에 추가
-    }
-
-    // 디버프 추가 또는 갱신
-    public void AddFocusBuff(FocusBuffData newBuff)
-    {
-        var existing = ActiveDebuffs.FirstOrDefault(b => b.OptionID == newBuff.OptionID);
-        if (existing != null)
-        {
-            existing.Elapsed = 0f;
-            existing.Duration = newBuff.Duration;
-            Debug.Log($"[버프 갱신] {newBuff.OptionID} → 지속 {newBuff.Duration}턴");
-        }
-        else
-        {
-            ActiveDebuffs.Add(newBuff);
-            Debug.Log($"[버프 적용] {newBuff.OptionID} → 지속 {newBuff.Duration}턴");
-        }
     }
 
     // 보스의 특정 부위를 공격
