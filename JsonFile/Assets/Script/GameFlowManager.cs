@@ -18,8 +18,6 @@ public class GameFlowManager : MonoBehaviour
     public InventoryManager inventoryManager;
     [Header("집중 전투 전용")]
     // [SerializeField] public FocusMonsterSpawner focusMonsterSpawner; // 집중 전투용 몬스터 스포너
-    [SerializeField] public TESTBoss testBoss; // 집중 전투용 TESTBoss
-    [SerializeField] public BossPartCombatManager bossPartCombatManager; // 일반 전투용 CombatTest
     private string pendingMonsterID;
     //public int CurrentChapterIndex = 1;
 

@@ -668,16 +668,6 @@ namespace MyGame
         public BuffUI buffUI;
         private Coroutine uiRefreshRoutine;
 
-        [Header("집중전투 전용(턴 기반)")]
-        public BossPartCombatManager BossPartCombatManager;
-        public int MaxHP;
-        public int CurrentHP;
-        public int AttackPower = 30;
-        public int hitChance = 80; // 명중률 (0~100)
-
-        /// <summary>집중전투 사망 판정(자동 전투의 Health와는 분리된 체계)</summary>
-        public bool IsDead => CurrentHP <= 0;
-
         /// <summary>장비 장착 여부 질의(패시브 무한 지속 판단용)</summary>
         public IEquipmentQuery equipmentQuery; // EquipmentSystem에서 주입
 
@@ -776,7 +766,6 @@ namespace MyGame
 
                 // UI 동기화 + 틱 루틴 보장
                 RefreshBuffUI();
-                StartBuffRoutineSafe();
 
                 // 디버깅: 이 캐릭터의 GM 주입 여부를 확인
                 Debug.Log($"[Buff] Add: {key} ({buff.OptionID}) on {charaterName}, GM={gameFlowManager != null}");
@@ -807,7 +796,6 @@ namespace MyGame
 
             // UI 동기화 + 틱 루틴 보장
             RefreshBuffUI();
-            StartBuffRoutineSafe();
 
             Debug.Log($"[Buff] Add: {key} ({buff.OptionID}) from {buff.SourceItemID}");
         }
@@ -1070,7 +1058,6 @@ namespace MyGame
             if (activeBuffs.Count > 0 && gameFlowManager != null &&
                 gameFlowManager.GetCurrentFlowState() == GameFlowManager.FlowState.Battle)
             {
-                StartBuffRoutineSafe();
             }
         }
         #endregion
