@@ -7,7 +7,7 @@ using UnityEngine.Playables;
 
 public class MonsterSpawner : MonoBehaviour
 {
-    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½")]
+    [Header("ÂüÁ¶ÇÒ ¸Å´ÏÀú")]
     public JsonManager jsonManager;
     public MonsterOptionManager monsterOptionManager;
     public CombatTest combatTest;
@@ -16,50 +16,50 @@ public class MonsterSpawner : MonoBehaviour
     public BattleUI battleUI;
     public BuffUI buffUI;
 
-    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
+    [Header("¸ó½ºÅÍ ÇÁ¸®ÆÕ")]
     public GameObject canves;
     public GameObject monsterPrefab;
-    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Êµï¿½
+    // »ý¼ºµÈ ¸ó½ºÅÍ ÀÎ½ºÅÏ½º¸¦ ÀúÀåÇÒ ÇÊµå
     
     public GameObject canvusImage;
-    private GameObject _currentMonster; //<-ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Òµï¿½? 
-    // ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼
+    private GameObject _currentMonster; //<-ÀÌ°Å °ø¿ë ÇÁ¸®ÆÕÀ¸·Î »ç¿ëÇÒµí? 
+    // ¿ÜºÎ¿¡¼­ Á¢±ÙÇÒ ¼ö ÀÖµµ·Ï ÇÁ·ÎÆÛÆ¼
     public GameObject CurrentMonster => _currentMonster;
 
 
     private void Awake()
     {
-        // ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
-        jsonManager = JsonManager.Instance; // ï¿½ï¿½ï¿½ï¿½
+        // ÀÚµ¿ ÂüÁ¶
+        jsonManager = JsonManager.Instance; // ¼öÁ¤
         if (monsterOptionManager == null) monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
         if (combatTest == null) combatTest = FindObjectOfType<CombatTest>();
         if (player == null) player = GameObject.FindWithTag("Player");
         canves.SetActive(false);
-        //SpawnMonsterByID("monster_001"); //ï¿½Ó½Ã·ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å°ï¿½ï¿½
+        //SpawnMonsterByID("monster_001"); //ÀÓ½Ã·Î ÀûÀÌ¸§À» ³Ö°í »ý¼ºÀ» ½ÃÅ°°í
     }
 
     /// <summary>
-    /// ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ Monster IDï¿½ï¿½ ï¿½ï¿½ï¿½Þ¹Þ¾ï¿½ ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+    /// ¿ÜºÎ¿¡¼­ Monster ID¸¦ Àü´Þ¹Þ¾Æ ¸ó½ºÅÍ¸¦ ½ºÆùÇÏ°í ÀüÅõ »ó´ë·Î ¼³Á¤ÇÕ´Ï´Ù.
     /// </summary>
     public void SpawnMonsterByID(string monsterID)
     {
         canves.SetActive(true);
-        // (1) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°Å³ï¿½ ï¿½ï¿½È°ï¿½ï¿½
+        // (1) ±âÁ¸ ¸ó½ºÅÍ°¡ ÀÖÀ¸¸é Á¦°ÅÇÏ°Å³ª ÀçÈ°¿ë
         if (_currentMonster != null)
         {
             Destroy(_currentMonster);
         }
 
-        // (2) JSONï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
+        // (2) JSON¿¡¼­ µ¥ÀÌÅÍ Ã£±â
         var data = jsonManager.GetMonMasters("Mon_Master")
                               .FirstOrDefault(m => m.Mon_ID == monsterID);
         if (data == null)
         {
-            Debug.LogError($"[{nameof(MonsterSpawner)}] MonsterDataï¿½ï¿½ï¿½ï¿½ '{monsterID}'ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
+            Debug.LogError($"[{nameof(MonsterSpawner)}] MonsterData¿¡¼­ '{monsterID}'¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
             return;
         }
 
-        // (3) ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Êµå¿¡ ï¿½ï¿½ï¿½ï¿½
+        // (3) ÀÎ½ºÅÏ½º »ý¼º ÈÄ ÇÊµå¿¡ ÀúÀå
         Vector3 vector3 = new Vector3(10, -125, 0);
         
         _currentMonster = Instantiate(monsterPrefab, canvusImage.transform.position, Quaternion.identity,canvusImage.transform);
@@ -68,8 +68,8 @@ public class MonsterSpawner : MonoBehaviour
         _currentMonster.name = data.Mon_Name;
         if (enemy == null) enemy = GameObject.FindWithTag("Enemy");
 
-        Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Effect1_Statï¿½ï¿½ ï¿½ï¿½ : {data.Effect1_Stat}");
-        // (4) Character ï¿½ï¿½ï¿½ï¿½
+        Debug.Log($"¸ó½ºÅÍÀÇ Effect1_StatÀÇ °ª : {data.Effect1_Stat}");
+        // (4) Character ¼¼ÆÃ
         var ch = _currentMonster.GetComponent<Character>();
         ch.charaterName = data.Mon_Name;
         ch.MaxHealth = data.Mon_HP;
@@ -104,18 +104,18 @@ public class MonsterSpawner : MonoBehaviour
             });
         }
             
-        // (5) CombatTestï¿½ï¿½ ï¿½Ò´ï¿½
+        // (5) CombatTest¿¡ ÇÒ´ç
         combatTest.enemy = ch;
 
-        // (6) ï¿½Ð½Ãºï¿½ ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // (6) ÆÐ½Ãºê ¿É¼Ç Àû¿ë
         ApplyPassive(data.MonPas_Effect1, data.Effect1_Stat, data.Mon_ID, ch);
         ApplyPassive(data.MonPas_Effect2, data.Effect2_Stat, data.Mon_ID, ch);
 
-        Debug.Log($"[Spawn] {_currentMonster.name} ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
-        battleUI.SetingUI();//UI ï¿½ï¿½ï¿½Å½ï¿½ï¿½ï¿½ï¿½ï¿½
+        Debug.Log($"[Spawn] {_currentMonster.name} ¼¼ÆÃ ¿Ï·á");
+        battleUI.SetingUI();//UI °»½Å½ÃÄÑÁÜ
     }
 
-    //ï¿½ï¿½ï¿½â¼­ ï¿½Ð½Ãºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //¿©±â¼­ ÆÐ½Ãºê µî·ÏÀ» ÇØÁÜ
     private void ApplyPassive(string optionID, int value, string sourceID, Character target)
     {
         if (string.IsNullOrEmpty(optionID) || optionID == "--" || optionID == null)
@@ -127,13 +127,13 @@ public class MonsterSpawner : MonoBehaviour
             Target = player.GetComponent<Character>(),
             option_ID = optionID,
             Value = value,
-            // ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½Ø½ï¿½Æ® ï¿½Êµï¿½ ï¿½ï¿½ï¿½ï¿½
+            // ÇÊ¿äÇÑ Ãß°¡ ÄÁÅØ½ºÆ® ÇÊµå ¼³Á¤
         };
-        Debug.Log($"ApplyPassiveï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {value}");
-        Debug.Log($"ApplyPassive = ctx.userï¿½ï¿½ ï¿½ï¿½ : {ctx.User}\nApplyPassive = ctx.Target = {ctx.Target}");
+        Debug.Log($"ApplyPassive¿¡¼­ÀÇ {value}");
+        Debug.Log($"ApplyPassive = ctx.userÀÇ °ª : {ctx.User}\nApplyPassive = ctx.Target = {ctx.Target}");
         monsterOptionManager.ApplyMonsterOption(optionID, ctx);
     }
 
-    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    //ÁýÁß ÀüÅõ ¿ë
 }
  

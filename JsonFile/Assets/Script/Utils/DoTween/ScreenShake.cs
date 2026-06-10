@@ -1,45 +1,45 @@
 // ScreenShake.cs
-// DOTween ï¿½ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½é¸² ï¿½ï¿½Æ¿ï¿½ï¿½Æ¼
-// - RectTransform(ï¿½ï¿½ï¿½ UI) ï¿½ï¿½ï¿½ï¿½
-// - Transform(Ä«ï¿½Þ¶ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®) ï¿½ï¿½ï¿½ï¿½
-// ï¿½ßºï¿½ È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+// DOTween ±â¹Ý È­¸é Èçµé¸² À¯Æ¿¸®Æ¼
+// - RectTransform(¹è°æ UI) Èçµé±â
+// - Transform(Ä«¸Þ¶ó/¿ùµå ¿ÀºêÁ§Æ®) Èçµé±â
+// Áßº¹ È£Ãâ ½Ã ÀÌÀü Æ®À©À» ¾ÈÀüÇÏ°Ô Á¾·áÇÏ°í Àç½ÃÀÛÇÑ´Ù.
 
 using UnityEngine;
 using DG.Tweening;
 
 public class ScreenShake : MonoBehaviour
 {
-    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
-    [Tooltip("UI ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ RectTransformï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [Header("Èçµé ´ë»ó (µÑ Áß ÇÏ³ª¸¸ ¼¼ÆÃ)")]
+    [Tooltip("UI ¹è°æÃ³·³ RectTransformÀ» Èçµé°í ½ÍÀ» ¶§ ÁöÁ¤")]
     public RectTransform uiTarget;
 
-    [Tooltip("Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ GameObject(Ä«ï¿½Þ¶ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    [Tooltip("Ä«¸Þ¶ó³ª ºó GameObject(Ä«¸Þ¶óÀÇ ºÎ¸ð)¸¦ Èçµé°í ½ÍÀ» ¶§ ÁöÁ¤")]
     public Transform worldTarget;
 
-    [Header("ï¿½âº» ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½")]
-    [Tooltip("ï¿½ï¿½é¸®ï¿½ï¿½ ï¿½Ã°ï¿½(ï¿½ï¿½)")]
+    [Header("±âº» ÆÄ¶ó¹ÌÅÍ")]
+    [Tooltip("Èçµé¸®´Â ½Ã°£(ÃÊ)")]
     public float defaultDuration = 0.2f;
 
-    [Tooltip("ï¿½ï¿½é¸² ï¿½ï¿½ï¿½ï¿½ (UI: anchoredPosition ï¿½È¼ï¿½ ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)")]
+    [Tooltip("Èçµé¸² °­µµ (UI: anchoredPosition ÇÈ¼¿ ´ÜÀ§ / ¿ùµå: À¯´Ö ´ÜÀ§)")]
     public float defaultStrength = 20f;
 
-    [Tooltip("ï¿½ï¿½ï¿½ï¿½ È½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¸ï¿½)")]
+    [Tooltip("Áøµ¿ È½¼ö(°ªÀÌ ³ôÀ»¼ö·Ï ÃÎÃÎÈ÷ ÅÐ¸²)")]
     public int defaultVibrato = 30;
 
-    [Tooltip("ï¿½ï¿½é¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (0~180)")]
+    [Tooltip("Èçµé¸®´Â ¹æÇâÀÇ ¹«ÀÛÀ§¼º (0~180)")]
     [Range(0f, 180f)] public float defaultRandomness = 90f;
 
-    [Tooltip("Time.timeScale ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½Ãµ)")]
+    [Tooltip("Time.timeScale ¹«½Ã ¿©ºÎ (¿¬ÃâÀº º¸Åë true ÃßÃµ)")]
     public bool ignoreTimeScale = true;
 
-    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    // ³»ºÎ »óÅÂ
     private Tweener _activeTweener;
     private Vector3 _uiOriginalAnchoredPos;
     private Vector3 _worldOriginalLocalPos;
 
     void Awake()
     {
-        // ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        // ¿øÀ§Ä¡ ÀúÀå (¾À ½ÃÀÛ ½ÃÁ¡ ±âÁØ)
         if (uiTarget != null)
             _uiOriginalAnchoredPos = uiTarget.anchoredPosition;
 
@@ -48,44 +48,44 @@ public class ScreenShake : MonoBehaviour
     }
 
     /// <summary>
-    /// ï¿½âº» ï¿½Ä¶ï¿½ï¿½ï¿½Í·ï¿½ ï¿½ï¿½ï¿½ï¿½
+    /// ±âº» ÆÄ¶ó¹ÌÅÍ·Î Èçµé±â
     /// </summary>
     public void Shake() => Shake(defaultDuration, defaultStrength, defaultVibrato, defaultRandomness);
 
     /// <summary>
-    /// Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í·ï¿½ ï¿½ï¿½ï¿½ï¿½
+    /// Ä¿½ºÅÒ ÆÄ¶ó¹ÌÅÍ·Î Èçµé±â
     /// </summary>
     public void Shake(float duration, float strength, int vibrato = 30, float randomness = 90f)
     {
-        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+        // ÁøÇà ÁßÀÎ Æ®À© Á¾·á ¹× ¿øÀ§Ä¡ º¸Á¤
         KillActiveTweenerAndRestore();
 
         if (uiTarget != null)
         {
-            // UIï¿½ï¿½ ï¿½ï¿½ï¿½: anchoredPositionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (RectTransform ï¿½ï¿½ï¿½ï¿½)
-            // DOShakeAnchorPos : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½È¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+            // UIÀÎ °æ¿ì: anchoredPositionÀ» Èçµç´Ù (RectTransform Àü¿ë)
+            // DOShakeAnchorPos : Á÷°üÀû, ÇÈ¼¿ ´ÜÀ§
             _activeTweener = uiTarget.DOShakeAnchorPos(duration, strength, vibrato, randomness, true, true)
-                .SetUpdate(ignoreTimeScale) // Å¸ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ãµ)
+                .SetUpdate(ignoreTimeScale) // Å¸ÀÓ½ºÄÉÀÏ ¹«½Ã(¿¬Ãâ¿ë ÃßÃµ)
                 .OnComplete(() => uiTarget.anchoredPosition = _uiOriginalAnchoredPos);
         }
         else if (worldTarget != null)
         {
-            // ï¿½ï¿½ï¿½ï¿½/Ä«ï¿½Þ¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: localPosition ï¿½ï¿½ï¿½ï¿½
-            // DOShakePosition ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½Ò°ï¿½ -> DoLocalMoveï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
-            // DOTweenï¿½ï¿½ DOShakePosition(transform) ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½.
-            // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Æ®(ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ãµ. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã³ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½(Post)ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½.
+            // ¿ùµå/Ä«¸Þ¶óÀÎ °æ¿ì: localPosition Èçµé±â
+            // DOShakePosition Àº ¿ùµå/·ÎÄÃ ÀüÈ¯ ºÒ°¡ -> DoLocalMove¸¦ ÀÌ¿ëÇÑ ÇÁ¸®¼Â ´ë½Å
+            // DOTweenÀÇ DOShakePosition(transform) ¿À¹ö·Îµå´Â ¿ùµå ÁÂÇ¥ ±â¹Ý.
+            // Ä«¸Þ¶ó ·çÆ®(ºó ¿ÀºêÁ§Æ®)¸¦ Èçµå´Â °É ÃßÃµ. Á÷Á¢ Èçµé¸é ÈÄÃ³¸® Ä«¸Þ¶ó(Post)¿Í Ãæµ¹ ÀûÀ½.
             _activeTweener = worldTarget.DOShakePosition(duration, strength, vibrato, randomness, false, true)
                 .SetUpdate(ignoreTimeScale)
                 .OnComplete(() => worldTarget.localPosition = _worldOriginalLocalPos);
         }
         else
         {
-            Debug.LogWarning("[ScreenShake] uiTarget/worldTarget ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
+            Debug.LogWarning("[ScreenShake] uiTarget/worldTarget µÑ ´Ù ºñ¾îÀÖÀ½. ¾Æ¹«°Íµµ Èçµé ¼ö ¾øÀ½.");
         }
     }
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½Ï°ï¿½(ï¿½Ç°ï¿½/Å©ï¿½ï¿½ ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    /// °­ÇÏ°Ô(ÇÇ°Ý/Å©¸® µî) Èçµé±â ¿¹½Ã ÇÁ¸®¼Â
     /// </summary>
     public void ShakeHard()
     {
@@ -93,7 +93,7 @@ public class ScreenShake : MonoBehaviour
     }
 
     /// <summary>
-    /// Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
+    /// Æ®À© Á¤¸® + ¿øÀ§Ä¡ º¹±¸
     /// </summary>
     private void KillActiveTweenerAndRestore()
     {
@@ -108,7 +108,7 @@ public class ScreenShake : MonoBehaviour
     }
 
     /// <summary>
-    /// ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½óº¹±ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½)
+    /// ¿ÜºÎ¿¡¼­ ¾ÈÀüÇÏ°Ô ¿ø»óº¹±ÍÇÒ ¶§ È£Ãâ (¾À ÀüÈ¯ µî)
     /// </summary>
     public void Restore()
     {

@@ -26,23 +26,8 @@ public class GameFlowManager : MonoBehaviour
     void Start()
     {
         playerState = PlayerState.Instance;
-
-        if (mainStoryManager != null)
-            mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
-        else
-            Debug.LogWarning("[GameFlowManager] mainStoryManager is not assigned in Inspector.");
-
-        if (randomEventManager != null)
-            randomEventManager.OnBattleJoin += HandleEventBattleJoin;
-        else
-            Debug.LogWarning("[GameFlowManager] randomEventManager is not assigned in Inspector.");
-
-        if (playerState == null)
-        {
-            Debug.LogError("[GameFlowManager] PlayerState.Instance is null. GameFlow may not function correctly.");
-            return;
-        }
-
+        mainStoryManager.OnBattleJoin += HandleStoryBattleJoin;
+        randomEventManager.OnBattleJoin += HandleEventBattleJoin;
         if (playerState.CurrentChapterIndex == 0)
         {
             playerState.CurrentChapterIndex++; // 챕터 증가
