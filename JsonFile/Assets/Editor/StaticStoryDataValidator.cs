@@ -7,37 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
-
-// ======= 네 프로젝트 데이터 구조 "필요한 필드만" 미니 정의 =======
-// (기존 코드/클래스명은 손대지 않기 위해 동일한 이름의 얕은 구조체로 파싱)
-[Serializable]
-public class Story_Master_Main
-{
-    public int Chapter_Index;
-    public int Event_Index;
-    public int Script_Index;
-    public string Scene_Code;
-    public string Script_Text;
-    public string Next_Scene;
-    // Choice1/2/3 등은 여기 검증엔 불필요해서 생략
-}
-
-[Serializable]
-public class Main_Script_Master_Main
-{
-    public string Script_Code;
-    public string KOR;
-    public string displayType;  // "TEXT", "MERCHANT", "BATTLE", "IMAGE", "CLAER"
-    public string StoryBreak;   // "Break"면 이벤트 종료 트리거
-    public string NEXTWIN;      // (전투용)
-    public string NEXTLOSE;     // (전투용)
-}
-
-// JsonUtility가 배열 루트 지원이 약해서 감싸는 래퍼
-[Serializable]
-public class Wrapper<T> { public List<T> items; }
 
 public static class StaticStoryDataValidator
 {
@@ -178,30 +151,35 @@ public static class StaticStoryDataValidator
         static string Safe(string s) => (s ?? "").Replace(",", " ");
     }
 
-    // Story/Script JSON 파일을 Wrapper<T> or 배열 그대로 두 가지 포맷 모두 지원
+    // Story/Script JSON 파일을 명명된 루트, Wrapper<T>, 배열 루트 포맷으로 지원
     static bool TryLoadList<T>(string path, out List<T> list)
     {
         list = null;
         try
         {
             string json = File.ReadAllText(path, Encoding.UTF8).Trim();
+            JToken root = JToken.Parse(json);
+            JToken arrayToken = null;
 
-            // 1) Wrapper 포맷 시도: { "items": [ ... ] }
-            try
+            if (root is JArray)
             {
-                var w = JsonUtility.FromJson<Wrapper<T>>(json);
-                if (w != null && w.items != null && w.items.Count > 0)
-                {
-                    list = w.items;
-                    return true;
-                }
+                arrayToken = root;
             }
-            catch { /* 다음 포맷 시도 */ }
+            else if (root is JObject obj)
+            {
+                arrayToken = obj[typeof(T).Name] ?? obj["items"];
+            }
 
-            // 2) 순수 배열 포맷 시도: [ ... ]
-            // JsonUtility는 배열 루트 직파싱이 안 되므로 Tuple-Wrapper 꼼수
-            json = "{\"items\":" + json + "}";
-            var w2 = JsonUtility.FromJson<Wrapper<T>>(json);
+            if (arrayToken == null || arrayToken.Type != JTokenType.Array)
+            {
+                Debug.LogError($"[StaticValidator] {typeof(T).Name} 배열 루트를 찾지 못했습니다: {path}");
+                list = new List<T>();
+                return false;
+            }
+
+            // JsonUtility는 배열 루트 직파싱이 안 되므로 프로젝트 공용 Wrapper<T>로 감싼다.
+            string wrappedJson = "{\"items\":" + arrayToken.ToString(Formatting.None) + "}";
+            var w2 = JsonUtility.FromJson<Wrapper<T>>(wrappedJson);
             list = w2?.items ?? new List<T>();
             return true;
         }

@@ -2,7 +2,6 @@
 using System.Linq;
 using MyGame;
 using UnityEngine.UI;
-using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Collections;  // Character, OptionContext 등이 있는 네임스페이스
@@ -339,5 +338,4 @@ public class EquipmentSystem : MonoBehaviour
         }
     }
 }
-
 

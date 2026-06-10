@@ -161,7 +161,7 @@ public class CombatTest : MonoBehaviour
 
         if (playerState.CurrentHealth <= 0 || playerState.CurrentMental <= 0)
         {
-            SceneManager.LoadScene("GameOverScene");
+            SceneManager.LoadScene("GameEndingScene");
             return;
         }
 
