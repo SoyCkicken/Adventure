@@ -10297,8 +10297,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combatTest: {fileID: 1515041320}
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+  bossPartCombatManager: {fileID: 163893750}
+>>>>>>> parent of 6ee094e ( 집중 전투 제거)
 =======
   bossPartCombatManager: {fileID: 163893750}
 >>>>>>> parent of 6ee094e ( 집중 전투 제거)
@@ -10378,7 +10382,10 @@ CanvasRenderer:
   m_GameObject: {fileID: 1018794061}
   m_CullTransparentMesh: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of 6ee094e ( 집중 전투 제거)
 =======
 >>>>>>> parent of 6ee094e ( 집중 전투 제거)
 --- !u!1 &1021419805
@@ -21839,11 +21846,15 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   m_AnchoredPosition: {x: 0, y: 0.00064844405}
 =======
   m_AnchoredPosition: {x: 0, y: 0.00039823772}
 >>>>>>> Stashed changes
+=======
+  m_AnchoredPosition: {x: 0, y: 0.000015393898}
+>>>>>>> parent of 6ee094e ( 집중 전투 제거)
 =======
   m_AnchoredPosition: {x: 0, y: 0.000015393898}
 >>>>>>> parent of 6ee094e ( 집중 전투 제거)
