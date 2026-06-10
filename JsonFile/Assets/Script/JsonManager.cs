@@ -70,12 +70,14 @@ public class JsonManager : MonoBehaviour
 
         foreach (TextAsset jsonFile in jsonFiles)
         {
-            if (jsonFile != null)
-            {
-                string fileName = jsonFile.name;
-                Debug.Log(fileName);
-                string jsonContent = jsonFile.text;
+            if (jsonFile == null) continue;
 
+            string fileName = jsonFile.name;
+            Debug.Log($"[JsonManager] 로드 시도: {fileName}");
+            string jsonContent = jsonFile.text;
+
+            try
+            {
                 // 파일명 기준으로 어떤 데이터인지 구분
                 //메인 스토리
                 if (fileName.Contains("Story_Master_Main"))
@@ -451,7 +453,12 @@ public class JsonManager : MonoBehaviour
                     Debug.LogWarning($"[JsonManager] {fileName}.json 은 인식되지 않는 형식입니다.");
                 }
             }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[JsonManager] {fileName}.json 파싱 중 오류: {ex.Message}");
 
+
+            }
         }
 
     }
