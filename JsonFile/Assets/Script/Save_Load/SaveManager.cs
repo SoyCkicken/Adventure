@@ -519,7 +519,33 @@ public class SaveManager : MonoBehaviour
     private string currentGameVersion;
 
     // ====== Save Path / Pending Data ======
-    public static string SavePath => Application.persistentDataPath + "/save.json";
+#if UNITY_EDITOR
+    private static string savePathOverride;
+#endif
+
+    public static string SavePath
+    {
+        get
+        {
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(savePathOverride))
+                return savePathOverride;
+#endif
+            return Application.persistentDataPath + "/save.json";
+        }
+    }
+
+#if UNITY_EDITOR
+    public static void SetSavePathForTesting(string path)
+    {
+        savePathOverride = path;
+    }
+
+    public static void ClearSavePathForTesting()
+    {
+        savePathOverride = null;
+    }
+#endif
     public static SaveData pendingLoadData;
 
     private void Awake()
@@ -1161,3 +1187,4 @@ public class SaveManager : MonoBehaviour
         public List<ItemData> inventoryItems = new();
     }
 }
+

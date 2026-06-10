@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -54,7 +54,11 @@ public static class ChoiceEvaluator
     /// </summary>
     public static bool EvaluateSuccess(float rate01)
     {
-        return UnityEngine.Random.value < Mathf.Clamp01(rate01);
+        float clampedRate = Mathf.Clamp01(rate01);
+        if (clampedRate <= 0f) return false;
+        if (clampedRate >= 1f) return true;
+
+        return UnityEngine.Random.value < clampedRate;
     }
 
     /// <summary>
@@ -87,4 +91,5 @@ public class ChoiceResult
     public bool IsSuccess;     // 성공 여부
     public string NextCode;    // 이동할 스크립트 코드
 }
+
 
