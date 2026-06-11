@@ -48,6 +48,10 @@ public class JsonManager : MonoBehaviour
     private Dictionary<string, List<Armor_Master>> ArmorMasterDict = new Dictionary<string, List<Armor_Master>>();
     private Dictionary<string, List<Item_Master>> ItemMasterDict = new Dictionary<string, List<Item_Master>>();
     private Dictionary<string, List<Option_Master>> Option_MasterDict = new Dictionary<string, List<Option_Master>>();
+    private readonly Dictionary<string, Weapon_Master> weaponById = new Dictionary<string, Weapon_Master>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Armor_Master> armorById = new Dictionary<string, Armor_Master>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Item_Master> itemById = new Dictionary<string, Item_Master>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Option_Master> optionById = new Dictionary<string, Option_Master>(StringComparer.OrdinalIgnoreCase);
 
     //적
     private Dictionary<string, List<Mon_Master>> Mon_MasterDict = new Dictionary<string, List<Mon_Master>>();
@@ -465,6 +469,40 @@ public class JsonManager : MonoBehaviour
             }
         }
 
+        RebuildItemLookupIndexes();
+
+    }
+
+    private void RebuildItemLookupIndexes()
+    {
+        weaponById.Clear();
+        armorById.Clear();
+        itemById.Clear();
+        optionById.Clear();
+
+        foreach (var weapon in WeaponMasterDict.Values.SelectMany(list => list))
+        {
+            if (!string.IsNullOrEmpty(weapon?.Weapon_ID))
+                weaponById[weapon.Weapon_ID] = weapon;
+        }
+
+        foreach (var armor in ArmorMasterDict.Values.SelectMany(list => list))
+        {
+            if (!string.IsNullOrEmpty(armor?.Armor_ID))
+                armorById[armor.Armor_ID] = armor;
+        }
+
+        foreach (var item in ItemMasterDict.Values.SelectMany(list => list))
+        {
+            if (!string.IsNullOrEmpty(item?.Item_ID))
+                itemById[item.Item_ID] = item;
+        }
+
+        foreach (var option in Option_MasterDict.Values.SelectMany(list => list))
+        {
+            if (!string.IsNullOrEmpty(option?.Option_ID))
+                optionById[option.Option_ID] = option;
+        }
     }
 
     // JSON 배열을 JsonUtility 파싱용 객체로 감싸주는 함수
@@ -556,12 +594,7 @@ public class JsonManager : MonoBehaviour
             return null;
         }
 
-        return new ItemData
-        {
-            Item_ID = item.Item_ID,
-            Item_Name = item.Item_NAME,
-            Item_Type = item.ItemType
-        };
+        return ItemDataFactory.FromItem(item);
     }
 
     private static string WrapJsonArray(JArray jsonArray, Dictionary<string, string> fieldAliases = null)
@@ -716,6 +749,17 @@ public class JsonManager : MonoBehaviour
         return new List<Weapon_Master>(); // ⬅︎ 빈 리스트
     }
 
+    public Weapon_Master GetWeaponById(string weaponId)
+    {
+        if (string.IsNullOrEmpty(weaponId)) return null;
+        if (weaponById.TryGetValue(weaponId, out var weapon)) return weapon;
+
+        weapon = WeaponMasterDict.Values.SelectMany(list => list)
+            .FirstOrDefault(item => string.Equals(item?.Weapon_ID, weaponId, StringComparison.OrdinalIgnoreCase));
+        if (weapon != null) weaponById[weapon.Weapon_ID] = weapon;
+        return weapon;
+    }
+
     public List<Armor_Master> GetArmorMasters(string fileName)
     {
         if (ArmorMasterDict.TryGetValue(fileName, out var list))
@@ -724,12 +768,34 @@ public class JsonManager : MonoBehaviour
         return new List<Armor_Master>(); // ⬅︎ 빈 리스트
     }
 
+    public Armor_Master GetArmorById(string armorId)
+    {
+        if (string.IsNullOrEmpty(armorId)) return null;
+        if (armorById.TryGetValue(armorId, out var armor)) return armor;
+
+        armor = ArmorMasterDict.Values.SelectMany(list => list)
+            .FirstOrDefault(item => string.Equals(item?.Armor_ID, armorId, StringComparison.OrdinalIgnoreCase));
+        if (armor != null) armorById[armor.Armor_ID] = armor;
+        return armor;
+    }
+
     public List<Item_Master> GetItemMasters(string fileName)
     {
         if (ItemMasterDict.TryGetValue(fileName, out List<Item_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Item_Master 데이터가 없습니다.");
         return null;
+    }
+
+    public Item_Master GetItemMasterById(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId)) return null;
+        if (itemById.TryGetValue(itemId, out var item)) return item;
+
+        item = ItemMasterDict.Values.SelectMany(list => list)
+            .FirstOrDefault(entry => string.Equals(entry?.Item_ID, itemId, StringComparison.OrdinalIgnoreCase));
+        if (item != null) itemById[item.Item_ID] = item;
+        return item;
     }
     public List<ItemData> GetItemDataList(string fileKey)
     {
@@ -742,22 +808,7 @@ public class JsonManager : MonoBehaviour
         List<ItemData> list = new();
         foreach (var m in itemMasters)
         {
-            list.Add(new ItemData
-            {
-                Item_ID = m.Item_ID,
-                Item_Name = m.Item_NAME,
-                Item_Type = m.ItemType,
-                Item_Price = m.Item_Price,
-                Description = m.Item_Description,
-
-                Option_1_ID = m.Item_Option1,
-                Option_Value1 = m.Option1_Value,
-                Option_2_ID = m.Item_Option2,
-                Option_Value2 = m.Option2_Value,
-
-                Heal_Value = 0,
-                Mental_Heal_Value = 0
-            });
+            list.Add(ItemDataFactory.FromItem(m));
         }
 
         return list;
@@ -768,6 +819,17 @@ public class JsonManager : MonoBehaviour
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Option_Master 데이터가 없습니다.");
         return null;
+    }
+
+    public Option_Master GetOptionById(string optionId)
+    {
+        if (string.IsNullOrEmpty(optionId) || optionId == "null") return null;
+        if (optionById.TryGetValue(optionId, out var option)) return option;
+
+        option = Option_MasterDict.Values.SelectMany(list => list)
+            .FirstOrDefault(entry => string.Equals(entry?.Option_ID, optionId, StringComparison.OrdinalIgnoreCase));
+        if (option != null) optionById[option.Option_ID] = option;
+        return option;
     }
     //몬스터
     public List<Mon_Master> GetMonMasters(string fileName)
@@ -876,40 +938,7 @@ public class JsonManager : MonoBehaviour
     public ItemData GetItemDataFromCode(string code)
     {
         if (string.IsNullOrEmpty(code)) return null;
-
-        if (code.StartsWith("Weapon_"))
-        {
-            var weapon = GetWeaponMasters("Weapon_Master").FirstOrDefault(w => w.Weapon_ID == code);
-            if (weapon != null)
-            {
-                return new ItemData
-                {
-                    Item_ID = weapon.Weapon_ID,
-                    Item_Name = weapon.Weapon_Name,
-                    Item_Type = weapon.ItemType
-                };
-            }
-        }
-        else if (code.StartsWith("Armor_"))
-        {
-            var armor = GetArmorMasters("Armor_Master").FirstOrDefault(a => a.Armor_ID == code);
-            if (armor != null)
-            {
-                return new ItemData
-                {
-                    Item_ID = armor.Armor_ID,
-                    Item_Name = armor.Armor_NAME,
-                    Item_Type = armor.ItemType
-                };
-            }
-        }
-        else if (code.StartsWith("Item_"))
-        {
-            return FindItemDataByCode(GetItemMasters("Item_Master"), code);
-        }
-
-        // 기타 타입 확장 가능
-        return null;
+        return ItemDataFactory.FromCode(this, code);
     }
 
 }

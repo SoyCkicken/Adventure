@@ -766,6 +766,7 @@ namespace MyGame
 
                 // UI 동기화 + 틱 루틴 보장
                 RefreshBuffUI();
+                StartBuffRoutineSafe();
 
                 // 디버깅: 이 캐릭터의 GM 주입 여부를 확인
                 Debug.Log($"[Buff] Add: {key} ({buff.OptionID}) on {charaterName}, GM={gameFlowManager != null}");
@@ -779,15 +780,24 @@ namespace MyGame
             switch (buff.OptionID)
             {
                 case "Option_003": // 화상 즉시 2%(Tick은 별도 루틴에서 1초마다 반복)
-                    int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-                    buff.Target.Health -= dmg;
-                    Debug.Log($"[화상 즉시] {buff.Target.charaterName} -{dmg}");
+                    Character burnTarget = GetBuffTarget(buff);
+                    if (burnTarget != null)
+                    {
+                        int dmg = CalculatePeriodicAmount(burnTarget);
+                        Debug.Log($"화상 피해 입기 전 체력 : {burnTarget.Health}");
+                        burnTarget.Health -= dmg;
+                        Debug.Log($"[화상 즉시] {burnTarget.charaterName} -{dmg} , 현재 체력 : {burnTarget.Health}");
+                    }
                     break;
 
                 case "Option_004": // 회복 즉시 2%
-                    int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-                    buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
-                    Debug.Log($"[회복 즉시] {buff.Target.charaterName} +{heal}");
+                    Character healTarget = GetBuffTarget(buff);
+                    if (healTarget != null)
+                    {
+                        int heal = CalculatePeriodicAmount(healTarget);
+                        healTarget.Health = Mathf.Min(healTarget.MaxHealth, healTarget.Health + heal);
+                        Debug.Log($"[회복 즉시] {healTarget.charaterName} +{heal}");
+                    }
                     break;
             }
 
@@ -796,8 +806,19 @@ namespace MyGame
 
             // UI 동기화 + 틱 루틴 보장
             RefreshBuffUI();
+            StartBuffRoutineSafe();
 
             Debug.Log($"[Buff] Add: {key} ({buff.OptionID}) from {buff.SourceItemID}");
+        }
+
+        private void StartBuffRoutineSafe()
+        {
+            if (buffCoroutine != null) return;
+
+            if (gameObject != null && gameObject.activeInHierarchy && enabled)
+            {
+                buffCoroutine = StartCoroutine(BuffTickRoutine());
+            }
         }
         #endregion
 
@@ -820,55 +841,17 @@ namespace MyGame
 
             while (true)
             {
+                yield return wait;
+
                 // 전투가 아니라는 "명시적" 신호가 있을 때만 쉰다.
                 // GM이 null이면 전투 중으로 간주(= 루틴 지속)  ← A안 핵심
                 if (gameFlowManager != null &&
                     gameFlowManager.GetCurrentFlowState() != GameFlowManager.FlowState.Battle)
                 {
-                    yield return wait;
                     continue;
                 }
 
-                var expired = new List<string>();
-
-                foreach (var kv in activeBuffs)
-                {
-                    var buff = kv.Value;
-
-                    // 패시브인데 현재도 장착 유지면 시간 고정(무한 지속)
-                    if (IsStillEquipped(buff))
-                    {
-                        buff.Elapsed = 0f;
-                        continue;
-                    }
-
-                    // 1초 경과
-                    buff.Elapsed += 1f;
-
-                    // 1초 Tick 효과(지속 피해/지속 회복 등)
-                    switch (buff.OptionID)
-                    {
-                        case "Option_003": // 화상 Tick
-                            int dmg = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-                            buff.Target.Health -= dmg;
-                            Debug.Log($"[화상 Tick] {buff.Target.charaterName} -{dmg}");
-                            break;
-
-                        case "Option_004": // 회복 Tick
-                            int heal = Mathf.FloorToInt(buff.Target.MaxHealth * 0.02f);
-                            buff.Target.Health = Mathf.Min(buff.Target.MaxHealth, buff.Target.Health + heal);
-                            Debug.Log($"[회복 Tick] {buff.Target.charaterName} +{heal}");
-                            break;
-                    }
-
-                    // 만료 체크(0 이하 = 영구/패시브)
-                    if (buff.Duration > 0 && buff.Elapsed >= buff.Duration)
-                        expired.Add(kv.Key);
-                }
-
-                // 만료 반영(주의: Remove 내부에서 UI를 직접 지우지 않고 Refresh로 동기화)
-                foreach (var key in expired)
-                    RemoveBuff(key);
+                TickActiveBuffs(1f);
 
                 // 더 이상 버프가 없으면 루틴 종료(다음 AddBuff 시 재시작)
                 if (activeBuffs.Count == 0)
@@ -876,11 +859,69 @@ namespace MyGame
                     buffCoroutine = null;
                     yield break;
                 }
-
-                // UI 갱신
-                battleUI?.UpdateUI();
-                yield return wait;
             }
+        }
+
+        private void TickActiveBuffs(float elapsedSeconds)
+        {
+            var expired = new List<string>();
+
+            foreach (var kv in activeBuffs.ToList())
+            {
+                if (!activeBuffs.TryGetValue(kv.Key, out var buff))
+                    continue;
+
+                // 패시브인데 현재도 장착 유지면 시간 고정(무한 지속)
+                if (IsStillEquipped(buff))
+                {
+                    buff.Elapsed = 0f;
+                    continue;
+                }
+
+                buff.Elapsed += elapsedSeconds;
+                ApplyPeriodicTick(buff);
+
+                // 만료 체크(0 이하 = 영구/패시브)
+                if (buff.Duration > 0 && buff.Elapsed >= buff.Duration)
+                    expired.Add(kv.Key);
+            }
+
+            foreach (var key in expired)
+                RemoveBuffByKey(key);
+
+            battleUI?.UpdateUI();
+            RefreshBuffUI();
+        }
+
+        private void ApplyPeriodicTick(BuffData buff)
+        {
+            Character target = GetBuffTarget(buff);
+            if (target == null) return;
+
+            switch (buff.OptionID)
+            {
+                case "Option_003": // 화상 Tick
+                    int dmg = CalculatePeriodicAmount(target);
+                    target.Health -= dmg;
+                    Debug.Log($"[화상 Tick] {target.charaterName} -{dmg}");
+                    break;
+
+                case "Option_004": // 회복 Tick
+                    int heal = CalculatePeriodicAmount(target);
+                    target.Health = Mathf.Min(target.MaxHealth, target.Health + heal);
+                    Debug.Log($"[회복 Tick] {target.charaterName} +{heal}");
+                    break;
+            }
+        }
+
+        private Character GetBuffTarget(BuffData buff)
+        {
+            return buff.Target != null ? buff.Target : this;
+        }
+
+        private static int CalculatePeriodicAmount(Character target)
+        {
+            return Mathf.FloorToInt(target.MaxHealth * 0.02f);
         }
         #endregion
 
@@ -1030,7 +1071,7 @@ namespace MyGame
 
             foreach (var key in toRemove)
             {
-                RemoveBuff(key);
+                RemoveBuffByKey(key);
                 Debug.Log($"[전투 종료] 일시적 버프 제거됨: {key}");
             }
         }
@@ -1055,9 +1096,9 @@ namespace MyGame
         private void OnEnable()
         {
             // 재활성화 시: 전투 중이고 버프가 남아 있다면 틱 루틴 재시작
-            if (activeBuffs.Count > 0 && gameFlowManager != null &&
-                gameFlowManager.GetCurrentFlowState() == GameFlowManager.FlowState.Battle)
+            if (activeBuffs.Count > 0)
             {
+                StartBuffRoutineSafe();
             }
         }
         #endregion

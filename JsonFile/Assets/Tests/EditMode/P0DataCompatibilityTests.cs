@@ -100,6 +100,37 @@ public class P0DataCompatibilityTests
     }
 
     [Test]
+    public void JsonManagerIndexesItemMastersById()
+    {
+        ResetRuntimeSingleton("JsonManager", "Instance");
+        Component jsonManager = CreateComponent("JsonManager");
+
+        TextAsset weaponAsset = Resources.Load<TextAsset>("Events/Weapon_Master");
+        object weapons = ParseWeaponMasters(weaponAsset.text);
+        AddToPrivateDictionary(jsonManager, "WeaponMasterDict", "Weapon_Master", weapons);
+
+        Type optionType = GetRuntimeType("Option_Master");
+        object optionMaster = System.Activator.CreateInstance(optionType);
+        SetField(optionMaster, "Option_ID", "Option_003");
+        SetField(optionMaster, "Effect_ID", "Effect_003");
+        AddToPrivateDictionary(jsonManager, "Option_MasterDict", "Option_Master", CreateTypedList("Option_Master", optionMaster));
+
+        object weapon = InvokeInstance(jsonManager, "GetWeaponById", "Weapon_013");
+        Assert.That(weapon, Is.Not.Null);
+        Assert.That(GetField<string>(weapon, "Option_1_ID"), Is.EqualTo("Option_003"));
+
+        object option = InvokeInstance(jsonManager, "GetOptionById", "Option_003");
+        Assert.That(option, Is.Not.Null);
+        Assert.That(GetField<string>(option, "Effect_ID"), Is.EqualTo("Effect_003"));
+
+        object itemData = InvokeInstance(jsonManager, "GetItemDataFromCode", "Weapon_013");
+        Assert.That(itemData, Is.Not.Null);
+        Assert.That(GetField<string>(itemData, "Item_ID"), Is.EqualTo("Weapon_013"));
+        Assert.That(GetField<string>(itemData, "Option_1_ID"), Is.EqualTo("Option_003"));
+        Assert.That(GetField<int>(itemData, "Option_Value1"), Is.EqualTo(5));
+    }
+
+    [Test]
     public void StoryNavigatorNormalizesMainScriptChoiceCodes()
     {
         object normalized = InvokeStatic("StoryNodeNavigator", "NormalizeToSceneCode", "MainScript_1_2_3");
@@ -167,6 +198,28 @@ public class P0DataCompatibilityTests
         Assert.That(CountEnumerable(failReasons), Is.GreaterThan(0));
     }
 
+    [Test]
+    public void PeriodicBuffTicksApplyBurnAndHealingAfterInitialEffect()
+    {
+        Component burnTarget = CreateCharacter("Burn Target", maxHealth: 100, health: 100);
+        object burn = CreateBuffData("test_burn", "Option_003", burnTarget, duration: 5f);
+
+        InvokeInstance(burnTarget, "AddBuff", burn);
+        Assert.That(GetField<int>(burnTarget, "Health"), Is.EqualTo(98), "Burn should apply once immediately.");
+
+        InvokePrivateInstance(burnTarget, "TickActiveBuffs", 1f);
+        Assert.That(GetField<int>(burnTarget, "Health"), Is.EqualTo(96), "Burn should apply again on the next tick.");
+
+        Component healTarget = CreateCharacter("Heal Target", maxHealth: 100, health: 80);
+        object heal = CreateBuffData("test_heal", "Option_004", healTarget, duration: 5f);
+
+        InvokeInstance(healTarget, "AddBuff", heal);
+        Assert.That(GetField<int>(healTarget, "Health"), Is.EqualTo(82), "Healing should apply once immediately.");
+
+        InvokePrivateInstance(healTarget, "TickActiveBuffs", 1f);
+        Assert.That(GetField<int>(healTarget, "Health"), Is.EqualTo(84), "Healing should apply again on the next tick.");
+    }
+
     [TearDown]
     public void TearDown()
     {
@@ -185,6 +238,32 @@ public class P0DataCompatibilityTests
     {
         var go = new GameObject($"P0 Test {typeName}");
         return go.AddComponent(GetRuntimeType(typeName));
+    }
+
+    private static Component CreateCharacter(string name, int maxHealth, int health)
+    {
+        Component character = CreateComponent("Character");
+        character.gameObject.name = $"P0 Test {name}";
+        SetField(character, "charaterName", name);
+        SetField(character, "MaxHealth", maxHealth);
+        SetField(character, "Health", health);
+        return character;
+    }
+
+    private static object CreateBuffData(string buffId, string optionId, Component target, float duration)
+    {
+        Type buffType = GetRuntimeType("BuffData");
+        object buff = System.Activator.CreateInstance(buffType);
+        SetField(buff, "BuffID", buffId);
+        SetField(buff, "OptionID", optionId);
+        SetField(buff, "Value", 0);
+        SetField(buff, "Duration", duration);
+        SetField(buff, "Elapsed", 0f);
+        SetField(buff, "IsDebuff", optionId == "Option_003");
+        SetField(buff, "IsPassive", false);
+        SetField(buff, "Target", target);
+        SetField(buff, "SourceItemID", "test_item");
+        return buff;
     }
 
     private static object ParseWeaponMasters(string jsonContent)
@@ -319,6 +398,26 @@ public class P0DataCompatibilityTests
         return method.Invoke(null, args);
     }
 
+    private static object InvokeInstance(object target, string methodName, params object[] args)
+    {
+        MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        return method.Invoke(target, args);
+    }
+
+    private static object InvokePrivateInstance(object target, string methodName, params object[] args)
+    {
+        MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.That(method, Is.Not.Null, methodName);
+        return method.Invoke(target, args);
+    }
+
+    private static void AddToPrivateDictionary(object target, string fieldName, string key, object value)
+    {
+        FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+        object dictionary = field.GetValue(target);
+        dictionary.GetType().GetMethod("Add").Invoke(dictionary, new[] { key, value });
+    }
+
     private static void ResetRuntimeSingleton(string typeName, string propertyName)
     {
         Type type = GetRuntimeType(typeName);
@@ -328,9 +427,13 @@ public class P0DataCompatibilityTests
 
     private static Type GetRuntimeType(string typeName)
     {
+        string[] candidates = typeName.Contains(".")
+            ? new[] { typeName }
+            : new[] { typeName, $"MyGame.{typeName}" };
+
         Type type = System.AppDomain.CurrentDomain
             .GetAssemblies()
-            .Select(assembly => assembly.GetType(typeName))
+            .SelectMany(assembly => candidates.Select(assembly.GetType))
             .FirstOrDefault(candidate => candidate != null);
 
         if (type == null)

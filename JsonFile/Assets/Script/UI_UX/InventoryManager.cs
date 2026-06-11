@@ -178,178 +178,93 @@ public class InventoryManager : MonoBehaviour
     }
     void ShowItemDetail(ItemData item)
     {
-        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-        var itemMasters = jsonManager.GetItemMasters("Item_Master");
-        
         selectedItem = item;
+        ItemDataFactory.ApplyMasterData(selectedItem, jsonManager);
         itemDetailPanel.SetActive(true);
 
-        if (item.Item_Type == "Weapon")
-        {
-            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
-            itemNameText.text = weapon?.Weapon_Name;
-            itemDescText.text = weapon?.Description;
-            itemTypeText.text = "무기";
-            if (!string.IsNullOrEmpty(item.Item_Name))
-            {
-                Debug.Log(item.Item_Name);
-                if (item_Icon == null)
-                {
-                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
-                    return;
-                }
-                Sprite s = spriteBank.Load(item.Item_Name);
-                if (s != null)
-                {
-                    item_Icon.sprite = s;
-                }
-            }
-            else
-            {
-                Sprite s = spriteBank.Load("UI_InventorySlot 1");
-                item_Icon.sprite = s;
-            }
-        }
-        else if (item.Item_Type == "Armor")
-        {
-            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
-            itemNameText.text = armor?.Armor_NAME;
-            itemDescText.text = armor?.Description;
-            itemTypeText.text = "방어구";
-            if (!string.IsNullOrEmpty(item.Item_Name))
-            {
-                Debug.Log(item.Item_Name);
-                if (item_Icon == null)
-                {
-                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
-                    return;
-                }
-                Sprite s = spriteBank.Load(item.Item_Name);
-                if (s != null)
-                {
-                    item_Icon.sprite = s;
-                }
-            }
-            else
-            {
-                Sprite s = spriteBank.Load("UI_InventorySlot 1");
-                item_Icon.sprite = s;
-            }
-        }
-        else if (item.Item_Type == "Consumable")
-        {
-            var Consumptionitem = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
-            itemNameText.text = Consumptionitem.Item_NAME;
-            itemDescText.text = Consumptionitem.Item_Description;
-            itemTypeText.text = "소비";
-            if (!string.IsNullOrEmpty(item.Item_Name))
-            {
-                Debug.Log(item.Item_Name);
-                if (item_Icon == null)
-                {
-                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
-                    return;
-                }
-                Sprite s = spriteBank.Load(item.Item_Name);
-                if (s != null)
-                {
-                    item_Icon.sprite = s;
-                }
-            }
-            else
-            {
-                Sprite s = spriteBank.Load("UI_InventorySlot 1");
-                item_Icon.sprite = s;
-            }
-        }
-        else
-        {
-            var Normalitem = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
-            itemNameText.text = Normalitem?.Item_NAME;
-            itemDescText.text = Normalitem?.Item_Description;
-            itemTypeText.text = "일반";
-            if (!string.IsNullOrEmpty(item.Item_Name))
-            {
-                Debug.Log(item.Item_Name);
-                if (item_Icon == null)
-                {
-                    Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
-                    return;
-                }
-                Sprite s = spriteBank.Load(item.Item_Name);
-                if (s != null)
-                {
-                    item_Icon.sprite = s;
-                }
-            }
-            else
-            {
-                Sprite s = spriteBank.Load("UI_InventorySlot 1");
-                item_Icon.sprite = s;
-            }
-        }
+        itemNameText.text = string.IsNullOrEmpty(selectedItem.Item_Name) ? selectedItem.Item_ID : selectedItem.Item_Name;
+        itemDescText.text = selectedItem.Description;
+        itemTypeText.text = GetItemTypeLabel(selectedItem);
+        ApplyItemIcon(selectedItem);
 
-        itemStatText.text = GetStatText(item);
-        itemOptionText.text = GetOptionText(item);
+        itemStatText.text = GetStatText(selectedItem);
+        itemOptionText.text = GetOptionText(selectedItem);
 
         equipButton.gameObject.SetActive(false);
         unequipButton.gameObject.SetActive(false);
         useButton.gameObject.SetActive(false);
         removeButton.gameObject.SetActive(false);
-        
-        switch (item.Item_Type)
+
+        switch (selectedItem.Item_Type)
         {
             case "Weapon":
-                bool isWeaponEquipped = (weaponEquipSlot.CurrentItem == item);
+                bool isWeaponEquipped = IsSlotItem(weaponEquipSlot, selectedItem);
                 equipButton.gameObject.SetActive(!isWeaponEquipped);
                 unequipButton.gameObject.SetActive(isWeaponEquipped);
                 removeButton.gameObject.SetActive (!isWeaponEquipped);
-                var weapon_Master = weaponMasters.FirstOrDefault(i => i.Weapon_ID == selectedItem.Item_ID);
-                selectedItem.Option_1_ID = weapon_Master.Option_1_ID;
-                selectedItem.Option_Value1 = weapon_Master.Option_Value1;
-                selectedItem.Option_2_ID = weapon_Master.Option_2_ID;
-                selectedItem.Option_Value2 = weapon_Master.Option_Value1;
-                if(!string.IsNullOrEmpty(selectedItem.Option_1_ID))
-                Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
-                if(!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
+                LogItemOptions(selectedItem);
                 break;
 
             case "Armor":
-                bool isArmorEquipped = (armorEquipSlot.CurrentItem == item);
+                bool isArmorEquipped = IsSlotItem(armorEquipSlot, selectedItem);
                 equipButton.gameObject.SetActive(!isArmorEquipped);
                 unequipButton.gameObject.SetActive(isArmorEquipped);
                 removeButton.gameObject.SetActive(!isArmorEquipped);
-                var armor_Master = armorMasters.FirstOrDefault(i => i.Armor_ID == selectedItem.Item_ID);
-                selectedItem.Option_1_ID = armor_Master.Armor_Option1;
-                selectedItem.Option_Value1 = armor_Master.Option1_Value;
-                selectedItem.Option_2_ID = armor_Master.Armor_Option2;
-                selectedItem.Option_Value2 = armor_Master.Option2_Value;
-                if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
-                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
-                if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                    Debug.Log($"{selectedItem.Option_2_ID} : {selectedItem.Option_Value2}");
+                LogItemOptions(selectedItem);
                 break;
 
             case "Consumable":
                 useButton.gameObject.SetActive(true);
                 removeButton.gameObject.SetActive(true);
-                var item_Master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
-                //Debug.Log($"옵션 아이디 값 : {master.Item_Option1}");
-                selectedItem.Option_1_ID = item_Master.Item_Option1;
-                selectedItem.Option_Value1 = item_Master.Option1_Value;
-                selectedItem.Option_2_ID = item_Master.Item_Option2;
-                selectedItem.Option_Value2 = item_Master.Option2_Value;
-                if (!string.IsNullOrEmpty(selectedItem.Option_1_ID))
-                    Debug.Log($"{selectedItem.Option_1_ID} : {selectedItem.Option_Value1}");
-                if (!string.IsNullOrEmpty(selectedItem.Option_2_ID))
-                    Debug.Log($"{selectedItem.Option_2_ID}  :  {selectedItem.Option_Value2}");
+                LogItemOptions(selectedItem);
                 break;
             case "Item":
                 removeButton.gameObject.SetActive(true);
                 break;
         }
+    }
+
+    private bool IsSlotItem(ItemSlotUI slot, ItemData item)
+    {
+        return slot?.CurrentItem != null && item != null && slot.CurrentItem.Item_ID == item.Item_ID;
+    }
+
+    private string GetItemTypeLabel(ItemData item)
+    {
+        if (item == null) return "";
+        return item.Item_Type switch
+        {
+            "Weapon" => "무기",
+            "Armor" => "방어구",
+            "Consumable" => "소비",
+            "Item" => "일반",
+            _ => item.Item_Type
+        };
+    }
+
+    private void ApplyItemIcon(ItemData item)
+    {
+        if (item_Icon == null)
+        {
+            Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
+            return;
+        }
+
+        string spriteName = string.IsNullOrEmpty(item?.Item_Name) ? "UI_InventorySlot 1" : item.Item_Name;
+        Sprite sprite = spriteBank.Load(spriteName);
+        if (sprite != null)
+            item_Icon.sprite = sprite;
+    }
+
+    private void LogItemOptions(ItemData item)
+    {
+        if (!ItemDataFactory.TryGetOptionValues(item, out string option1, out int value1, out string option2, out int value2))
+            return;
+
+        if (ItemDataFactory.HasOption(option1))
+            Debug.Log($"{option1} : {value1}");
+        if (ItemDataFactory.HasOption(option2))
+            Debug.Log($"{option2} : {value2}");
     }
     // 추가 된 부분 확인용 주석
 
@@ -375,83 +290,24 @@ public class InventoryManager : MonoBehaviour
 
     string GetStatText(ItemData item)
     {
-        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-        if (item.Item_Type == "Weapon")
-        {
-            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == selectedItem.Item_ID);
-            return $"공격력: {weapon?.Weapon_DMG}";
-        }
-        else if (item.Item_Type == "Armor")
-        {
-            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == selectedItem.Item_ID);
-            return $"방어력: {armor?.Armor_DEF}, 체력: {armor?.Armor_HP}";
-        }
-        else if (item.Item_Type == "Consumable")
-        {
-            List<string> effects = new();
-            //if (item.Heal_Value > 0) effects.Add($"체력 회복: {item.Heal_Value}");
-            //if (item.Mental_Heal_Value > 0) effects.Add($"정신력 회복: {item.Mental_Heal_Value}");
-            return string.Join(", ", effects);
-        }
-        return "";
+        return ItemDataFactory.GetStatText(item);
     }
 
     string GetOptionText(ItemData item)
     {
         List<string> options = new();
-        var weaponMasters = jsonManager.GetWeaponMasters("Weapon_Master");
-        var armorMasters = jsonManager.GetArmorMasters("Armor_Master");
-        var itemMasters = jsonManager.GetItemMasters("Item_Master");
-        var optionMasters = jsonManager.GetOptionMasters("Option_Master");
+        ItemDataFactory.TryGetOptionValues(item, out string id1, out int val1, out string id2, out int val2);
 
-        string id1 = "", id2 = "";
-        int val1 = 0, val2 = 0;
-
-        if (item.Item_Type == "Weapon")
+        if (ItemDataFactory.HasOption(id1))
         {
-            var weapon = weaponMasters.FirstOrDefault(w => w.Weapon_ID == item.Item_ID);
-            id1 = weapon?.Option_1_ID;
-            val1 = weapon?.Option_Value1 ?? 0;
-            id2 = weapon?.Option_2_ID;
-            val2 = weapon?.Option_Value2 ?? 0;
-        }
-        else if (item.Item_Type == "Armor")
-        {
-            var armor = armorMasters.FirstOrDefault(a => a.Armor_ID == item.Item_ID);
-            id1 = armor?.Armor_Option1;
-            val1 = armor?.Option1_Value ?? 0;
-            id2 = armor?.Armor_Option2;
-            val2 = armor?.Option2_Value ?? 0;
-        }
-        else if (item.Item_Type == "Consumable")
-        {
-            var Consumable = itemMasters.FirstOrDefault(a => a.Item_ID == item.Item_ID);
-            id1 = Consumable?.Item_Option1;
-            val1 = Consumable?.Option1_Value ?? 0;
-            id2 = Consumable?.Item_Option2;
-            val2 = Consumable?.Option2_Value ?? 0;
-        }
-        else
-        {
-            id1 = item.Option_1_ID;
-            val1 = item.Option_Value1;
-            id2 = item.Option_2_ID;
-            val2 = item.Option_Value2;
-        }
-
-        if (!string.IsNullOrEmpty(id1) && id1 != "null")
-        {
-           var option_1 = optionMasters.FirstOrDefault(a => a.Option_ID == id1);
-            string desc = option_1.Option_Description;
+            string desc = jsonManager.GetOptionById(id1)?.Option_Description;
             if (!string.IsNullOrEmpty(desc))
                 options.Add($"{desc} +{val1}");
         }
 
-        if (!string.IsNullOrEmpty(id2) && id2 != "null")
+        if (ItemDataFactory.HasOption(id2))
         {
-            var option_2 = optionMasters.FirstOrDefault(a => a.Option_ID == id2);
-            string desc = option_2.Option_Description;
+            string desc = jsonManager.GetOptionById(id2)?.Option_Description;
             if (!string.IsNullOrEmpty(desc))
                 options.Add($"{desc} +{val2}");
         }
@@ -592,16 +448,14 @@ public class InventoryManager : MonoBehaviour
     public void OnClickUse()
     {
         if (selectedItem == null || selectedItem.Item_Type != "Consumable") return;
-        var itemMasters = jsonManager.GetItemMasters("Item_Master");
-        var master = itemMasters.FirstOrDefault(i => i.Item_ID == selectedItem.Item_ID);
+        ItemDataFactory.ApplyMasterData(selectedItem, jsonManager);
         Debug.Log("아이템 사용을 시도 했습니다");
         OptionManager.UseItem(selectedItem, new OptionContext
         {
             User = player,
             playerState = playerState,
-            option_ID = master.Item_Option1,
-
-            Value = master.Option1_Value
+            option_ID = selectedItem.Option_1_ID,
+            Value = selectedItem.Option_Value1
         });
 
             inventoryItems.Remove(selectedItem);

@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
-using System.Linq;
 #if UNITY_EDITOR
 public class RemoteTester : MonoBehaviour
 {
@@ -31,23 +30,17 @@ public class RemoteTester : MonoBehaviour
     private List<string> enemyIDs = new List<string> { "monster_001", "monster_002", "monster_003" };
     private List<string> WeaponID = new List<string>();
     private List<string> ArmorID = new List<string>();
-    private List<ItemData> WeaponitemData = new List<ItemData>();
-    private List<ItemData> ArmoritemData = new List<ItemData>();
 
     private void Start()
     {
         jsonManager = JsonManager.Instance; // 수정
-        var allWeapons = jsonManager.GetWeaponMasters("Weapon_Master").ToList();
-        foreach (var weapon in allWeapons)
+        foreach (var weapon in jsonManager.GetWeaponMasters("Weapon_Master"))
         {
             WeaponID.Add(weapon.Weapon_ID);
-            WeaponitemData.Add(new ItemData { Item_ID = weapon.Weapon_ID, Item_Name = weapon.Weapon_Name, Item_Type = weapon.ItemType });
         }
-        var allArmors = jsonManager.GetArmorMasters("Armor_Master").ToList();
-        foreach (var armor in allArmors)
+        foreach (var armor in jsonManager.GetArmorMasters("Armor_Master"))
         {
             ArmorID.Add(armor.Armor_ID);
-            ArmoritemData.Add(new ItemData { Item_ID = armor.Armor_ID, Item_Name = armor.Armor_NAME, Item_Type = armor.ItemType });
         }
         mainStoryButton.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
         randomStoryButton.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
@@ -121,7 +114,7 @@ public class RemoteTester : MonoBehaviour
     void WeaponAddInventory(string weaponID)
     {
         Debug.Log($"[리모컨] 아이템 추가 시작: {weaponID}");
-        var itemData = WeaponitemData.FirstOrDefault(i => i.Item_ID == weaponID);
+        var itemData = ItemDataFactory.FromCode(jsonManager, weaponID);
         if (itemData != null)
         {
             inventoryManager.AddItemToInventory(itemData);
@@ -134,7 +127,7 @@ public class RemoteTester : MonoBehaviour
     void ArmorAddInventory(string armorID)
     {
         Debug.Log($"[리모컨] 아이템 추가 시작 : {armorID}");
-        var itemData = ArmoritemData.FirstOrDefault(i => i.Item_ID == armorID);
+        var itemData = ItemDataFactory.FromCode(jsonManager, armorID);
         if (itemData != null)
         {
             inventoryManager.AddItemToInventory(itemData);
@@ -148,3 +141,4 @@ public class RemoteTester : MonoBehaviour
     }
 }
 #endif
+

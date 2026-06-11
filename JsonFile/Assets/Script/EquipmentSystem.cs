@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Linq;
 using MyGame;
 using UnityEngine.UI;
 using System;
@@ -72,9 +71,7 @@ public class EquipmentSystem : MonoBehaviour
         // 자동 참조
 
         var weaponId = string.IsNullOrEmpty(player.weapon_Name) ? null : player.weapon_Name;
-        var weapon = !string.IsNullOrEmpty(weaponId)
-            ? jsonManager.GetWeaponMasters("Weapon_Master").FirstOrDefault(w => w.Weapon_ID == weaponId)
-            : null;
+        var weapon = !string.IsNullOrEmpty(weaponId) ? jsonManager.GetWeaponById(weaponId) : null;
 
         Debug.Log($"무기 = {player.weapon_Name != ""}");
         // 무기 장착 처리
@@ -88,7 +85,7 @@ public class EquipmentSystem : MonoBehaviour
                 + (playerState.DIV * weapon.DIV_Scaling));
             player.damage = tempDamage;
             // 옵션 리스트에 추가
-            if (!string.IsNullOrEmpty(weapon.Option_1_ID))
+            if (ItemDataFactory.HasOption(weapon.Option_1_ID))
                 OptionManager.ApplyOption(weapon.Option_1_ID, new OptionContext
                 {
                     User = player,
@@ -96,7 +93,7 @@ public class EquipmentSystem : MonoBehaviour
                     item_ID = weapon.Weapon_ID,
                     option_ID = weapon.Option_1_ID
                 });
-            if (!string.IsNullOrEmpty(weapon.Option_2_ID))
+            if (ItemDataFactory.HasOption(weapon.Option_2_ID))
                 OptionManager.ApplyOption(weapon.Option_2_ID, new OptionContext
                 {
                     User = player,
@@ -106,9 +103,7 @@ public class EquipmentSystem : MonoBehaviour
                 });
         }
         var armorId = string.IsNullOrEmpty(player.armor_Name) ? null : player.armor_Name;
-        var armor = !string.IsNullOrEmpty(armorId)
-            ? jsonManager.GetArmorMasters("Armor_Master").FirstOrDefault(a => a.Armor_ID == armorId)
-            : null;
+        var armor = !string.IsNullOrEmpty(armorId) ? jsonManager.GetArmorById(armorId) : null;
         Debug.Log($"방어구 = {player.armor_Name != ""}");
         // 방어구 장착 처리
         if (armor != null)
@@ -116,7 +111,7 @@ public class EquipmentSystem : MonoBehaviour
             player.armor = armor.Armor_DEF;
             player.MaxHealth = armor.Armor_HP;
             // 옵션 리스트에 추가
-            if (!string.IsNullOrEmpty(armor.Armor_Option1))
+            if (ItemDataFactory.HasOption(armor.Armor_Option1))
                 OptionManager.ApplyOption(armor.Armor_Option1, new OptionContext
                 {
                     User = player,
@@ -124,7 +119,7 @@ public class EquipmentSystem : MonoBehaviour
                     item_ID = armor.Armor_ID,
                     option_ID = armor.Armor_Option1
                 });
-            if (!string.IsNullOrEmpty(armor.Armor_Option2))
+            if (ItemDataFactory.HasOption(armor.Armor_Option2))
                 OptionManager.ApplyOption(armor.Armor_Option2, new OptionContext
                 {
                     User = player,
@@ -338,4 +333,3 @@ public class EquipmentSystem : MonoBehaviour
         }
     }
 }
-
