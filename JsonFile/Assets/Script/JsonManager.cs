@@ -64,6 +64,22 @@ public class JsonManager : MonoBehaviour
     //선택지 선택 시 필요 조건 관련
     private readonly Dictionary<(string scene, int choiceNo), List<ChoiceRequirement>> _choiceReqBySceneChoice
     = new Dictionary<(string, int), List<ChoiceRequirement>>();
+
+    private static readonly Dictionary<string, string> WeaponMasterFieldAliases = new Dictionary<string, string>
+    {
+        // Runtime classes cannot expose a C# field named "One-Handed"; keep the JSON unchanged and alias it at load time.
+        { "One-Handed", nameof(Weapon_Master.One_Handed) }
+    };
+
+    private static readonly HashSet<string> RuntimeIgnoredEventFiles = new HashSet<string>
+    {
+        // Authoring/support data that is not mapped to runtime classes in the P0 loader.
+        "ChoiceCondition",
+        "ChoiceConditions",
+        "General",
+        "Mon_concentrate"
+    };
+
     private void LoadAllJsonFiles()
     {
         TextAsset[] jsonFiles = Resources.LoadAll<TextAsset>("Events");
@@ -75,6 +91,12 @@ public class JsonManager : MonoBehaviour
             string fileName = jsonFile.name;
             Debug.Log($"[JsonManager] 로드 시도: {fileName}");
             string jsonContent = jsonFile.text;
+
+            if (RuntimeIgnoredEventFiles.Contains(fileName))
+            {
+                Debug.Log($"[JsonManager] {fileName}.json 은 런타임 로딩 대상이 아니므로 건너뜁니다.");
+                continue;
+            }
 
             try
             {
@@ -265,24 +287,15 @@ public class JsonManager : MonoBehaviour
                 //아이템
                 else if (fileName.Contains("Weapon_Master"))
                 {
-                    // ✅ jsonContent는 전체 JSON 문자열
-                    var jObj = JObject.Parse(jsonContent);
-
-                    // ✅ 배열 부분만 추출
-                    string arrayStr = jObj["Weapon_Master"].ToString();
-
-                    // ✅ 배열을 items로 감싸기
-                    string wrappedJson = WrapJsonArray(arrayStr);
-
-                    // ✅ 파싱
-                    Wrapper<Weapon_Master> wrapper = JsonUtility.FromJson<Wrapper<Weapon_Master>>(wrappedJson);
-
-                    if (wrapper != null && wrapper.items != null)
+                    if (!TryParseWeaponMasters(jsonContent, out List<Weapon_Master> weapons, out string error))
                     {
-                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
-                        WeaponMasterDict[cleanFileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                        Debug.LogError($"[JsonManager] {fileName}.json Weapon_Master 루트 확인 실패: {error}");
+                        continue;
                     }
+
+                    string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                    WeaponMasterDict[cleanFileName] = weapons;
+                    Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {weapons.Count}개)");
                 }
                 else if (fileName.Contains("Armor_Master"))
                 {
@@ -307,24 +320,15 @@ public class JsonManager : MonoBehaviour
                 }
                 else if (fileName.Contains("Item_Master"))
                 {
-                    // ✅ jsonContent는 전체 JSON 문자열
-                    var jObj = JObject.Parse(jsonContent);
-
-                    // ✅ 배열 부분만 추출
-                    string arrayStr = jObj["Item_Master"].ToString();
-
-                    // ✅ 배열을 items로 감싸기
-                    string wrappedJson = WrapJsonArray(arrayStr);
-
-                    // ✅ 파싱
-                    Wrapper<Item_Master> wrapper = JsonUtility.FromJson<Wrapper<Item_Master>>(wrappedJson);
-
-                    if (wrapper != null && wrapper.items != null)
+                    if (!TryParseItemMasters(jsonContent, out List<Item_Master> items, out string error))
                     {
-                        string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
-                        ItemMasterDict[cleanFileName] = wrapper.items;
-                        Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
+                        Debug.LogError($"[JsonManager] {fileName}.json Item_Master 루트 확인 실패: {error}");
+                        continue;
                     }
+
+                    string cleanFileName = Path.GetFileNameWithoutExtension(fileName);
+                    ItemMasterDict[cleanFileName] = items;
+                    Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {items.Count}개)");
                 }
                 else if (fileName.Contains("Option_Master"))
                 {
@@ -464,9 +468,136 @@ public class JsonManager : MonoBehaviour
     }
 
     // JSON 배열을 JsonUtility 파싱용 객체로 감싸주는 함수
-    private string WrapJsonArray(string jsonArray)
+    private static string WrapJsonArray(string jsonArray)
     {
         return "{\"items\":" + jsonArray + "}";
+    }
+
+    public static bool TryGetRootArray(string jsonContent, string rootKey, out JArray array, out string error)
+    {
+        array = null;
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(jsonContent))
+        {
+            error = "jsonContent is empty.";
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(rootKey))
+        {
+            error = "rootKey is empty.";
+            return false;
+        }
+
+        try
+        {
+            JObject root = JObject.Parse(jsonContent);
+            if (!root.TryGetValue(rootKey, out JToken token))
+            {
+                error = $"Root key '{rootKey}' was not found.";
+                return false;
+            }
+
+            if (token.Type != JTokenType.Array)
+            {
+                error = $"Root key '{rootKey}' is {token.Type}, not Array.";
+                return false;
+            }
+
+            array = (JArray)token;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            return false;
+        }
+    }
+
+    public static bool TryParseWeaponMasters(string jsonContent, out List<Weapon_Master> weapons, out string error)
+    {
+        weapons = null;
+        if (!TryGetRootArray(jsonContent, "Weapon_Master", out JArray weaponArray, out error))
+        {
+            return false;
+        }
+
+        string wrappedJson = WrapJsonArray(weaponArray, WeaponMasterFieldAliases);
+        Wrapper<Weapon_Master> wrapper = JsonUtility.FromJson<Wrapper<Weapon_Master>>(wrappedJson);
+        weapons = wrapper?.items ?? new List<Weapon_Master>();
+        return true;
+    }
+
+    public static bool TryParseItemMasters(string jsonContent, out List<Item_Master> items, out string error)
+    {
+        items = null;
+        if (!TryGetRootArray(jsonContent, "Item_Master", out JArray itemArray, out error))
+        {
+            return false;
+        }
+
+        string wrappedJson = WrapJsonArray(itemArray);
+        Wrapper<Item_Master> wrapper = JsonUtility.FromJson<Wrapper<Item_Master>>(wrappedJson);
+        items = wrapper?.items ?? new List<Item_Master>();
+        return true;
+    }
+
+    public static ItemData FindItemDataByCode(IEnumerable<Item_Master> itemMasters, string code)
+    {
+        if (itemMasters == null || string.IsNullOrEmpty(code))
+        {
+            return null;
+        }
+
+        Item_Master item = itemMasters.FirstOrDefault(i => i.Item_ID == code);
+        if (item == null)
+        {
+            return null;
+        }
+
+        return new ItemData
+        {
+            Item_ID = item.Item_ID,
+            Item_Name = item.Item_NAME,
+            Item_Type = item.ItemType
+        };
+    }
+
+    private static string WrapJsonArray(JArray jsonArray, Dictionary<string, string> fieldAliases = null)
+    {
+        JArray normalizedArray = fieldAliases == null || fieldAliases.Count == 0
+            ? jsonArray
+            : NormalizeFieldAliases(jsonArray, fieldAliases);
+
+        return WrapJsonArray(normalizedArray.ToString(Formatting.None));
+    }
+
+    private static JArray NormalizeFieldAliases(JArray jsonArray, Dictionary<string, string> fieldAliases)
+    {
+        var normalizedArray = new JArray();
+
+        foreach (JToken token in jsonArray)
+        {
+            if (token is not JObject source)
+            {
+                normalizedArray.Add(token.DeepClone());
+                continue;
+            }
+
+            var target = (JObject)source.DeepClone();
+            foreach (var alias in fieldAliases)
+            {
+                if (target.TryGetValue(alias.Key, out JToken value) && !target.ContainsKey(alias.Value))
+                {
+                    target[alias.Value] = value.DeepClone();
+                }
+            }
+
+            normalizedArray.Add(target);
+        }
+
+        return normalizedArray;
     }
 
     // 특정 파일명으로 Story_Master 리스트 가져오기
@@ -774,16 +905,7 @@ public class JsonManager : MonoBehaviour
         }
         else if (code.StartsWith("Item_"))
         {
-            var Item = GetItemMasters("Item_Master").FirstOrDefault(i => i.Item_NAME == code);
-            if (Item != null)
-            {
-                return new ItemData
-                {
-                    Item_ID = Item.Item_ID,
-                    Item_Name = Item.Item_NAME,
-                    Item_Type = Item.ItemType
-                };
-            }
+            return FindItemDataByCode(GetItemMasters("Item_Master"), code);
         }
 
         // 기타 타입 확장 가능
@@ -800,6 +922,3 @@ public class Wrapper<T>
 {
     public List<T> items;
 }
-
-
-

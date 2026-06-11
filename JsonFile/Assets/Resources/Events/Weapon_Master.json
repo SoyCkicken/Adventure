@@ -227,6 +227,25 @@
       "ItemType": "Weapon",
       "One-Handed": null,
       "Item_Price": 5.0
+    },
+    {
+      "Weapon_ID": "Weapon_013",
+      "Weapon_Name": "Option_003",
+      "Weapon_DMG": 18.0,
+      "STR_Scaling": 0.1,
+      "DEX_Scaling": 0.1,
+      "INT_Scaling": 0.1,
+      "MAG_Scaling": 0.1,
+      "DIV_Scaling": 0.1,
+      "CHR_Scaling": 0.1,
+      "Option_1_ID": "Option_003",
+      "Option_Value1": 5.0,
+      "Option_2_ID": null,
+      "Option_Value2": 0.0,
+      "Description": "Test weapon: applies burn on hit",
+      "ItemType": "Weapon",
+      "One-Handed": true,
+      "Item_Price": 5.0
     }
   ]
 }

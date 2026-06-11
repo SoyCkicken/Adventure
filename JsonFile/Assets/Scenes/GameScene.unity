@@ -14968,7 +14968,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1630125088}
-  - component: {fileID: 1630125089}
   m_Layer: 0
   m_Name: MousePoint
   m_TagString: Untagged
@@ -14991,22 +14990,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1010119033}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1630125089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1630125087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0e295382e3e6de42bdc7c059bee6207, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  manager: {fileID: 0}
 --- !u!1001 &1634365829
 PrefabInstance:
   m_ObjectHideFlags: 0
