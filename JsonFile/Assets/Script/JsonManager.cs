@@ -355,6 +355,10 @@ public class JsonManager : MonoBehaviour
                         Debug.Log($"[JsonManager] {fileName}.json 로드 완료 (데이터 {wrapper.items.Count}개)");
                     }
                 }
+                else if (fileName.Contains("OptionEffect_Master"))
+                {
+                    Debug.Log($"[JsonManager] {fileName}.json 은 Option_Master 병합용 authoring 데이터로 로드 대상에서 제외합니다.");
+                }
 
                 else if (fileName.Contains("Mon_Master"))
                 {

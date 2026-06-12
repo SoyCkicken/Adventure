@@ -1245,6 +1245,46 @@ namespace MyGame
         /// </summary>
         private void ApplyStatDelta(BuffData buff, bool apply)
         {
+            if (string.Equals(buff.ApplyMode, "Stat", System.StringComparison.OrdinalIgnoreCase))
+            {
+                int signedValue = apply ? buff.Value : -buff.Value;
+                switch (buff.StatType)
+                {
+                    case "Damage":
+                        damage += signedValue;
+                        return;
+                    case "Armor":
+                        armor += signedValue;
+                        return;
+                    case "MaxHealth":
+                        MaxHealth += signedValue;
+                        Health = Mathf.Min(Health, MaxHealth);
+                        return;
+                    case "CritChance":
+                    case "CriticalChance":
+                        CitChance += signedValue;
+                        return;
+                    case "DebuffDamageResist":
+                        DebuffDamageResist += signedValue;
+                        return;
+                    case "BleedResist":
+                        BleedResist += signedValue;
+                        return;
+                    case "PoisonResist":
+                        PoisonResist += signedValue;
+                        return;
+                    case "FreezeResist":
+                        FreezeResist += signedValue;
+                        return;
+                    case "Speed":
+                    case "AttackSpeed":
+                        float statMul = buff.Value / 100f;
+                        if (apply) speed *= (1f + statMul);
+                        else speed /= (1f + statMul);
+                        return;
+                }
+            }
+
             switch (buff.OptionID)
             {
                 case "Option_002": // 치확 ±Value

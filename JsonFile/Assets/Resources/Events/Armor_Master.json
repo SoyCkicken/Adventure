@@ -129,6 +129,19 @@
       "Description": "테스트 갑옷 7",
       "ItemType": "Armor",
       "Item_Price": 7.0
+    },
+    {
+      "Armor_ID": "Armor_011",
+      "Armor_NAME": "저항 테스트 갑옷",
+      "Armor_DEF": 3.0,
+      "Armor_HP": 100.0,
+      "Armor_Option1": "Option_014",
+      "Option1_Value": 20.0,
+      "Armor_Option2": "Option_015",
+      "Option2_Value": 30.0,
+      "Description": "디버프 피해/출혈 저항 연결 테스트용 갑옷",
+      "ItemType": "Armor",
+      "Item_Price": 5.0
     }
   ]
 }

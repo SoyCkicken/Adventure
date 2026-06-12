@@ -440,6 +440,45 @@ public class ForceNextAttackMissEffect : IOptionEffect
     }
 }
 
+public class StatBonusEffect : IOptionEffect
+{
+    public void Apply(OptionContext ctx)
+    {
+        if (ctx.User == null)
+        {
+            Debug.LogWarning("[StatBonusEffect] 사용자 캐릭터가 없어 효과를 적용하지 못했습니다.");
+            return;
+        }
+
+        Option_Master option = OptionManager.GetOption(ctx.option_ID);
+        var buff = new BuffData
+        {
+            BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
+            OptionID = ctx.option_ID,
+            Value = ctx.Value,
+            Duration = 0f,
+            Elapsed = 0f,
+            IsDebuff = false,
+            IsPassive = true,
+            Target = ctx.User,
+            User = ctx.User,
+            SourceItemID = ctx.item_ID,
+            StatusType = option?.StatusType,
+            ApplyMode = "Stat",
+            StackPolicy = "Ignore",
+            StackCount = 1,
+            MaxStack = 1,
+            TriggerType = option?.TriggerType,
+            ValueMode = option?.ValueMode,
+            StatType = option?.StatType,
+            ResistanceType = option?.ResistanceType
+        };
+
+        ctx.User.AddBuff(buff);
+        Debug.Log($"[StatBonusEffect] {ctx.User.charaterName} {buff.StatType} +{ctx.Value}");
+    }
+}
+
 public abstract class StatusStackEffect : IOptionEffect
 {
     private readonly string fallbackStatusType;
@@ -643,6 +682,7 @@ public class OptionManager : MonoBehaviour
         { "Effect_011", new HolyStackEffect() },
         { "Effect_012", new RegenStackEffect() },
         { "Effect_013", new FreezeStackEffect() },
+        { "Effect_014", new StatBonusEffect() },
     };
 
     // 옵션 설명 딕셔너리
@@ -661,6 +701,10 @@ public class OptionManager : MonoBehaviour
         { "Option_011", "신성" },
         { "Option_012", "재생" },
         { "Option_013", "빙결" },
+        { "Option_014", "디버프 피해 저항" },
+        { "Option_015", "출혈 저항" },
+        { "Option_016", "중독 저항" },
+        { "Option_017", "빙결 저항" },
         { "null", "" }
     };
 

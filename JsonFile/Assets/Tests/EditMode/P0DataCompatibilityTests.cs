@@ -12,7 +12,7 @@ public class P0DataCompatibilityTests
 {
     private static readonly Dictionary<string, int> ExpectedEventCounts = new Dictionary<string, int>
     {
-        { "Armor_Master", 10 },
+        { "Armor_Master", 11 },
         { "BlackSmith", 22 },
         { "ChoiceCondition", 3 },
         { "ChoiceConditions", 3 },
@@ -24,7 +24,8 @@ public class P0DataCompatibilityTests
         { "Mon_concentrate", 2 },
         { "Mon_Effect_Master", 1 },
         { "Mon_Master", 2 },
-        { "Option_Master", 13 },
+        { "Option_Master", 17 },
+        { "OptionEffect_Master", 17 },
         { "Patch_Notes", 3 },
         { "RandomEvents_Master_Event", 46 },
         { "Ran_Script_Master_Event", 50 },
@@ -55,9 +56,10 @@ public class P0DataCompatibilityTests
     [TestCase("RandomEvents_Master_Event", 46)]
     [TestCase("Ran_Script_Master_Event", 50)]
     [TestCase("Weapon_Master", 13)]
-    [TestCase("Armor_Master", 10)]
+    [TestCase("Armor_Master", 11)]
     [TestCase("Item_Master", 20)]
-    [TestCase("Option_Master", 13)]
+    [TestCase("Option_Master", 17)]
+    [TestCase("OptionEffect_Master", 17)]
     [TestCase("Mon_Master", 2)]
     public void ImportantJsonRowCountsStayStable(string fileKey, int expectedCount)
     {
@@ -103,6 +105,24 @@ public class P0DataCompatibilityTests
         Assert.That(asset.text, Does.Contain("\"StatusType\": \"Bleed\""));
         Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_013\""));
         Assert.That(asset.text, Does.Contain("\"StatusType\": \"Freeze\""));
+        Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_017\""));
+        Assert.That(asset.text, Does.Contain("\"StatType\": \"FreezeResist\""));
+    }
+
+    [Test]
+    public void OptionEffectAuthoringSheetIsMergedIntoRuntimeOptionMaster()
+    {
+        TextAsset optionAsset = Resources.Load<TextAsset>("Events/Option_Master");
+        TextAsset effectAsset = Resources.Load<TextAsset>("Events/OptionEffect_Master");
+        Assert.That(optionAsset, Is.Not.Null);
+        Assert.That(effectAsset, Is.Not.Null);
+
+        Assert.That(TryGetRootArrayCount(optionAsset.text, "Option_Master", out int optionCount, out string optionError), Is.True, optionError);
+        Assert.That(TryGetRootArrayCount(effectAsset.text, "OptionEffect_Master", out int effectCount, out string effectError), Is.True, effectError);
+        Assert.That(optionCount, Is.EqualTo(effectCount));
+        Assert.That(optionAsset.text, Does.Contain("\"Option_ID\": \"Option_014\""));
+        Assert.That(optionAsset.text, Does.Contain("\"ApplyMode\": \"Stat\""));
+        Assert.That(optionAsset.text, Does.Contain("\"StatType\": \"DebuffDamageResist\""));
     }
 
     [Test]
@@ -382,6 +402,78 @@ public class P0DataCompatibilityTests
         Assert.That(GetField<int>(target, "Health"), Is.EqualTo(100));
     }
 
+    [Test]
+    public void EquipmentSystemAppliesResistanceStatsFromJsonArmorOptions()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component playerState = CreateComponent("PlayerState");
+        Component player = CreateCharacter("Equipment Resistance Player", maxHealth: 100, health: 100);
+        Component optionManager = CreateComponent("OptionManager");
+        Component equipmentSystem = CreateComponent("EquipmentSystem");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        SetField(playerState, "STR", 10);
+        SetField(playerState, "AGI", 10);
+        SetField(playerState, "Health", 10);
+        SetField(player, "armor_Name", "Armor_011");
+        SetField(player, "weapon_Name", "");
+        SetField(equipmentSystem, "jsonManager", jsonManager);
+        SetField(equipmentSystem, "playerState", playerState);
+        SetField(equipmentSystem, "player", player);
+
+        InvokeInstance(equipmentSystem, "Init");
+
+        Assert.That(GetField<int>(player, "armor"), Is.EqualTo(3));
+        Assert.That(GetField<int>(player, "DebuffDamageResist"), Is.EqualTo(20));
+        Assert.That(GetField<int>(player, "BleedResist"), Is.EqualTo(30));
+
+        InvokeInstance(player, "RemoveBuffByItem", "Armor_011");
+        Assert.That(GetField<int>(player, "DebuffDamageResist"), Is.EqualTo(0));
+        Assert.That(GetField<int>(player, "BleedResist"), Is.EqualTo(0));
+    }
+
+    [Test]
+    public void EquipmentSystemRegistersWeaponOnHitOptionAndRuntimeEffectCanFire()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component playerState = CreateComponent("PlayerState");
+        Component player = CreateCharacter("Equipment Weapon Player", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Equipment Weapon Target", maxHealth: 100, health: 100);
+        Component optionManager = CreateComponent("OptionManager");
+        Component equipmentSystem = CreateComponent("EquipmentSystem");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        SetField(playerState, "STR", 10);
+        SetField(playerState, "AGI", 10);
+        SetField(player, "weapon_Name", "Weapon_013");
+        SetField(player, "armor_Name", "");
+        SetField(equipmentSystem, "jsonManager", jsonManager);
+        SetField(equipmentSystem, "playerState", playerState);
+        SetField(equipmentSystem, "player", player);
+
+        InvokeInstance(equipmentSystem, "Init");
+
+        IList options = (IList)GetField<object>(player, "OnHitOptions");
+        Assert.That(options.Count, Is.EqualTo(1));
+        object equippedOption = options[0];
+        Assert.That(GetField<string>(equippedOption, "OptionID"), Is.EqualTo("Option_003"));
+        Assert.That(GetField<int>(equippedOption, "Value"), Is.EqualTo(5));
+        Assert.That(GetField<string>(equippedOption, "item_ID"), Is.EqualTo("Weapon_013"));
+
+        object context = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(context, "User", player);
+        SetField(context, "Target", target);
+        SetField(context, "Value", GetField<int>(equippedOption, "Value"));
+        SetField(context, "item_ID", GetField<string>(equippedOption, "item_ID"));
+        SetField(context, "option_ID", GetField<string>(equippedOption, "OptionID"));
+
+        InvokeStatic("OptionManager", "ApplyOnHitOnly", GetField<string>(equippedOption, "OptionID"), context);
+
+        Assert.That(GetField<int>(target, "Health"), Is.EqualTo(95), "Weapon_013 should apply its burn option through the runtime on-hit path.");
+    }
+
     [TearDown]
     public void TearDown()
     {
@@ -394,12 +486,24 @@ public class P0DataCompatibilityTests
         }
 
         ResetRuntimeSingleton("JsonManager", "Instance");
+        ResetRuntimeSingleton("OptionManager", "Instance");
+        ResetRuntimeSingleton("PlayerState", "Instance");
     }
 
     private static Component CreateComponent(string typeName)
     {
         var go = new GameObject($"P0 Test {typeName}");
         return go.AddComponent(GetRuntimeType(typeName));
+    }
+
+    private static void PrepareJsonAndOptionManagers(Component jsonManager, Component optionManager)
+    {
+        SetRuntimeSingleton("JsonManager", "Instance", jsonManager);
+        InvokePrivateInstance(jsonManager, "LoadAllJsonFiles");
+        SetAutoProperty(jsonManager, "IsReady", true);
+
+        SetRuntimeSingleton("OptionManager", "Instance", optionManager);
+        SetField(optionManager, "jsonManager", jsonManager);
     }
 
     private static Component CreateCharacter(string name, int maxHealth, int health)
@@ -599,6 +703,21 @@ public class P0DataCompatibilityTests
         Type type = GetRuntimeType(typeName);
         FieldInfo backingField = type.GetField($"<{propertyName}>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
         backingField?.SetValue(null, null);
+    }
+
+    private static void SetRuntimeSingleton(string typeName, string propertyName, object value)
+    {
+        Type type = GetRuntimeType(typeName);
+        FieldInfo backingField = type.GetField($"<{propertyName}>k__BackingField", BindingFlags.Static | BindingFlags.NonPublic);
+        Assert.That(backingField, Is.Not.Null, $"{typeName}.{propertyName}");
+        backingField.SetValue(null, value);
+    }
+
+    private static void SetAutoProperty(object target, string propertyName, object value)
+    {
+        FieldInfo backingField = target.GetType().GetField($"<{propertyName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.That(backingField, Is.Not.Null, $"{target.GetType().Name}.{propertyName}");
+        backingField.SetValue(target, value);
     }
 
     private static Type GetRuntimeType(string typeName)

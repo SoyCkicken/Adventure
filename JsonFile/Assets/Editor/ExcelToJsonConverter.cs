@@ -211,12 +211,16 @@ using System.Text.RegularExpressions;
 public class ExcelAutoGenerator : EditorWindow
 {
     private static readonly Encoding OutputEncoding = new UTF8Encoding(false);
+    private const string OptionMasterTableName = "Option_Master";
+    private const string OptionEffectMasterTableName = "OptionEffect_Master";
 
     private string excelFolderPath = "Assets/ExcelFiles";
     private string jsonOutputFolder = "Assets/Resources/Events";
     private string classOutputFolder = "Assets/Json";
 
     private List<string> excelFilePaths = new List<string>();
+    private DataTable optionEffectTable;
+    private Dictionary<string, Dictionary<string, object>> optionEffectRowsByOptionId = new Dictionary<string, Dictionary<string, object>>(StringComparer.OrdinalIgnoreCase);
 
     private static string MakeAutoClassName(DataTable table, DataColumn column)
     => $"{SanitizeTypeName(table.TableName)}_{ToPascal(column.ColumnName)}Item";
@@ -270,6 +274,7 @@ public class ExcelAutoGenerator : EditorWindow
         using var reader = ExcelReaderFactory.CreateReader(stream, CreateReaderConfiguration());
         var conf = new ExcelDataSetConfiguration { ConfigureDataTable = _ => new ExcelDataTableConfiguration { UseHeaderRow = true } };
         var dataSet = reader.AsDataSet(conf);
+        PrepareOptionEffectMetadata(dataSet);
 
         foreach (DataTable table in dataSet.Tables)
         {
@@ -287,46 +292,10 @@ public class ExcelAutoGenerator : EditorWindow
             var dict = new Dictionary<string, object>();
             foreach (DataColumn col in table.Columns)
             {
-                var val = dr[col];
-                if (val is string s)
-                {
-                    string trimmed = s.Trim();
-
-                    // ✅ (추가) List<클래스>[ ... ] 타입 힌트 처리
-                    if (TypeInferUtils.TryParseListTypeHint(trimmed, out var hintedElemType, out var hintedJson))
-                    {
-                        try
-                        {
-                            dict[col.ColumnName] = JArray.Parse(hintedJson);
-                        }
-                        catch
-                        {
-                            dict[col.ColumnName] = s; // 파싱 실패 시 원본 문자열 유지
-                        }
-                        continue;
-                    }
-                    // 기존: 배열 형태 문자열이면 JArray로 보관
-                    if (trimmed.StartsWith("["))
-                    {
-                        try
-                        {
-                            dict[col.ColumnName] = JArray.Parse(trimmed);
-                        }
-                        catch
-                        {
-                            dict[col.ColumnName] = s; // 파싱 실패 시 문자열 그대로
-                        }
-                    }
-                    else
-                    {
-                        dict[col.ColumnName] = val;
-                    }
-                }
-                else
-                {
-                    dict[col.ColumnName] = val;
-                }
+                dict[col.ColumnName] = ConvertCellValue(dr[col]);
             }
+
+            MergeOptionEffectMetadata(table, dict);
             rows.Add(dict);
         }
 
@@ -357,6 +326,21 @@ public class ExcelAutoGenerator : EditorWindow
             string fieldName = SanitizeVariableName(col.ColumnName);
             string type = InferType(table, col);
             writer.WriteLine($"    public {type} {fieldName};");
+        }
+
+        if (IsOptionMasterTable(table) && optionEffectTable != null)
+        {
+            foreach (DataColumn col in optionEffectTable.Columns)
+            {
+                if (string.Equals(col.ColumnName, "Option_ID", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (table.Columns.Contains(col.ColumnName))
+                    continue;
+
+                string fieldName = SanitizeVariableName(col.ColumnName);
+                string type = InferType(optionEffectTable, col);
+                writer.WriteLine($"    public {type} {fieldName};");
+            }
         }
 
         writer.WriteLine("}");
@@ -653,6 +637,92 @@ public class ExcelAutoGenerator : EditorWindow
         if (string.IsNullOrEmpty(s)) s = "AutoType";
         if (char.IsDigit(s[0])) s = "_" + s;
         return s;
+    }
+
+    private void PrepareOptionEffectMetadata(DataSet dataSet)
+    {
+        optionEffectTable = dataSet.Tables
+            .Cast<DataTable>()
+            .FirstOrDefault(t => string.Equals(t.TableName, OptionEffectMasterTableName, StringComparison.OrdinalIgnoreCase));
+        optionEffectRowsByOptionId.Clear();
+
+        if (optionEffectTable == null || !optionEffectTable.Columns.Contains("Option_ID"))
+            return;
+
+        foreach (DataRow row in optionEffectTable.Rows)
+        {
+            string optionId = row["Option_ID"]?.ToString();
+            if (string.IsNullOrWhiteSpace(optionId))
+                continue;
+
+            var values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            foreach (DataColumn col in optionEffectTable.Columns)
+            {
+                if (string.Equals(col.ColumnName, "Option_ID", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                values[col.ColumnName] = ConvertCellValue(row[col]);
+            }
+
+            optionEffectRowsByOptionId[optionId.Trim()] = values;
+        }
+    }
+
+    private void MergeOptionEffectMetadata(DataTable table, Dictionary<string, object> row)
+    {
+        if (!IsOptionMasterTable(table) || optionEffectRowsByOptionId.Count == 0)
+            return;
+        if (!row.TryGetValue("Option_ID", out object rawOptionId))
+            return;
+
+        string optionId = rawOptionId?.ToString();
+        if (string.IsNullOrWhiteSpace(optionId))
+            return;
+        if (!optionEffectRowsByOptionId.TryGetValue(optionId.Trim(), out var metadata))
+            return;
+
+        foreach (var kv in metadata)
+        {
+            if (!row.ContainsKey(kv.Key))
+                row[kv.Key] = kv.Value;
+        }
+    }
+
+    private static bool IsOptionMasterTable(DataTable table)
+        => string.Equals(table.TableName, OptionMasterTableName, StringComparison.OrdinalIgnoreCase);
+
+    private static object ConvertCellValue(object val)
+    {
+        if (val is string s)
+        {
+            string trimmed = s.Trim();
+
+            if (TypeInferUtils.TryParseListTypeHint(trimmed, out var hintedElemType, out var hintedJson))
+            {
+                try
+                {
+                    return JArray.Parse(hintedJson);
+                }
+                catch
+                {
+                    return s;
+                }
+            }
+
+            if (trimmed.StartsWith("["))
+            {
+                try
+                {
+                    return JArray.Parse(trimmed);
+                }
+                catch
+                {
+                    return s;
+                }
+            }
+        }
+
+        return val;
     }
 
     internal static ExcelReaderConfiguration CreateReaderConfiguration()
