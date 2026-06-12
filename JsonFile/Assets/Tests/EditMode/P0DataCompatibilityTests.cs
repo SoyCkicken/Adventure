@@ -24,8 +24,8 @@ public class P0DataCompatibilityTests
         { "Mon_concentrate", 2 },
         { "Mon_Effect_Master", 1 },
         { "Mon_Master", 2 },
-        { "Option_Master", 17 },
-        { "OptionEffect_Master", 17 },
+        { "Option_Master", 18 },
+        { "OptionEffect_Master", 18 },
         { "Patch_Notes", 3 },
         { "RandomEvents_Master_Event", 46 },
         { "Ran_Script_Master_Event", 50 },
@@ -58,8 +58,8 @@ public class P0DataCompatibilityTests
     [TestCase("Weapon_Master", 13)]
     [TestCase("Armor_Master", 11)]
     [TestCase("Item_Master", 20)]
-    [TestCase("Option_Master", 17)]
-    [TestCase("OptionEffect_Master", 17)]
+    [TestCase("Option_Master", 18)]
+    [TestCase("OptionEffect_Master", 18)]
     [TestCase("Mon_Master", 2)]
     public void ImportantJsonRowCountsStayStable(string fileKey, int expectedCount)
     {
@@ -107,6 +107,10 @@ public class P0DataCompatibilityTests
         Assert.That(asset.text, Does.Contain("\"StatusType\": \"Freeze\""));
         Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_017\""));
         Assert.That(asset.text, Does.Contain("\"StatType\": \"FreezeResist\""));
+        Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_018\""));
+        Assert.That(asset.text, Does.Contain("\"Effect_ID\": \"Effect_015\""));
+        Assert.That(asset.text, Does.Contain("\"Option_Type\": \"OnBattleStart\""));
+        Assert.That(asset.text, Does.Contain("\"StatusType\": \"Berserk\""));
     }
 
     [Test]
@@ -472,6 +476,114 @@ public class P0DataCompatibilityTests
         InvokeStatic("OptionManager", "ApplyOnHitOnly", GetField<string>(equippedOption, "OptionID"), context);
 
         Assert.That(GetField<int>(target, "Health"), Is.EqualTo(95), "Weapon_013 should apply its burn option through the runtime on-hit path.");
+    }
+
+    [Test]
+    public void EquipmentOptionCanApplyDebuffOnBattleStart()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component player = CreateCharacter("Battle Start Player", maxHealth: 100, health: 100);
+        Component enemy = CreateCharacter("Battle Start Enemy", maxHealth: 100, health: 100);
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        object option = InvokeStatic("OptionManager", "GetOption", "Option_003");
+        SetField(option, "Option_Type", "OnBattleStart");
+
+        object registerContext = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(registerContext, "User", player);
+        SetField(registerContext, "Value", 5);
+        SetField(registerContext, "item_ID", "Weapon_BattleStart");
+        SetField(registerContext, "option_ID", "Option_003");
+
+        InvokeStatic("OptionManager", "ApplyOption", "Option_003", registerContext);
+
+        IList options = (IList)GetField<object>(player, "OnBattleStartOptions");
+        Assert.That(options.Count, Is.EqualTo(1));
+        object equippedOption = options[0];
+        Assert.That(GetField<string>(equippedOption, "OptionID"), Is.EqualTo("Option_003"));
+        Assert.That(GetField<string>(equippedOption, "item_ID"), Is.EqualTo("Weapon_BattleStart"));
+        Assert.That(GetField<int>(enemy, "Health"), Is.EqualTo(100), "Registration should not apply before battle target exists.");
+
+        object applyContext = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(applyContext, "User", player);
+        SetField(applyContext, "Target", enemy);
+        SetField(applyContext, "Value", GetField<int>(equippedOption, "Value"));
+        SetField(applyContext, "item_ID", GetField<string>(equippedOption, "item_ID"));
+        SetField(applyContext, "option_ID", GetField<string>(equippedOption, "OptionID"));
+
+        InvokeStatic("OptionManager", "ApplyBattleStartOnly", "Option_003", applyContext);
+
+        Assert.That(GetField<int>(enemy, "Health"), Is.EqualTo(95), "OnBattleStart equipment option should apply to the enemy when combat starts.");
+    }
+
+    [Test]
+    public void BerserkBattleStartBuffIsNonStackingAndChangesCombatStats()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component playerState = CreateComponent("PlayerState");
+        Component player = CreateCharacter("Berserk Player", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Berserk Target", maxHealth: 100, health: 100);
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        SetField(player, "speed", 1f);
+        SetField(player, "armor", 3);
+        SetField(player, "damage", 0);
+        SetField(player, "CitChance", 0);
+
+        object option = InvokeStatic("OptionManager", "GetOption", "Option_018");
+        Assert.That(option, Is.Not.Null);
+        Assert.That(GetField<string>(option, "Option_Type"), Is.EqualTo("OnBattleStart"));
+        Assert.That(GetField<string>(option, "Effect_ID"), Is.EqualTo("Effect_015"));
+
+        object context = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(context, "playerState", playerState);
+        SetField(context, "User", player);
+        SetField(context, "Target", target);
+        SetField(context, "Value", 50);
+        SetField(context, "item_ID", "Weapon_Berserk");
+        SetField(context, "option_ID", "Option_018");
+
+        InvokeStatic("OptionManager", "ApplyBattleStartOnly", "Option_018", context);
+        InvokeStatic("OptionManager", "ApplyBattleStartOnly", "Option_018", context);
+
+        Assert.That(GetField<float>(player, "speed"), Is.EqualTo(1.5f).Within(0.001f), "Berserk speed bonus should not stack.");
+        Assert.That(GetField<int>(player, "armor"), Is.EqualTo(-2), "Berserk armor penalty should not stack.");
+
+        InvokeInstance(player, "Attack", target);
+        Assert.That(GetField<int>(player, "Health"), Is.EqualTo(99), "Berserk should deal 1% max HP self-damage on attack.");
+
+        object taken = InvokeInstance(player, "TakeDamage", 10);
+        Assert.That((int)taken, Is.EqualTo(15), "Player berserk damage taken increase should be 30% after armor calculation.");
+        Assert.That(GetField<int>(player, "Health"), Is.EqualTo(84));
+    }
+
+    [Test]
+    public void DamageTakenIncreaseBuffsAreSummedAfterArmorReduction()
+    {
+        Component target = CreateCharacter("Damage Taken Target", maxHealth: 100, health: 100);
+        SetField(target, "armor", 2);
+
+        object firstDebuff = CreateBuffData("damage_taken_1", "Option_018", target, duration: 0f, value: 0);
+        SetField(firstDebuff, "StatusType", "DamageTakenA");
+        SetField(firstDebuff, "SourceItemID", "source_a");
+        SetField(firstDebuff, "DamageTakenIncreasePercent", 25);
+
+        object secondDebuff = CreateBuffData("damage_taken_2", "Option_018", target, duration: 0f, value: 0);
+        SetField(secondDebuff, "StatusType", "DamageTakenB");
+        SetField(secondDebuff, "SourceItemID", "source_b");
+        SetField(secondDebuff, "DamageTakenIncreasePercent", 30);
+
+        InvokeInstance(target, "AddBuff", firstDebuff);
+        InvokeInstance(target, "AddBuff", secondDebuff);
+
+        object taken = InvokeInstance(target, "TakeDamage", 10);
+
+        Assert.That((int)taken, Is.EqualTo(12), "Damage should be floor((10 - 2) * 1.55).");
+        Assert.That(GetField<int>(target, "Health"), Is.EqualTo(88));
     }
 
     [TearDown]

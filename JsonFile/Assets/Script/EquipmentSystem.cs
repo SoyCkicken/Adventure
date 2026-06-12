@@ -249,6 +249,7 @@ public class EquipmentSystem : MonoBehaviour
         //Debug.LogError("플레이어 능력치 초기화");
         // 기본치 재설정
         player.OnHitOptions.Clear();
+        player.OnBattleStartOptions.Clear();
         Debug.Log($"Player의 장비 장착 여부 무기 : {player.weapon_Name} , 갑옷 : {player.armor_Name} ");
 
         if (player.armor_Name != "" || player.weapon_Name != "")

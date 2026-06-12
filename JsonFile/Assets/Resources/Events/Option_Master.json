@@ -356,6 +356,27 @@
       "StatType": "FreezeResist",
       "ResistanceType": null,
       "MaxRemoveCount": 0.0
+    },
+    {
+      "Option_ID": "Option_018",
+      "Option_Description": "광폭화: 전투 시작 시 자신에게 광폭화 부여. 공격 속도 50% 증가, 매 공격 시 최대 체력 1% 반동 피해, 받는 피해 증가, 방어력 -5",
+      "Effect_ID": "Effect_015",
+      "Option_Type": "OnBattleStart",
+      "StatusType": "Berserk",
+      "ApplyMode": "Compound",
+      "StackPolicy": "Ignore",
+      "MaxStack": 1,
+      "Duration": 0,
+      "TickInterval": 0,
+      "TriggerType": "OnBattleStart",
+      "ValueMode": "Percent",
+      "BaseChance": 0,
+      "ChancePerStack": 0,
+      "BaseValue": 1,
+      "ValuePerStack": 0,
+      "StatType": "AttackSpeed",
+      "ResistanceType": null,
+      "MaxRemoveCount": 0
     }
   ]
 }

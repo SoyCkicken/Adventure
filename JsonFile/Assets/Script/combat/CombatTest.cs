@@ -65,6 +65,7 @@ public class CombatTest : MonoBehaviour
         enemy.Health = enemy.MaxHealth;
         if(monsterOptionManager == null)
         monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
+        ApplyBattleStartOptions();
         // 실제 전투 코루틴 실행
         StartCoroutine(ProcessBattle());
     }
@@ -322,6 +323,31 @@ public class CombatTest : MonoBehaviour
                 }
             }
             Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
+        }
+    }
+
+    private void ApplyBattleStartOptions()
+    {
+        if (player?.OnBattleStartOptions == null || enemy == null)
+            return;
+
+        playerState ??= PlayerState.Instance;
+
+        foreach (var opt in player.OnBattleStartOptions)
+        {
+            if (string.IsNullOrEmpty(opt.OptionID))
+                continue;
+
+            var ctx = new OptionContext
+            {
+                playerState = playerState,
+                User = player,
+                Target = enemy,
+                option_ID = opt.OptionID,
+                Value = opt.Value,
+                item_ID = opt.item_ID
+            };
+            OptionManager.ApplyBattleStartOnly(opt.OptionID, ctx);
         }
     }
     private bool CheckDeath(Character attacker, Character target)

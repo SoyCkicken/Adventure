@@ -663,6 +663,7 @@ namespace MyGame
 
         [Header("보유 옵션(온힛/피격시 발동 등)")]
         public List<EquippedOption> OnHitOptions = new List<EquippedOption>();      // 본인 공격 시 발동
+        public List<EquippedOption> OnBattleStartOptions = new List<EquippedOption>(); // 전투 진입 시 1회 발동
         public List<MonsterOption> OnEnemyHitOptions = new List<MonsterOption>();   // 적의 공격(피격) 시 발동
 
         /// <summary>
@@ -718,6 +719,10 @@ namespace MyGame
         /// </summary>
         private string GetBuffKey(BuffData b)
         {
+            if (string.Equals(b.StatusType, "BerserkBuff", System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(b.StatusType, "BerserkDebuff", System.StringComparison.OrdinalIgnoreCase))
+                return $"status:{b.StatusType}";
+
             if (IsStackingStatus(b))
                 return $"status:{b.StatusType}";
 
@@ -736,14 +741,16 @@ namespace MyGame
         public int TakeDamage(int damage)
         {
             int reduced = Mathf.Max(damage - armor, 0);
-            Health -= reduced;
+            int damageTakenIncrease = GetDamageTakenIncreasePercent();
+            int finalDamage = Mathf.FloorToInt(reduced * (1f + damageTakenIncrease / 100f));
+            Health -= finalDamage;
             CombatFeedback.Report(
                 CombatFeedbackKind.Damage,
                 null,
                 this,
-                reduced,
-                $"{charaterName} 피해 {reduced} (방어 {armor}, 현재 HP {Health})");
-            return reduced;
+                finalDamage,
+                $"{charaterName} 피해 {finalDamage} (방어 {armor}, 받는 피해 +{damageTakenIncrease}%, 현재 HP {Health})");
+            return finalDamage;
         }
 
         // 기본 공격 (자동 전투 체계)
@@ -965,6 +972,8 @@ namespace MyGame
             target.StatType = string.IsNullOrEmpty(source.StatType) ? target.StatType : source.StatType;
             target.ResistanceType = string.IsNullOrEmpty(source.ResistanceType) ? target.ResistanceType : source.ResistanceType;
             target.MaxRemoveCount = source.MaxRemoveCount > 0 ? source.MaxRemoveCount : target.MaxRemoveCount;
+            target.DamageTakenIncreasePercent = source.DamageTakenIncreasePercent > 0 ? source.DamageTakenIncreasePercent : target.DamageTakenIncreasePercent;
+            target.SelfDamageOnAttackPercent = source.SelfDamageOnAttackPercent > 0 ? source.SelfDamageOnAttackPercent : target.SelfDamageOnAttackPercent;
         }
 
         private void StartBuffRoutineSafe()
@@ -1125,7 +1134,24 @@ namespace MyGame
                 {
                     ApplyHolyOnAttack(buff, attackTarget);
                 }
+
+                if (buff.SelfDamageOnAttackPercent > 0)
+                {
+                    ApplySelfDamageOnAttack(buff);
+                }
             }
+        }
+
+        private void ApplySelfDamageOnAttack(BuffData buff)
+        {
+            int amount = Mathf.Max(1, Mathf.FloorToInt(MaxHealth * buff.SelfDamageOnAttackPercent / 100f));
+            Health -= amount;
+            CombatFeedback.Report(
+                CombatFeedbackKind.StatusDamage,
+                this,
+                this,
+                amount,
+                $"{charaterName} {buff.StatusType} 반동 피해 {amount} (현재 HP {Health})");
         }
 
         private void ApplyStackedSelfDamage(BuffData buff)
@@ -1242,6 +1268,17 @@ namespace MyGame
         private int GetMaxRemoveCount(BuffData buff)
         {
             return Mathf.Clamp(buff.MaxRemoveCount <= 0 ? 3 : buff.MaxRemoveCount, 1, 3);
+        }
+
+        private int GetDamageTakenIncreasePercent()
+        {
+            int total = 0;
+            foreach (var buff in activeBuffs.Values)
+            {
+                total += Mathf.Max(0, buff.DamageTakenIncreasePercent);
+            }
+
+            return total;
         }
 
         private bool RollPercent(float chance)
@@ -1552,5 +1589,7 @@ namespace MyGame
         public string StatType;
         public string ResistanceType;
         public int MaxRemoveCount;
+        public int DamageTakenIncreasePercent;
+        public int SelfDamageOnAttackPercent;
     }
 }

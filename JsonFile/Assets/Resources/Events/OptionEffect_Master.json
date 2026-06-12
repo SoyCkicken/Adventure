@@ -305,6 +305,24 @@
       "StatType": "FreezeResist",
       "ResistanceType": null,
       "MaxRemoveCount": 0.0
+    },
+    {
+      "Option_ID": "Option_018",
+      "StatusType": "Berserk",
+      "ApplyMode": "Compound",
+      "StackPolicy": "Ignore",
+      "MaxStack": 1,
+      "Duration": 0,
+      "TickInterval": 0,
+      "TriggerType": "OnBattleStart",
+      "ValueMode": "Percent",
+      "BaseChance": 0,
+      "ChancePerStack": 0,
+      "BaseValue": 1,
+      "ValuePerStack": 0,
+      "StatType": "AttackSpeed",
+      "ResistanceType": null,
+      "MaxRemoveCount": 0
     }
   ]
 }

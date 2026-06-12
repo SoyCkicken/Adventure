@@ -567,6 +567,77 @@ public class FreezeStackEffect : StatusStackEffect
     public FreezeStackEffect() : base("Freeze", true, true) { }
 }
 
+public class BerserkBattleStartEffect : IOptionEffect
+{
+    private const int DefaultSpeedPercent = 50;
+    private const int SelfDamagePercent = 1;
+    private const int EnemyDamageTakenIncreasePercent = 25;
+    private const int PlayerDamageTakenIncreasePercent = 30;
+    private const int ArmorPenalty = -5;
+
+    public void Apply(OptionContext ctx)
+    {
+        if (ctx.User == null)
+        {
+            Debug.LogWarning("[BerserkBattleStartEffect] 사용자 캐릭터가 없어 광폭화를 적용하지 못했습니다.");
+            return;
+        }
+
+        int speedPercent = ctx.Value > 0 ? ctx.Value : DefaultSpeedPercent;
+        int damageTakenIncrease = ctx.playerState != null
+            ? PlayerDamageTakenIncreasePercent
+            : EnemyDamageTakenIncreasePercent;
+
+        ctx.User.AddBuff(new BuffData
+        {
+            BuffID = "berserk_buff",
+            OptionID = ctx.option_ID,
+            Value = speedPercent,
+            Duration = 0f,
+            Elapsed = 0f,
+            IsDebuff = false,
+            IsPassive = false,
+            Target = ctx.User,
+            User = ctx.User,
+            SourceItemID = ctx.item_ID,
+            StatusType = "BerserkBuff",
+            ApplyMode = "Stat",
+            StackPolicy = "Refresh",
+            StackCount = 1,
+            MaxStack = 1,
+            TriggerType = "OnAttack",
+            ValueMode = "Percent",
+            StatType = "AttackSpeed",
+            SelfDamageOnAttackPercent = SelfDamagePercent
+        });
+
+        ctx.User.AddBuff(new BuffData
+        {
+            BuffID = "berserk_debuff",
+            OptionID = ctx.option_ID,
+            Value = ArmorPenalty,
+            Duration = 0f,
+            Elapsed = 0f,
+            IsDebuff = true,
+            IsPassive = false,
+            Target = ctx.User,
+            User = ctx.User,
+            SourceItemID = ctx.item_ID,
+            StatusType = "BerserkDebuff",
+            ApplyMode = "Stat",
+            StackPolicy = "Refresh",
+            StackCount = 1,
+            MaxStack = 1,
+            TriggerType = "OnDamaged",
+            ValueMode = "Percent",
+            StatType = "Armor",
+            DamageTakenIncreasePercent = damageTakenIncrease
+        });
+
+        Debug.Log($"[Berserk] {ctx.User.charaterName} 광폭화 적용: 공속 +{speedPercent}%, 반동 {SelfDamagePercent}%, 받는 피해 +{damageTakenIncrease}%, 방어 {ArmorPenalty}");
+    }
+}
+
 public class OneShot_HPHealing : IOptionEffect
 {
     public void Apply(OptionContext ctx)
@@ -683,6 +754,7 @@ public class OptionManager : MonoBehaviour
         { "Effect_012", new RegenStackEffect() },
         { "Effect_013", new FreezeStackEffect() },
         { "Effect_014", new StatBonusEffect() },
+        { "Effect_015", new BerserkBattleStartEffect() },
     };
 
     // 옵션 설명 딕셔너리
@@ -705,6 +777,7 @@ public class OptionManager : MonoBehaviour
         { "Option_015", "출혈 저항" },
         { "Option_016", "중독 저항" },
         { "Option_017", "빙결 저항" },
+        { "Option_018", "광폭화" },
         { "null", "" }
     };
 
@@ -756,6 +829,17 @@ public class OptionManager : MonoBehaviour
                 Debug.Log($"[OptionManager] OnHit 옵션 {optionID} 등록 완료");
                 break;
 
+            case "OnBattleStart":
+            case "BattleStart":
+                ctx.User.OnBattleStartOptions.Add(new Character.EquippedOption
+                {
+                    OptionID = optionID,
+                    Value = ctx.Value,
+                    item_ID = ctx.item_ID
+                });
+                Debug.Log($"[OptionManager] 전투 시작 옵션 {optionID} 등록 완료");
+                break;
+
             default:
                 Debug.LogWarning($"[OptionManager] 미지원 Option_Type: {opt.Option_Type}, 기본 적용 시도");
                 effect.Apply(ctx);
@@ -797,6 +881,7 @@ public class OptionManager : MonoBehaviour
     public static void RemovePassive(string optionID, Character target)
     {
         target.OnHitOptions.RemoveAll(opt => opt.OptionID == optionID);
+        target.OnBattleStartOptions.RemoveAll(opt => opt.OptionID == optionID);
         Debug.Log($"[OptionManager] 패시브 제거됨: {optionID}");
     }
 
@@ -841,6 +926,24 @@ public class OptionManager : MonoBehaviour
     {
         var opt = GetOption(optionID);
         if (opt == null || opt.Option_Type != "OnHit")
+            return;
+
+        if (effects.TryGetValue(opt.Effect_ID, out var effect))
+        {
+            effect.Apply(ctx);
+        }
+    }
+
+    public static void ApplyBattleStartOnly(string optionID, OptionContext ctx)
+    {
+        var opt = GetOption(optionID);
+        if (opt == null)
+            return;
+
+        bool isBattleStart =
+            opt.Option_Type == "OnBattleStart" ||
+            opt.Option_Type == "BattleStart";
+        if (!isBattleStart)
             return;
 
         if (effects.TryGetValue(opt.Effect_ID, out var effect))
