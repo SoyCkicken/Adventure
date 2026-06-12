@@ -308,21 +308,10 @@ public class CombatTest : MonoBehaviour
 
         if (isEnemy && attacker.OnEnemyHitOptions != null)
         {
-            foreach (var opt in attacker.OnEnemyHitOptions)
-            {
-                var ctx = new OptionContext
-                {
-                    User = attacker,
-                    Target = target,
-                    option_ID = opt.OptionID,
-                    Value = opt.Value
-                };
+            if (monsterOptionManager == null)
+                monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
 
-                if (!string.IsNullOrEmpty(opt.OptionID))
-                {
-                    monsterOptionManager.ApplyOption(opt.OptionID, ctx);
-                }
-            }
+            monsterOptionManager?.ApplyOnHitOptions(attacker, target);
             Debug.Log("<color=black>몬스터 온힛 효과 테스트 적용</color>");
         }
     }
@@ -351,6 +340,10 @@ public class CombatTest : MonoBehaviour
             };
             OptionManager.ApplyBattleStartOnly(opt.OptionID, ctx);
         }
+
+        if (monsterOptionManager == null)
+            monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
+        monsterOptionManager?.ApplyBattleStartOptions(enemy, player);
     }
     private bool CheckDeath(Character attacker, Character target)
     {

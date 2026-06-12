@@ -587,6 +587,111 @@ public class P0DataCompatibilityTests
     }
 
     [Test]
+    public void MonsterOptionCollectorSupportsNumberedSlotsAndSkipsNoOps()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+        Component monsterOptionManager = CreateComponent("MonsterOptionManager");
+
+        var data = new MonsterMasterForTest
+        {
+            Mon_ID = "monster_boss_test",
+            MonPas_Effect1 = "--",
+            MonPas_Effect2 = "Option_009",
+            Effect2_Stat = 0,
+            MonPas_Effect3 = "Option_013",
+            Effect3_Stat = 2
+        };
+
+        object options = InvokeInstance(monsterOptionManager, "CollectOptionsFromObject", data);
+        List<object> optionList = ((IEnumerable)options).Cast<object>().ToList();
+
+        Assert.That(optionList.Count, Is.EqualTo(2));
+        Assert.That(GetField<string>(optionList[0], "OptionID"), Is.EqualTo("Option_009"));
+        Assert.That(GetField<int>(optionList[0], "Value"), Is.EqualTo(0), "Unbalanced values should remain raw 0 until execution.");
+        Assert.That(GetField<string>(optionList[0], "Trigger"), Is.EqualTo("OnHit"));
+        Assert.That(GetField<string>(optionList[1], "OptionID"), Is.EqualTo("Option_013"));
+        Assert.That(GetField<int>(optionList[1], "Value"), Is.EqualTo(2));
+    }
+
+    [Test]
+    public void MonsterOnHitOptionUsesOptionManagerWithSafeDefaultValue()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+        Component monsterOptionManager = CreateComponent("MonsterOptionManager");
+        Component monster = CreateCharacter("Monster Option User", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Monster Option Target", maxHealth: 100, health: 100);
+        Component victim = CreateCharacter("Monster Option Victim", maxHealth: 100, health: 100);
+
+        SetField(target, "damage", 10);
+        SetField(target, "CitChance", 0);
+        AddMonsterOption(monster, "Option_008", 0, "OnHit", "monster_test:MonPas_Effect1");
+
+        InvokeInstance(monsterOptionManager, "ApplyOnHitOptions", monster, target);
+        object missed = InvokeInstance(target, "Attack", victim);
+
+        Assert.That(GetField<int>(missed, "Item1"), Is.EqualTo(0), "Empty monster value should safely apply one forced-miss charge.");
+        Assert.That(GetField<int>(victim, "Health"), Is.EqualTo(100));
+    }
+
+    [Test]
+    public void MonsterBattleStartPassiveIsTemporaryAndRemovedAfterBattle()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+        Component monsterOptionManager = CreateComponent("MonsterOptionManager");
+        Component monster = CreateCharacter("Monster Passive User", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Monster Passive Target", maxHealth: 100, health: 100);
+
+        AddMonsterOption(monster, "Option_014", 5, "BattleStart", "monster_test:MonPas_Effect1");
+
+        InvokeInstance(monsterOptionManager, "ApplyBattleStartOptions", monster, target);
+        Assert.That(GetField<int>(monster, "DebuffDamageResist"), Is.EqualTo(5));
+
+        InvokeInstance(monster, "RemoveTemporaryBuffs");
+        Assert.That(GetField<int>(monster, "DebuffDamageResist"), Is.EqualTo(0));
+    }
+
+    [Test]
+    public void MonsterMasterReferencesKnownOptionOrMonsterEffectIds()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+        Component monsterOptionManager = CreateComponent("MonsterOptionManager");
+
+        TextAsset monsterAsset = Resources.Load<TextAsset>("Events/Mon_Master");
+        Assert.That(monsterAsset, Is.Not.Null);
+        MonMasterJsonRoot root = JsonUtility.FromJson<MonMasterJsonRoot>(monsterAsset.text);
+        Assert.That(root?.Mon_Master, Is.Not.Null);
+
+        foreach (MonsterMasterForTest monster in root.Mon_Master)
+        {
+            object options = InvokeInstance(monsterOptionManager, "CollectOptionsFromObject", monster);
+            foreach (object option in (IEnumerable)options)
+            {
+                string optionID = GetField<string>(option, "OptionID");
+                if (optionID.StartsWith("Option_"))
+                {
+                    Assert.That(InvokeStatic("OptionManager", "GetOption", optionID), Is.Not.Null, $"{monster.Mon_ID}:{optionID}");
+                }
+                else if (optionID.StartsWith("MonEffect_"))
+                {
+                    Assert.That((bool)InvokeInstance(monsterOptionManager, "IsRegisteredMonsterEffect", optionID), Is.True, $"{monster.Mon_ID}:{optionID}");
+                }
+            }
+        }
+    }
+
+    [Test]
     public void BerserkUsesExplicitPlayerFlagWhenPlayerStateIsMissing()
     {
         Component jsonManager = CreateComponent("JsonManager");
@@ -686,7 +791,33 @@ public class P0DataCompatibilityTests
 
         ResetRuntimeSingleton("JsonManager", "Instance");
         ResetRuntimeSingleton("OptionManager", "Instance");
+        ResetRuntimeSingleton("MonsterOptionManager", "Instance");
         ResetRuntimeSingleton("PlayerState", "Instance");
+    }
+
+    [Serializable]
+    private class MonsterMasterForTest
+    {
+        public string Mon_ID;
+        public string Mon_Name;
+        public int Mon_HP;
+        public int Mon_ATK;
+        public int Mon_Def;
+        public int Mon_Speed;
+        public string MonPas_Effect1;
+        public int Effect1_Stat;
+        public string MonPas_Effect2;
+        public int Effect2_Stat;
+        public string MonPas_Effect3;
+        public int Effect3_Stat;
+        public int Get_EXP;
+        public int Get_Soul;
+    }
+
+    [Serializable]
+    private class MonMasterJsonRoot
+    {
+        public List<MonsterMasterForTest> Mon_Master;
     }
 
     private static Component CreateComponent(string typeName)
@@ -743,6 +874,19 @@ public class P0DataCompatibilityTests
         SetField(buff, "ValueMode", "PercentMaxHP");
         SetField(buff, "IsDebuff", isDebuff);
         return buff;
+    }
+
+    private static void AddMonsterOption(Component monster, string optionId, int value, string trigger, string sourceId)
+    {
+        Type monsterOptionType = GetRuntimeType("Character").GetNestedType("MonsterOption");
+        object option = System.Activator.CreateInstance(monsterOptionType);
+        SetField(option, "OptionID", optionId);
+        SetField(option, "Value", value);
+        SetField(option, "Trigger", trigger);
+        SetField(option, "SourceID", sourceId);
+
+        IList options = (IList)GetField<object>(monster, "OnEnemyHitOptions");
+        options.Add(option);
     }
 
     private static object ParseWeaponMasters(string jsonContent)

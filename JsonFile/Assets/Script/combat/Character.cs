@@ -734,6 +734,8 @@ namespace MyGame
         {
             public string OptionID;
             public int Value;
+            public string Trigger;
+            public string SourceID;
         }
 
         #region 전투/피해 처리(자동 전투 체계)
