@@ -26,6 +26,7 @@ public class CombatTest : MonoBehaviour
     public GameObject ImageGameObject;
     public GameObject PopupObject;
     public ScreenShake _screenShake;
+    public BattleImageDoTween battleImageFx;
     // 전투 완료 콜백
     private Action<bool> onComplete;
     // 전투 종료시 넘길 변수
@@ -53,8 +54,12 @@ public class CombatTest : MonoBehaviour
         if (optionManager == null)
             optionManager = FindObjectOfType<OptionManager>();
         Enemy_Animator = enemy.GetComponent<Animator>();
+        if (battleImageFx == null)
+            battleImageFx = FindObjectOfType<BattleImageDoTween>();
         // 전투 상태 초기화
         battleOver = false;
+        CombatFeedback.Clear();
+        battleUI?.ClearCombatLog();
         Debug.Log("전투로 넘어 갔습니다!");
         player.Health = player.MaxHealth;
         enemy.Health = enemy.MaxHealth;
@@ -210,6 +215,7 @@ public class CombatTest : MonoBehaviour
         if (attacker == enemy)
         {
             var (damage, iscrit) = attacker.Attack(player);
+            PlayVisualFeedback(attacker, iscrit);
             if (iscrit)
             {
                 var gameObject = Instantiate(EnemyAttackImage, ImageGameObject.transform.position, Quaternion.identity, ImageGameObject.transform.parent);
@@ -244,13 +250,40 @@ public class CombatTest : MonoBehaviour
         if (attacker == player)
         {
             var (damage, isCrit) = attacker.Attack(enemy);
+            PlayVisualFeedback(attacker, isCrit);
             if (isCrit)
             {
                 Debug.Log("크리티컬 공격입니다");
                 Enemy_Animator.SetTrigger("isHit");
             }
+            else if (damage > 0)
+            {
+                Enemy_Animator.SetTrigger("isHit");
+            }
            
         }
+    }
+
+    private void PlayVisualFeedback(Character attacker, bool isCrit)
+    {
+        if (battleImageFx == null)
+            battleImageFx = FindObjectOfType<BattleImageDoTween>();
+        if (battleImageFx == null)
+            return;
+
+        if (attacker.LastAttackResult == "Miss" || attacker.LastAttackResult == "Blocked")
+        {
+            battleImageFx.PlayMissEffect();
+            return;
+        }
+
+        if (attacker == enemy)
+            battleImageFx.PlayEnemyAttackEffect(isCrit);
+        else if (attacker == player)
+            battleImageFx.PlayPlayerAttackEffect(isCrit);
+
+        if (isCrit)
+            battleImageFx.PlayCritEffect();
     }
 
     private void ApplyOnHitOptions(Character attacker, Character target, bool isPlayer, bool isEnemy)

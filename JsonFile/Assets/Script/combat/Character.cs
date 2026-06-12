@@ -648,6 +648,7 @@ namespace MyGame
         [SerializeField] private int forcedMissCharges;
         [SerializeField] private int nextAttackMissChance;
         private float statusSpeedMultiplier = 1f;
+        public string LastAttackResult { get; private set; } = "None";
 
         [Header("장비/몬스터 패시브 원천 정보")]
         public string weapon_Name;
@@ -736,7 +737,12 @@ namespace MyGame
         {
             int reduced = Mathf.Max(damage - armor, 0);
             Health -= reduced;
-            Debug.Log($"{charaterName}이(가) 받는 데미지: {damage} → 방어구 {armor} 경감 → 실제 {reduced}. 현재 HP: {Health}");
+            CombatFeedback.Report(
+                CombatFeedbackKind.Damage,
+                null,
+                this,
+                reduced,
+                $"{charaterName} 피해 {reduced} (방어 {armor}, 현재 HP {Health})");
             return reduced;
         }
 
@@ -745,32 +751,60 @@ namespace MyGame
         {
             if (TryBlockActionBeforeAttack())
             {
-                Debug.Log($"{charaterName}은(는) 상태 이상으로 행동하지 못했습니다.");
+                LastAttackResult = "Blocked";
+                CombatFeedback.Report(
+                    CombatFeedbackKind.ActionBlocked,
+                    this,
+                    target,
+                    0,
+                    $"{charaterName}은(는) 상태 이상으로 행동하지 못했습니다.");
                 return (0, false);
             }
 
             if (ConsumeForcedMiss())
             {
-                Debug.Log($"{charaterName}의 공격은 강제 실패 효과로 빗나갔습니다.");
+                LastAttackResult = "Miss";
+                CombatFeedback.Report(
+                    CombatFeedbackKind.Miss,
+                    this,
+                    target,
+                    0,
+                    $"{charaterName}의 공격이 빗나갔습니다.");
                 return (0, false);
             }
 
             if (ConsumeNextAttackMissChance())
             {
-                Debug.Log($"{charaterName}의 공격은 명중률 감소 효과로 빗나갔습니다.");
+                LastAttackResult = "Miss";
+                CombatFeedback.Report(
+                    CombatFeedbackKind.Miss,
+                    this,
+                    target,
+                    0,
+                    $"{charaterName}의 공격이 명중률 감소 효과로 빗나갔습니다.");
                 return (0, false);
             }
 
-            Debug.Log(damage);
-            Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
+            CombatFeedback.Report(
+                CombatFeedbackKind.Attack,
+                this,
+                target,
+                damage,
+                $"{charaterName}이(가) {target.charaterName}을(를) 공격합니다.");
             int testnum = UnityEngine.Random.Range(0, 100);
             bool isCrit = testnum < CitChance;
             int finalDamage = isCrit ? damage * 2 : damage;
 
-            Debug.Log($"{isCrit} , {CitChance} {testnum}");
-            Debug.Log(finalDamage);
-
             int dealtDamage = target.TakeDamage(finalDamage);
+            LastAttackResult = isCrit ? "Crit" : "Hit";
+            CombatFeedback.Report(
+                isCrit ? CombatFeedbackKind.Damage : CombatFeedbackKind.Attack,
+                this,
+                target,
+                dealtDamage,
+                isCrit
+                    ? $"{charaterName} 치명타! {target.charaterName}에게 {dealtDamage} 피해"
+                    : $"{charaterName} 공격 적중. {target.charaterName}에게 {dealtDamage} 피해");
             ProcessOnAttackStatusEffects(target);
             return (dealtDamage, isCrit);
         }
@@ -778,7 +812,12 @@ namespace MyGame
         public void AddForcedMiss(int charges = 1)
         {
             forcedMissCharges += Mathf.Max(1, charges);
-            Debug.Log($"[ForcedMiss] {charaterName} 다음 공격 실패 {forcedMissCharges}회 예약");
+            CombatFeedback.Report(
+                CombatFeedbackKind.StatusApplied,
+                null,
+                this,
+                forcedMissCharges,
+                $"{charaterName}에게 다음 공격 실패 {forcedMissCharges}회가 예약되었습니다.");
         }
 
         public bool ConsumeForcedMiss()
@@ -793,7 +832,12 @@ namespace MyGame
         public void AddNextAttackMissChance(int percent)
         {
             nextAttackMissChance = Mathf.Clamp(nextAttackMissChance + Mathf.Max(0, percent), 0, 100);
-            Debug.Log($"[AccuracyDown] {charaterName} 다음 공격 실패 확률 +{percent}% (현재 {nextAttackMissChance}%)");
+            CombatFeedback.Report(
+                CombatFeedbackKind.AccuracyDown,
+                null,
+                this,
+                nextAttackMissChance,
+                $"{charaterName}의 다음 공격 실패 확률 +{percent}% (현재 {nextAttackMissChance}%)");
         }
 
         private bool ConsumeNextAttackMissChance()
@@ -858,9 +902,13 @@ namespace MyGame
                     if (burnTarget != null)
                     {
                         int dmg = CalculatePeriodicAmount(burnTarget, buff.Value);
-                        Debug.Log($"화상 피해 입기 전 체력 : {burnTarget.Health}");
                         burnTarget.Health -= dmg;
-                        Debug.Log($"[화상 즉시] {burnTarget.charaterName} -{dmg} , 현재 체력 : {burnTarget.Health}");
+                        CombatFeedback.Report(
+                            CombatFeedbackKind.StatusDamage,
+                            buff.User,
+                            burnTarget,
+                            dmg,
+                            $"{burnTarget.charaterName} 화상 피해 {dmg} (현재 HP {burnTarget.Health})");
                     }
                     break;
 
@@ -870,7 +918,12 @@ namespace MyGame
                     {
                         int heal = CalculatePeriodicAmount(healTarget, buff.Value);
                         healTarget.Health = Mathf.Min(healTarget.MaxHealth, healTarget.Health + heal);
-                        Debug.Log($"[회복 즉시] {healTarget.charaterName} +{heal}");
+                        CombatFeedback.Report(
+                            CombatFeedbackKind.StatusHeal,
+                            buff.User,
+                            healTarget,
+                            heal,
+                            $"{healTarget.charaterName} 회복 {heal} (현재 HP {healTarget.Health})");
                     }
                     break;
             }
@@ -1006,13 +1059,23 @@ namespace MyGame
                 case "Option_003": // 화상 Tick
                     int dmg = CalculatePeriodicAmount(target, buff.Value);
                     target.Health -= dmg;
-                    Debug.Log($"[화상 Tick] {target.charaterName} -{dmg}");
+                    CombatFeedback.Report(
+                        CombatFeedbackKind.StatusDamage,
+                        buff.User,
+                        target,
+                        dmg,
+                        $"{target.charaterName} 화상 지속 피해 {dmg} (현재 HP {target.Health})");
                     break;
 
                 case "Option_004": // 회복 Tick
                     int heal = CalculatePeriodicAmount(target, buff.Value);
                     target.Health = Mathf.Min(target.MaxHealth, target.Health + heal);
-                    Debug.Log($"[회복 Tick] {target.charaterName} +{heal}");
+                    CombatFeedback.Report(
+                        CombatFeedbackKind.StatusHeal,
+                        buff.User,
+                        target,
+                        heal,
+                        $"{target.charaterName} 지속 회복 {heal} (현재 HP {target.Health})");
                     break;
             }
         }
@@ -1074,7 +1137,12 @@ namespace MyGame
             int resistance = GetResistancePercent(buff);
             int finalDamage = Mathf.FloorToInt(damageAmount * (100 - resistance) / 100f);
             Health -= Mathf.Max(0, finalDamage);
-            Debug.Log($"[{buff.StatusType}] {charaterName} 공격 시 {finalDamage} 피해 (stack={buff.StackCount})");
+            CombatFeedback.Report(
+                CombatFeedbackKind.StatusDamage,
+                this,
+                this,
+                finalDamage,
+                $"{charaterName} {buff.StatusType} 피해 {finalDamage} (stack={buff.StackCount})");
         }
 
         private void ApplyStackedSelfHeal(BuffData buff)
@@ -1084,7 +1152,12 @@ namespace MyGame
 
             int healAmount = CalculateStackedPercentAmount(this, buff);
             Health = Mathf.Min(MaxHealth, Health + Mathf.Max(0, healAmount));
-            Debug.Log($"[{buff.StatusType}] {charaterName} 공격 시 {healAmount} 회복 (stack={buff.StackCount})");
+            CombatFeedback.Report(
+                CombatFeedbackKind.StatusHeal,
+                this,
+                this,
+                healAmount,
+                $"{charaterName} {buff.StatusType} 회복 {healAmount} (stack={buff.StackCount})");
         }
 
         private void ApplyHolyOnAttack(BuffData buff, Character attackTarget)
@@ -1100,7 +1173,12 @@ namespace MyGame
             {
                 int count = Mathf.Min(GetMaxRemoveCount(buff), 1 + buff.StackCount / 3);
                 int removed = RemoveDebuffs(count);
-                Debug.Log($"[Holy] {charaterName} 디버프 {removed}개 정화");
+                CombatFeedback.Report(
+                    CombatFeedbackKind.Cleanse,
+                    this,
+                    this,
+                    removed,
+                    $"{charaterName} 디버프 {removed}개 정화");
             }
         }
 

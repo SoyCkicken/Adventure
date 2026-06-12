@@ -15,10 +15,23 @@ public class BattleUI : MonoBehaviour
     public Slider monsterHPSlider;
     public Slider playerHpSlider;
     public TMP_Text enemyNameText;
+    public TMP_Text combatLogText;
+    [SerializeField] private int maxCombatLogLines = 6;
+    private readonly Queue<string> combatLogLines = new Queue<string>();
 
     void Start()
     {
        
+    }
+
+    private void OnEnable()
+    {
+        CombatFeedback.OnFeedback += HandleCombatFeedback;
+    }
+
+    private void OnDisable()
+    {
+        CombatFeedback.OnFeedback -= HandleCombatFeedback;
     }
     //적 생성 되었을때 세팅용
     public void SetingUI()
@@ -46,9 +59,29 @@ public class BattleUI : MonoBehaviour
         
         playerHpSlider.value = player.Health;
     }
-    // Update is called once per frame
-    void Update()
+
+    public void ClearCombatLog()
     {
-        
+        combatLogLines.Clear();
+        if (combatLogText != null)
+            combatLogText.text = string.Empty;
+    }
+
+    private void HandleCombatFeedback(CombatFeedbackEntry entry)
+    {
+        AppendCombatLog(entry.Message);
+    }
+
+    public void AppendCombatLog(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        combatLogLines.Enqueue(message);
+        while (combatLogLines.Count > Mathf.Max(1, maxCombatLogLines))
+            combatLogLines.Dequeue();
+
+        if (combatLogText != null)
+            combatLogText.text = string.Join("\n", combatLogLines);
     }
 }

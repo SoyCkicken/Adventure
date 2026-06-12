@@ -37,9 +37,18 @@ public class SpriteBank : MonoBehaviour
     // 이름만 주면 내부 딕셔너리에서 찾아서 리턴
     public Sprite Load(string spriteName)
     {
-        if (dict.TryGetValue(spriteName, out var result))
+        if (TryLoad(spriteName, out var result))
             return result;
         Debug.LogError($"SpriteBank: '{spriteName}' 스프라이트를 찾을 수 없습니다.");
         return null;
+    }
+
+    public bool TryLoad(string spriteName, out Sprite result)
+    {
+        result = null;
+        if (string.IsNullOrWhiteSpace(spriteName) || dict == null)
+            return false;
+
+        return dict.TryGetValue(spriteName, out result);
     }
 }

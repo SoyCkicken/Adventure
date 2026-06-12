@@ -52,6 +52,7 @@
 
 using MyGame;
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,11 +62,15 @@ public class BuffIconUI : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private Image timerSlider; // UI 게이지 (Image.type = Filled, Fill Amount 사용)
     [SerializeField] private SpriteBank spriteBank;
+    [SerializeField] private TMP_Text stackText;
+    [SerializeField] private TMP_Text durationText;
 
     public BuffData buffData { get; private set; }
 
     // 패시브/무한 지속이면 타이머를 돌리지 않는다
     private bool noTimer;
+    private int lastShownSeconds = -1;
+    private Coroutine timerRoutine;
 
     public void Set(BuffData data)
     {
@@ -75,8 +80,20 @@ public class BuffIconUI : MonoBehaviour
         if (spriteBank == null) spriteBank = SpriteBank.Instance;
 
         // 아이콘 세팅
-        var spr = (spriteBank != null) ? spriteBank.Load(buffData.OptionID) : null;
-        if (spr != null) iconImage.sprite = spr;
+        Sprite spr = null;
+        if (spriteBank != null)
+            spriteBank.TryLoad(buffData.OptionID, out spr);
+        if (spr != null && iconImage != null)
+        {
+            iconImage.sprite = spr;
+            iconImage.color = Color.white;
+        }
+        else if (iconImage != null)
+        {
+            iconImage.color = GetFallbackColor(buffData);
+        }
+
+        UpdateStackText();
 
         // 패시브 또는 Duration<=0 은 타이머 숨김
         noTimer = buffData.IsPassive || buffData.Duration <= 0f;
@@ -97,16 +114,14 @@ public class BuffIconUI : MonoBehaviour
                 UpdateFill(); // 최초 반영
             }
         }
-    }
 
-    private void Update()
-    {
-        if (buffData == null) return;
+        if (noTimer)
+        {
+            UpdateDurationText();
+            return;
+        }
 
-        // 시간 주도권은 Character가 가짐 — UI는 표시만
-        if (noTimer) return;
-
-        UpdateFill();
+        StartTimerRoutine();
     }
 
     private void UpdateFill()
@@ -115,6 +130,7 @@ public class BuffIconUI : MonoBehaviour
 
         float progress = Mathf.Clamp01(buffData.Elapsed / buffData.Duration);
         timerSlider.fillAmount = progress;
+        UpdateDurationText();
 
         // 수명 끝나면 UI 제거 (일시적 버프만)
         if (progress >= 1f - 1e-4f)
@@ -129,6 +145,98 @@ public class BuffIconUI : MonoBehaviour
         buffData.Duration = updated.Duration;
         buffData.Elapsed = updated.Elapsed;
         buffData.Value = updated.Value;
+        buffData.StackCount = updated.StackCount;
         Set(buffData); // 타이머 on/off 재판단
+    }
+
+    private void StartTimerRoutine()
+    {
+        if (timerRoutine != null || !isActiveAndEnabled)
+            return;
+
+        timerRoutine = StartCoroutine(TimerRefreshRoutine());
+    }
+
+    private IEnumerator TimerRefreshRoutine()
+    {
+        var wait = new WaitForSeconds(0.2f);
+        while (buffData != null && !noTimer)
+        {
+            UpdateFill();
+            yield return wait;
+        }
+
+        timerRoutine = null;
+    }
+
+    private void OnDisable()
+    {
+        if (timerRoutine != null)
+        {
+            StopCoroutine(timerRoutine);
+            timerRoutine = null;
+        }
+    }
+
+    private void UpdateStackText()
+    {
+        if (stackText == null)
+            return;
+
+        bool showStack = buffData != null &&
+                         string.Equals(buffData.StackPolicy, "Stack", StringComparison.OrdinalIgnoreCase) &&
+                         buffData.StackCount > 1;
+        if (showStack)
+            stackText.SetText("x{0}", buffData.StackCount);
+        else
+            stackText.text = string.Empty;
+    }
+
+    private void UpdateDurationText()
+    {
+        if (durationText == null || buffData == null)
+            return;
+
+        if (buffData.IsPassive || buffData.Duration <= 0f)
+        {
+            durationText.text = string.Empty;
+            return;
+        }
+
+        float remaining = Mathf.Max(0f, buffData.Duration - buffData.Elapsed);
+        int seconds = Mathf.CeilToInt(remaining);
+        if (seconds == lastShownSeconds)
+            return;
+
+        lastShownSeconds = seconds;
+        durationText.SetText("{0}", seconds);
+    }
+
+    private static Color GetFallbackColor(BuffData data)
+    {
+        string key = data?.StatusType ?? data?.OptionID ?? string.Empty;
+        switch (key)
+        {
+            case "Burn":
+            case "Option_003":
+                return new Color(1f, 0.32f, 0.12f);
+            case "Bleed":
+            case "Option_009":
+                return new Color(0.75f, 0.05f, 0.08f);
+            case "Poison":
+            case "Option_010":
+                return new Color(0.38f, 0.75f, 0.18f);
+            case "Holy":
+            case "Option_011":
+                return new Color(1f, 0.88f, 0.25f);
+            case "Regen":
+            case "Option_012":
+                return new Color(0.18f, 0.75f, 0.42f);
+            case "Freeze":
+            case "Option_013":
+                return new Color(0.36f, 0.78f, 1f);
+            default:
+                return Color.white;
+        }
     }
 }
