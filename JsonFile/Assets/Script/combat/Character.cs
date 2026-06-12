@@ -641,6 +641,13 @@ namespace MyGame
         public int armor;
         public int CitChance = 10; // 기본 치확
         public int GetEXP;
+        public int DebuffDamageResist;
+        public int BleedResist;
+        public int PoisonResist;
+        public int FreezeResist;
+        [SerializeField] private int forcedMissCharges;
+        [SerializeField] private int nextAttackMissChance;
+        private float statusSpeedMultiplier = 1f;
 
         [Header("장비/몬스터 패시브 원천 정보")]
         public string weapon_Name;
@@ -678,6 +685,10 @@ namespace MyGame
         bool IsStillEquipped(BuffData buff)
             => buff.IsPassive && equipmentQuery != null && equipmentQuery.IsItemEquipped(buff.SourceItemID);
 
+        bool IsStackingStatus(BuffData buff)
+            => string.Equals(buff.StackPolicy, "Stack", System.StringComparison.OrdinalIgnoreCase) &&
+               !string.IsNullOrEmpty(buff.StatusType);
+
         /// <summary>
         /// 집중전투(턴 기반)에서는 자동 전투 버프와 완전히 분리된 디버프 리스트를 사용
         /// - 턴이 지날 때마다 TurnDebuff()에서 Elapsed +1 및 효과 Tick
@@ -706,6 +717,9 @@ namespace MyGame
         /// </summary>
         private string GetBuffKey(BuffData b)
         {
+            if (IsStackingStatus(b))
+                return $"status:{b.StatusType}";
+
             return string.IsNullOrEmpty(b.SourceItemID) ? b.BuffID : $"{b.BuffID}:{b.SourceItemID}";
         }
 
@@ -729,6 +743,24 @@ namespace MyGame
         // 기본 공격 (자동 전투 체계)
         public (int dealtDamage, bool isCrit) Attack(Character target)
         {
+            if (TryBlockActionBeforeAttack())
+            {
+                Debug.Log($"{charaterName}은(는) 상태 이상으로 행동하지 못했습니다.");
+                return (0, false);
+            }
+
+            if (ConsumeForcedMiss())
+            {
+                Debug.Log($"{charaterName}의 공격은 강제 실패 효과로 빗나갔습니다.");
+                return (0, false);
+            }
+
+            if (ConsumeNextAttackMissChance())
+            {
+                Debug.Log($"{charaterName}의 공격은 명중률 감소 효과로 빗나갔습니다.");
+                return (0, false);
+            }
+
             Debug.Log(damage);
             Debug.Log($"{charaterName}이(가) {target.charaterName}을(를) 공격: {damage} 데미지 시도");
             int testnum = UnityEngine.Random.Range(0, 100);
@@ -739,7 +771,39 @@ namespace MyGame
             Debug.Log(finalDamage);
 
             int dealtDamage = target.TakeDamage(finalDamage);
+            ProcessOnAttackStatusEffects(target);
             return (dealtDamage, isCrit);
+        }
+
+        public void AddForcedMiss(int charges = 1)
+        {
+            forcedMissCharges += Mathf.Max(1, charges);
+            Debug.Log($"[ForcedMiss] {charaterName} 다음 공격 실패 {forcedMissCharges}회 예약");
+        }
+
+        public bool ConsumeForcedMiss()
+        {
+            if (forcedMissCharges <= 0)
+                return false;
+
+            forcedMissCharges--;
+            return true;
+        }
+
+        public void AddNextAttackMissChance(int percent)
+        {
+            nextAttackMissChance = Mathf.Clamp(nextAttackMissChance + Mathf.Max(0, percent), 0, 100);
+            Debug.Log($"[AccuracyDown] {charaterName} 다음 공격 실패 확률 +{percent}% (현재 {nextAttackMissChance}%)");
+        }
+
+        private bool ConsumeNextAttackMissChance()
+        {
+            if (nextAttackMissChance <= 0)
+                return false;
+
+            int chance = nextAttackMissChance;
+            nextAttackMissChance = 0;
+            return RollPercent(chance);
         }
         #endregion
 
@@ -754,17 +818,26 @@ namespace MyGame
         public void AddBuff(BuffData buff)
         {
             if (buff == null) return;
+            NormalizeBuffDefaults(buff);
             string key = GetBuffKey(buff);
 
             // 동일 출처/동일 BuffID가 이미 있으면 → 갱신(지속시간 리셋 & 값 갱신)
             if (activeBuffs.TryGetValue(key, out var existing))
             {
-                existing.Duration = buff.Duration;
+                if (string.Equals(existing.StackPolicy, "Stack", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    int addStack = Mathf.Max(1, buff.StackCount);
+                    existing.StackCount = Mathf.Min(GetMaxStack(existing), Mathf.Max(1, existing.StackCount) + addStack);
+                }
+
+                existing.Duration = buff.Duration > 0 ? buff.Duration : existing.Duration;
                 existing.Elapsed = 0f;
                 existing.Value = buff.Value; // 필요 시 수치 갱신
+                CopyStatusMetadata(existing, buff);
                 Debug.Log($"[Buff] Refresh: {key} (Duration reset, Value={existing.Value})");
 
                 // UI 동기화 + 틱 루틴 보장
+                RecalculateStatusStatModifiers();
                 RefreshBuffUI();
                 StartBuffRoutineSafe();
 
@@ -775,26 +848,27 @@ namespace MyGame
 
             // 신규 등록
             activeBuffs[key] = buff;
+            RecalculateStatusStatModifiers();
 
             // 즉시형 효과 1회(시작 즉시)
             switch (buff.OptionID)
             {
-                case "Option_003": // 화상 즉시 2%(Tick은 별도 루틴에서 1초마다 반복)
+                case "Option_003": // 화상 즉시 Value%(Tick은 별도 루틴에서 반복)
                     Character burnTarget = GetBuffTarget(buff);
                     if (burnTarget != null)
                     {
-                        int dmg = CalculatePeriodicAmount(burnTarget);
+                        int dmg = CalculatePeriodicAmount(burnTarget, buff.Value);
                         Debug.Log($"화상 피해 입기 전 체력 : {burnTarget.Health}");
                         burnTarget.Health -= dmg;
                         Debug.Log($"[화상 즉시] {burnTarget.charaterName} -{dmg} , 현재 체력 : {burnTarget.Health}");
                     }
                     break;
 
-                case "Option_004": // 회복 즉시 2%
+                case "Option_004": // 회복 즉시 Value%
                     Character healTarget = GetBuffTarget(buff);
                     if (healTarget != null)
                     {
-                        int heal = CalculatePeriodicAmount(healTarget);
+                        int heal = CalculatePeriodicAmount(healTarget, buff.Value);
                         healTarget.Health = Mathf.Min(healTarget.MaxHealth, healTarget.Health + heal);
                         Debug.Log($"[회복 즉시] {healTarget.charaterName} +{heal}");
                     }
@@ -809,6 +883,35 @@ namespace MyGame
             StartBuffRoutineSafe();
 
             Debug.Log($"[Buff] Add: {key} ({buff.OptionID}) from {buff.SourceItemID}");
+        }
+
+        private void NormalizeBuffDefaults(BuffData buff)
+        {
+            if (string.IsNullOrEmpty(buff.StatusType))
+                buff.StatusType = buff.OptionID;
+            if (string.IsNullOrEmpty(buff.StackPolicy))
+                buff.StackPolicy = buff.IsPassive ? "Ignore" : "Refresh";
+            if (buff.StackCount <= 0)
+                buff.StackCount = 1;
+            if (buff.MaxStack <= 0)
+                buff.MaxStack = string.Equals(buff.StackPolicy, "Stack", System.StringComparison.OrdinalIgnoreCase) ? 99 : 1;
+        }
+
+        private static void CopyStatusMetadata(BuffData target, BuffData source)
+        {
+            target.StatusType = string.IsNullOrEmpty(source.StatusType) ? target.StatusType : source.StatusType;
+            target.ApplyMode = string.IsNullOrEmpty(source.ApplyMode) ? target.ApplyMode : source.ApplyMode;
+            target.StackPolicy = string.IsNullOrEmpty(source.StackPolicy) ? target.StackPolicy : source.StackPolicy;
+            target.MaxStack = source.MaxStack > 0 ? source.MaxStack : target.MaxStack;
+            target.TriggerType = string.IsNullOrEmpty(source.TriggerType) ? target.TriggerType : source.TriggerType;
+            target.ValueMode = string.IsNullOrEmpty(source.ValueMode) ? target.ValueMode : source.ValueMode;
+            target.BaseChance = source.BaseChance != 0 ? source.BaseChance : target.BaseChance;
+            target.ChancePerStack = source.ChancePerStack != 0 ? source.ChancePerStack : target.ChancePerStack;
+            target.BaseValue = source.BaseValue != 0 ? source.BaseValue : target.BaseValue;
+            target.ValuePerStack = source.ValuePerStack != 0 ? source.ValuePerStack : target.ValuePerStack;
+            target.StatType = string.IsNullOrEmpty(source.StatType) ? target.StatType : source.StatType;
+            target.ResistanceType = string.IsNullOrEmpty(source.ResistanceType) ? target.ResistanceType : source.ResistanceType;
+            target.MaxRemoveCount = source.MaxRemoveCount > 0 ? source.MaxRemoveCount : target.MaxRemoveCount;
         }
 
         private void StartBuffRoutineSafe()
@@ -901,13 +1004,13 @@ namespace MyGame
             switch (buff.OptionID)
             {
                 case "Option_003": // 화상 Tick
-                    int dmg = CalculatePeriodicAmount(target);
+                    int dmg = CalculatePeriodicAmount(target, buff.Value);
                     target.Health -= dmg;
                     Debug.Log($"[화상 Tick] {target.charaterName} -{dmg}");
                     break;
 
                 case "Option_004": // 회복 Tick
-                    int heal = CalculatePeriodicAmount(target);
+                    int heal = CalculatePeriodicAmount(target, buff.Value);
                     target.Health = Mathf.Min(target.MaxHealth, target.Health + heal);
                     Debug.Log($"[회복 Tick] {target.charaterName} +{heal}");
                     break;
@@ -919,9 +1022,176 @@ namespace MyGame
             return buff.Target != null ? buff.Target : this;
         }
 
-        private static int CalculatePeriodicAmount(Character target)
+        private static int CalculatePeriodicAmount(Character target, int percent)
         {
-            return Mathf.FloorToInt(target.MaxHealth * 0.02f);
+            return Mathf.FloorToInt(target.MaxHealth * Mathf.Max(0, percent) / 100f);
+        }
+
+        private bool TryBlockActionBeforeAttack()
+        {
+            foreach (var buff in activeBuffs.Values.ToList())
+            {
+                if (!string.Equals(buff.StatusType, "Freeze", System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                float chance = GetStackedChance(buff);
+                int resistance = Mathf.Clamp(FreezeResist, 0, 100);
+                chance *= (100 - resistance) / 100f;
+                if (RollPercent(chance))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void ProcessOnAttackStatusEffects(Character attackTarget)
+        {
+            foreach (var buff in activeBuffs.Values.ToList())
+            {
+                string status = buff.StatusType ?? "";
+                if (string.Equals(status, "Bleed", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(status, "Poison", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    ApplyStackedSelfDamage(buff);
+                }
+                else if (string.Equals(status, "Regen", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    ApplyStackedSelfHeal(buff);
+                }
+                else if (string.Equals(status, "Holy", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    ApplyHolyOnAttack(buff, attackTarget);
+                }
+            }
+        }
+
+        private void ApplyStackedSelfDamage(BuffData buff)
+        {
+            if (!RollPercent(GetStackedChance(buff)))
+                return;
+
+            int damageAmount = CalculateStackedPercentAmount(this, buff);
+            int resistance = GetResistancePercent(buff);
+            int finalDamage = Mathf.FloorToInt(damageAmount * (100 - resistance) / 100f);
+            Health -= Mathf.Max(0, finalDamage);
+            Debug.Log($"[{buff.StatusType}] {charaterName} 공격 시 {finalDamage} 피해 (stack={buff.StackCount})");
+        }
+
+        private void ApplyStackedSelfHeal(BuffData buff)
+        {
+            if (!RollPercent(GetStackedChance(buff)))
+                return;
+
+            int healAmount = CalculateStackedPercentAmount(this, buff);
+            Health = Mathf.Min(MaxHealth, Health + Mathf.Max(0, healAmount));
+            Debug.Log($"[{buff.StatusType}] {charaterName} 공격 시 {healAmount} 회복 (stack={buff.StackCount})");
+        }
+
+        private void ApplyHolyOnAttack(BuffData buff, Character attackTarget)
+        {
+            if (attackTarget != null && RollPercent(GetStackedChance(buff)))
+            {
+                int penalty = Mathf.FloorToInt(GetStackedValue(buff));
+                attackTarget.AddNextAttackMissChance(penalty);
+            }
+
+            int cleanseChance = Mathf.Max(1, buff.StackCount / 2) * 2;
+            if (RollPercent(cleanseChance))
+            {
+                int count = Mathf.Min(GetMaxRemoveCount(buff), 1 + buff.StackCount / 3);
+                int removed = RemoveDebuffs(count);
+                Debug.Log($"[Holy] {charaterName} 디버프 {removed}개 정화");
+            }
+        }
+
+        private int RemoveDebuffs(int maxCount)
+        {
+            int removed = 0;
+            var keys = activeBuffs
+                .Where(kv => kv.Value.IsDebuff && !kv.Value.IsPassive)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            foreach (var key in keys)
+            {
+                if (removed >= maxCount)
+                    break;
+
+                RemoveBuffByKey(key);
+                removed++;
+            }
+
+            return removed;
+        }
+
+        private int CalculateStackedPercentAmount(Character target, BuffData buff)
+        {
+            return Mathf.FloorToInt(target.MaxHealth * Mathf.Max(0, GetStackedValue(buff)) / 100f);
+        }
+
+        private float GetStackedChance(BuffData buff)
+        {
+            return Mathf.Clamp(GetStackedFormulaValue(buff.BaseChance, buff.ChancePerStack, buff.StackCount), 0f, 100f);
+        }
+
+        private float GetStackedValue(BuffData buff)
+        {
+            return GetStackedFormulaValue(buff.BaseValue, buff.ValuePerStack, buff.StackCount);
+        }
+
+        private static float GetStackedFormulaValue(float baseValue, float perStack, int stack)
+        {
+            int count = Mathf.Max(1, stack);
+            return baseValue + Mathf.Max(0, count - 1) * perStack;
+        }
+
+        private int GetResistancePercent(BuffData buff)
+        {
+            int specific = 0;
+            if (string.Equals(buff.ResistanceType, "BleedResist", System.StringComparison.OrdinalIgnoreCase))
+                specific = BleedResist;
+            else if (string.Equals(buff.ResistanceType, "PoisonResist", System.StringComparison.OrdinalIgnoreCase))
+                specific = PoisonResist;
+
+            return Mathf.Clamp(DebuffDamageResist + specific, 0, 100);
+        }
+
+        private int GetMaxStack(BuffData buff)
+        {
+            return Mathf.Max(1, buff.MaxStack);
+        }
+
+        private int GetMaxRemoveCount(BuffData buff)
+        {
+            return Mathf.Clamp(buff.MaxRemoveCount <= 0 ? 3 : buff.MaxRemoveCount, 1, 3);
+        }
+
+        private bool RollPercent(float chance)
+        {
+            if (chance <= 0f) return false;
+            if (chance >= 100f) return true;
+            return UnityEngine.Random.Range(0f, 100f) < chance;
+        }
+
+        private void RecalculateStatusStatModifiers()
+        {
+            if (statusSpeedMultiplier <= 0f)
+                statusSpeedMultiplier = 1f;
+
+            speed /= statusSpeedMultiplier;
+
+            float newMultiplier = 1f;
+            foreach (var buff in activeBuffs.Values)
+            {
+                if (!string.Equals(buff.StatusType, "Freeze", System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                float slowPercent = Mathf.Clamp(GetStackedValue(buff), 0f, 95f);
+                newMultiplier *= 1f - slowPercent / 100f;
+            }
+
+            statusSpeedMultiplier = newMultiplier;
+            speed *= statusSpeedMultiplier;
         }
         #endregion
 
@@ -1018,6 +1288,7 @@ namespace MyGame
             }
 
             // 단 한 번의 동기화로 안전하게 반영
+            RecalculateStatusStatModifiers();
             RefreshBuffUI();
         }
 
@@ -1058,6 +1329,7 @@ namespace MyGame
             Debug.Log($"[Buff] Removed: {key}");
 
             // 상태 변경 직후 UI 동기화
+            RecalculateStatusStatModifiers();
             RefreshBuffUI();
         }
 
@@ -1148,5 +1420,19 @@ namespace MyGame
         public bool IsDebuff;         // 디버프 여부(표시/정렬 등에 쓰일 수 있음)
         public Character Target;      // 효과를 받는 대상(예: 화상 피해 대상)
         public Character User;        // 시전자(본인)
+        public string StatusType;
+        public string ApplyMode;
+        public string StackPolicy;
+        public int StackCount = 1;
+        public int MaxStack = 1;
+        public string TriggerType;
+        public string ValueMode;
+        public float BaseChance;
+        public float ChancePerStack;
+        public float BaseValue;
+        public float ValuePerStack;
+        public string StatType;
+        public string ResistanceType;
+        public int MaxRemoveCount;
     }
 }

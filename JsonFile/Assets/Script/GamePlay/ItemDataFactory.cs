@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class ItemDataFactory
@@ -165,6 +166,18 @@ public static class ItemDataFactory
     public static string NormalizeOptionId(string optionId)
     {
         return HasOption(optionId) ? optionId.Trim() : null;
+    }
+
+    public static IEnumerable<string> GetIconKeys(ItemData item, string fallback = "UI_InventorySlot 1")
+    {
+        if (!string.IsNullOrWhiteSpace(item?.Icon))
+            yield return item.Icon.Trim();
+        if (!string.IsNullOrWhiteSpace(item?.Item_ID))
+            yield return item.Item_ID.Trim();
+        if (!string.IsNullOrWhiteSpace(item?.Item_Name))
+            yield return item.Item_Name.Trim();
+        if (!string.IsNullOrWhiteSpace(fallback))
+            yield return fallback;
     }
 
     private static bool IsType(ItemData item, string itemType)

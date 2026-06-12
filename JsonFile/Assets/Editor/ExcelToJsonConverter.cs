@@ -210,6 +210,8 @@ using System.Text.RegularExpressions;
 
 public class ExcelAutoGenerator : EditorWindow
 {
+    private static readonly Encoding OutputEncoding = new UTF8Encoding(false);
+
     private string excelFolderPath = "Assets/ExcelFiles";
     private string jsonOutputFolder = "Assets/Resources/Events";
     private string classOutputFolder = "Assets/Json";
@@ -265,7 +267,7 @@ public class ExcelAutoGenerator : EditorWindow
     private void ConvertExcel(string path)
     {
         using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
-        using var reader = ExcelReaderFactory.CreateReader(stream);
+        using var reader = ExcelReaderFactory.CreateReader(stream, CreateReaderConfiguration());
         var conf = new ExcelDataSetConfiguration { ConfigureDataTable = _ => new ExcelDataTableConfiguration { UseHeaderRow = true } };
         var dataSet = reader.AsDataSet(conf);
 
@@ -335,7 +337,7 @@ public class ExcelAutoGenerator : EditorWindow
 
         if (!Directory.Exists(jsonOutputFolder)) Directory.CreateDirectory(jsonOutputFolder);
         var jsonSavePath = Path.Combine(jsonOutputFolder, table.TableName + ".json");
-        File.WriteAllText(jsonSavePath, JsonConvert.SerializeObject(workbook, Formatting.Indented));
+        File.WriteAllText(jsonSavePath, JsonConvert.SerializeObject(workbook, Formatting.Indented), OutputEncoding);
     }
 
     private void CreateCSharpClass(DataTable table)
@@ -343,7 +345,7 @@ public class ExcelAutoGenerator : EditorWindow
         if (!Directory.Exists(classOutputFolder)) Directory.CreateDirectory(classOutputFolder);
         var scriptFilePath = Path.Combine(classOutputFolder, SanitizeTypeName(table.TableName) + ".cs");
 
-        using var writer = new StreamWriter(scriptFilePath, false, Encoding.UTF8);
+        using var writer = new StreamWriter(scriptFilePath, false, OutputEncoding);
         writer.WriteLine("using System;");
         writer.WriteLine("using System.Collections.Generic;");
         writer.WriteLine("[Serializable]");
@@ -653,13 +655,53 @@ public class ExcelAutoGenerator : EditorWindow
         return s;
     }
 
+    internal static ExcelReaderConfiguration CreateReaderConfiguration()
+    {
+        RegisterCodePagesProviderIfAvailable();
+
+        return new ExcelReaderConfiguration
+        {
+            FallbackEncoding = GetExcelFallbackEncoding()
+        };
+    }
+
+    internal static Encoding GetExcelFallbackEncoding()
+    {
+        try
+        {
+            return Encoding.GetEncoding(949);
+        }
+        catch
+        {
+            try
+            {
+                return Encoding.GetEncoding("ks_c_5601-1987");
+            }
+            catch
+            {
+                return Encoding.UTF8;
+            }
+        }
+    }
+
+    private static void RegisterCodePagesProviderIfAvailable()
+    {
+        Type providerType = Type.GetType("System.Text.CodePagesEncodingProvider, System.Text.Encoding.CodePages");
+        var instanceProperty = providerType?.GetProperty("Instance", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+        var provider = instanceProperty?.GetValue(null) as EncodingProvider;
+        if (provider != null)
+        {
+            Encoding.RegisterProvider(provider);
+        }
+    }
+
     // 파일 하단 아무 곳에 추가
     private void EmitRegistryClassesOnce()
     {
         if (!Directory.Exists(classOutputFolder)) Directory.CreateDirectory(classOutputFolder);
         var extraPath = Path.Combine(classOutputFolder, "Auto_GeneratedTypes.cs");
 
-        using var writer = new StreamWriter(extraPath, false, Encoding.UTF8);
+        using var writer = new StreamWriter(extraPath, false, OutputEncoding);
         writer.WriteLine("using System;");
         writer.WriteLine("using System.Collections.Generic;");
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -23,7 +24,7 @@ public class P0DataCompatibilityTests
         { "Mon_concentrate", 2 },
         { "Mon_Effect_Master", 1 },
         { "Mon_Master", 2 },
-        { "Option_Master", 8 },
+        { "Option_Master", 13 },
         { "Patch_Notes", 3 },
         { "RandomEvents_Master_Event", 46 },
         { "Ran_Script_Master_Event", 50 },
@@ -56,7 +57,7 @@ public class P0DataCompatibilityTests
     [TestCase("Weapon_Master", 13)]
     [TestCase("Armor_Master", 10)]
     [TestCase("Item_Master", 20)]
-    [TestCase("Option_Master", 8)]
+    [TestCase("Option_Master", 13)]
     [TestCase("Mon_Master", 2)]
     public void ImportantJsonRowCountsStayStable(string fileKey, int expectedCount)
     {
@@ -83,8 +84,25 @@ public class P0DataCompatibilityTests
         Assert.That(GetField<bool>(oldSword, "One_Handed"), Is.True);
         Assert.That(GetField<bool>(shortBow, "One_Handed"), Is.True);
         Assert.That(GetField<bool>(testBurnBlade, "One_Handed"), Is.True);
+        Assert.That(GetField<string>(testBurnBlade, "Weapon_Name"), Is.EqualTo("화염 검"));
         Assert.That(GetField<string>(testBurnBlade, "Option_1_ID"), Is.EqualTo("Option_003"));
         Assert.That(GetField<int>(testBurnBlade, "Option_Value1"), Is.EqualTo(5));
+    }
+
+    [Test]
+    public void ExcelGeneratedOptionDataPreservesKoreanForcedMissEffect()
+    {
+        TextAsset asset = Resources.Load<TextAsset>("Events/Option_Master");
+        Assert.That(asset, Is.Not.Null);
+
+        Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_008\""));
+        Assert.That(asset.text, Does.Contain("\"Option_Description\": \"적중 시 대상의 다음 공격 1회 실패\""));
+        Assert.That(asset.text, Does.Contain("\"Effect_ID\": \"Effect_008\""));
+        Assert.That(asset.text, Does.Contain("\"Option_Type\": \"OnHit\""));
+        Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_009\""));
+        Assert.That(asset.text, Does.Contain("\"StatusType\": \"Bleed\""));
+        Assert.That(asset.text, Does.Contain("\"Option_ID\": \"Option_013\""));
+        Assert.That(asset.text, Does.Contain("\"StatusType\": \"Freeze\""));
     }
 
     [Test]
@@ -202,22 +220,166 @@ public class P0DataCompatibilityTests
     public void PeriodicBuffTicksApplyBurnAndHealingAfterInitialEffect()
     {
         Component burnTarget = CreateCharacter("Burn Target", maxHealth: 100, health: 100);
-        object burn = CreateBuffData("test_burn", "Option_003", burnTarget, duration: 5f);
+        object burn = CreateBuffData("test_burn", "Option_003", burnTarget, duration: 5f, value: 5);
 
         InvokeInstance(burnTarget, "AddBuff", burn);
-        Assert.That(GetField<int>(burnTarget, "Health"), Is.EqualTo(98), "Burn should apply once immediately.");
+        Assert.That(GetField<int>(burnTarget, "Health"), Is.EqualTo(95), "Burn should apply Value% once immediately.");
 
         InvokePrivateInstance(burnTarget, "TickActiveBuffs", 1f);
-        Assert.That(GetField<int>(burnTarget, "Health"), Is.EqualTo(96), "Burn should apply again on the next tick.");
+        Assert.That(GetField<int>(burnTarget, "Health"), Is.EqualTo(90), "Burn should apply Value% again on the next tick.");
 
         Component healTarget = CreateCharacter("Heal Target", maxHealth: 100, health: 80);
-        object heal = CreateBuffData("test_heal", "Option_004", healTarget, duration: 5f);
+        object heal = CreateBuffData("test_heal", "Option_004", healTarget, duration: 5f, value: 5);
 
         InvokeInstance(healTarget, "AddBuff", heal);
-        Assert.That(GetField<int>(healTarget, "Health"), Is.EqualTo(82), "Healing should apply once immediately.");
+        Assert.That(GetField<int>(healTarget, "Health"), Is.EqualTo(85), "Healing should apply Value% once immediately.");
 
         InvokePrivateInstance(healTarget, "TickActiveBuffs", 1f);
-        Assert.That(GetField<int>(healTarget, "Health"), Is.EqualTo(84), "Healing should apply again on the next tick.");
+        Assert.That(GetField<int>(healTarget, "Health"), Is.EqualTo(90), "Healing should apply Value% again on the next tick.");
+    }
+
+    [Test]
+    public void ForcedMissEffectConsumesOnlyTheNextAttack()
+    {
+        Component attacker = CreateCharacter("Miss Attacker", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Miss Target", maxHealth: 100, health: 100);
+        SetField(attacker, "damage", 10);
+        SetField(attacker, "CitChance", 0);
+
+        InvokeInstance(attacker, "AddForcedMiss", 1);
+
+        object missed = InvokeInstance(attacker, "Attack", target);
+        Assert.That(GetField<int>(missed, "Item1"), Is.EqualTo(0));
+        Assert.That(GetField<bool>(missed, "Item2"), Is.False);
+        Assert.That(GetField<int>(target, "Health"), Is.EqualTo(100));
+
+        object hit = InvokeInstance(attacker, "Attack", target);
+        Assert.That(GetField<int>(hit, "Item1"), Is.EqualTo(10));
+        Assert.That(GetField<int>(target, "Health"), Is.EqualTo(90));
+    }
+
+    [Test]
+    public void ForcedMissOptionEffectAddsMissChargeToTarget()
+    {
+        Component attacker = CreateCharacter("Effect User", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Effect Target", maxHealth: 100, health: 100);
+        SetField(target, "damage", 10);
+        SetField(target, "CitChance", 0);
+
+        object context = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(context, "User", attacker);
+        SetField(context, "Target", target);
+        SetField(context, "Value", 1);
+        SetField(context, "item_ID", "test_item");
+        SetField(context, "option_ID", "Option_008");
+
+        object effect = System.Activator.CreateInstance(GetRuntimeType("ForceNextAttackMissEffect"));
+        InvokeInstance(effect, "Apply", context);
+
+        Component victim = CreateCharacter("Effect Victim", maxHealth: 100, health: 100);
+        object missed = InvokeInstance(target, "Attack", victim);
+        Assert.That(GetField<int>(missed, "Item1"), Is.EqualTo(0));
+        Assert.That(GetField<int>(victim, "Health"), Is.EqualTo(100));
+    }
+
+    [Test]
+    public void ExcelConverterUsesKoreanFallbackEncoding()
+    {
+        Type converterType = GetRuntimeType("ExcelAutoGenerator");
+        MethodInfo method = converterType.GetMethod("GetExcelFallbackEncoding", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(method, Is.Not.Null);
+
+        Encoding encoding = (Encoding)method.Invoke(null, null);
+        Assert.That(encoding.CodePage == 949 || encoding.CodePage == 65001, Is.True, encoding.EncodingName);
+    }
+
+    [Test]
+    public void StackingBleedDamagesAttackerOnAttackAndUsesResistance()
+    {
+        Component attacker = CreateCharacter("Bleed Attacker", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Bleed Target", maxHealth: 100, health: 100);
+        SetField(attacker, "damage", 0);
+        SetField(attacker, "BleedResist", 50);
+
+        object bleed = CreateStatusBuff("bleed", "Option_009", "Bleed", attacker, stackCount: 1, isDebuff: true);
+        SetField(bleed, "BaseChance", 100f);
+        SetField(bleed, "ChancePerStack", 0f);
+        SetField(bleed, "BaseValue", 2f);
+        SetField(bleed, "ValuePerStack", 2f);
+        SetField(bleed, "ResistanceType", "BleedResist");
+
+        InvokeInstance(attacker, "AddBuff", bleed);
+        InvokeInstance(attacker, "AddBuff", bleed);
+        InvokeInstance(attacker, "Attack", target);
+
+        Assert.That(GetField<int>(attacker, "Health"), Is.EqualTo(98), "2-stack bleed should deal 4%, reduced by 50% resistance.");
+    }
+
+    [Test]
+    public void StackingRegenHealsOwnerOnAttack()
+    {
+        Component owner = CreateCharacter("Regen Owner", maxHealth: 100, health: 50);
+        Component target = CreateCharacter("Regen Target", maxHealth: 100, health: 100);
+        SetField(owner, "damage", 0);
+
+        object regen = CreateStatusBuff("regen", "Option_012", "Regen", owner, stackCount: 1, isDebuff: false);
+        SetField(regen, "BaseChance", 100f);
+        SetField(regen, "ChancePerStack", 0f);
+        SetField(regen, "BaseValue", 1f);
+        SetField(regen, "ValuePerStack", 1f);
+
+        InvokeInstance(owner, "AddBuff", regen);
+        InvokeInstance(owner, "AddBuff", regen);
+        InvokeInstance(owner, "Attack", target);
+
+        Assert.That(GetField<int>(owner, "Health"), Is.EqualTo(52), "2-stack regen should heal 2% on attack.");
+    }
+
+    [Test]
+    public void HolyCanApplyNextAttackMissChance()
+    {
+        Component owner = CreateCharacter("Holy Owner", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Holy Target", maxHealth: 100, health: 100);
+        Component victim = CreateCharacter("Holy Victim", maxHealth: 100, health: 100);
+        SetField(owner, "damage", 0);
+        SetField(target, "damage", 10);
+
+        object holy = CreateStatusBuff("holy", "Option_011", "Holy", owner, stackCount: 1, isDebuff: false);
+        SetField(holy, "BaseChance", 100f);
+        SetField(holy, "ChancePerStack", 0f);
+        SetField(holy, "BaseValue", 100f);
+        SetField(holy, "ValuePerStack", 0f);
+        SetField(holy, "MaxRemoveCount", 3);
+
+        InvokeInstance(owner, "AddBuff", holy);
+        InvokeInstance(owner, "Attack", target);
+        object missed = InvokeInstance(target, "Attack", victim);
+
+        Assert.That(GetField<int>(missed, "Item1"), Is.EqualTo(0));
+        Assert.That(GetField<int>(victim, "Health"), Is.EqualTo(100));
+    }
+
+    [Test]
+    public void FreezeSlowsOwnerAndCanBlockAction()
+    {
+        Component frozen = CreateCharacter("Frozen", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Freeze Target", maxHealth: 100, health: 100);
+        SetField(frozen, "speed", 10f);
+        SetField(frozen, "damage", 10);
+
+        object freeze = CreateStatusBuff("freeze", "Option_013", "Freeze", frozen, stackCount: 2, isDebuff: true);
+        SetField(freeze, "BaseChance", 100f);
+        SetField(freeze, "ChancePerStack", 0f);
+        SetField(freeze, "BaseValue", 10f);
+        SetField(freeze, "ValuePerStack", 5f);
+        SetField(freeze, "StatType", "Speed");
+
+        InvokeInstance(frozen, "AddBuff", freeze);
+        Assert.That(GetField<float>(frozen, "speed"), Is.EqualTo(8.5f).Within(0.001f));
+
+        object blocked = InvokeInstance(frozen, "Attack", target);
+        Assert.That(GetField<int>(blocked, "Item1"), Is.EqualTo(0));
+        Assert.That(GetField<int>(target, "Health"), Is.EqualTo(100));
     }
 
     [TearDown]
@@ -250,19 +412,33 @@ public class P0DataCompatibilityTests
         return character;
     }
 
-    private static object CreateBuffData(string buffId, string optionId, Component target, float duration)
+    private static object CreateBuffData(string buffId, string optionId, Component target, float duration, int value = 0)
     {
         Type buffType = GetRuntimeType("BuffData");
         object buff = System.Activator.CreateInstance(buffType);
         SetField(buff, "BuffID", buffId);
         SetField(buff, "OptionID", optionId);
-        SetField(buff, "Value", 0);
+        SetField(buff, "Value", value);
         SetField(buff, "Duration", duration);
         SetField(buff, "Elapsed", 0f);
         SetField(buff, "IsDebuff", optionId == "Option_003");
         SetField(buff, "IsPassive", false);
         SetField(buff, "Target", target);
         SetField(buff, "SourceItemID", "test_item");
+        return buff;
+    }
+
+    private static object CreateStatusBuff(string buffId, string optionId, string statusType, Component target, int stackCount, bool isDebuff)
+    {
+        object buff = CreateBuffData(buffId, optionId, target, duration: 0f, value: stackCount);
+        SetField(buff, "StatusType", statusType);
+        SetField(buff, "ApplyMode", "Stacking");
+        SetField(buff, "StackPolicy", "Stack");
+        SetField(buff, "StackCount", stackCount);
+        SetField(buff, "MaxStack", 99);
+        SetField(buff, "TriggerType", "OnAttack");
+        SetField(buff, "ValueMode", "PercentMaxHP");
+        SetField(buff, "IsDebuff", isDebuff);
         return buff;
     }
 

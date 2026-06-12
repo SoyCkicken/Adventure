@@ -250,10 +250,15 @@ public class InventoryManager : MonoBehaviour
             return;
         }
 
-        string spriteName = string.IsNullOrEmpty(item?.Item_Name) ? "UI_InventorySlot 1" : item.Item_Name;
-        Sprite sprite = spriteBank.Load(spriteName);
-        if (sprite != null)
-            item_Icon.sprite = sprite;
+        foreach (string spriteName in ItemDataFactory.GetIconKeys(item))
+        {
+            Sprite sprite = spriteBank.Load(spriteName);
+            if (sprite != null)
+            {
+                item_Icon.sprite = sprite;
+                return;
+            }
+        }
     }
 
     private void LogItemOptions(ItemData item)

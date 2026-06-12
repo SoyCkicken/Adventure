@@ -264,7 +264,8 @@ public class CombatTest : MonoBehaviour
                     User = attacker,
                     Target = target,
                     option_ID = opt.OptionID,
-                    Value = opt.Value
+                    Value = opt.Value,
+                    item_ID = opt.item_ID
                 };
                 OptionManager.ApplyOnHitOnly(opt.OptionID, ctx);
             }

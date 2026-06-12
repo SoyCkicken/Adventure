@@ -425,6 +425,109 @@ public class BurnDebuffEffect : IOptionEffect
     }
 }
 
+public class ForceNextAttackMissEffect : IOptionEffect
+{
+    public void Apply(OptionContext ctx)
+    {
+        if (ctx.Target == null)
+        {
+            Debug.LogWarning("[ForceNextAttackMissEffect] 대상이 없어 효과를 적용하지 못했습니다.");
+            return;
+        }
+
+        ctx.Target.AddForcedMiss(Mathf.Max(1, ctx.Value));
+        Debug.Log($"[ForceNextAttackMissEffect] {ctx.Target.charaterName}의 다음 공격 실패 효과 적용");
+    }
+}
+
+public abstract class StatusStackEffect : IOptionEffect
+{
+    private readonly string fallbackStatusType;
+    private readonly bool targetEnemy;
+    private readonly bool isDebuff;
+
+    protected StatusStackEffect(string fallbackStatusType, bool targetEnemy, bool isDebuff)
+    {
+        this.fallbackStatusType = fallbackStatusType;
+        this.targetEnemy = targetEnemy;
+        this.isDebuff = isDebuff;
+    }
+
+    public void Apply(OptionContext ctx)
+    {
+        Character target = targetEnemy ? ctx.Target : ctx.User;
+        if (target == null)
+        {
+            Debug.LogWarning($"[{fallbackStatusType}] 대상이 없어 상태를 적용하지 못했습니다.");
+            return;
+        }
+
+        Option_Master option = OptionManager.GetOption(ctx.option_ID);
+        var buff = BuildBuff(ctx, option, target);
+        target.AddBuff(buff);
+        Debug.Log($"[{buff.StatusType}] {target.charaterName} stack +{buff.StackCount}");
+    }
+
+    private BuffData BuildBuff(OptionContext ctx, Option_Master option, Character target)
+    {
+        string statusType = string.IsNullOrEmpty(option?.StatusType) ? fallbackStatusType : option.StatusType;
+        int stackCount = Mathf.Max(1, ctx.Value);
+
+        return new BuffData
+        {
+            BuffID = $"{statusType}_{ctx.option_ID}",
+            OptionID = ctx.option_ID,
+            Value = ctx.Value,
+            Duration = option?.Duration ?? 0f,
+            Elapsed = 0f,
+            IsDebuff = isDebuff,
+            IsPassive = false,
+            Target = target,
+            User = ctx.User,
+            SourceItemID = ctx.item_ID,
+            StatusType = statusType,
+            ApplyMode = option?.ApplyMode,
+            StackPolicy = string.IsNullOrEmpty(option?.StackPolicy) ? "Stack" : option.StackPolicy,
+            StackCount = stackCount,
+            MaxStack = option != null && option.MaxStack > 0 ? option.MaxStack : 99,
+            TriggerType = option?.TriggerType,
+            ValueMode = option?.ValueMode,
+            BaseChance = option?.BaseChance ?? 0f,
+            ChancePerStack = option?.ChancePerStack ?? 0f,
+            BaseValue = option?.BaseValue ?? 0f,
+            ValuePerStack = option?.ValuePerStack ?? 0f,
+            StatType = option?.StatType,
+            ResistanceType = option?.ResistanceType,
+            MaxRemoveCount = option?.MaxRemoveCount ?? 0
+        };
+    }
+}
+
+public class BleedStackEffect : StatusStackEffect
+{
+    public BleedStackEffect() : base("Bleed", true, true) { }
+}
+
+public class PoisonStackEffect : StatusStackEffect
+{
+    public PoisonStackEffect() : base("Poison", true, true) { }
+}
+
+public class HolyStackEffect : StatusStackEffect
+{
+    public HolyStackEffect() : base("Holy", false, false) { }
+}
+
+public class RegenStackEffect : StatusStackEffect
+{
+    public RegenStackEffect() : base("Regen", false, false) { }
+}
+
+public class FreezeStackEffect : StatusStackEffect
+{
+    public FreezeStackEffect() : base("Freeze", true, true) { }
+}
+
 public class OneShot_HPHealing : IOptionEffect
 {
     public void Apply(OptionContext ctx)
@@ -534,6 +637,12 @@ public class OptionManager : MonoBehaviour
         { "Effect_005", new SpeedBuff() },
         { "Effect_006", new OneShot_HPHealing() },
         { "Effect_007", new OneShot_MPHealing() },
+        { "Effect_008", new ForceNextAttackMissEffect() },
+        { "Effect_009", new BleedStackEffect() },
+        { "Effect_010", new PoisonStackEffect() },
+        { "Effect_011", new HolyStackEffect() },
+        { "Effect_012", new RegenStackEffect() },
+        { "Effect_013", new FreezeStackEffect() },
     };
 
     // 옵션 설명 딕셔너리
@@ -546,6 +655,12 @@ public class OptionManager : MonoBehaviour
         { "Option_005", "공격속도 버프" },
         { "Option_006", "1회 실질 체력 회복" },
         { "Option_007", "1회 실질 정신력 회복" },
+        { "Option_008", "다음 공격 실패" },
+        { "Option_009", "출혈" },
+        { "Option_010", "중독" },
+        { "Option_011", "신성" },
+        { "Option_012", "재생" },
+        { "Option_013", "빙결" },
         { "null", "" }
     };
 

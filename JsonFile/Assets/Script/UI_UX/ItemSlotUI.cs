@@ -27,18 +27,21 @@ public class ItemSlotUI : MonoBehaviour
         onClickCallback = onClick;
         if (spriteBank == null)
             spriteBank = FindObjectOfType<SpriteBank>();
-        if (!string.IsNullOrEmpty(data.Item_Name))
+        if (data != null)
         {
-            Debug.Log(data.Item_Name);
             if (icon == null)
             {
                 Debug.LogError("[ItemSlotUI] icon(Image)가 에디터에 연결되지 않았습니다.");
                 return;
             }
-            Sprite s = spriteBank.Load(data.Item_Name);
-            if (s != null)
+            foreach (string spriteName in ItemDataFactory.GetIconKeys(data))
             {
-                icon.sprite = s;
+                Sprite s = spriteBank.Load(spriteName);
+                if (s != null)
+                {
+                    icon.sprite = s;
+                    return;
+                }
             }
         }
         else
