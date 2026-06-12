@@ -12,8 +12,8 @@ public class P0DataCompatibilityTests
 {
     private static readonly Dictionary<string, int> ExpectedEventCounts = new Dictionary<string, int>
     {
-        { "Armor_Master", 11 },
-        { "BlackSmith", 22 },
+        { "Armor_Master", 43 },
+        { "BlackSmith", 86 },
         { "ChoiceCondition", 3 },
         { "ChoiceConditions", 3 },
         { "Event_Effect_Master", 3 },
@@ -23,7 +23,7 @@ public class P0DataCompatibilityTests
         { "Main_SuccessRate_Master_Main", 2 },
         { "Mon_concentrate", 2 },
         { "Mon_Effect_Master", 1 },
-        { "Mon_Master", 2 },
+        { "Mon_Master", 10 },
         { "Option_Master", 18 },
         { "OptionEffect_Master", 18 },
         { "Patch_Notes", 3 },
@@ -32,7 +32,7 @@ public class P0DataCompatibilityTests
         { "Ran_SuccessRate_Master_Events", 5 },
         { "Story_Effect_Master", 3 },
         { "Story_Master_Main", 93 },
-        { "Weapon_Master", 13 }
+        { "Weapon_Master", 45 }
     };
 
     [Test]
@@ -55,12 +55,12 @@ public class P0DataCompatibilityTests
     [TestCase("Main_Script_Master_Main", 93)]
     [TestCase("RandomEvents_Master_Event", 46)]
     [TestCase("Ran_Script_Master_Event", 50)]
-    [TestCase("Weapon_Master", 13)]
-    [TestCase("Armor_Master", 11)]
+    [TestCase("Weapon_Master", 45)]
+    [TestCase("Armor_Master", 43)]
     [TestCase("Item_Master", 20)]
     [TestCase("Option_Master", 18)]
     [TestCase("OptionEffect_Master", 18)]
-    [TestCase("Mon_Master", 2)]
+    [TestCase("Mon_Master", 10)]
     public void ImportantJsonRowCountsStayStable(string fileKey, int expectedCount)
     {
         TextAsset asset = Resources.Load<TextAsset>($"Events/{fileKey}");
@@ -78,7 +78,7 @@ public class P0DataCompatibilityTests
 
         object weapons = ParseWeaponMasters(asset.text);
         Assert.That(weapons, Is.Not.Null);
-        Assert.That(CountEnumerable(weapons), Is.EqualTo(13));
+        Assert.That(CountEnumerable(weapons), Is.EqualTo(45));
 
         object oldSword = FindByField(weapons, "Weapon_ID", "Weapon_001");
         object shortBow = FindByField(weapons, "Weapon_ID", "Weapon_002");
@@ -584,6 +584,93 @@ public class P0DataCompatibilityTests
 
         Assert.That((int)taken, Is.EqualTo(12), "Damage should be floor((10 - 2) * 1.55).");
         Assert.That(GetField<int>(target, "Health"), Is.EqualTo(88));
+    }
+
+    [Test]
+    public void BerserkUsesExplicitPlayerFlagWhenPlayerStateIsMissing()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component player = CreateCharacter("Berserk Flag Player", maxHealth: 100, health: 100);
+        Component target = CreateCharacter("Berserk Flag Target", maxHealth: 100, health: 100);
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        SetField(player, "speed", 1f);
+        SetField(player, "armor", 3);
+
+        object context = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(context, "IsPlayer", true);
+        SetField(context, "User", player);
+        SetField(context, "Target", target);
+        SetField(context, "Value", 50);
+        SetField(context, "item_ID", "Weapon_Berserk");
+        SetField(context, "option_ID", "Option_018");
+
+        InvokeStatic("OptionManager", "ApplyBattleStartOnly", "Option_018", context);
+
+        object taken = InvokeInstance(player, "TakeDamage", 10);
+        Assert.That((int)taken, Is.EqualTo(15), "Explicit player flag should use the 30% player damage taken penalty.");
+    }
+
+    [Test]
+    public void BattleStartOptionRegistrationUpdatesSameItemOptionInsteadOfDuplicating()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component player = CreateCharacter("Battle Start Registration Player", maxHealth: 100, health: 100);
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        object context = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(context, "User", player);
+        SetField(context, "Value", 50);
+        SetField(context, "item_ID", "Weapon_Berserk");
+        SetField(context, "option_ID", "Option_018");
+
+        InvokeStatic("OptionManager", "ApplyOption", "Option_018", context);
+        SetField(context, "Value", 60);
+        InvokeStatic("OptionManager", "ApplyOption", "Option_018", context);
+
+        IList options = (IList)GetField<object>(player, "OnBattleStartOptions");
+        Assert.That(options.Count, Is.EqualTo(1));
+        Assert.That(GetField<int>(options[0], "Value"), Is.EqualTo(60));
+    }
+
+    [Test]
+    public void StopBattleRemovesTemporaryCombatBuffs()
+    {
+        Component combat = CreateComponent("CombatTest");
+        Component player = CreateCharacter("Stop Battle Player", maxHealth: 100, health: 100);
+        Component enemy = CreateCharacter("Stop Battle Enemy", maxHealth: 100, health: 100);
+        GameObject normalBattle = new GameObject("P0 Test Normal Battle");
+        SetField(combat, "player", player);
+        SetField(combat, "enemy", enemy);
+        SetField(combat, "NormalBattle", normalBattle);
+
+        SetField(player, "speed", 1f);
+        SetField(player, "armor", 3);
+
+        object speedBuff = CreateBuffData("berserk_buff", "Option_018", player, duration: 0f, value: 50);
+        SetField(speedBuff, "StatusType", "BerserkBuff");
+        SetField(speedBuff, "ApplyMode", "Stat");
+        SetField(speedBuff, "StatType", "AttackSpeed");
+
+        object armorDebuff = CreateBuffData("berserk_debuff", "Option_018", player, duration: 0f, value: -5);
+        SetField(armorDebuff, "StatusType", "BerserkDebuff");
+        SetField(armorDebuff, "ApplyMode", "Stat");
+        SetField(armorDebuff, "StatType", "Armor");
+
+        InvokeInstance(player, "AddBuff", speedBuff);
+        InvokeInstance(player, "AddBuff", armorDebuff);
+        Assert.That(GetField<float>(player, "speed"), Is.EqualTo(1.5f).Within(0.001f));
+        Assert.That(GetField<int>(player, "armor"), Is.EqualTo(-2));
+
+        InvokeInstance(combat, "StopBattle");
+
+        Assert.That(GetField<float>(player, "speed"), Is.EqualTo(1f).Within(0.001f));
+        Assert.That(GetField<int>(player, "armor"), Is.EqualTo(3));
+        Assert.That(normalBattle.activeSelf, Is.False);
     }
 
     [TearDown]

@@ -94,6 +94,13 @@ public class EventDisplay : MonoBehaviour
     public void StartEventSequence(Action<bool> onComplete)
     {
         onCompleteCallback = onComplete;
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>(true);
+        playerState = playerState ?? PlayerState.Instance ?? FindObjectOfType<PlayerState>(true);
+        if (jsonManager == null || playerState == null)
+        {
+            Debug.LogWarning("[EventDisplay] 필수 런타임 참조가 없어 랜덤 이벤트 시작을 건너뜁니다.");
+            return;
+        }
 
         // JSON 데이터 로드
         eventList = jsonManager.GetRandomMainMasters("RandomEvents_Master_Event");

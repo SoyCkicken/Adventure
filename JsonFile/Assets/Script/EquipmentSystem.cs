@@ -88,6 +88,8 @@ public class EquipmentSystem : MonoBehaviour
             if (ItemDataFactory.HasOption(weapon.Option_1_ID))
                 OptionManager.ApplyOption(weapon.Option_1_ID, new OptionContext
                 {
+                    playerState = playerState,
+                    IsPlayer = true,
                     User = player,
                     Value = weapon.Option_Value1,
                     item_ID = weapon.Weapon_ID,
@@ -96,6 +98,8 @@ public class EquipmentSystem : MonoBehaviour
             if (ItemDataFactory.HasOption(weapon.Option_2_ID))
                 OptionManager.ApplyOption(weapon.Option_2_ID, new OptionContext
                 {
+                    playerState = playerState,
+                    IsPlayer = true,
                     User = player,
                     Value = weapon.Option_Value2,
                     item_ID = weapon.Weapon_ID,
@@ -114,6 +118,8 @@ public class EquipmentSystem : MonoBehaviour
             if (ItemDataFactory.HasOption(armor.Armor_Option1))
                 OptionManager.ApplyOption(armor.Armor_Option1, new OptionContext
                 {
+                    playerState = playerState,
+                    IsPlayer = true,
                     User = player,
                     Value = armor.Option1_Value,
                     item_ID = armor.Armor_ID,
@@ -122,6 +128,8 @@ public class EquipmentSystem : MonoBehaviour
             if (ItemDataFactory.HasOption(armor.Armor_Option2))
                 OptionManager.ApplyOption(armor.Armor_Option2, new OptionContext
                 {
+                    playerState = playerState,
+                    IsPlayer = true,
                     User = player,
                     Value = armor.Option2_Value,
                     item_ID = armor.Armor_ID,

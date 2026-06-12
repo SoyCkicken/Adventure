@@ -973,6 +973,7 @@ namespace MyGame
             target.ResistanceType = string.IsNullOrEmpty(source.ResistanceType) ? target.ResistanceType : source.ResistanceType;
             target.MaxRemoveCount = source.MaxRemoveCount > 0 ? source.MaxRemoveCount : target.MaxRemoveCount;
             target.DamageTakenIncreasePercent = source.DamageTakenIncreasePercent > 0 ? source.DamageTakenIncreasePercent : target.DamageTakenIncreasePercent;
+            target.AllDamageTakenIncreasePercent = source.AllDamageTakenIncreasePercent > 0 ? source.AllDamageTakenIncreasePercent : target.AllDamageTakenIncreasePercent;
             target.SelfDamageOnAttackPercent = source.SelfDamageOnAttackPercent > 0 ? source.SelfDamageOnAttackPercent : target.SelfDamageOnAttackPercent;
         }
 
@@ -1547,6 +1548,7 @@ namespace MyGame
         public int Value;
         public string item_ID;
         public string option_ID;
+        public bool IsPlayer;
         public float hp; // 예시
 
         public override string ToString()
@@ -1590,6 +1592,7 @@ namespace MyGame
         public string ResistanceType;
         public int MaxRemoveCount;
         public int DamageTakenIncreasePercent;
+        public int AllDamageTakenIncreasePercent;
         public int SelfDamageOnAttackPercent;
     }
 }

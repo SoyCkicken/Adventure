@@ -584,7 +584,7 @@ public class BerserkBattleStartEffect : IOptionEffect
         }
 
         int speedPercent = ctx.Value > 0 ? ctx.Value : DefaultSpeedPercent;
-        int damageTakenIncrease = ctx.playerState != null
+        int damageTakenIncrease = ctx.IsPlayer || ctx.playerState != null
             ? PlayerDamageTakenIncreasePercent
             : EnemyDamageTakenIncreasePercent;
 
@@ -820,23 +820,13 @@ public class OptionManager : MonoBehaviour
                 break;
 
             case "OnHit":
-                ctx.User.OnHitOptions.Add(new Character.EquippedOption
-                {
-                    OptionID = optionID,
-                    Value = ctx.Value,
-                    item_ID = ctx.item_ID
-                });
+                RegisterEquippedOption(ctx.User.OnHitOptions, optionID, ctx.Value, ctx.item_ID);
                 Debug.Log($"[OptionManager] OnHit 옵션 {optionID} 등록 완료");
                 break;
 
             case "OnBattleStart":
             case "BattleStart":
-                ctx.User.OnBattleStartOptions.Add(new Character.EquippedOption
-                {
-                    OptionID = optionID,
-                    Value = ctx.Value,
-                    item_ID = ctx.item_ID
-                });
+                RegisterEquippedOption(ctx.User.OnBattleStartOptions, optionID, ctx.Value, ctx.item_ID);
                 Debug.Log($"[OptionManager] 전투 시작 옵션 {optionID} 등록 완료");
                 break;
 
@@ -845,6 +835,24 @@ public class OptionManager : MonoBehaviour
                 effect.Apply(ctx);
                 break;
         }
+    }
+
+    private static void RegisterEquippedOption(List<Character.EquippedOption> options, string optionID, int value, string itemID)
+    {
+        if (options == null || string.IsNullOrEmpty(optionID))
+            return;
+
+        var equippedOption = new Character.EquippedOption
+        {
+            OptionID = optionID,
+            Value = value,
+            item_ID = itemID
+        };
+        int index = options.FindIndex(opt => opt.OptionID == optionID && opt.item_ID == itemID);
+        if (index >= 0)
+            options[index] = equippedOption;
+        else
+            options.Add(equippedOption);
     }
 
     public static void UseItem(ItemData item, OptionContext ctx)
@@ -858,6 +866,7 @@ public class OptionManager : MonoBehaviour
             {
                 User = ctx.User,
                 playerState = ctx.playerState,
+                IsPlayer = ctx.IsPlayer,
                 Value = item.Option_Value1,
                 item_ID = item.Item_ID,
                 option_ID = item.Option_1_ID
@@ -871,6 +880,7 @@ public class OptionManager : MonoBehaviour
             {
                 User = ctx.User,
                 playerState = ctx.playerState,
+                IsPlayer = ctx.IsPlayer,
                 Value = item.Option_Value2,
                 item_ID = item.Item_ID,
                 option_ID = item.Option_2_ID

@@ -75,9 +75,10 @@ public class CombatTest : MonoBehaviour
     /// </summary>
     public void StopBattle()
     {
-        // 진행 중인 모든 코루틴 정지
-        StopAllCoroutines();
         battleOver = true;
+        CleanupBuffsOnly();
+        StopAllCoroutines();
+        NormalBattle?.SetActive(false);
     }
 
     private IEnumerator ProcessBattle()
@@ -341,6 +342,7 @@ public class CombatTest : MonoBehaviour
             var ctx = new OptionContext
             {
                 playerState = playerState,
+                IsPlayer = true,
                 User = player,
                 Target = enemy,
                 option_ID = opt.OptionID,

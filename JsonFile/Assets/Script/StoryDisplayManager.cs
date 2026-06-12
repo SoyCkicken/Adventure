@@ -95,6 +95,13 @@ public class StoryDisplayManager : MonoBehaviour
 
         //if (jsonManager == null)
         //    jsonManager = FindObjectOfType<JsonManager>();
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>(true);
+        playerState = playerState ?? PlayerState.Instance ?? FindObjectOfType<PlayerState>(true);
+        if (jsonManager == null || playerState == null)
+        {
+            Debug.LogWarning("[StoryDisplayManager] 필수 런타임 참조가 없어 메인 스토리 시작을 건너뜁니다.");
+            return;
+        }
         onCompleteCallback = onComplete;
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");

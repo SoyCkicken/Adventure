@@ -5,7 +5,7 @@ using TMPro;
 #if UNITY_EDITOR
 public class RemoteTester : MonoBehaviour
 {
-    [Header("¿ÞÂÊ Ä«Å×°í¸® ¹öÆ°")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½×°ï¿½ï¿½ ï¿½ï¿½Æ°")]
     public Button mainStoryButton;
     public Button randomStoryButton;
     public Button battleButton;
@@ -13,27 +13,33 @@ public class RemoteTester : MonoBehaviour
     public Button reMoveButton;
     public Button armorTestButton;
 
-    [Header("¿À¸¥ÂÊ ¹öÆ° ÇÁ¸®ÆÕ ¹× ºÎ¸ð")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Î¸ï¿½")]
     public GameObject buttonPrefab;
     public Transform rightPanelParent;
 
-    [Header("¸ÞÀÎ½ºÅä¸® , ÀÌº¥Æ® , Àû °ü·Ã Á¤º¸")]
+    [Header("ï¿½ï¿½ï¿½Î½ï¿½ï¿½ä¸® , ï¿½Ìºï¿½Æ® , ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public StoryDisplayManager storyDisplayManager;
     public EventDisplay eventDisplay;
     public GameFlowManager gameFlowManager;
     public InventoryManager inventoryManager;
     public JsonManager jsonManager;
 
-    // °¡»ó ½Ã³ª¸®¿À / Àû ID ¸®½ºÆ®
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ ID ï¿½ï¿½ï¿½ï¿½Æ®
     private List<string> mainStories = new List<string> { "MainScene_1_1", "MainScene_1_2", "MainScene_1_3", "MainScene_1_4" ,"MainScene_1_5","MainScene_2_1"};
     private List<string> randomStories = new List<string> { "EventScene_1", "EventScene_2", "EventScene_3", "EventScene_4" };
-    private List<string> enemyIDs = new List<string> { "monster_001", "monster_002", "monster_003" };
+    private List<string> enemyIDs = new List<string>();
     private List<string> WeaponID = new List<string>();
     private List<string> ArmorID = new List<string>();
 
-    private void Start()
+private void Start()
     {
-        jsonManager = JsonManager.Instance; // ¼öÁ¤
+        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // ìˆ˜ì •
+        if (jsonManager == null)
+        {
+            Debug.LogWarning("[RemoteTester] JsonManagerë¥¼ ì°¾ì§€ ëª»í•´ ë””ë²„ê·¸ ë²„íŠ¼ ì´ˆê¸°í™”ë¥¼ ê±´ë„ˆëœë‹ˆë‹¤.");
+            return;
+        }
+
         foreach (var weapon in jsonManager.GetWeaponMasters("Weapon_Master"))
         {
             WeaponID.Add(weapon.Weapon_ID);
@@ -42,22 +48,27 @@ public class RemoteTester : MonoBehaviour
         {
             ArmorID.Add(armor.Armor_ID);
         }
-        mainStoryButton.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
-        randomStoryButton.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
-        battleButton.onClick.AddListener(() => ShowOptions(enemyIDs, OnBattleSelected));
-        weaponTestButton.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
-        armorTestButton.onClick.AddListener(() => ShowOptions(ArmorID, ArmorAddInventory));
-        reMoveButton.onClick.AddListener(() => RemoveAllInventory());
+        foreach (var monster in jsonManager.GetMonMasters("Mon_Master"))
+        {
+            enemyIDs.Add(monster.Mon_ID);
+        }
+
+        mainStoryButton?.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
+        randomStoryButton?.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
+        battleButton?.onClick.AddListener(() => ShowOptions(enemyIDs, OnBattleSelected));
+        weaponTestButton?.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
+        armorTestButton?.onClick.AddListener(() => ShowOptions(ArmorID, ArmorAddInventory));
+        reMoveButton?.onClick.AddListener(() => RemoveAllInventory());
     }
 
-    // ¿À¸¥ÂÊ ÆÐ³Î ¹öÆ° »ý¼º
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½
     void ShowOptions(List<string> options, System.Action<string> onClickAction)
     {
-        // ±âÁ¸ ¹öÆ° Á¦°Å
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½
         foreach (Transform child in rightPanelParent)
             Destroy(child.gameObject);
 
-        // »õ·Î¿î ¹öÆ° »ý¼º
+        // ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½
         foreach (var option in options)
         {
             GameObject btnObj = Instantiate(buttonPrefab, rightPanelParent);
@@ -67,7 +78,7 @@ public class RemoteTester : MonoBehaviour
         }
     }
 
-    // °¢ Ç×¸ñ Å¬¸¯ ½Ã µ¿ÀÛ
+    // ï¿½ï¿½ ï¿½×¸ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     void OnMainStorySelected(string groupID)
     {
         string[] parts = groupID.Replace("MainScene_", "").Split('_');
@@ -77,8 +88,8 @@ public class RemoteTester : MonoBehaviour
             int.TryParse(parts[1], out int eventIndex))
         {
             {
-                Debug.Log($"[¸®¸ðÄÁ] ·£´ý ÀÌº¥Æ® ¼öµ¿ ½ÇÇà: ±×·ì ID = {chapter} , {eventIndex}");
-                //ÀÏ´Ü Á¤Áö ½ÃÅ°°í ½ÇÇà
+                Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½×·ï¿½ ID = {chapter} , {eventIndex}");
+                //ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 storyDisplayManager.StopMainStory();
                 eventDisplay.StopRandomEvent();
                 storyDisplayManager.storyList.Clear();
@@ -92,8 +103,8 @@ public class RemoteTester : MonoBehaviour
     {
         if (int.TryParse(groupID.Replace("EventScene_", ""), out int id))
         {
-            Debug.Log($"[¸®¸ðÄÁ] ·£´ý ÀÌº¥Æ® ¼öµ¿ ½ÇÇà: ±×·ì ID = {id}");
-            //ÀÏ´Ü Á¤Áö ½ÃÅ°°í ½ÇÇà
+            Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½×·ï¿½ ID = {id}");
+            //ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             storyDisplayManager.StopMainStory();
             eventDisplay.StopRandomEvent();
             storyDisplayManager.storyList.Clear();
@@ -104,7 +115,7 @@ public class RemoteTester : MonoBehaviour
 
     void OnBattleSelected(string enemyID)
     {
-        Debug.Log($"[¸®¸ðÄÁ] ÀüÅõ ½ÃÀÛ: {enemyID}");
+        Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {enemyID}");
         storyDisplayManager.StopMainStory();
         eventDisplay.StopRandomEvent();
         storyDisplayManager.storyList.Clear();
@@ -113,7 +124,7 @@ public class RemoteTester : MonoBehaviour
     }
     void WeaponAddInventory(string weaponID)
     {
-        Debug.Log($"[¸®¸ðÄÁ] ¾ÆÀÌÅÛ Ãß°¡ ½ÃÀÛ: {weaponID}");
+        Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½: {weaponID}");
         var itemData = ItemDataFactory.FromCode(jsonManager, weaponID);
         if (itemData != null)
         {
@@ -121,12 +132,12 @@ public class RemoteTester : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"[¸®¸ðÄÁ] ¹«±â {weaponID}ÀÇ ItemData¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ {weaponID}ï¿½ï¿½ ItemDataï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
     void ArmorAddInventory(string armorID)
     {
-        Debug.Log($"[¸®¸ðÄÁ] ¾ÆÀÌÅÛ Ãß°¡ ½ÃÀÛ : {armorID}");
+        Debug.Log($"[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½ : {armorID}");
         var itemData = ItemDataFactory.FromCode(jsonManager, armorID);
         if (itemData != null)
         {
@@ -136,7 +147,7 @@ public class RemoteTester : MonoBehaviour
 
     void RemoveAllInventory()
     {
-        Debug.Log("[¸®¸ðÄÁ] ÀÎº¥Åä¸®¿¡ ÀÖ´Â ¸ðµç ¾ÆÀÌÅÛ »èÁ¦ ½ÇÁ¦·Î´Â ÀÛµ¿ ¾ÈÇÔ");
+        Debug.Log("[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½Îºï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ ï¿½Ûµï¿½ ï¿½ï¿½ï¿½ï¿½");
         //inventoryManager.ClearAllItems();
     }
 }

@@ -20,24 +20,23 @@ public class ItemSlotUI : MonoBehaviour
         button.onClick.AddListener(OnClick);
         spriteBank = SpriteBank.Instance;
     }
-    public void Setup(ItemData item, System.Action<ItemData> onClick)
+public void Setup(ItemData item, System.Action<ItemData> onClick)
     {
         data = item;
         CurrentItem = item;
         onClickCallback = onClick;
         if (spriteBank == null)
-            spriteBank = FindObjectOfType<SpriteBank>();
+            spriteBank = SpriteBank.Instance ?? FindObjectOfType<SpriteBank>(true);
         if (data != null)
         {
             if (icon == null)
             {
-                Debug.LogError("[ItemSlotUI] icon(Image)°¡ ¿¡µğÅÍ¿¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+                Debug.LogError("[ItemSlotUI] icon(Image)ê°€ ì—ë””í„°ì— ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
                 return;
             }
             foreach (string spriteName in ItemDataFactory.GetIconKeys(data))
             {
-                Sprite s = spriteBank.Load(spriteName);
-                if (s != null)
+                if (spriteBank != null && spriteBank.TryLoad(spriteName, out Sprite s))
                 {
                     icon.sprite = s;
                     return;
@@ -46,32 +45,33 @@ public class ItemSlotUI : MonoBehaviour
         }
         else
         {
-            Debug.Log("ÀÌ¹ÌÁö°¡ ¾ø¾î¼­ ¿©±â µé¾î¿ÍÁ³½À´Ï´Ù");
-            Sprite t = spriteBank.Load("UI_InventorySlot 1");
-            icon.sprite = t;
+            Debug.Log("ì´ë¯¸ì§€ê°€ ì—†ì–´ì„œ ì—¬ê¸° ë“¤ì–´ì™€ì¡ŒìŠµë‹ˆë‹¤");
+            if (spriteBank != null && spriteBank.TryLoad("UI_InventorySlot 1", out Sprite t))
+                icon.sprite = t;
         }
     }
-    public void Clear()
+public void Clear()
     {
         data = null;
         CurrentItem = null;
-        //icon.sprite = spriteBank.Load("UI_InventorySlot 1");
         icon.sprite = null;
         onClickCallback = null;
+        if (spriteBank == null)
+            spriteBank = SpriteBank.Instance ?? FindObjectOfType<SpriteBank>(true);
         switch (slotType)
         {
             case SlotType.RWeapon:
-                icon.sprite = spriteBank.Load("UI_EquipmentSlot_RightHand");
+                if (spriteBank != null && spriteBank.TryLoad("UI_EquipmentSlot_RightHand", out var rightHandSprite))
+                    icon.sprite = rightHandSprite;
                 break;
             case SlotType.LWeapon:
-                icon.sprite = spriteBank.Load("UI_EquipmentSlot_LeftHand");
+                if (spriteBank != null && spriteBank.TryLoad("UI_EquipmentSlot_LeftHand", out var leftHandSprite))
+                    icon.sprite = leftHandSprite;
                 break;
             case SlotType.Armor:
-                icon.sprite = spriteBank.Load("UI_EquipmentSlot_Armor 1");
+                if (spriteBank != null && spriteBank.TryLoad("UI_EquipmentSlot_Armor 1", out var armorSprite))
+                    icon.sprite = armorSprite;
                 break;
-            //default:
-            //    icon.sprite = spriteBank.Load("UI_InventorySlot 1");
-            //    break;
         }
     }
 

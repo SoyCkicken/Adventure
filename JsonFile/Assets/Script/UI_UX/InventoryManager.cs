@@ -57,10 +57,10 @@ public class InventoryManager : MonoBehaviour
     public ItemData selectedItem;
     public void Awake()
     {
-        jsonManager = JsonManager.Instance; // 수정
-        playerState = PlayerState.Instance;
-        spriteBank = SpriteBank.Instance;
-        optionManager = OptionManager.Instance;
+        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // 수정
+        playerState = PlayerState.Instance ?? FindObjectOfType<PlayerState>(true);
+        spriteBank = SpriteBank.Instance ?? FindObjectOfType<SpriteBank>(true);
+        optionManager = OptionManager.Instance ?? FindObjectOfType<OptionManager>(true);
     }
     private void Start()
     {
@@ -101,8 +101,12 @@ public class InventoryManager : MonoBehaviour
     {
         foreach (var slot in slotUIs)
         {
+            if (slot == null || slot.icon == null)
+                continue;
+
             slot.Clear();
-            slot.icon.sprite = spriteBank.Load("UI_InventorySlot 1");
+            if (spriteBank != null && spriteBank.TryLoad("UI_InventorySlot 1", out var emptySlotSprite))
+                slot.icon.sprite = emptySlotSprite;
         }
         for (int i = 0; i < inventoryItems.Count && i < slotUIs.Count; i++)
         {

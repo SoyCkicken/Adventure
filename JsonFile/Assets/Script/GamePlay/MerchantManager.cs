@@ -43,18 +43,24 @@ public class MerchantManager : MonoBehaviour
     void Start()
     {
         playerState = PlayerState.Instance;
-        jsonManager = JsonManager.Instance; // 수정
+        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // 수정
+        inventoryManager = inventoryManager ?? FindObjectOfType<InventoryManager>(true);
         //패널 닫기
-        MerchantItem_ClearButton.onClick.AddListener(() => { MerchantDetailPanel.gameObject.SetActive(false); });
-        MerchantItem_CloseButton.onClick.AddListener(() => {
+        MerchantItem_ClearButton?.onClick.AddListener(() => { MerchantDetailPanel?.gameObject.SetActive(false); });
+        MerchantItem_CloseButton?.onClick.AddListener(() => {
             Debug.Log("상점 닫기를 시도 했습니다");
-            Merchant_Invantory.gameObject.SetActive(false);
-            inventoryManager.inventoryPanel.SetActive(false);
+            Merchant_Invantory?.gameObject.SetActive(false);
+            inventoryManager?.inventoryPanel?.SetActive(false);
             onCloseCallback?.Invoke();  // ⬅ 닫을 때 콜백 실행
         });
 
 
             // 1) JsonManager 에서 상인용 리스트 가져오기
+        if (jsonManager == null)
+        {
+            Debug.LogWarning("[MerchantManager] JsonManager를 찾지 못해 상점 초기화를 건너뜁니다.");
+            return;
+        }
             allItems = jsonManager.GetMerchantItems(merchantKey);
         if (allItems == null || allItems.Count == 0)
         {
