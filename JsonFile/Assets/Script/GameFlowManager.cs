@@ -176,7 +176,7 @@ public class GameFlowManager : MonoBehaviour
         }
 
         Debug.Log($"[리모컨] 수동 전투 실행: {monsterID}");
-        Debug.LogError("여기서 잠시 멈춥니다 정보 확인 하세요");
+        Debug.Log("[리모컨] 수동 전투 디버그 경로로 진입합니다.");
 
         prevState = FlowState.None;
         currentState = FlowState.Battle;

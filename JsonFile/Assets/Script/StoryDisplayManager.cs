@@ -868,8 +868,17 @@ public class StoryDisplayManager : MonoBehaviour
         //if (jsonManager == null)
         //    jsonManager = FindObjectOfType<JsonManager>();
 
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>(true);
+        if (jsonManager == null)
+        {
+            Debug.LogError("[StoryDisplayManager] JsonManager를 찾을 수 없어 메인 스토리를 로드할 수 없습니다.");
+            onCompleteCallback?.Invoke();
+            flowManager?.SetState(GameFlowManager.FlowState.None);
+            return;
+        }
+
         RegisterTouchCatcher();
-        storyList.Clear();
+        storyList?.Clear();
         storyList = jsonManager.GetStoryMainMasters("Story_Master_Main");
 
         Debug.Log($"StoryList Count: {(storyList != null ? storyList.Count : -1)}");

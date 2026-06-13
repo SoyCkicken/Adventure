@@ -15,6 +15,12 @@ public partial class JsonManager : MonoBehaviour
     public bool IsReady { get; private set; }
     public event Action OnReady;
     public static JsonManager Instance { get; private set; }
+
+    private static List<T> EmptyList<T>()
+    {
+        return new List<T>();
+    }
+
     private void Awake()
     {
         // 싱글톤 인스턴스 설정
@@ -128,14 +134,14 @@ public partial class JsonManager : MonoBehaviour
         }
             
         Debug.LogWarning($"[JsonManager] {fileName} Story_Master_Main 데이터가 없습니다.");
-        return null;
+        return EmptyList<Story_Master_Main>();
     }
     public List<Main_Script_Master_Main> GetStoryMainScriptMasters(string fileName)
     {
         if (storyMasterScriptDict.TryGetValue(fileName, out List<Main_Script_Master_Main> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Main_Script_Master_Main 데이터가 없습니다.");
-        return null;
+        return EmptyList<Main_Script_Master_Main>();
     }
     //확률 조회
     public List<Main_SuccessRate_Master_Main> GetSuccessRatesMainByScene(string sceneCode)
@@ -150,7 +156,7 @@ public partial class JsonManager : MonoBehaviour
         if (storyMastersuccessRateDict.TryGetValue(fileName, out List<Main_SuccessRate_Master_Main> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Main_SuccessRate_Master_Main 데이터가 없습니다.");
-        return null;
+        return EmptyList<Main_SuccessRate_Master_Main>();
     }
     //public List<Main_SuccessRate_Master_Main> GetSuccessRatesRanByScene(string sceneCode)
     //{
@@ -184,7 +190,7 @@ public partial class JsonManager : MonoBehaviour
         if (storyMasterEffectDict.TryGetValue(fileName, out List<Story_Effect_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Story_Effect_Master 데이터가 없습니다.");
-        return null;
+        return EmptyList<Story_Effect_Master>();
     }
     //이벤트 스토리
     public List<RandomEvents_Master_Event> GetRandomMainMasters(string fileName)
@@ -192,14 +198,14 @@ public partial class JsonManager : MonoBehaviour
         if (RandomMasterDict.TryGetValue(fileName, out List<RandomEvents_Master_Event> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} RandomEvents_Master_Event 데이터가 없습니다.");
-        return null;
+        return EmptyList<RandomEvents_Master_Event>();
     }
     public List<Ran_Script_Master_Event> GetRandomScriptMasters(string fileName)
     {
         if (RandomMasterScriptDict.TryGetValue(fileName, out List<Ran_Script_Master_Event> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Ran_Script_Master_Event 데이터가 없습니다.");
-        return null;
+        return EmptyList<Ran_Script_Master_Event>();
     }
     //확률 조회
     public List<Ran_SuccessRate_Master_Events> GetSuccessRatesRanByScene(string sceneCode)
@@ -214,14 +220,14 @@ public partial class JsonManager : MonoBehaviour
         if (RandomMasterSuccessRateDict.TryGetValue(fileName, out List<Ran_SuccessRate_Master_Events> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Ran_SuccessRate_Master_Events 데이터가 없습니다.");
-        return null;
+        return EmptyList<Ran_SuccessRate_Master_Events>();
     }
     public List<Event_Effect_Master> GetRanomEffectMasters(string fileName)
     {
         if (RandomMasterEffectDict.TryGetValue(fileName, out List<Event_Effect_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Event_Effect_Master 데이터가 없습니다.");
-        return null;
+        return EmptyList<Event_Effect_Master>();
     }
     //아이템 목록
     public List<Weapon_Master> GetWeaponMasters(string fileName)
@@ -229,7 +235,7 @@ public partial class JsonManager : MonoBehaviour
         if (WeaponMasterDict.TryGetValue(fileName, out var list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Weapon_Master 데이터가 없습니다.");
-        return new List<Weapon_Master>(); // ⬅︎ 빈 리스트
+        return EmptyList<Weapon_Master>();
     }
 
     public Weapon_Master GetWeaponById(string weaponId)
@@ -248,7 +254,7 @@ public partial class JsonManager : MonoBehaviour
         if (ArmorMasterDict.TryGetValue(fileName, out var list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Armor_Master 데이터가 없습니다.");
-        return new List<Armor_Master>(); // ⬅︎ 빈 리스트
+        return EmptyList<Armor_Master>();
     }
 
     public Armor_Master GetArmorById(string armorId)
@@ -267,7 +273,7 @@ public partial class JsonManager : MonoBehaviour
         if (ItemMasterDict.TryGetValue(fileName, out List<Item_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Item_Master 데이터가 없습니다.");
-        return null;
+        return EmptyList<Item_Master>();
     }
 
     public Item_Master GetItemMasterById(string itemId)
@@ -301,7 +307,7 @@ public partial class JsonManager : MonoBehaviour
         if (Option_MasterDict.TryGetValue(fileName, out List<Option_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Option_Master 데이터가 없습니다.");
-        return null;
+        return EmptyList<Option_Master>();
     }
 
     public Option_Master GetOptionById(string optionId)
@@ -320,14 +326,14 @@ public partial class JsonManager : MonoBehaviour
         if (Mon_MasterDict.TryGetValue(fileName, out List<Mon_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Mon_Master 데이터가 없습니다.");
-        return null;
+        return EmptyList<Mon_Master>();
     }
     public List<Mon_Effect_Master> GetMonEffectMasters(string fileName)
     {
         if (Mon_EffectMasterDict.TryGetValue(fileName, out List<Mon_Effect_Master> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} Mon_Effect_Master 데이터가 없습니다.");
-        return null;
+        return EmptyList<Mon_Effect_Master>();
     }
 
     //상인
@@ -337,7 +343,7 @@ public partial class JsonManager : MonoBehaviour
         if (BlackSmith_Item_Dict.TryGetValue(fileName, out List<BlackSmith> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} BlackSmith 데이터가 없습니다.");
-        return null;
+        return EmptyList<BlackSmith>();
     }
     public List<Gradient> GetGradients(string fileName)
     {
@@ -345,7 +351,7 @@ public partial class JsonManager : MonoBehaviour
         if (Gradient_Item_Dict.TryGetValue(fileName, out List<Gradient> list))
             return list;
         Debug.LogWarning($"[JsonManager] {fileName} BlackSmith 데이터가 없습니다.");
-        return null;
+        return EmptyList<Gradient>();
     }
 
     public List<MerchantItem> GetMerchantItems(string fileKey)
@@ -402,8 +408,8 @@ public partial class JsonManager : MonoBehaviour
 
     public List<ChoiceRequirement> GetChoiceRequirementsByScene(string sceneCode, int choiceNo)
     {
-        if (string.IsNullOrEmpty(sceneCode)) return null;
-        return _choiceReqBySceneChoice.TryGetValue((sceneCode, choiceNo), out var list) ? list : null;
+        if (string.IsNullOrEmpty(sceneCode)) return EmptyList<ChoiceRequirement>();
+        return _choiceReqBySceneChoice.TryGetValue((sceneCode, choiceNo), out var list) ? list : EmptyList<ChoiceRequirement>();
     }
 
     // 전체 로드된 Story_Master 파일명 리스트

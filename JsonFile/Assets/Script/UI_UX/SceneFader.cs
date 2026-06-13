@@ -109,7 +109,7 @@ public class SceneFader : MonoBehaviour
     {
         EnsureOverlay();
 
-        if (_isBusy) yield return null;
+        while (_isBusy) yield return null;
         _isBusy = true;
         KillActiveTween();
 
@@ -131,7 +131,7 @@ public class SceneFader : MonoBehaviour
     {
         EnsureOverlay();
 
-        if (_isBusy) yield return null;
+        while (_isBusy) yield return null;
         _isBusy = true;
         KillActiveTween();
 

@@ -27,22 +27,35 @@ public class MonsterSpawner : MonoBehaviour
         if (monsterOptionManager == null) monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
         if (combatTest == null) combatTest = FindObjectOfType<CombatTest>();
         if (player == null) player = GameObject.FindWithTag("Player");
-        canves.SetActive(false);
+        if (canves != null) canves.SetActive(false);
     }
 
     public void SpawnMonsterByID(string monsterID)
     {
-        canves.SetActive(true);
+        if (canves != null) canves.SetActive(true);
         if (_currentMonster != null)
         {
             Destroy(_currentMonster);
         }
 
+        jsonManager = jsonManager ?? JsonManager.Instance;
+        if (jsonManager == null)
+        {
+            Debug.LogError($"[{nameof(MonsterSpawner)}] JsonManager is missing.");
+            return;
+        }
+
         var data = jsonManager.GetMonMasters("Mon_Master")
-                              .FirstOrDefault(m => m.Mon_ID == monsterID);
+                               .FirstOrDefault(m => m.Mon_ID == monsterID);
         if (data == null)
         {
             Debug.LogError($"[{nameof(MonsterSpawner)}] MonsterData '{monsterID}' was not found.");
+            return;
+        }
+
+        if (monsterPrefab == null || canvusImage == null || battleUI == null || combatTest == null)
+        {
+            Debug.LogError($"[{nameof(MonsterSpawner)}] Required spawn references are missing.");
             return;
         }
 

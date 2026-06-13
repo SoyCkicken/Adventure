@@ -8,7 +8,7 @@ using SRDebugger;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 public class RemoteTester : MonoBehaviour
 {
-    [Header("���� ī�װ�� ��ư")]
+    [Header("���� ī�װ��?��ư")]
     public Button mainStoryButton;
     public Button randomStoryButton;
     public Button battleButton;
@@ -41,10 +41,11 @@ public class RemoteTester : MonoBehaviour
 
 private void Start()
     {
-        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // 수정
+        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // ?�정
+        EnsureRuntimeReferences();
         if (jsonManager == null)
         {
-            Debug.LogWarning("[RemoteTester] JsonManager를 찾지 못해 디버그 버튼 초기화를 건너뜁니다.");
+            Debug.LogWarning("[RemoteTester] JsonManager�?찾�? 못해 ?�버�?버튼 초기?��? 건너?�니??");
             return;
         }
 
@@ -110,6 +111,17 @@ private void Start()
     // ������ �г� ��ư ����
     void ShowOptions(List<string> options, System.Action<string> onClickAction)
     {
+        if (rightPanelParent == null || buttonPrefab == null)
+        {
+            Debug.LogWarning("[RemoteTester] option panel references are missing.");
+            return;
+        }
+
+        if (options == null || options.Count == 0)
+        {
+            Debug.LogWarning("[RemoteTester] no debug options to show.");
+            return;
+        }
         // ���� ��ư ����
         foreach (Transform child in rightPanelParent)
             Destroy(child.gameObject);
@@ -125,6 +137,22 @@ private void Start()
     }
 
     // �� �׸� Ŭ�� �� ����
+    private void EnsureRuntimeReferences()
+    {
+        storyDisplayManager = storyDisplayManager ?? FindObjectOfType<StoryDisplayManager>(true);
+        eventDisplay = eventDisplay ?? FindObjectOfType<EventDisplay>(true);
+        gameFlowManager = gameFlowManager ?? FindObjectOfType<GameFlowManager>(true);
+        inventoryManager = inventoryManager ?? FindObjectOfType<InventoryManager>(true);
+    }
+
+    private void ClearRuntimeSequences()
+    {
+        EnsureRuntimeReferences();
+        storyDisplayManager?.StopMainStory();
+        eventDisplay?.StopRandomEvent();
+        storyDisplayManager?.storyList?.Clear();
+        eventDisplay?.groupEvents?.Clear();
+    }
     void OnMainStorySelected(string groupID)
     {
         string[] parts = groupID.Replace("MainScene_", "").Split('_');
@@ -136,11 +164,14 @@ private void Start()
             {
                 Debug.Log($"[������] ���� �̺�Ʈ ���� ����: �׷� ID = {chapter} , {eventIndex}");
                 //�ϴ� ���� ��Ű�� ����
-                storyDisplayManager.StopMainStory();
-                eventDisplay.StopRandomEvent();
-                storyDisplayManager.storyList.Clear();
-                eventDisplay.groupEvents.Clear();
-                FindObjectOfType<StoryDisplayManager>().LoadMainStory(chapter, eventIndex);
+                ClearRuntimeSequences();
+                var manager = storyDisplayManager ?? FindObjectOfType<StoryDisplayManager>(true);
+                if (manager == null)
+                {
+                    Debug.LogWarning("[RemoteTester] StoryDisplayManager is missing.");
+                    return;
+                }
+                manager.LoadMainStory(chapter, eventIndex);
             }
         }
     }
@@ -151,22 +182,28 @@ private void Start()
         {
             Debug.Log($"[������] ���� �̺�Ʈ ���� ����: �׷� ID = {id}");
             //�ϴ� ���� ��Ű�� ����
-            storyDisplayManager.StopMainStory();
-            eventDisplay.StopRandomEvent();
-            storyDisplayManager.storyList.Clear();
-            eventDisplay.groupEvents.Clear();
-            FindObjectOfType<EventDisplay>().LoadEventStory(id);
+            ClearRuntimeSequences();
+            var manager = eventDisplay ?? FindObjectOfType<EventDisplay>(true);
+            if (manager == null)
+            {
+                Debug.LogWarning("[RemoteTester] EventDisplay is missing.");
+                return;
+            }
+            manager.LoadEventStory(id);
         }
     }
 
     void OnBattleSelected(string enemyID)
     {
         Debug.Log($"[������] ���� ����: {enemyID}");
-        storyDisplayManager.StopMainStory();
-        eventDisplay.StopRandomEvent();
-        storyDisplayManager.storyList.Clear();
-        eventDisplay.groupEvents.Clear();
-        FindObjectOfType<GameFlowManager>().ForceBattleWithMonster(enemyID);
+        ClearRuntimeSequences();
+        var manager = gameFlowManager ?? FindObjectOfType<GameFlowManager>(true);
+        if (manager == null)
+        {
+            Debug.LogWarning("[RemoteTester] GameFlowManager is missing.");
+            return;
+        }
+        manager.ForceBattleWithMonster(enemyID);
     }
     void WeaponAddInventory(string weaponID)
     {
@@ -174,6 +211,11 @@ private void Start()
         var itemData = ItemDataFactory.FromCode(jsonManager, weaponID);
         if (itemData != null)
         {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("[RemoteTester] InventoryManager is missing.");
+                return;
+            }
             inventoryManager.AddItemToInventory(itemData);
         }
         else
@@ -187,13 +229,18 @@ private void Start()
         var itemData = ItemDataFactory.FromCode(jsonManager, armorID);
         if (itemData != null)
         {
+            if (inventoryManager == null)
+            {
+                Debug.LogWarning("[RemoteTester] InventoryManager is missing.");
+                return;
+            }
             inventoryManager.AddItemToInventory(itemData);
         }
     }
 
     void RemoveAllInventory()
     {
-        Debug.Log("[������] �κ��丮�� �ִ� ��� ������ ���� �����δ� �۵� ����");
+        Debug.Log("[������] �κ��丮�� �ִ� ���?������ ���� �����δ� �۵� ����");
         //inventoryManager.ClearAllItems();
     }
 }

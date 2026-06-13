@@ -54,14 +54,12 @@ public class EventDisplay : MonoBehaviour
     
     // 외부 콜백
     private Action<bool> onCompleteCallback;
+    private TouchCatcher touchCatcherComponent;
 
 
     private void Awake()
     {
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
-        {
-            OnSkip();
-        };
+        RegisterTouchCatcher();
         //count = rng.Next(1,2);
     }
 
@@ -138,10 +136,7 @@ public class EventDisplay : MonoBehaviour
         Debug.Log("랜덤 값을 뽑습니다");
         ClearContent();
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
-        {
-            OnSkip();
-        };
+        RegisterTouchCatcher();
         if (eventGroups == null || eventGroups.Count == 0)
         {
             // 남은 그룹 없음 -> 메인 스토리 복귀ㄴ
@@ -253,10 +248,7 @@ public class EventDisplay : MonoBehaviour
         Debug.Log("[EventDisplay] 이벤트 출력 시작");
 
         SkipButton.SetActive(true);
-        TouchCatcher.GetComponent<TouchCatcher>().onTapOutsideScrollView += () =>
-        {
-            OnSkip();
-        };
+        RegisterTouchCatcher();
 
         if (groupEvents == null || currentGroupIndex >= groupEvents.Count)
         {
@@ -341,12 +333,33 @@ public class EventDisplay : MonoBehaviour
     }
     private void ClearTouchCatcher()
     {
-        if (TouchCatcher != null)
+        if (touchCatcherComponent == null && TouchCatcher != null)
         {
-            var catcher = TouchCatcher.GetComponent<TouchCatcher>();
-            if (catcher != null)
-                catcher.onTapOutsideScrollView = null;
+            touchCatcherComponent = TouchCatcher.GetComponent<TouchCatcher>();
         }
+
+        if (touchCatcherComponent != null)
+            touchCatcherComponent.onTapOutsideScrollView = null;
+    }
+
+    private void RegisterTouchCatcher()
+    {
+        if (TouchCatcher == null)
+        {
+            Debug.LogWarning("[EventDisplay] TouchCatcher is not assigned.");
+            return;
+        }
+
+        if (touchCatcherComponent == null)
+            touchCatcherComponent = TouchCatcher.GetComponent<TouchCatcher>();
+
+        if (touchCatcherComponent == null)
+        {
+            Debug.LogWarning("[EventDisplay] TouchCatcher component is missing.");
+            return;
+        }
+
+        touchCatcherComponent.onTapOutsideScrollView = OnSkip;
     }
 
     public void BattleState(string enemyID)
@@ -1012,6 +1025,7 @@ public class EventDisplay : MonoBehaviour
 
         ClearContent();
         TouchCatcher.SetActive(true);
+        RegisterTouchCatcher();
         SkipButton.SetActive(true);
         SkipButton.GetComponent<Button>().onClick.RemoveAllListeners();
         SkipButton.GetComponent<Button>().onClick.AddListener(() => OnSkip());

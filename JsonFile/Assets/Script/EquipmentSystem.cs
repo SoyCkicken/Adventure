@@ -11,6 +11,7 @@ public class EquipmentSystem : MonoBehaviour
     public JsonManager jsonManager;
     public InventoryManager inventoryManager;
     public Character player;
+    [SerializeField] private float jsonManagerWaitTimeoutSeconds = 5f;
 
     private void Start()
     {
@@ -44,7 +45,16 @@ public class EquipmentSystem : MonoBehaviour
     private IEnumerator WaitAndInit()
     {
         // JsonManager 생성 대기
-        while (JsonManager.Instance == null) yield return null;
+        float timeoutAt = Time.realtimeSinceStartup + Mathf.Max(0.1f, jsonManagerWaitTimeoutSeconds);
+        while (JsonManager.Instance == null && Time.realtimeSinceStartup < timeoutAt)
+            yield return null;
+
+        if (JsonManager.Instance == null)
+        {
+            Debug.LogWarning("[EquipmentSystem] JsonManager 대기 시간이 초과되어 장비 초기화를 건너뜁니다.");
+            yield break;
+        }
+
         jsonManager = JsonManager.Instance;
 
         if (jsonManager.IsReady) Init();

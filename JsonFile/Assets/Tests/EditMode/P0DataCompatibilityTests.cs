@@ -778,6 +778,45 @@ public class P0DataCompatibilityTests
         Assert.That(normalBattle.activeSelf, Is.False);
     }
 
+    [Test]
+    public void MissingJsonManagerListTablesReturnEmptyCollections()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        const string missingKey = "Missing_Table_For_Test";
+
+        string[] listGetterNames =
+        {
+            "GetStoryMainMasters",
+            "GetStoryMainScriptMasters",
+            "GetStoryMainSuccessRateMasters",
+            "GetStoryMainEffectMasters",
+            "GetRandomMainMasters",
+            "GetRandomScriptMasters",
+            "GetRandomSuccessRateMasters",
+            "GetRanomEffectMasters",
+            "GetWeaponMasters",
+            "GetArmorMasters",
+            "GetItemMasters",
+            "GetOptionMasters",
+            "GetMonMasters",
+            "GetMonEffectMasters",
+            "GetBlackSmiths",
+            "GetGradients",
+            "GetPatchNotes"
+        };
+
+        foreach (string methodName in listGetterNames)
+        {
+            object result = InvokeInstance(jsonManager, methodName, missingKey);
+            Assert.That(result, Is.Not.Null, methodName);
+            Assert.That(CountEnumerable(result), Is.EqualTo(0), methodName);
+        }
+
+        object choiceRequirements = InvokeInstance(jsonManager, "GetChoiceRequirementsByScene", "", 1);
+        Assert.That(choiceRequirements, Is.Not.Null);
+        Assert.That(CountEnumerable(choiceRequirements), Is.EqualTo(0));
+    }
+
     [TearDown]
     public void TearDown()
     {
