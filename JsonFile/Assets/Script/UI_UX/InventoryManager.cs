@@ -53,6 +53,8 @@ public class InventoryManager : MonoBehaviour
     private const int minSlotCount = 7;
     private int currnetSlotCount;
     private const int maxSlotCount = 14;
+    private const float detailBodyMinFontSize = 26f;
+    private const float detailNameMinFontSize = 34f;
 
     public ItemData selectedItem;
     public void Awake()
@@ -60,7 +62,7 @@ public class InventoryManager : MonoBehaviour
         jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // 수정
         playerState = PlayerState.Instance ?? FindObjectOfType<PlayerState>(true);
         spriteBank = SpriteBank.Instance ?? FindObjectOfType<SpriteBank>(true);
-        optionManager = OptionManager.Instance ?? FindObjectOfType<OptionManager>(true);
+        optionManager = OptionManager.EnsureInstance();
     }
     private void Start()
     {
@@ -84,6 +86,7 @@ public class InventoryManager : MonoBehaviour
             OnInventoryButton.gameObject.SetActive(false);
             inventoryPanel.SetActive(true);
             UpdateDPS_MaxHealth();
+            player?.DebugLogActiveBuffs("[InventoryManager]");
         });
         OffInventoryButton.onClick.AddListener(() =>
         {
@@ -92,6 +95,7 @@ public class InventoryManager : MonoBehaviour
             OnInventoryButton.gameObject.SetActive(true);
         });
         OffItemDetailButton.onClick.AddListener(() => itemDetailPanel.SetActive(false));
+        ConfigureDetailTextReadability();
         UpdateInventoryByStrength();
         LoadInventory();
         UpdateDPS_MaxHealth();
@@ -185,6 +189,7 @@ public class InventoryManager : MonoBehaviour
         selectedItem = item;
         ItemDataFactory.ApplyMasterData(selectedItem, jsonManager);
         itemDetailPanel.SetActive(true);
+        ConfigureDetailTextReadability();
 
         itemNameText.text = string.IsNullOrEmpty(selectedItem.Item_Name) ? selectedItem.Item_ID : selectedItem.Item_Name;
         itemDescText.text = selectedItem.Description;
@@ -226,6 +231,26 @@ public class InventoryManager : MonoBehaviour
                 removeButton.gameObject.SetActive(true);
                 break;
         }
+    }
+
+    private void ConfigureDetailTextReadability()
+    {
+        ConfigureDetailText(itemNameText, detailNameMinFontSize, 44f);
+        ConfigureDetailText(itemStatText, detailBodyMinFontSize, 34f);
+        ConfigureDetailText(itemOptionText, detailBodyMinFontSize, 34f);
+        ConfigureDetailText(itemDescText, detailBodyMinFontSize, 34f);
+        ConfigureDetailText(itemTypeText, detailBodyMinFontSize, 34f);
+    }
+
+    private static void ConfigureDetailText(TextMeshProUGUI text, float minSize, float maxSize)
+    {
+        if (text == null) return;
+
+        text.enableAutoSizing = true;
+        text.fontSizeMin = minSize;
+        text.fontSizeMax = Mathf.Max(maxSize, minSize);
+        if (text.fontSize < minSize)
+            text.fontSize = minSize;
     }
 
     private bool IsSlotItem(ItemSlotUI slot, ItemData item)
@@ -473,8 +498,9 @@ public class InventoryManager : MonoBehaviour
     }
     public void UpdateDPS_MaxHealth()
     {
-        Debug.Log($"player.damage = {player.damage}");
-        DPSText.text = (player.damage * player.speed).ToString("0.0");
+        float dps = player.damage * player.speed;
+        Debug.Log($"[InventoryStats] attack={player.damage}, speed={player.speed:0.###}, dps={dps:0.0}, maxHP={player.MaxHealth}");
+        DPSText.text = dps.ToString("0.0");
         HPText.text = player.MaxHealth.ToString();
         //Debug.Log($"플레이어의 공격력 : {player.damage}\n플레이어의 속도 : {player.speed}\n플레이어의 체력 : {player.MaxHealth}");
     }

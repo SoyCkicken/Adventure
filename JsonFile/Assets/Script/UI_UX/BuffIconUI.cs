@@ -64,6 +64,10 @@ public class BuffIconUI : MonoBehaviour
     [SerializeField] private SpriteBank spriteBank;
     [SerializeField] private TMP_Text stackText;
     [SerializeField] private TMP_Text durationText;
+    [SerializeField] private Color buffIconTint = Color.white;
+    [SerializeField] private Color debuffIconTint = new Color(1f, 0.72f, 0.72f);
+    [SerializeField] private Color buffTimerColor = new Color(0.35f, 0.8f, 1f);
+    [SerializeField] private Color debuffTimerColor = new Color(1f, 0.22f, 0.22f);
 
     public BuffData buffData { get; private set; }
 
@@ -80,13 +84,11 @@ public class BuffIconUI : MonoBehaviour
         if (spriteBank == null) spriteBank = SpriteBank.Instance;
 
         // 아이콘 세팅
-        Sprite spr = null;
-        if (spriteBank != null)
-            spriteBank.TryLoad(buffData.OptionID, out spr);
+        Sprite spr = TryLoadBuffSprite(buffData);
         if (spr != null && iconImage != null)
         {
             iconImage.sprite = spr;
-            iconImage.color = Color.white;
+            iconImage.color = buffData.IsDebuff ? debuffIconTint : buffIconTint;
         }
         else if (iconImage != null)
         {
@@ -99,6 +101,7 @@ public class BuffIconUI : MonoBehaviour
         noTimer = buffData.IsPassive || buffData.Duration <= 0f;
         if (timerSlider != null)
         {
+            timerSlider.color = buffData.IsDebuff ? debuffTimerColor : buffTimerColor;
             if (noTimer)
             {
                 // ① 아예 숨기기
@@ -122,6 +125,28 @@ public class BuffIconUI : MonoBehaviour
         }
 
         StartTimerRoutine();
+    }
+
+    private Sprite TryLoadBuffSprite(BuffData data)
+    {
+        if (spriteBank == null || data == null)
+            return null;
+
+        string[] candidates =
+        {
+            data.OptionID,
+            data.StatusType,
+            data.BuffID,
+            data.SourceItemID
+        };
+
+        foreach (string key in candidates)
+        {
+            if (spriteBank.TryLoad(key, out var spr))
+                return spr;
+        }
+
+        return null;
     }
 
     private void UpdateFill()

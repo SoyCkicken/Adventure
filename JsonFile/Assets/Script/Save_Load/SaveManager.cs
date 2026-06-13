@@ -54,12 +54,22 @@ public class SaveManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void Start()
+    {
+        InitializeForScene(SceneManager.GetActiveScene());
+    }
+
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        InitializeForScene(scene);
+    }
+
+    private void InitializeForScene(Scene scene)
     {
 
 
@@ -70,11 +80,10 @@ public class SaveManager : MonoBehaviour
 
         // 토글 설정
         SetupPatchNoteToggle();
-        // 새 게임 버튼 설정
-        SetupNewGameButton();
-
         // 버튼 리스너 재등록
         SetupButtons();
+        // 새 게임 버튼 설정
+        SetupNewGameButton();
 
         // 씬별 초기화
         if (scene.name == "LobbyScenes")
@@ -108,6 +117,7 @@ public class SaveManager : MonoBehaviour
             _startButton.onClick.RemoveAllListeners();
             _startButton.onClick.AddListener(() =>
             {
+                Debug.Log("시작 버튼 눌림");
                 if (SceneFader.Instance != null)
                 {
                     SceneFader.Instance.LoadSceneWithFade(
@@ -174,30 +184,6 @@ public class SaveManager : MonoBehaviour
         {
             LoadButton.onClick.RemoveAllListeners();
             LoadButton.onClick.AddListener(OnClickLoadGame);
-        }
-        if (_startButton != null)
-        {
-            _startButton.onClick.RemoveAllListeners();
-            _startButton.onClick.AddListener(() =>
-            {
-                if (SceneFader.Instance != null)
-                {
-                    SceneFader.Instance.LoadSceneWithFade(
-                        sceneName: "GameScene",
-                        fadeOut: 0.35f,
-                        fadeIn: 0.25f,
-                        onBeforeUnload: () =>
-                        {
-                            //DeleteSave(); // 새 게임 시작 시 기존 저장 삭제
-                            playerState?.GenerateRandomStats();
-                        },
-                        onAfterLoad: () =>
-                        {
-                            SaveGame(); // 새 게임 시작 시 자동 저장
-                        }
-                    );
-                }
-            });
         }
     }
 

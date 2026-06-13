@@ -191,17 +191,25 @@ public class PatchNoteViewer : MonoBehaviour
 
         foreach (var note in data.Patch_Notes)
         {
-            var headerObj = Instantiate(textPrefab, contentParent);
-            headerObj.GetComponent<TMP_Text>().text = $"<b>{note.version} ({note.Date})</b>";
+            AddPatchNoteText($"<b>{note.version} ({note.Date})</b>");
 
             foreach (var line in note.Lines)
             {
-                var lineObj = Instantiate(textPrefab, contentParent);
-                lineObj.GetComponent<TMP_Text>().text = $" - {line}";
+                AddPatchNoteText($" - {line}");
             }
 
-            var spaceObj = Instantiate(textPrefab, contentParent);
-            spaceObj.GetComponent<TMP_Text>().text = "";
+            AddPatchNoteText("");
+        }
+    }
+
+    private void AddPatchNoteText(string text)
+    {
+        var lineObj = Instantiate(textPrefab, contentParent);
+        var tmpText = lineObj.GetComponent<TMP_Text>();
+        if (tmpText != null)
+        {
+            tmpText.text = text;
+            tmpText.margin = new Vector4(30f, tmpText.margin.y, 30f, tmpText.margin.w);
         }
     }
 }

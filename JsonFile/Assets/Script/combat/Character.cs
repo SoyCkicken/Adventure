@@ -745,6 +745,8 @@ namespace MyGame
             int reduced = Mathf.Max(damage - armor, 0);
             int damageTakenIncrease = GetDamageTakenIncreasePercent();
             int finalDamage = Mathf.FloorToInt(reduced * (1f + damageTakenIncrease / 100f));
+            int increasedDamage = finalDamage - reduced;
+            Debug.Log($"[TakeDamage] target={charaterName}, incoming={damage}, armor={armor}, afterArmor={reduced}, damageTakenIncrease={damageTakenIncrease}%, increased={increasedDamage}, final={finalDamage}");
             Health -= finalDamage;
             CombatFeedback.Report(
                 CombatFeedbackKind.Damage,
@@ -1154,12 +1156,13 @@ namespace MyGame
                 this,
                 this,
                 amount,
-                $"{charaterName} {buff.StatusType} 반동 피해 {amount} (현재 HP {Health})");
+                $"{charaterName} {buff.StatusType} 반동 피해 {amount} (maxHP={MaxHealth}, value={buff.SelfDamageOnAttackPercent}%, source={buff.SourceItemID}, 현재 HP {Health})");
         }
 
         private void ApplyStackedSelfDamage(BuffData buff)
         {
-            if (!RollPercent(GetStackedChance(buff)))
+            float chance = GetStackedChance(buff);
+            if (!RollPercent(chance))
                 return;
 
             int damageAmount = CalculateStackedPercentAmount(this, buff);
@@ -1171,12 +1174,13 @@ namespace MyGame
                 this,
                 this,
                 finalDamage,
-                $"{charaterName} {buff.StatusType} 피해 {finalDamage} (stack={buff.StackCount})");
+                $"{charaterName} {buff.StatusType} 피해 {finalDamage} (chance={chance:0.#}%, value={GetStackedValue(buff):0.#}%, raw={damageAmount}, resist={resistance}%, stack={buff.StackCount}, source={buff.SourceItemID})");
         }
 
         private void ApplyStackedSelfHeal(BuffData buff)
         {
-            if (!RollPercent(GetStackedChance(buff)))
+            float chance = GetStackedChance(buff);
+            if (!RollPercent(chance))
                 return;
 
             int healAmount = CalculateStackedPercentAmount(this, buff);
@@ -1186,15 +1190,22 @@ namespace MyGame
                 this,
                 this,
                 healAmount,
-                $"{charaterName} {buff.StatusType} 회복 {healAmount} (stack={buff.StackCount})");
+                $"{charaterName} {buff.StatusType} 회복 {healAmount} (chance={chance:0.#}%, value={GetStackedValue(buff):0.#}%, stack={buff.StackCount}, source={buff.SourceItemID}, 현재 HP {Health})");
         }
 
         private void ApplyHolyOnAttack(BuffData buff, Character attackTarget)
         {
-            if (attackTarget != null && RollPercent(GetStackedChance(buff)))
+            float accuracyDownChance = GetStackedChance(buff);
+            if (attackTarget != null && RollPercent(accuracyDownChance))
             {
                 int penalty = Mathf.FloorToInt(GetStackedValue(buff));
                 attackTarget.AddNextAttackMissChance(penalty);
+                CombatFeedback.Report(
+                    CombatFeedbackKind.AccuracyDown,
+                    this,
+                    attackTarget,
+                    penalty,
+                    $"{charaterName} Holy 명중률 감소 적용: {attackTarget.charaterName} nextMissChance +{penalty}% (chance={accuracyDownChance:0.#}%, stack={buff.StackCount}, source={buff.SourceItemID})");
             }
 
             int cleanseChance = Mathf.Max(1, buff.StackCount / 2) * 2;
@@ -1352,6 +1363,23 @@ namespace MyGame
             yield return null;
             buffUI?.SetBuffs(activeBuffs.Values.ToList(), this);
             uiRefreshRoutine = null;
+        }
+
+        public string GetActiveBuffDebugSummary()
+        {
+            if (activeBuffs.Count == 0)
+                return $"[BuffSummary] {charaterName}: active buff/debuff 없음";
+
+            var lines = activeBuffs.Values
+                .Select(buff =>
+                    $"{buff.OptionID}/{buff.StatusType} type={(buff.IsDebuff ? "Debuff" : "Buff")} stack={buff.StackCount} value={buff.Value} duration={buff.Duration:0.#} elapsed={buff.Elapsed:0.#} source={buff.SourceItemID}")
+                .ToList();
+            return $"[BuffSummary] {charaterName}: {activeBuffs.Count}개\n" + string.Join("\n", lines);
+        }
+
+        public void DebugLogActiveBuffs(string source)
+        {
+            Debug.Log($"{source} {GetActiveBuffDebugSummary()}");
         }
         #endregion
 

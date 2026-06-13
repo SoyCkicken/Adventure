@@ -2397,7 +2397,7 @@ MonoBehaviour:
   showPatchNoteToggle: {fileID: 776750099}
   _startButton: {fileID: 1609662291}
   SaveButton: {fileID: 0}
-  LoadButton: {fileID: 0}
+  LoadButton: {fileID: 2060242954}
   autoCreateOnBoot: 1
 --- !u!4 &1947755918
 Transform:

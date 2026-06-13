@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 using SRDebugger;
-#endif
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
 public class RemoteTester : MonoBehaviour
 {
-    [Header("���� ī�װ��?��ư")]
+    [Header("Debug category buttons")]
     public Button mainStoryButton;
     public Button randomStoryButton;
     public Button battleButton;
@@ -21,62 +21,56 @@ public class RemoteTester : MonoBehaviour
     [SerializeField] private KeyCode srDebuggerToggleKey = KeyCode.F12;
     [SerializeField] private bool enableSRDebuggerHotkey = true;
 
-    [Header("������ ��ư ������ �� �θ�")]
+    [Header("Option button prefab and target parent")]
     public GameObject buttonPrefab;
     public Transform rightPanelParent;
 
-    [Header("���ν��丮 , �̺�Ʈ , �� ���� ����")]
+    [Header("Runtime managers")]
     public StoryDisplayManager storyDisplayManager;
     public EventDisplay eventDisplay;
     public GameFlowManager gameFlowManager;
     public InventoryManager inventoryManager;
     public JsonManager jsonManager;
 
-    // ���� �ó����� / �� ID ����Ʈ
-    private List<string> mainStories = new List<string> { "MainScene_1_1", "MainScene_1_2", "MainScene_1_3", "MainScene_1_4" ,"MainScene_1_5","MainScene_2_1"};
+    private List<string> mainStories = new List<string> { "MainScene_1_1", "MainScene_1_2", "MainScene_1_3", "MainScene_1_4", "MainScene_1_5", "MainScene_2_1" };
     private List<string> randomStories = new List<string> { "EventScene_1", "EventScene_2", "EventScene_3", "EventScene_4" };
     private List<string> enemyIDs = new List<string>();
     private List<string> WeaponID = new List<string>();
     private List<string> ArmorID = new List<string>();
 
-private void Start()
+    private void Start()
     {
-        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true); // ?�정
+        jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>(true);
         EnsureRuntimeReferences();
+
         if (jsonManager == null)
         {
-            Debug.LogWarning("[RemoteTester] JsonManager�?찾�? 못해 ?�버�?버튼 초기?��? 건너?�니??");
+            Debug.LogWarning("[RemoteTester] JsonManager is missing. Debug buttons were not initialized.");
             return;
         }
 
         foreach (var weapon in jsonManager.GetWeaponMasters("Weapon_Master"))
-        {
             WeaponID.Add(weapon.Weapon_ID);
-        }
+
         foreach (var armor in jsonManager.GetArmorMasters("Armor_Master"))
-        {
             ArmorID.Add(armor.Armor_ID);
-        }
+
         foreach (var monster in jsonManager.GetMonMasters("Mon_Master"))
-        {
             enemyIDs.Add(monster.Mon_ID);
-        }
 
         mainStoryButton?.onClick.AddListener(() => ShowOptions(mainStories, OnMainStorySelected));
         randomStoryButton?.onClick.AddListener(() => ShowOptions(randomStories, OnRandomStorySelected));
         battleButton?.onClick.AddListener(() => ShowOptions(enemyIDs, OnBattleSelected));
         weaponTestButton?.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
         armorTestButton?.onClick.AddListener(() => ShowOptions(ArmorID, ArmorAddInventory));
-        reMoveButton?.onClick.AddListener(() => RemoveAllInventory());
+        reMoveButton?.onClick.AddListener(RemoveAllInventory);
         srDebuggerToggleButton?.onClick.AddListener(ToggleSRDebuggerPanel);
     }
 
     private void Update()
     {
         if (enableSRDebuggerHotkey && Input.GetKeyDown(srDebuggerToggleKey))
-        {
             ToggleSRDebuggerPanel();
-        }
     }
 
     public void ToggleSRDebuggerPanel()
@@ -108,35 +102,36 @@ private void Start()
         }
     }
 
-    // ������ �г� ��ư ����
-    void ShowOptions(List<string> options, System.Action<string> onClickAction)
+    private void ShowOptions(List<string> options, System.Action<string> onClickAction)
     {
         if (rightPanelParent == null || buttonPrefab == null)
         {
-            Debug.LogWarning("[RemoteTester] option panel references are missing.");
+            Debug.LogWarning("[RemoteTester] Option panel references are missing.");
             return;
         }
 
         if (options == null || options.Count == 0)
         {
-            Debug.LogWarning("[RemoteTester] no debug options to show.");
+            Debug.LogWarning("[RemoteTester] No debug options to show.");
             return;
         }
-        // ���� ��ư ����
+
         foreach (Transform child in rightPanelParent)
             Destroy(child.gameObject);
 
-        // ���ο� ��ư ����
         foreach (var option in options)
         {
             GameObject btnObj = Instantiate(buttonPrefab, rightPanelParent);
-            btnObj.GetComponentInChildren<TMP_Text>().text = option;
+            TMP_Text label = btnObj.GetComponentInChildren<TMP_Text>();
+            if (label != null)
+                label.text = option;
 
-            btnObj.GetComponent<Button>().onClick.AddListener(() => onClickAction(option));
+            Button button = btnObj.GetComponent<Button>();
+            if (button != null)
+                button.onClick.AddListener(() => onClickAction(option));
         }
     }
 
-    // �� �׸� Ŭ�� �� ����
     private void EnsureRuntimeReferences()
     {
         storyDisplayManager = storyDisplayManager ?? FindObjectOfType<StoryDisplayManager>(true);
@@ -153,96 +148,102 @@ private void Start()
         storyDisplayManager?.storyList?.Clear();
         eventDisplay?.groupEvents?.Clear();
     }
-    void OnMainStorySelected(string groupID)
+
+    private void OnMainStorySelected(string groupID)
     {
         string[] parts = groupID.Replace("MainScene_", "").Split('_');
 
-        if (parts.Length == 2 &&
-            int.TryParse(parts[0], out int chapter) &&
-            int.TryParse(parts[1], out int eventIndex))
+        if (parts.Length != 2 ||
+            !int.TryParse(parts[0], out int chapter) ||
+            !int.TryParse(parts[1], out int eventIndex))
         {
-            {
-                Debug.Log($"[������] ���� �̺�Ʈ ���� ����: �׷� ID = {chapter} , {eventIndex}");
-                //�ϴ� ���� ��Ű�� ����
-                ClearRuntimeSequences();
-                var manager = storyDisplayManager ?? FindObjectOfType<StoryDisplayManager>(true);
-                if (manager == null)
-                {
-                    Debug.LogWarning("[RemoteTester] StoryDisplayManager is missing.");
-                    return;
-                }
-                manager.LoadMainStory(chapter, eventIndex);
-            }
+            Debug.LogWarning($"[RemoteTester] Invalid main story id: {groupID}");
+            return;
         }
-    }
 
-    void OnRandomStorySelected(string groupID)
-    {
-        if (int.TryParse(groupID.Replace("EventScene_", ""), out int id))
-        {
-            Debug.Log($"[������] ���� �̺�Ʈ ���� ����: �׷� ID = {id}");
-            //�ϴ� ���� ��Ű�� ����
-            ClearRuntimeSequences();
-            var manager = eventDisplay ?? FindObjectOfType<EventDisplay>(true);
-            if (manager == null)
-            {
-                Debug.LogWarning("[RemoteTester] EventDisplay is missing.");
-                return;
-            }
-            manager.LoadEventStory(id);
-        }
-    }
-
-    void OnBattleSelected(string enemyID)
-    {
-        Debug.Log($"[������] ���� ����: {enemyID}");
+        Debug.Log($"[RemoteTester] Load main story: chapter={chapter}, event={eventIndex}");
         ClearRuntimeSequences();
+
+        var manager = storyDisplayManager ?? FindObjectOfType<StoryDisplayManager>(true);
+        if (manager == null)
+        {
+            Debug.LogWarning("[RemoteTester] StoryDisplayManager is missing.");
+            return;
+        }
+
+        manager.LoadMainStory(chapter, eventIndex);
+    }
+
+    private void OnRandomStorySelected(string groupID)
+    {
+        if (!int.TryParse(groupID.Replace("EventScene_", ""), out int id))
+        {
+            Debug.LogWarning($"[RemoteTester] Invalid random event id: {groupID}");
+            return;
+        }
+
+        Debug.Log($"[RemoteTester] Load random event: id={id}");
+        ClearRuntimeSequences();
+
+        var manager = eventDisplay ?? FindObjectOfType<EventDisplay>(true);
+        if (manager == null)
+        {
+            Debug.LogWarning("[RemoteTester] EventDisplay is missing.");
+            return;
+        }
+
+        manager.LoadEventStory(id);
+    }
+
+    private void OnBattleSelected(string enemyID)
+    {
+        Debug.Log($"[RemoteTester] Force battle: {enemyID}");
+        ClearRuntimeSequences();
+
         var manager = gameFlowManager ?? FindObjectOfType<GameFlowManager>(true);
         if (manager == null)
         {
             Debug.LogWarning("[RemoteTester] GameFlowManager is missing.");
             return;
         }
+
         manager.ForceBattleWithMonster(enemyID);
     }
-    void WeaponAddInventory(string weaponID)
+
+    private void WeaponAddInventory(string weaponID)
     {
-        Debug.Log($"[������] ������ �߰� ����: {weaponID}");
-        var itemData = ItemDataFactory.FromCode(jsonManager, weaponID);
-        if (itemData != null)
-        {
-            if (inventoryManager == null)
-            {
-                Debug.LogWarning("[RemoteTester] InventoryManager is missing.");
-                return;
-            }
-            inventoryManager.AddItemToInventory(itemData);
-        }
-        else
-        {
-            Debug.LogError($"[������] ���� {weaponID}�� ItemData�� ã�� �� �����ϴ�.");
-        }
-    }
-    void ArmorAddInventory(string armorID)
-    {
-        Debug.Log($"[������] ������ �߰� ���� : {armorID}");
-        var itemData = ItemDataFactory.FromCode(jsonManager, armorID);
-        if (itemData != null)
-        {
-            if (inventoryManager == null)
-            {
-                Debug.LogWarning("[RemoteTester] InventoryManager is missing.");
-                return;
-            }
-            inventoryManager.AddItemToInventory(itemData);
-        }
+        Debug.Log($"[RemoteTester] Add weapon to inventory: {weaponID}");
+        AddInventoryItem(weaponID);
     }
 
-    void RemoveAllInventory()
+    private void ArmorAddInventory(string armorID)
     {
-        Debug.Log("[������] �κ��丮�� �ִ� ���?������ ���� �����δ� �۵� ����");
-        //inventoryManager.ClearAllItems();
+        Debug.Log($"[RemoteTester] Add armor to inventory: {armorID}");
+        AddInventoryItem(armorID);
+    }
+
+    private void AddInventoryItem(string itemID)
+    {
+        var itemData = ItemDataFactory.FromCode(jsonManager, itemID);
+        if (itemData == null)
+        {
+            Debug.LogError($"[RemoteTester] Could not create ItemData for {itemID}.");
+            return;
+        }
+
+        if (inventoryManager == null)
+        {
+            Debug.LogWarning("[RemoteTester] InventoryManager is missing.");
+            return;
+        }
+
+        inventoryManager.AddItemToInventory(itemData);
+    }
+
+    private void RemoveAllInventory()
+    {
+        Debug.Log("[RemoteTester] Remove-all inventory action is not implemented yet.");
+        // inventoryManager.ClearAllItems();
     }
 }
 #endif
-

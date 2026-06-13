@@ -438,6 +438,35 @@ public class P0DataCompatibilityTests
     }
 
     [Test]
+    public void EquipmentSystemAutoCreatesOptionManagerAndAppliesArmorCriticalChance()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component playerState = CreateComponent("PlayerState");
+        Component player = CreateCharacter("Equipment Critical Player", maxHealth: 100, health: 100);
+        Component equipmentSystem = CreateComponent("EquipmentSystem");
+
+        SetRuntimeSingleton("JsonManager", "Instance", jsonManager);
+        InvokePrivateInstance(jsonManager, "LoadAllJsonFiles");
+        SetAutoProperty(jsonManager, "IsReady", true);
+        ResetRuntimeSingleton("OptionManager", "Instance");
+
+        SetField(playerState, "STR", 10);
+        SetField(playerState, "AGI", 10);
+        SetField(playerState, "INT", 10);
+        SetField(playerState, "Health", 10);
+        SetField(player, "armor_Name", "Armor_002");
+        SetField(player, "weapon_Name", "");
+        SetField(equipmentSystem, "jsonManager", jsonManager);
+        SetField(equipmentSystem, "playerState", playerState);
+        SetField(equipmentSystem, "player", player);
+
+        InvokeInstance(equipmentSystem, "Init");
+
+        Assert.That(GetField<int>(player, "CitChance"), Is.EqualTo(100));
+        Assert.That(GetField<int>(player, "armor"), Is.EqualTo(3));
+    }
+
+    [Test]
     public void EquipmentSystemRegistersWeaponOnHitOptionAndRuntimeEffectCanFire()
     {
         Component jsonManager = CreateComponent("JsonManager");

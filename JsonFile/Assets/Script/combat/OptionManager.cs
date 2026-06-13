@@ -352,14 +352,25 @@ public class CriticalBuff : IOptionEffect
 {
     public void Apply(OptionContext ctx)
     {
+        Option_Master option = OptionManager.GetOption(ctx.option_ID);
         var buffData = new BuffData
         {
             BuffID = $"{ctx.item_ID}_{ctx.option_ID}",
             User = ctx.User,
+            Target = ctx.User,
             OptionID = ctx.option_ID,
             Value = ctx.Value,
             SourceItemID = ctx.item_ID,
-            IsPassive = true
+            IsPassive = true,
+            IsDebuff = false,
+            ApplyMode = "Stat",
+            StackPolicy = "Ignore",
+            StackCount = 1,
+            MaxStack = 1,
+            StatusType = string.IsNullOrEmpty(option?.StatusType) ? "CriticalChance" : option.StatusType,
+            StatType = string.IsNullOrEmpty(option?.StatType) ? "CritChance" : option.StatType,
+            TriggerType = option?.TriggerType,
+            ValueMode = option?.ValueMode
         };
         ctx.User.AddBuff(buffData);
         Debug.Log($"[CriticalBuff] 크리티컬 버프 적용: {ctx.Value}%");
@@ -687,7 +698,8 @@ public class OptionManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (Application.isPlaying)
+            DontDestroyOnLoad(gameObject);
 
         // JsonManager 참조 설정
         jsonManager = JsonManager.Instance ?? FindObjectOfType<JsonManager>();
@@ -730,11 +742,54 @@ public class OptionManager : MonoBehaviour
     // 기존 static Initialize 메서드는 호환성을 위해 유지
     public static void Initialize(JsonManager json)
     {
+        OptionManager manager = EnsureInstance();
+        if (manager != null)
+        {
+            manager.jsonManager = json;
+            manager.InitializeOptions();
+        }
+    }
+
+    public static OptionManager EnsureInstance()
+    {
         if (Instance != null)
         {
-            Instance.jsonManager = json;
-            Instance.InitializeOptions();
+            Instance.EnsureInitialized();
+            return Instance;
         }
+
+        OptionManager existing = FindObjectOfType<OptionManager>(true);
+        if (existing != null)
+        {
+            Instance = existing;
+            existing.EnsureInitialized();
+            return existing;
+        }
+
+        string objectName = Application.isPlaying ? "OptionManager" : "P0 Test OptionManager Auto";
+        var go = new GameObject(objectName);
+        OptionManager created = go.AddComponent<OptionManager>();
+        created.EnsureInitialized();
+        return created;
+    }
+
+    private void EnsureInitialized()
+    {
+        if (isInitialized) return;
+
+        jsonManager = jsonManager ?? JsonManager.Instance ?? FindObjectOfType<JsonManager>(true);
+        buffUI = buffUI ?? FindObjectOfType<BuffUI>(true);
+
+        if (jsonManager == null)
+        {
+            Debug.LogWarning("[OptionManager] JsonManager가 없어 옵션 초기화를 대기합니다.");
+            return;
+        }
+
+        if (jsonManager.IsReady)
+            InitializeOptions();
+        else
+            jsonManager.OnReady += InitializeOptions;
     }
 
     // 효과 딕셔너리
@@ -784,13 +839,14 @@ public class OptionManager : MonoBehaviour
     // ⭐ ApplyOption 메서드 수정
     public static void ApplyOption(string optionID, OptionContext ctx)
     {
-        if (Instance == null || !Instance.isInitialized)
+        OptionManager manager = EnsureInstance();
+        if (manager == null || !manager.isInitialized)
         {
             Debug.LogError("[OptionManager] 인스턴스가 초기화되지 않았습니다!");
             return;
         }
 
-        var opt = Instance.GetOptionInternal(optionID);
+        var opt = manager.GetOptionInternal(optionID);
         if (opt == null)
         {
             Debug.LogWarning($"[OptionManager] {optionID} 옵션 정보 없음");
@@ -906,12 +962,13 @@ public class OptionManager : MonoBehaviour
     // ⭐ GetOption을 인스턴스 메서드로 변경
     public static Option_Master GetOption(string optionID)
     {
-        if (Instance == null)
+        OptionManager manager = EnsureInstance();
+        if (manager == null)
         {
             Debug.LogError("[OptionManager] Instance가 null입니다!");
             return null;
         }
-        return Instance.GetOptionInternal(optionID);
+        return manager.GetOptionInternal(optionID);
     }
 
     private Option_Master GetOptionInternal(string optionID)

@@ -77,6 +77,7 @@ public class EquipmentSystem : MonoBehaviour
         {
             player.equipmentQuery = new EquipmentQueryImpl(() => player.weapon_Name, () => player.armor_Name);
         }
+        OptionManager.EnsureInstance();
         ClearInit();
         // 자동 참조
 
