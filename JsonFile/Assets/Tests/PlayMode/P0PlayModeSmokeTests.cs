@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 
 public class P0PlayModeSmokeTests
 {
@@ -22,6 +24,26 @@ public class P0PlayModeSmokeTests
         {
             string scenePath = $"Assets/Scenes/{sceneName}.unity";
             Assert.That(SceneUtility.GetBuildIndexByScenePath(scenePath), Is.GreaterThanOrEqualTo(0), scenePath);
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator RequiredScenesLoadInPlayMode()
+    {
+        foreach (string sceneName in RequiredScenes)
+        {
+            AsyncOperation load = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            Assert.That(load, Is.Not.Null, $"{sceneName} load operation should start.");
+
+            float timeoutAt = Time.realtimeSinceStartup + 10f;
+            while (!load.isDone)
+            {
+                Assert.That(Time.realtimeSinceStartup, Is.LessThan(timeoutAt), $"{sceneName} load timed out.");
+                yield return null;
+            }
+
+            yield return null;
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(sceneName));
         }
     }
 

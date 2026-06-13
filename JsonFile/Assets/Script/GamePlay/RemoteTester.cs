@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+using SRDebugger;
+#endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 public class RemoteTester : MonoBehaviour
 {
     [Header("���� ī�װ�� ��ư")]
@@ -12,6 +15,11 @@ public class RemoteTester : MonoBehaviour
     public Button weaponTestButton;
     public Button reMoveButton;
     public Button armorTestButton;
+    public Button srDebuggerToggleButton;
+
+    [Header("SRDebugger")]
+    [SerializeField] private KeyCode srDebuggerToggleKey = KeyCode.F12;
+    [SerializeField] private bool enableSRDebuggerHotkey = true;
 
     [Header("������ ��ư ������ �� �θ�")]
     public GameObject buttonPrefab;
@@ -59,6 +67,44 @@ private void Start()
         weaponTestButton?.onClick.AddListener(() => ShowOptions(WeaponID, WeaponAddInventory));
         armorTestButton?.onClick.AddListener(() => ShowOptions(ArmorID, ArmorAddInventory));
         reMoveButton?.onClick.AddListener(() => RemoveAllInventory());
+        srDebuggerToggleButton?.onClick.AddListener(ToggleSRDebuggerPanel);
+    }
+
+    private void Update()
+    {
+        if (enableSRDebuggerHotkey && Input.GetKeyDown(srDebuggerToggleKey))
+        {
+            ToggleSRDebuggerPanel();
+        }
+    }
+
+    public void ToggleSRDebuggerPanel()
+    {
+        try
+        {
+            if (!SRDebug.IsInitialized)
+            {
+                SRDebug.Init();
+                SRDebug.Instance.ShowDebugPanel(false);
+                Debug.Log("[RemoteTester] SRDebugger initialized and opened.");
+                return;
+            }
+
+            if (SRDebug.Instance.IsDebugPanelVisible)
+            {
+                SRDebug.Instance.HideDebugPanel();
+                Debug.Log("[RemoteTester] SRDebugger hidden.");
+            }
+            else
+            {
+                SRDebug.Instance.ShowDebugPanel(false);
+                Debug.Log("[RemoteTester] SRDebugger opened.");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[RemoteTester] SRDebugger toggle failed: {ex.Message}");
+        }
     }
 
     // ������ �г� ��ư ����

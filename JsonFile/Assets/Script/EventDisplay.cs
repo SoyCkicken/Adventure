@@ -73,12 +73,7 @@ public class EventDisplay : MonoBehaviour
 
     private List<ChoiceRequirement> GetRequirementsFor(string sceneKey, int choiceNo, Ran_SuccessRate_Master_Events rateRow)
     {
-        // 1) 성공률 시트에 ChoiceRequirement 컬럼이 있으면 그것을 우선 사용
-        if (rateRow != null && rateRow.ChoiceRequirement != null && rateRow.ChoiceRequirement.Count > 0)
-            return rateRow.ChoiceRequirement;
-
-        // 2) 없으면 JsonManager 색인에서 보조 조회 (sceneKey = Random_Event_ID)
-        return jsonManager != null ? jsonManager.GetChoiceRequirementsByScene(sceneKey, choiceNo) : null;
+        return ChoiceRequirementResolver.Resolve(jsonManager, sceneKey, choiceNo, rateRow);
     }
 
     public void Start()
@@ -717,12 +712,7 @@ public class EventDisplay : MonoBehaviour
 
             if (hasRate)
             {
-                choiceResult = ChoiceEvaluator.Resolve(
-                    formula: rateRow.Success_Formula,
-                    nextOnSuccess: rateRow.Success_Next_Script,
-                    nextOnFail: rateRow.Fail_Next_Script,
-                    state: playerState
-                );
+                choiceResult = ChoiceBranchResolver.Resolve(rateRow, playerState);
 
                 if (choiceResult != null && txt != null)
                 {
@@ -739,29 +729,13 @@ public class EventDisplay : MonoBehaviour
 
                 btn.onClick.AddListener(() =>
                 {
-                    //string nextCode;
-                    //bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
-                    //nextCode = success ? rateRow.Success_Next_Script?.Trim()
-                    //                   : rateRow.Fail_Next_Script?.Trim();
-
-                    //if (string.IsNullOrEmpty(nextCode)) nextCode = ch.code;
-                    //OnChoice(nextCode);
-                    string nextCode;
-                    bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
-                    nextCode = success ? rateRow.Success_Next_Script?.Trim()
-                                       : rateRow.Fail_Next_Script?.Trim();
-
-                    if (string.IsNullOrEmpty(nextCode)) nextCode = ch.code;
-
-                    // 🔴 라벨 텍스트 같이 전달
+                    string nextCode = ChoiceBranchResolver.ResolveNextCode(rateRow, choiceResult, ch.code);
                     OnChoice(nextCode, ch.text);
                 });
             }
             else
             {
-                // 일반 버튼
-                btn.onClick.AddListener(() => OnChoice(ch.code,ch.text));
-
+                btn.onClick.AddListener(() => OnChoice(ch.code, ch.text));
             }
         }
     }

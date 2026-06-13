@@ -77,15 +77,7 @@ public class StoryDisplayManager : MonoBehaviour
     private List<ChoiceRequirement> GetRequirementsFor(string sceneCode, int choiceNo,
     Main_SuccessRate_Master_Main rateRow)
     {
-        // 1) 성공률 시트에 ChoiceRequirement 컬럼이 있으면 그걸 우선 사용 (네 스샷 1번처럼)
-        if (rateRow != null && rateRow.ChoiceRequirement != null && rateRow.ChoiceRequirement.Count > 0)
-            return rateRow.ChoiceRequirement;
-
-        // 2) 없으면 JsonManager에서 (Scene, ChoiceNo)로 별도 색인된 조건을 꺼냄 (있다면)
-        if (jsonManager != null)
-            return jsonManager.GetChoiceRequirementsByScene(sceneCode, choiceNo);
-
-        return null;
+        return ChoiceRequirementResolver.Resolve(jsonManager, sceneCode, choiceNo, rateRow);
     }
     public void StartMainStory(Action onComplete)
     {
@@ -565,13 +557,7 @@ public class StoryDisplayManager : MonoBehaviour
             // 3-6) 조건 통과 → 확률 있는지에 따라 분기
             if (hasRate)
             {
-                // 성공률 계산(기존에 쓰던 ChoiceEvaluator 그대로 활용)
-                var choiceResult = ChoiceEvaluator.Resolve(
-                    formula: rateRow.Success_Formula,
-                    nextOnSuccess: rateRow.Success_Next_Script,
-                    nextOnFail: rateRow.Fail_Next_Script,
-                    state: playerState
-                );
+                var choiceResult = ChoiceBranchResolver.Resolve(rateRow, playerState);
 
                 // 배지 UI 붙이는 도우미 그대로 사용
                 if (choiceResult != null)
@@ -587,41 +573,19 @@ public class StoryDisplayManager : MonoBehaviour
                     );
                 }
 
-                // 클릭 → 성공/실패에 따라 분기 스크립트
                 btn.onClick.AddListener(() =>
                 {
-                    //string nextCode = null;
-                    //bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
-                    //nextCode = success ? rateRow.Success_Next_Script?.Trim()
-                    //                   : rateRow.Fail_Next_Script?.Trim();
-
-                    //if (string.IsNullOrEmpty(nextCode))
-                    //    nextCode = !string.IsNullOrEmpty(overrideScene) ? overrideScene : choiceText.Trim();
-
-                    //OnChoiceSelected(nextCode);
-                    string nextCode = null;
-                    bool success = ChoiceEvaluator.EvaluateSuccess(choiceResult.SuccessRate);
-                    nextCode = success ? rateRow.Success_Next_Script?.Trim()
-                                       : rateRow.Fail_Next_Script?.Trim();
-
-                    if (string.IsNullOrEmpty(nextCode))
-                        nextCode = !string.IsNullOrEmpty(overrideScene) ? overrideScene : choiceText.Trim();
-
-                    OnChoiceSelected(nextCode, choiceText); // 🔴 라벨 코드 같이 전달
+                    string fallbackCode = !string.IsNullOrEmpty(overrideScene) ? overrideScene : choiceText.Trim();
+                    string nextCode = ChoiceBranchResolver.ResolveNextCode(rateRow, choiceResult, fallbackCode);
+                    OnChoiceSelected(nextCode, choiceText);
                 });
             }
             else
             {
-                // 일반 버튼
-                //btn.onClick.AddListener(() =>
-                //{
-                //    string nextCode = !string.IsNullOrEmpty(overrideScene) ? overrideScene : choiceText.Trim();
-                //    OnChoiceSelected(nextCode);
-                //});
                 btn.onClick.AddListener(() =>
                 {
                     string nextCode = !string.IsNullOrEmpty(overrideScene) ? overrideScene : choiceText.Trim();
-                    OnChoiceSelected(nextCode, choiceText); // 🔴 라벨 코드 같이 전달
+                    OnChoiceSelected(nextCode, choiceText);
                 });
             }
         }
