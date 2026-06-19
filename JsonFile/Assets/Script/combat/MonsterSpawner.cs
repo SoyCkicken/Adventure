@@ -91,6 +91,9 @@ public class MonsterSpawner : MonoBehaviour
 
         combatTest.enemy = ch;
         battleUI.SetingUI();
-        Debug.Log($"[Spawn] {_currentMonster.name} spawned with {ch.OnEnemyHitOptions.Count} monster options.");
+        string optionSummary = monsterOptionManager != null
+            ? monsterOptionManager.FormatOptionSummary(ch.OnEnemyHitOptions)
+            : string.Empty;
+        Debug.Log($"[Spawn] {_currentMonster.name} spawned with {ch.OnEnemyHitOptions.Count} monster options. {optionSummary}");
     }
 }

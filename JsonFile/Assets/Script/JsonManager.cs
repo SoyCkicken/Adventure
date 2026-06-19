@@ -356,11 +356,16 @@ public partial class JsonManager : MonoBehaviour
 
     public List<MerchantItem> GetMerchantItems(string fileKey)
     {
-        // 1. 캐시 확인
         if (merchantItemCache.TryGetValue(fileKey, out var cachedList))
             return cachedList;
 
-        // 2. JSON 파일 로드
+        if (BlackSmith_Item_Dict.TryGetValue(fileKey, out List<BlackSmith> loadedRows))
+        {
+            var convertedRows = ConvertBlackSmithRows(loadedRows);
+            merchantItemCache[fileKey] = convertedRows;
+            return convertedRows;
+        }
+
         TextAsset jsonFile = Resources.Load<TextAsset>("Events/" + fileKey);
         if (jsonFile == null)
         {
@@ -368,42 +373,38 @@ public partial class JsonManager : MonoBehaviour
             return new List<MerchantItem>();
         }
 
-        try
+        if (!JsonRuntimeTableParser.TryParseList(jsonFile.text, fileKey, out List<BlackSmith> parsedRows, out string error))
         {
-            // 3. JSON 파싱 (JObject로 수동 파싱)
-            var root = JsonConvert.DeserializeObject<Dictionary<string, JArray>>(jsonFile.text);
-            if (!root.TryGetValue(fileKey, out var rawArray))
-            {
-                Debug.LogError($"[JsonManager] JSON에 {fileKey} 키를 찾을 수 없음");
-                return new List<MerchantItem>();
-            }
-
-            var convertedList = new List<MerchantItem>();
-
-            foreach (var token in rawArray)
-            {
-                var obj = token as JObject;
-                if (obj == null) continue;
-
-                var item = new MerchantItem
-                {
-                    Item_ID = obj["Item_ID"]?.ToString(),
-                    Item_Type = obj["Item_Type"]?.ToString(),
-                    Item_Name = obj["Item_Name"]?.ToString(),
-                    Item_Price = (int)(obj["Item_Price"]?.ToObject<float>() ?? 0f) // <-- float → int 변환
-                };
-
-                convertedList.Add(item);
-            }
-
-            merchantItemCache[fileKey] = convertedList;
-            return convertedList;
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"[JsonManager] JSON 파싱 중 오류 발생: {ex.Message}");
+            Debug.LogError($"[JsonManager] 상점 JSON 파싱 중 오류 발생: {error}");
             return new List<MerchantItem>();
         }
+
+        var convertedList = ConvertBlackSmithRows(parsedRows);
+        merchantItemCache[fileKey] = convertedList;
+        return convertedList;
+    }
+
+    private static List<MerchantItem> ConvertBlackSmithRows(IEnumerable<BlackSmith> rows)
+    {
+        var convertedList = new List<MerchantItem>();
+        if (rows == null)
+            return convertedList;
+
+        foreach (BlackSmith row in rows)
+        {
+            if (row == null)
+                continue;
+
+            convertedList.Add(new MerchantItem
+            {
+                Item_ID = row.Item_ID,
+                Item_Type = row.Item_Type,
+                Item_Name = row.Item_Name,
+                Item_Price = row.Item_Price
+            });
+        }
+
+        return convertedList;
     }
 
     public List<ChoiceRequirement> GetChoiceRequirementsByScene(string sceneCode, int choiceNo)

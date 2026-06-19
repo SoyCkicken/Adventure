@@ -854,6 +854,25 @@
       "ItemType": "Weapon",
       "One-Handed": true,
       "Item_Price": 5000.0
+    },
+    {
+      "Weapon_ID": "Weapon_046",
+      "Weapon_Name": "영원의 서리봉",
+      "Weapon_DMG": 535.0,
+      "STR_Scaling": 0.0,
+      "DEX_Scaling": 0.0,
+      "INT_Scaling": 3.4,
+      "MAG_Scaling": 1.15,
+      "DIV_Scaling": 0.0,
+      "CHR_Scaling": 0.0,
+      "Option_1_ID": "Option_013",
+      "Option_Value1": 18.0,
+      "Option_2_ID": "Option_011",
+      "Option_Value2": 22.0,
+      "Description": "빙결 제어와 정화를 겸비한 최상위 서리 지팡이",
+      "ItemType": "Weapon",
+      "One-Handed": true,
+      "Item_Price": 6000.0
     }
   ]
 }

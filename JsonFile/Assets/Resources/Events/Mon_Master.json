@@ -139,6 +139,48 @@
       "Effect2_Stat": 0.0,
       "Get_EXP": 90.0,
       "Get_Soul": 320.0
+    },
+    {
+      "Mon_ID": "monster_011",
+      "Mon_Name": "Elite Bleed Stalker",
+      "Mon_HP": 190.0,
+      "Mon_ATK": 22.0,
+      "Mon_Def": 5.0,
+      "Mon_Speed": 2.0,
+      "MonPas_Effect1": "Option_009",
+      "Effect1_Stat": 1.0,
+      "MonPas_Effect2": "Option_010",
+      "Effect2_Stat": 1.0,
+      "Get_EXP": 75.0,
+      "Get_Soul": 280.0
+    },
+    {
+      "Mon_ID": "monster_012",
+      "Mon_Name": "Elite Frost Guard",
+      "Mon_HP": 260.0,
+      "Mon_ATK": 20.0,
+      "Mon_Def": 14.0,
+      "Mon_Speed": 1.0,
+      "MonPas_Effect1": "Option_013",
+      "Effect1_Stat": 2.0,
+      "MonPas_Effect2": "--",
+      "Effect2_Stat": 0.0,
+      "Get_EXP": 85.0,
+      "Get_Soul": 310.0
+    },
+    {
+      "Mon_ID": "monster_013",
+      "Mon_Name": "Elite Berserk Warden",
+      "Mon_HP": 360.0,
+      "Mon_ATK": 32.0,
+      "Mon_Def": 8.0,
+      "Mon_Speed": 1.0,
+      "MonPas_Effect1": "Option_018",
+      "Effect1_Stat": 50.0,
+      "MonPas_Effect2": "Option_009",
+      "Effect2_Stat": 1.0,
+      "Get_EXP": 110.0,
+      "Get_Soul": 380.0
     }
   ]
 }

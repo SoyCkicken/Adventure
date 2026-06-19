@@ -122,6 +122,25 @@ public class MonsterOptionManager : MonoBehaviour
         return IsNoOpEffect(optionID) || !IsMonsterEffectID(optionID) || effects.ContainsKey(optionID);
     }
 
+    public string FormatOptionSummary(IEnumerable<Character.MonsterOption> options)
+    {
+        if (options == null)
+            return string.Empty;
+
+        var labels = options
+            .Where(option => !IsNoOpEffect(option.OptionID))
+            .Select(option =>
+            {
+                string desc = OptionManager.GetOptionDescription(option.OptionID);
+                string label = string.IsNullOrEmpty(desc) ? option.OptionID : desc;
+                string trigger = string.IsNullOrEmpty(option.Trigger) ? ResolveTrigger(option.OptionID) : option.Trigger;
+                return $"{label}({trigger})";
+            })
+            .ToList();
+
+        return labels.Count == 0 ? string.Empty : string.Join(", ", labels);
+    }
+
     public void ApplyMonsterOption(string optionID, OptionContext ctx)
     {
         EnsureEffects();
@@ -178,6 +197,7 @@ public class MonsterOptionManager : MonoBehaviour
 
         if (IsMonsterEffectID(optionID))
         {
+            ReportMonsterOption(monsterOption, monster, target, trigger, ctx.Value);
             ApplyMonsterOption(optionID, ctx);
             return;
         }
@@ -194,16 +214,41 @@ public class MonsterOptionManager : MonoBehaviour
 
         if (trigger == TriggerOnHit && IsOnHitOption(option))
         {
+            ReportMonsterOption(monsterOption, monster, target, trigger, ctx.Value);
             OptionManager.ApplyOnHitOnly(optionID, ctx);
         }
         else if (trigger == TriggerBattleStart && IsBattleStartOption(option))
         {
+            ReportMonsterOption(monsterOption, monster, target, trigger, ctx.Value);
             OptionManager.ApplyBattleStartOnly(optionID, ctx);
         }
         else if (trigger == TriggerBattleStart && IsPassiveOption(option))
         {
+            ReportMonsterOption(monsterOption, monster, target, trigger, ctx.Value);
             ApplyMonsterPassiveOption(option, ctx);
         }
+    }
+
+    private static void ReportMonsterOption(
+        Character.MonsterOption monsterOption,
+        Character monster,
+        Character target,
+        string trigger,
+        int value)
+    {
+        if (monster == null)
+            return;
+
+        string optionID = monsterOption.OptionID;
+        string desc = OptionManager.GetOptionDescription(optionID);
+        string label = string.IsNullOrEmpty(desc) ? optionID : desc;
+        string source = string.IsNullOrEmpty(monsterOption.SourceID) ? optionID : monsterOption.SourceID;
+        CombatFeedback.Report(
+            CombatFeedbackKind.StatusApplied,
+            monster,
+            target,
+            value,
+            $"{monster.charaterName} 정예 패시브 발동: {label} ({optionID}, trigger={trigger}, value={value}, source={source})");
     }
 
     private static void ApplyMonsterPassiveOption(Option_Master option, OptionContext ctx)

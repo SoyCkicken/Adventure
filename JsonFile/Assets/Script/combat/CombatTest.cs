@@ -343,8 +343,29 @@ public class CombatTest : MonoBehaviour
 
         if (monsterOptionManager == null)
             monsterOptionManager = FindObjectOfType<MonsterOptionManager>();
+        ReportMonsterPassiveSummary();
         monsterOptionManager?.ApplyBattleStartOptions(enemy, player);
     }
+
+    private void ReportMonsterPassiveSummary()
+    {
+        if (enemy?.OnEnemyHitOptions == null || enemy.OnEnemyHitOptions.Count == 0)
+            return;
+
+        string summary = monsterOptionManager != null
+            ? monsterOptionManager.FormatOptionSummary(enemy.OnEnemyHitOptions)
+            : string.Empty;
+        if (string.IsNullOrEmpty(summary))
+            return;
+
+        CombatFeedback.Report(
+            CombatFeedbackKind.Info,
+            enemy,
+            player,
+            enemy.OnEnemyHitOptions.Count,
+            $"{enemy.charaterName} 정예 패시브: {summary}");
+    }
+
     private bool CheckDeath(Character attacker, Character target)
     {
         if (target.Health <= 0 || attacker.Health <= 0)

@@ -12,8 +12,8 @@ public class P0DataCompatibilityTests
 {
     private static readonly Dictionary<string, int> ExpectedEventCounts = new Dictionary<string, int>
     {
-        { "Armor_Master", 43 },
-        { "BlackSmith", 86 },
+        { "Armor_Master", 44 },
+        { "BlackSmith", 88 },
         { "ChoiceCondition", 3 },
         { "ChoiceConditions", 3 },
         { "Event_Effect_Master", 3 },
@@ -23,7 +23,7 @@ public class P0DataCompatibilityTests
         { "Main_SuccessRate_Master_Main", 2 },
         { "Mon_concentrate", 2 },
         { "Mon_Effect_Master", 1 },
-        { "Mon_Master", 10 },
+        { "Mon_Master", 13 },
         { "Option_Master", 18 },
         { "OptionEffect_Master", 18 },
         { "Patch_Notes", 3 },
@@ -32,7 +32,7 @@ public class P0DataCompatibilityTests
         { "Ran_SuccessRate_Master_Events", 5 },
         { "Story_Effect_Master", 3 },
         { "Story_Master_Main", 93 },
-        { "Weapon_Master", 45 }
+        { "Weapon_Master", 46 }
     };
 
     [Test]
@@ -55,12 +55,13 @@ public class P0DataCompatibilityTests
     [TestCase("Main_Script_Master_Main", 93)]
     [TestCase("RandomEvents_Master_Event", 46)]
     [TestCase("Ran_Script_Master_Event", 50)]
-    [TestCase("Weapon_Master", 45)]
-    [TestCase("Armor_Master", 43)]
+    [TestCase("Weapon_Master", 46)]
+    [TestCase("Armor_Master", 44)]
+    [TestCase("BlackSmith", 88)]
     [TestCase("Item_Master", 20)]
     [TestCase("Option_Master", 18)]
     [TestCase("OptionEffect_Master", 18)]
-    [TestCase("Mon_Master", 10)]
+    [TestCase("Mon_Master", 13)]
     public void ImportantJsonRowCountsStayStable(string fileKey, int expectedCount)
     {
         TextAsset asset = Resources.Load<TextAsset>($"Events/{fileKey}");
@@ -78,17 +79,23 @@ public class P0DataCompatibilityTests
 
         object weapons = ParseWeaponMasters(asset.text);
         Assert.That(weapons, Is.Not.Null);
-        Assert.That(CountEnumerable(weapons), Is.EqualTo(45));
+        Assert.That(CountEnumerable(weapons), Is.EqualTo(46));
 
         object oldSword = FindByField(weapons, "Weapon_ID", "Weapon_001");
         object shortBow = FindByField(weapons, "Weapon_ID", "Weapon_002");
         object testBurnBlade = FindByField(weapons, "Weapon_ID", "Weapon_013");
+        object eternalFrostStaff = FindByField(weapons, "Weapon_ID", "Weapon_046");
         Assert.That(GetField<bool>(oldSword, "One_Handed"), Is.True);
         Assert.That(GetField<bool>(shortBow, "One_Handed"), Is.True);
         Assert.That(GetField<bool>(testBurnBlade, "One_Handed"), Is.True);
+        Assert.That(GetField<bool>(eternalFrostStaff, "One_Handed"), Is.True);
         Assert.That(GetField<string>(testBurnBlade, "Weapon_Name"), Is.EqualTo("화염 검"));
         Assert.That(GetField<string>(testBurnBlade, "Option_1_ID"), Is.EqualTo("Option_003"));
         Assert.That(GetField<int>(testBurnBlade, "Option_Value1"), Is.EqualTo(5));
+        Assert.That(GetField<string>(eternalFrostStaff, "Option_1_ID"), Is.EqualTo("Option_013"));
+        Assert.That(GetField<int>(eternalFrostStaff, "Option_Value1"), Is.EqualTo(18));
+        Assert.That(GetField<string>(eternalFrostStaff, "Option_2_ID"), Is.EqualTo("Option_011"));
+        Assert.That(GetField<int>(eternalFrostStaff, "Option_Value2"), Is.EqualTo(22));
     }
 
     [Test]
@@ -139,6 +146,263 @@ public class P0DataCompatibilityTests
         object item = InvokeStatic("JsonManager", "FindItemDataByCode", items, "Item_001");
         Assert.That(item, Is.Not.Null);
         Assert.That(GetField<string>(item, "Item_ID"), Is.EqualTo("Item_001"));
+    }
+
+    [Test]
+    public void MerchantItemsUseLoadedBlackSmithTable()
+    {
+        ResetRuntimeSingleton("JsonManager", "Instance");
+        Component jsonManager = CreateComponent("JsonManager");
+
+        InvokePrivateInstance(jsonManager, "LoadAllJsonFiles");
+
+        object blackSmithRows = InvokeInstance(jsonManager, "GetBlackSmiths", "BlackSmith");
+        Assert.That(CountEnumerable(blackSmithRows), Is.EqualTo(88));
+
+        object merchantItems = InvokeInstance(jsonManager, "GetMerchantItems", "BlackSmith");
+        Assert.That(CountEnumerable(merchantItems), Is.EqualTo(88));
+        Assert.That(FindByField(merchantItems, "Item_ID", "Weapon_014"), Is.Not.Null);
+        Assert.That(FindByField(merchantItems, "Item_ID", "Armor_012"), Is.Not.Null);
+        Assert.That(FindByField(merchantItems, "Item_ID", "Weapon_046"), Is.Not.Null);
+        Assert.That(FindByField(merchantItems, "Item_ID", "Armor_044"), Is.Not.Null);
+        Assert.That(FindOptionalByField(merchantItems, "Item_ID", "Weapon_013"), Is.Null);
+        Assert.That(FindOptionalByField(merchantItems, "Item_ID", "Armor_011"), Is.Null);
+    }
+
+    [Test]
+    public void EternalFrostEquipmentUsesExistingOptionsAndItemDataPath()
+    {
+        ResetRuntimeSingleton("JsonManager", "Instance");
+        Component jsonManager = CreateComponent("JsonManager");
+
+        InvokePrivateInstance(jsonManager, "LoadAllJsonFiles");
+        SetAutoProperty(jsonManager, "IsReady", true);
+
+        object weapon = InvokeInstance(jsonManager, "GetWeaponById", "Weapon_046");
+        Assert.That(weapon, Is.Not.Null);
+        Assert.That(GetField<int>(weapon, "Weapon_DMG"), Is.EqualTo(535));
+        Assert.That(GetField<string>(weapon, "Option_1_ID"), Is.EqualTo("Option_013"));
+        Assert.That(GetField<int>(weapon, "Option_Value1"), Is.EqualTo(18));
+        Assert.That(GetField<string>(weapon, "Option_2_ID"), Is.EqualTo("Option_011"));
+        Assert.That(GetField<int>(weapon, "Option_Value2"), Is.EqualTo(22));
+
+        object armor = InvokeInstance(jsonManager, "GetArmorById", "Armor_044");
+        Assert.That(armor, Is.Not.Null);
+        Assert.That(GetField<int>(armor, "Armor_DEF"), Is.EqualTo(88));
+        Assert.That(GetField<int>(armor, "Armor_HP"), Is.EqualTo(5450));
+        Assert.That(GetField<string>(armor, "Armor_Option1"), Is.EqualTo("Option_017"));
+        Assert.That(GetField<int>(armor, "Option1_Value"), Is.EqualTo(36));
+        Assert.That(GetField<string>(armor, "Armor_Option2"), Is.EqualTo("Option_014"));
+        Assert.That(GetField<int>(armor, "Option2_Value"), Is.EqualTo(26));
+
+        foreach (string optionId in new[] { "Option_013", "Option_011", "Option_017", "Option_014" })
+        {
+            Assert.That(InvokeInstance(jsonManager, "GetOptionById", optionId), Is.Not.Null, optionId);
+        }
+
+        object weaponItem = InvokeInstance(jsonManager, "GetItemDataFromCode", "Weapon_046");
+        Assert.That(weaponItem, Is.Not.Null);
+        Assert.That(GetField<string>(weaponItem, "Item_ID"), Is.EqualTo("Weapon_046"));
+        Assert.That(GetField<string>(weaponItem, "Option_1_ID"), Is.EqualTo("Option_013"));
+        Assert.That(GetField<string>(weaponItem, "Option_2_ID"), Is.EqualTo("Option_011"));
+
+        object armorItem = InvokeInstance(jsonManager, "GetItemDataFromCode", "Armor_044");
+        Assert.That(armorItem, Is.Not.Null);
+        Assert.That(GetField<string>(armorItem, "Item_ID"), Is.EqualTo("Armor_044"));
+        Assert.That(GetField<string>(armorItem, "Option_1_ID"), Is.EqualTo("Option_017"));
+        Assert.That(GetField<string>(armorItem, "Option_2_ID"), Is.EqualTo("Option_014"));
+    }
+
+    [TestCase("Images/Items/Weapon_046")]
+    [TestCase("Images/Items/Armor_044")]
+    public void EternalFrostEquipmentIconsAreLoadableSprites(string resourcePath)
+    {
+        Sprite sprite = Resources.Load<Sprite>(resourcePath);
+        Assert.That(sprite, Is.Not.Null, resourcePath);
+        Assert.That(sprite.rect.width, Is.EqualTo(128).Within(0.01f), resourcePath);
+        Assert.That(sprite.rect.height, Is.EqualTo(128).Within(0.01f), resourcePath);
+    }
+
+    [TestCase("Option_001", 13)]
+    [TestCase("Option_002", 17)]
+    [TestCase("Option_003", 6)]
+    [TestCase("Option_004", 8)]
+    [TestCase("Option_005", 25)]
+    [TestCase("Option_006", 20)]
+    [TestCase("Option_007", 15)]
+    [TestCase("Option_008", 2)]
+    [TestCase("Option_009", 2)]
+    [TestCase("Option_010", 3)]
+    [TestCase("Option_011", 2)]
+    [TestCase("Option_012", 3)]
+    [TestCase("Option_013", 2)]
+    [TestCase("Option_014", 14)]
+    [TestCase("Option_015", 15)]
+    [TestCase("Option_016", 16)]
+    [TestCase("Option_017", 17)]
+    [TestCase("Option_018", 60)]
+    public void RuntimeOptionsApplyInjectedValuesThroughActualEffectPaths(string optionId, int injectedValue)
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+
+        object option = InvokeStatic("OptionManager", "GetOption", optionId);
+        Assert.That(option, Is.Not.Null, optionId);
+        Assert.That(GetField<string>(option, "Effect_ID"), Is.Not.Empty, optionId);
+        MakeOptionDeterministicForExecutionTest(option, optionId);
+
+        Component user = CreateCharacter($"{optionId} User", maxHealth: 100, health: 100);
+        Component target = CreateCharacter($"{optionId} Target", maxHealth: 100, health: 100);
+        Component victim = CreateCharacter($"{optionId} Victim", maxHealth: 100, health: 100);
+        SetField(user, "damage", 0);
+        SetField(user, "CitChance", 0);
+        SetField(target, "damage", 10);
+        SetField(target, "CitChance", 0);
+
+        string itemId = $"Injected_{optionId}";
+        object context = CreateOptionContext(user, target, injectedValue, itemId, optionId);
+        string optionType = GetField<string>(option, "Option_Type");
+
+        if (optionType == "OnHit")
+        {
+            InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+            AssertRegisteredOption(user, "OnHitOptions", optionId, injectedValue, itemId);
+        }
+        else if (optionType == "OnBattleStart" || optionType == "BattleStart")
+        {
+            InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+            AssertRegisteredOption(user, "OnBattleStartOptions", optionId, injectedValue, itemId);
+        }
+
+        switch (optionId)
+        {
+            case "Option_001":
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                Assert.That(GetField<int>(target, "Health"), Is.EqualTo(100 - injectedValue));
+                break;
+
+            case "Option_002":
+                SetField(user, "CitChance", 0);
+                InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+                Assert.That(GetField<int>(user, "CitChance"), Is.EqualTo(injectedValue));
+                break;
+
+            case "Option_003":
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                Assert.That(GetField<int>(target, "Health"), Is.EqualTo(100 - injectedValue));
+                Assert.That((string)InvokeInstance(target, "GetActiveBuffDebugSummary"), Does.Contain(optionId));
+                break;
+
+            case "Option_004":
+                SetField(user, "Health", 60);
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                Assert.That(GetField<int>(user, "Health"), Is.EqualTo(60 + injectedValue));
+                Assert.That((string)InvokeInstance(user, "GetActiveBuffDebugSummary"), Does.Contain(optionId));
+                break;
+
+            case "Option_005":
+                SetField(user, "speed", 2f);
+                InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+                Assert.That(GetField<float>(user, "speed"), Is.EqualTo(2.5f).Within(0.001f));
+                break;
+
+            case "Option_006":
+                Component hpState = CreateComponent("PlayerState");
+                SetProperty(hpState, "HP", 100);
+                SetField(hpState, "CurrentHealth", 40);
+                InvokeStatic("OptionManager", "ApplyOption", optionId, CreateOptionContext(user, target, injectedValue, itemId, optionId, hpState));
+                Assert.That(GetField<int>(hpState, "CurrentHealth"), Is.EqualTo(60));
+                break;
+
+            case "Option_007":
+                Component mpState = CreateComponent("PlayerState");
+                SetProperty(mpState, "MP", 100);
+                SetField(mpState, "CurrentMental", 50);
+                InvokeStatic("OptionManager", "ApplyOption", optionId, CreateOptionContext(user, target, injectedValue, itemId, optionId, mpState));
+                Assert.That(GetField<int>(mpState, "CurrentMental"), Is.EqualTo(65));
+                break;
+
+            case "Option_008":
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                object firstMiss = InvokeInstance(target, "Attack", victim);
+                object secondMiss = InvokeInstance(target, "Attack", victim);
+                object hitAfterCharges = InvokeInstance(target, "Attack", victim);
+                Assert.That(GetField<int>(firstMiss, "Item1"), Is.EqualTo(0));
+                Assert.That(GetField<int>(secondMiss, "Item1"), Is.EqualTo(0));
+                Assert.That(GetField<int>(hitAfterCharges, "Item1"), Is.EqualTo(10));
+                Assert.That(GetField<int>(victim, "Health"), Is.EqualTo(90));
+                break;
+
+            case "Option_009":
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                InvokeInstance(target, "Attack", victim);
+                Assert.That(GetField<int>(target, "Health"), Is.EqualTo(96));
+                break;
+
+            case "Option_010":
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                InvokeInstance(target, "Attack", victim);
+                Assert.That(GetField<int>(target, "Health"), Is.EqualTo(94));
+                break;
+
+            case "Option_011":
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                InvokeInstance(user, "Attack", target);
+                object holyMiss = InvokeInstance(target, "Attack", victim);
+                Assert.That(GetField<int>(holyMiss, "Item1"), Is.EqualTo(0));
+                Assert.That(GetField<int>(victim, "Health"), Is.EqualTo(100));
+                break;
+
+            case "Option_012":
+                SetField(user, "Health", 50);
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                InvokeInstance(user, "Attack", target);
+                Assert.That(GetField<int>(user, "Health"), Is.EqualTo(56));
+                break;
+
+            case "Option_013":
+                SetField(target, "speed", 10f);
+                InvokeStatic("OptionManager", "ApplyOnHitOnly", optionId, context);
+                Assert.That(GetField<float>(target, "speed"), Is.EqualTo(8.5f).Within(0.001f));
+                object freezeBlocked = InvokeInstance(target, "Attack", victim);
+                Assert.That(GetField<int>(freezeBlocked, "Item1"), Is.EqualTo(0));
+                Assert.That(GetField<int>(victim, "Health"), Is.EqualTo(100));
+                break;
+
+            case "Option_014":
+                InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+                Assert.That(GetField<int>(user, "DebuffDamageResist"), Is.EqualTo(injectedValue));
+                break;
+
+            case "Option_015":
+                InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+                Assert.That(GetField<int>(user, "BleedResist"), Is.EqualTo(injectedValue));
+                break;
+
+            case "Option_016":
+                InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+                Assert.That(GetField<int>(user, "PoisonResist"), Is.EqualTo(injectedValue));
+                break;
+
+            case "Option_017":
+                InvokeStatic("OptionManager", "ApplyOption", optionId, context);
+                Assert.That(GetField<int>(user, "FreezeResist"), Is.EqualTo(injectedValue));
+                break;
+
+            case "Option_018":
+                SetField(user, "speed", 2f);
+                SetField(user, "armor", 5);
+                InvokeStatic("OptionManager", "ApplyBattleStartOnly", optionId, context);
+                Assert.That(GetField<float>(user, "speed"), Is.EqualTo(3.2f).Within(0.001f));
+                Assert.That(GetField<int>(user, "armor"), Is.EqualTo(0));
+                break;
+
+            default:
+                Assert.Fail($"Unhandled option execution case: {optionId}");
+                break;
+        }
     }
 
     [Test]
@@ -721,6 +985,28 @@ public class P0DataCompatibilityTests
     }
 
     [Test]
+    public void EliteMonsterVariantsUseExistingPassiveOptions()
+    {
+        Component jsonManager = CreateComponent("JsonManager");
+        Component optionManager = CreateComponent("OptionManager");
+        PrepareJsonAndOptionManagers(jsonManager, optionManager);
+        InvokeStatic("OptionManager", "Initialize", jsonManager);
+        Component monsterOptionManager = CreateComponent("MonsterOptionManager");
+
+        object monsters = InvokeInstance(jsonManager, "GetMonMasters", "Mon_Master");
+        Assert.That(CountEnumerable(monsters), Is.EqualTo(13));
+
+        AssertEliteMonster(monsters, monsterOptionManager, "monster_011",
+            ("Option_009", "OnHit", 1),
+            ("Option_010", "OnHit", 1));
+        AssertEliteMonster(monsters, monsterOptionManager, "monster_012",
+            ("Option_013", "OnHit", 2));
+        AssertEliteMonster(monsters, monsterOptionManager, "monster_013",
+            ("Option_018", "BattleStart", 50),
+            ("Option_009", "OnHit", 1));
+    }
+
+    [Test]
     public void BerserkUsesExplicitPlayerFlagWhenPlayerStateIsMissing()
     {
         Component jsonManager = CreateComponent("JsonManager");
@@ -914,6 +1200,31 @@ public class P0DataCompatibilityTests
         return character;
     }
 
+    private static void AssertEliteMonster(
+        object monsters,
+        Component monsterOptionManager,
+        string monsterId,
+        params (string OptionId, string Trigger, int Value)[] expectedOptions)
+    {
+        object monster = ((IEnumerable)monsters)
+            .Cast<object>()
+            .FirstOrDefault(item => GetField<string>(item, "Mon_ID") == monsterId);
+        Assert.That(monster, Is.Not.Null, monsterId);
+
+        object options = InvokeInstance(monsterOptionManager, "CollectOptionsFromObject", monster);
+        List<object> optionList = ((IEnumerable)options).Cast<object>().ToList();
+        Assert.That(optionList.Count, Is.EqualTo(expectedOptions.Length), monsterId);
+
+        for (int i = 0; i < expectedOptions.Length; i++)
+        {
+            object option = optionList[i];
+            Assert.That(GetField<string>(option, "OptionID"), Is.EqualTo(expectedOptions[i].OptionId), $"{monsterId}[{i}] OptionID");
+            Assert.That(GetField<string>(option, "Trigger"), Is.EqualTo(expectedOptions[i].Trigger), $"{monsterId}[{i}] Trigger");
+            Assert.That(GetField<int>(option, "Value"), Is.EqualTo(expectedOptions[i].Value), $"{monsterId}[{i}] Value");
+            Assert.That(InvokeStatic("OptionManager", "GetOption", expectedOptions[i].OptionId), Is.Not.Null, $"{monsterId}:{expectedOptions[i].OptionId}");
+        }
+    }
+
     private static object CreateBuffData(string buffId, string optionId, Component target, float duration, int value = 0)
     {
         Type buffType = GetRuntimeType("BuffData");
@@ -1061,6 +1372,66 @@ public class P0DataCompatibilityTests
         return CreateTypedList("Main_Effect", effect);
     }
 
+    private static object CreateOptionContext(Component user, Component target, int value, string itemId, string optionId, Component playerState = null)
+    {
+        object context = System.Activator.CreateInstance(GetRuntimeType("OptionContext"));
+        SetField(context, "User", user);
+        SetField(context, "Target", target);
+        SetField(context, "Value", value);
+        SetField(context, "item_ID", itemId);
+        SetField(context, "option_ID", optionId);
+        if (playerState != null)
+        {
+            SetField(context, "playerState", playerState);
+        }
+
+        return context;
+    }
+
+    private static void MakeOptionDeterministicForExecutionTest(object option, string optionId)
+    {
+        switch (optionId)
+        {
+            case "Option_009":
+            case "Option_010":
+            case "Option_012":
+                SetField(option, "BaseChance", 100);
+                SetField(option, "ChancePerStack", 0);
+                SetField(option, "BaseValue", 2);
+                SetField(option, "ValuePerStack", 2);
+                break;
+
+            case "Option_011":
+                SetField(option, "BaseChance", 100);
+                SetField(option, "ChancePerStack", 0);
+                SetField(option, "BaseValue", 100);
+                SetField(option, "ValuePerStack", 0);
+                SetField(option, "MaxRemoveCount", 3);
+                break;
+
+            case "Option_013":
+                SetField(option, "BaseChance", 100);
+                SetField(option, "ChancePerStack", 0);
+                SetField(option, "BaseValue", 10);
+                SetField(option, "ValuePerStack", 5);
+                SetField(option, "StatType", "Speed");
+                break;
+        }
+    }
+
+    private static void AssertRegisteredOption(Component owner, string listFieldName, string optionId, int expectedValue, string itemId)
+    {
+        IList options = (IList)GetField<object>(owner, listFieldName);
+        object registered = options
+            .Cast<object>()
+            .FirstOrDefault(option =>
+                GetField<string>(option, "OptionID") == optionId &&
+                GetField<string>(option, "item_ID") == itemId);
+
+        Assert.That(registered, Is.Not.Null, $"{listFieldName}:{optionId}");
+        Assert.That(GetField<int>(registered, "Value"), Is.EqualTo(expectedValue), optionId);
+    }
+
     private static object CreateTypedList(string typeName, params object[] items)
     {
         Type itemType = GetRuntimeType(typeName);
@@ -1131,6 +1502,13 @@ public class P0DataCompatibilityTests
         backingField.SetValue(target, value);
     }
 
+    private static void SetProperty(object target, string propertyName, object value)
+    {
+        PropertyInfo property = target.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+        Assert.That(property, Is.Not.Null, $"{target.GetType().Name}.{propertyName}");
+        property.SetValue(target, value);
+    }
+
     private static Type GetRuntimeType(string typeName)
     {
         string[] candidates = typeName.Contains(".")
@@ -1152,6 +1530,15 @@ public class P0DataCompatibilityTests
 
     private static object FindByField(object items, string fieldName, string value)
     {
+        object item = FindOptionalByField(items, fieldName, value);
+        if (item != null)
+            return item;
+
+        throw new System.InvalidOperationException($"Item with {fieldName}={value} was not found.");
+    }
+
+    private static object FindOptionalByField(object items, string fieldName, string value)
+    {
         foreach (object item in (IEnumerable)items)
         {
             if (GetField<string>(item, fieldName) == value)
@@ -1160,7 +1547,7 @@ public class P0DataCompatibilityTests
             }
         }
 
-        throw new System.InvalidOperationException($"Item with {fieldName}={value} was not found.");
+        return null;
     }
 
     private static int CountEnumerable(object items)
