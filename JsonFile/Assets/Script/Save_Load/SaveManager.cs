@@ -27,7 +27,33 @@ public class SaveManager : MonoBehaviour
     private string currentGameVersion;
 
     // ====== Save Path / Pending Data ======
-    public static string SavePath => Application.persistentDataPath + "/save.json";
+#if UNITY_EDITOR
+    private static string savePathOverride;
+#endif
+
+    public static string SavePath
+    {
+        get
+        {
+#if UNITY_EDITOR
+            if (!string.IsNullOrEmpty(savePathOverride))
+                return savePathOverride;
+#endif
+            return Application.persistentDataPath + "/save.json";
+        }
+    }
+
+#if UNITY_EDITOR
+    public static void SetSavePathForTesting(string path)
+    {
+        savePathOverride = path;
+    }
+
+    public static void ClearSavePathForTesting()
+    {
+        savePathOverride = null;
+    }
+#endif
     public static SaveData pendingLoadData;
 
     private void Awake()
@@ -325,6 +351,7 @@ public class SaveManager : MonoBehaviour
 
     public void SaveGame()
     {
+        SaveData existingData = WriteLoadFile();
         SaveData data = new SaveData();
 
         // 기존: 각 시스템에 저장 위임 (변경 없음)
@@ -336,14 +363,16 @@ public class SaveManager : MonoBehaviour
 
         data.saveTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         data.lastSeenVersion = currentGameVersion;
+        data.showPatchNoteToggle = existingData?.showPatchNoteToggle ?? true;
 
         if (SceneManager.GetActiveScene().name != "GameScene")
         {
-            data.showPatchNoteToggle = showPatchNoteToggle.isOn;
+            data.showPatchNoteToggle = showPatchNoteToggle != null
+                ? showPatchNoteToggle.isOn
+                : data.showPatchNoteToggle;
         }
         // 파일로 기록
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
+        WriteSaveFile(data);
 
         Debug.Log("[SaveManager] 저장 완료 → " + SavePath);
 
@@ -356,13 +385,36 @@ public class SaveManager : MonoBehaviour
 
     public SaveData ReadSaveFile()
     {
+        return TryReadSaveFile(logMissing: true);
+    }
+
+    private SaveData TryReadSaveFile(bool logMissing)
+    {
         if (!File.Exists(SavePath))
         {
-            Debug.LogWarning("[SaveManager] 세이브 파일이 없습니다.");
+            if (logMissing)
+            {
+                Debug.LogWarning("[SaveManager] 세이브 파일이 없습니다.");
+            }
             return null;
         }
-        string json = File.ReadAllText(SavePath);
-        return JsonUtility.FromJson<SaveData>(json);
+
+        try
+        {
+            string json = File.ReadAllText(SavePath);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                Debug.LogError("[SaveManager] 세이브 파일이 비어 있습니다.");
+                return null;
+            }
+
+            return JsonUtility.FromJson<SaveData>(json);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[SaveManager] 세이브 파일 읽기/파싱 실패: {ex.Message}");
+            return null;
+        }
     }
 
     // ✅ 수정: 중복 호출 제거
@@ -387,23 +439,34 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            //SceneManager.LoadScene("GameScene");
+            Debug.LogWarning("[SaveManager] SceneFader가 없어 즉시 로드로 대체합니다.");
+            SceneManager.LoadScene("GameScene");
         }
     }
 
     public SaveData WriteLoadFile()
     {
-        if (!File.Exists(SavePath))
-            return null;
-        string json = File.ReadAllText(SavePath);
-        return JsonUtility.FromJson<SaveData>(json);
+        return TryReadSaveFile(logMissing: false);
     }
 
 
     public void WriteSaveFile(SaveData data)
     {
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
+        if (data == null)
+        {
+            Debug.LogError("[SaveManager] null SaveData는 저장하지 않습니다.");
+            return;
+        }
+
+        try
+        {
+            string json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(SavePath, json);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[SaveManager] 세이브 파일 쓰기 실패: {ex.Message}");
+        }
     }
 
     private Button FindButtonByNameContains(string keyword)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -48,6 +49,122 @@ public class P0DataCompatibilityTests
         {
             Assert.That(TryGetRootArrayCount(asset.text, asset.name, out int count, out string error), Is.True, $"{asset.name}: {error}");
             Assert.That(count, Is.GreaterThanOrEqualTo(0), asset.name);
+        }
+    }
+
+    [Test]
+    public void SaveDataPublicFieldNamesStayBackwardCompatible()
+    {
+        Type saveDataType = GetRuntimeType("SaveManager").GetNestedType("SaveData", BindingFlags.Public);
+        Assert.That(saveDataType, Is.Not.Null);
+
+        var actualFields = new HashSet<string>(
+            saveDataType.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Select(field => field.Name));
+
+        string[] requiredFields =
+        {
+            "playerName",
+            "STR",
+            "INT",
+            "AGI",
+            "MAG",
+            "CHA",
+            "Health",
+            "HP",
+            "MP",
+            "Level",
+            "Experience",
+            "ExperienceRequired",
+            "equippedWeaponData",
+            "equippedArmorData",
+            "PlayerCurrentChapterIndex",
+            "MainstoryEventIndex",
+            "MainstoryCurrentIndex",
+            "MainstorySceneCode",
+            "savedEventGroups",
+            "savedCurrentEventGroup",
+            "savedCurrentEvetnGroupIndex",
+            "flowState",
+            "saveTime",
+            "lastSeenVersion",
+            "showPatchNoteToggle",
+            "inventoryItems"
+        };
+
+        CollectionAssert.IsSubsetOf(requiredFields, actualFields);
+    }
+
+    [Test]
+    public void EditorBuildSettingsRequiredScenesStayEnabledAndOrdered()
+    {
+        string[] requiredScenePaths =
+        {
+            "Assets/Scenes/LobbyScenes.unity",
+            "Assets/Scenes/GameScene.unity",
+            "Assets/Scenes/GameEndingScene.unity"
+        };
+
+        string[] enabledScenes = EditorBuildSettings.scenes
+            .Where(scene => scene.enabled)
+            .Select(scene => scene.path)
+            .Take(requiredScenePaths.Length)
+            .ToArray();
+
+        CollectionAssert.AreEqual(requiredScenePaths, enabledScenes);
+    }
+
+    [Test]
+    public void OptionMasterEffectIdsResolveToRegisteredRuntimeEffects()
+    {
+        TextAsset optionAsset = Resources.Load<TextAsset>("Events/Option_Master");
+        Assert.That(optionAsset, Is.Not.Null);
+        IEnumerable optionRows = ParseRuntimeList(optionAsset.text, "Option_Master", "Option_Master");
+
+        var registeredEffectIds = GetRegisteredOptionEffectIds();
+        var optionIds = new HashSet<string>();
+        var knownOptionTypes = new HashSet<string>
+        {
+            "OnEquip",
+            "Passive",
+            "OnHit",
+            "OnBattleStart",
+            "BattleStart"
+        };
+
+        foreach (object optionRow in optionRows)
+        {
+            string optionId = GetField<string>(optionRow, "Option_ID");
+            string effectId = GetField<string>(optionRow, "Effect_ID");
+            string optionType = GetField<string>(optionRow, "Option_Type");
+
+            Assert.That(optionId, Does.StartWith("Option_"));
+            Assert.That(optionIds.Add(optionId), Is.True, $"Duplicate Option_ID: {optionId}");
+            Assert.That(effectId, Does.StartWith("Effect_"), optionId);
+            if (!string.IsNullOrEmpty(optionType))
+            {
+                Assert.That(knownOptionTypes.Contains(optionType), Is.True, $"{optionId}:{optionType}");
+            }
+            Assert.That(registeredEffectIds.Contains(effectId), Is.True, $"{optionId}:{effectId}");
+        }
+    }
+
+    [Test]
+    public void OptionEffectAuthoringRowsTargetExistingRuntimeOptions()
+    {
+        TextAsset optionAsset = Resources.Load<TextAsset>("Events/Option_Master");
+        TextAsset effectAsset = Resources.Load<TextAsset>("Events/OptionEffect_Master");
+        Assert.That(optionAsset, Is.Not.Null);
+        Assert.That(effectAsset, Is.Not.Null);
+        IEnumerable optionRows = ParseRuntimeList(optionAsset.text, "Option_Master", "Option_Master");
+        IEnumerable effectRows = ParseRuntimeList(effectAsset.text, "OptionEffect_Master", "OptionEffect_Master");
+
+        var optionIds = new HashSet<string>(optionRows.Cast<object>().Select(row => GetField<string>(row, "Option_ID")));
+        foreach (object effectRow in effectRows)
+        {
+            string optionId = GetField<string>(effectRow, "Option_ID");
+            Assert.That(optionId, Does.StartWith("Option_"));
+            Assert.That(optionIds.Contains(optionId), Is.True, $"OptionEffect_Master references missing Option_ID: {optionId}");
         }
     }
 
@@ -1297,6 +1414,36 @@ public class P0DataCompatibilityTests
         error = args[3] as string;
         count = success ? GetProperty<int>(args[2], "Count") : 0;
         return success;
+    }
+
+    private static HashSet<string> GetRegisteredOptionEffectIds()
+    {
+        FieldInfo field = GetRuntimeType("OptionManager").GetField("effects", BindingFlags.Static | BindingFlags.NonPublic);
+        Assert.That(field, Is.Not.Null, "OptionManager.effects");
+
+        IDictionary effects = (IDictionary)field.GetValue(null);
+        Assert.That(effects, Is.Not.Null);
+
+        var ids = new HashSet<string>();
+        foreach (object key in effects.Keys)
+        {
+            ids.Add(key as string);
+        }
+
+        return ids;
+    }
+
+    private static IEnumerable ParseRuntimeList(string jsonContent, string rootKey, string typeName)
+    {
+        Type parserType = GetRuntimeType("JsonRuntimeTableParser");
+        Type itemType = GetRuntimeType(typeName);
+        MethodInfo method = parserType.GetMethod("TryParseList", BindingFlags.Public | BindingFlags.Static)
+            .MakeGenericMethod(itemType);
+        object[] args = { jsonContent, rootKey, null, null, null };
+
+        bool success = (bool)method.Invoke(null, args);
+        Assert.That(success, Is.True, args[3] as string);
+        return (IEnumerable)args[2];
     }
 
     private static float EvaluateFormula(string formula, Component state)
