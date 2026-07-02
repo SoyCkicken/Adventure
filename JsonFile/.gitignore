@@ -72,3 +72,25 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Public repository hygiene
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+*.zip
+*.zip.meta
+*.log
+~$*.docx
+
+.openclaw/
+AGENTS.md
+SOUL.md
+USER.md
+TOOLS.md
+memory/
+Assets/google-services.json
+ProjectSettings/GooglePlayGameSettings.txt
+Assets/Resources/Data/*.docx
+Assets/Resources/Data/*.docx.meta

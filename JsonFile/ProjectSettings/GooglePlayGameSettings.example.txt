@@ -1,0 +1,9 @@
+lastUpgrade=20100
+proj.pluginVersion=2.1.0
+proj.AppId=REPLACE_WITH_GOOGLE_PLAY_GAMES_APP_ID
+and.BundleId=REPLACE_WITH_ANDROID_PACKAGE_NAME
+proj.classDir=Assets
+proj.ConstantsClassName=GPGSIds
+and.ResourceData=REPLACE_WITH_URL_ENCODED_GPGS_RESOURCE_XML
+and.ClientId=REPLACE_WITH_OAUTH_CLIENT_ID
+android.SetupDone=false
